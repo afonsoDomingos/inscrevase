@@ -126,19 +126,38 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
         return () => document.removeEventListener('mousedown', handleClick);
     }, []);
 
-    const navItems = [
-        { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} />, link: '/dashboard/mentor' },
-        { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} />, link: '/dashboard/mentor?tab=forms' },
-        { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} />, link: '/dashboard/mentor?tab=blog' },
-        { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} />, link: '/dashboard/mentor?tab=submissions' },
-        { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} />, link: '/dashboard/mentor?tab=earnings' },
-        { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} />, link: '/dashboard/mentor?tab=reports' },
-        { id: 'marketing', label: 'Impulsionar Vendas', icon: <Zap size={20} />, link: '/dashboard/mentor?tab=marketing' },
-        { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} />, link: '/dashboard/mentor?tab=plans' },
-        { id: 'lessons', label: 'Aulas', icon: <Video size={20} />, link: '/dashboard/mentor?tab=lessons' },
-        { id: 'explore', label: t('dashboard.exploreEvents'), icon: <Map size={20} />, link: '/' },
-        { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} />, link: '/dashboard/mentor?tab=settings' },
-        { id: 'feedback', label: 'Feedbacks', icon: <MessageSquare size={20} />, link: '/dashboard/mentor?tab=feedback' },
+    const navGroups = [
+        {
+            title: t('dashboard.navigation') || 'Navegação',
+            items: [
+                { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={18} />, link: '/dashboard/mentor' },
+                { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={18} />, link: '/dashboard/mentor?tab=forms' },
+                { id: 'lessons', label: 'Aulas', icon: <Video size={18} />, link: '/dashboard/mentor?tab=lessons' },
+            ]
+        },
+        {
+            title: t('dashboard.management') || 'Gerenciamento',
+            items: [
+                { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={18} />, link: '/dashboard/mentor?tab=submissions' },
+                { id: 'marketing', label: 'Marketing', icon: <Zap size={18} />, link: '/dashboard/mentor?tab=marketing' },
+                { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={18} />, link: '/dashboard/mentor?tab=blog' },
+            ]
+        },
+        {
+            title: t('dashboard.finance') || 'Financeiro',
+            items: [
+                { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={18} />, link: '/dashboard/mentor?tab=earnings' },
+                { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={18} />, link: '/dashboard/mentor?tab=plans' },
+            ]
+        },
+        {
+            title: t('dashboard.others') || 'Outros',
+            items: [
+                { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={18} />, link: '/dashboard/mentor?tab=reports' },
+                { id: 'feedback', label: 'Feedbacks', icon: <MessageSquare size={18} />, link: '/dashboard/mentor?tab=feedback' },
+                { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={18} />, link: '/dashboard/mentor?tab=settings' },
+            ]
+        }
     ];
 
     if (loading) {
@@ -201,7 +220,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
             <aside style={{
                 width: isMobile ? '280px' : (isSidebarCollapsed ? '80px' : '280px'),
                 transform: isMobile ? (isMobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)') : 'none',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                 background: 'var(--paper)',
                 color: 'var(--foreground)',
                 display: 'flex',
@@ -211,10 +230,11 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                 left: 0,
                 top: 0,
                 zIndex: 2000,
-                boxShadow: isMobile && !isMobileSidebarOpen ? 'none' : '4px 0 20px rgba(0,0,0,0.2)',
-                overflowX: 'hidden'
+                boxShadow: isMobile && !isMobileSidebarOpen ? 'none' : '4px 0 30px rgba(0,0,0,0.1)',
+                overflowX: 'hidden',
+                borderRight: '1px solid var(--border)'
             }}>
-                <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid #333' }}>
+                <div style={{ padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid var(--border)' }}>
                     {!isSidebarCollapsed && (
                         <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: 'var(--foreground)', margin: 0 }}>
                             Inscreva<span className="gold-text">.se</span>
@@ -239,50 +259,62 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                     )}
                 </div>
 
-                <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
-                    {navItems.map((item) => (
-                        <Link
-                            key={item.id}
-                            href={item.link}
-                            title={isSidebarCollapsed ? item.label : ''}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
-                                width: '100%',
-                                padding: '12px 16px',
-                                background: activeRoute === item.id ? 'var(--gold-gradient)' : 'transparent',
-                                color: activeRoute === item.id ? '#000' : '#aaa',
-                                borderRadius: '8px',
-                                textDecoration: 'none',
-                                transition: 'all 0.2s',
-                                fontWeight: activeRoute === item.id ? 700 : 500,
-                                position: 'relative',
-                                overflow: 'hidden'
-                            }}
-                        >
-                            {activeRoute === item.id && (
-                                <motion.div
-                                    layoutId="active-indicator"
-                                    style={{
-                                        position: 'absolute',
-                                        left: 0,
-                                        width: '4px',
-                                        height: '24px',
-                                        background: '#FFD700',
-                                        borderTopRightRadius: '4px',
-                                        borderBottomRightRadius: '4px'
-                                    }}
-                                />
-                            )}
-                            <div style={{ opacity: activeRoute === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
+                <nav className="luxury-scrollbar" style={{
+                    padding: '1rem',
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1.25rem',
+                    overflowY: 'auto',
+                }}>
+                    {navGroups.map((group, gIdx) => (
+                        <div key={gIdx} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                             {!isSidebarCollapsed && (
-                                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                                    {item.label}
-                                </span>
+                                <div style={{
+                                    padding: '0 1rem',
+                                    fontSize: '0.65rem',
+                                    fontWeight: 800,
+                                    textTransform: 'uppercase',
+                                    color: 'var(--text-muted)',
+                                    letterSpacing: '1px',
+                                    marginBottom: '0.5rem',
+                                    opacity: 0.6
+                                }}>
+                                    {group.title}
+                                </div>
                             )}
-                        </Link>
+                            {group.items.map((item) => (
+                                <Link
+                                    key={item.id}
+                                    href={item.link}
+                                    title={isSidebarCollapsed ? item.label : ''}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                                        width: '100%',
+                                        padding: '10px 14px',
+                                        background: activeRoute === item.id ? 'var(--gold-gradient)' : 'transparent',
+                                        color: activeRoute === item.id ? '#000' : 'var(--foreground)',
+                                        borderRadius: '10px',
+                                        textDecoration: 'none',
+                                        transition: 'all 0.2s',
+                                        fontWeight: activeRoute === item.id ? 800 : 500,
+                                        position: 'relative',
+                                        overflow: 'hidden',
+                                        fontSize: '0.85rem'
+                                    }}
+                                >
+                                    <div style={{ opacity: activeRoute === item.id ? 1 : 0.6, minWidth: '20px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
+                                    {!isSidebarCollapsed && (
+                                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                                            {item.label}
+                                        </span>
+                                    )}
+                                </Link>
+                            ))}
+                        </div>
                     ))}
 
                     <button
@@ -296,96 +328,84 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                             width: '100%',
                             borderRadius: '12px',
                             border: 'none',
-                            background: 'transparent',
-                            color: '#FFD700',
-                            fontWeight: 600,
+                            background: 'rgba(212,175,55,0.05)',
+                            color: '#D4AF37',
+                            fontWeight: 700,
                             cursor: 'pointer',
-                            marginTop: 'auto'
+                            marginTop: '0.5rem',
+                            fontSize: '0.85rem'
                         }}
                     >
-                        <Map size={20} />
+                        <Map size={18} />
                         {!isSidebarCollapsed && t('dashboard.settings.guidedTour')}
                     </button>
 
-                    {!isSidebarCollapsed && (
-                        <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(255,215,0,0.05)', borderRadius: '15px', border: '1px solid rgba(255,215,0,0.1)' }}>
-                            <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{t('dashboard.settings.currentPlan')}</div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <Crown size={16} color={user.plan === 'enterprise' ? '#000' : '#FFD700'} />
-                                <span style={{ fontWeight: 800, fontSize: '0.9rem', color: '#fff', textTransform: 'capitalize' }}>
-                                    {user.plan || 'Free'}
-                                </span>
-                            </div>
-                        </div>
-                    )}
-                </nav>
-
-                <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <button
-                        onClick={() => router.push('/dashboard/mentor?tab=support')}
-                        title={isSidebarCollapsed ? t('dashboard.support') : ""}
-                        style={{
-                            width: '100%',
-                            padding: '0.8rem',
-                            background: '#2a2a2a',
-                            border: '1px solid #FFD700',
-                            borderRadius: '12px',
-                            color: '#FFD700',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            fontWeight: 600,
-                            position: 'relative'
-                        }}
-                    >
-                        <LifeBuoy size={18} />
-                        {!isSidebarCollapsed && t('dashboard.support')}
-                        {unreadCount > 0 && (
-                            <span style={{
-                                position: 'absolute',
-                                top: '-5px',
-                                right: '-5px',
-                                background: '#ef4444',
-                                color: '#fff',
-                                borderRadius: '50%',
-                                width: '20px',
-                                height: '20px',
+                    <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <button
+                            onClick={() => router.push('/dashboard/mentor?tab=support')}
+                            title={isSidebarCollapsed ? t('dashboard.support') : ""}
+                            style={{
+                                width: '100%',
+                                padding: '0.8rem',
+                                background: '#2a2a2a',
+                                border: '1px solid #FFD700',
+                                borderRadius: '12px',
+                                color: '#FFD700',
+                                cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontSize: '0.7rem',
-                                fontWeight: 700,
-                                border: '2px solid #1a1a1a'
-                            }}>
-                                {unreadCount > 9 ? '9+' : unreadCount}
-                            </span>
-                        )}
-                    </button>
+                                gap: '10px',
+                                fontWeight: 600,
+                                position: 'relative'
+                            }}
+                        >
+                            <LifeBuoy size={18} />
+                            {!isSidebarCollapsed && t('dashboard.support')}
+                            {unreadCount > 0 && (
+                                <span style={{
+                                    position: 'absolute',
+                                    top: '-5px',
+                                    right: '-5px',
+                                    background: '#ef4444',
+                                    color: '#fff',
+                                    borderRadius: '50%',
+                                    width: '20px',
+                                    height: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '0.7rem',
+                                    fontWeight: 700,
+                                    border: '2px solid #1a1a1a'
+                                }}>
+                                    {unreadCount > 9 ? '9+' : unreadCount}
+                                </span>
+                            )}
+                        </button>
 
-                    <button
-                        onClick={() => authService.logout()}
-                        title={isSidebarCollapsed ? t('common.logout') : ""}
-                        style={{
-                            width: '100%',
-                            padding: '0.8rem',
-                            background: '#2a2a2a',
-                            border: '1px solid #333',
-                            borderRadius: '12px',
-                            color: '#e53e3e',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            fontWeight: 600
-                        }}
-                    >
-                        <LogOut size={18} />
-                        {!isSidebarCollapsed && t('common.logout')}
-                    </button>
-                </div>
+                        <button
+                            onClick={() => authService.logout()}
+                            title={isSidebarCollapsed ? t('common.logout') : ""}
+                            style={{
+                                width: '100%',
+                                padding: '0.8rem',
+                                background: '#2a2a2a',
+                                border: '1px solid #333',
+                                borderRadius: '12px',
+                                color: '#e53e3e',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '10px',
+                                fontWeight: 600
+                            }}
+                        >
+                            <LogOut size={18} />
+                            {!isSidebarCollapsed && t('common.logout')}
+                        </button>
+                    </div>
             </aside>
 
             {/* Main Content */}

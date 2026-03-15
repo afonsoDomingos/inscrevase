@@ -614,660 +614,657 @@ export default function AcademyView() {
                             )}
                         </div>
                     </div>
-                </div>
 
                     {/* Section Title */}
-            <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '4px', height: '24px', background: 'var(--gold-gradient)', borderRadius: '2px' }} />
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--foreground)', margin: 0 }}>Explorar Conteúdo</h2>
-            </div>
+                    <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '4px', height: '24px', background: 'var(--gold-gradient)', borderRadius: '2px' }} />
+                        <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--foreground)', margin: 0 }}>Explorar Conteúdo</h2>
+                    </div>
 
-            {/* Filters */}
-            <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'stretch' }}>
-                <div style={{ position: 'relative', flex: isMobile ? '1 1 100%' : 1, minWidth: isMobile ? '100%' : '250px' }}>
-                    <Search size={20} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
-                    <input
-                        type="text"
-                        placeholder="Buscar aulas..."
-                        value={learnSearch}
-                        onChange={(e) => setLearnSearch(e.target.value)}
-                        style={{ width: '100%', padding: '12px 12px 12px 44px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '1rem', background: 'var(--paper)', color: 'var(--foreground)' }}
-                    />
-                </div>
-                <select
-                    value={learnCategory}
-                    onChange={(e) => setLearnCategory(e.target.value)}
-                    style={{ flex: isMobile ? 1 : 'none', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '0.95rem', cursor: 'pointer', background: 'var(--paper)', color: 'var(--foreground)' }}
-                >
-                    <option value="all">{isMobile ? 'Categorias' : 'Todas Categorias'}</option>
-                    <option value="basico">🌱 Básico</option>
-                    <option value="intermediario">🚀 Intermediário</option>
-                    <option value="avancado">⚡ Avançado</option>
-                </select>
-                <button
-                    onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                    style={{
-                        flex: isMobile ? 1 : 'none',
-                        padding: '12px 16px',
-                        borderRadius: '12px',
-                        border: showFavoritesOnly ? '2px solid #ef4444' : '1px solid var(--border)',
-                        fontSize: '0.95rem',
-                        cursor: 'pointer',
-                        background: showFavoritesOnly ? '#fef2f2' : 'var(--paper)',
-                        color: showFavoritesOnly ? '#ef4444' : '#666',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '8px',
-                        fontWeight: showFavoritesOnly ? 'bold' : 'normal'
-                    }}
-                >
-                    <Heart size={18} fill={showFavoritesOnly ? '#ef4444' : 'none'} />
-                    {isMobile ? 'Fav.' : 'Favoritas'}
-                </button>
-            </div>
-
-            {/* Lessons Grid */}
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))',
-                gap: '1.5rem',
-                justifyContent: 'center'
-            }}>
-                {learnLessons.filter(l =>
-                    (l.title.toLowerCase().includes(learnSearch.toLowerCase()) || l.description?.toLowerCase().includes(learnSearch.toLowerCase())) &&
-                    (learnCategory === 'all' || l.category === learnCategory) &&
-                    (!showFavoritesOnly || l.isFavorite)
-                ).map((lesson, idx) => {
-                    const info = getCategoryInfo(lesson.category);
-                    return (
-                        <motion.div
-                            key={lesson._id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: idx * 0.05 }}
-                            whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(0,0,0,0.12)' }}
-                            onClick={() => openLesson(lesson)}
-                            className="luxury-card"
-                            style={{ background: 'var(--paper)', borderRadius: '20px', overflow: 'hidden', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', border: '1px solid var(--border)', position: 'relative' }}
+                    {/* Filters */}
+                    <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'stretch' }}>
+                        <div style={{ position: 'relative', flex: isMobile ? '1 1 100%' : 1, minWidth: isMobile ? '100%' : '250px' }}>
+                            <Search size={20} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
+                            <input
+                                type="text"
+                                placeholder="Buscar aulas..."
+                                value={learnSearch}
+                                onChange={(e) => setLearnSearch(e.target.value)}
+                                style={{ width: '100%', padding: '12px 12px 12px 44px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '1rem', background: 'var(--paper)', color: 'var(--foreground)' }}
+                            />
+                        </div>
+                        <select
+                            value={learnCategory}
+                            onChange={(e) => setLearnCategory(e.target.value)}
+                            style={{ flex: isMobile ? 1 : 'none', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '0.95rem', cursor: 'pointer', background: 'var(--paper)', color: 'var(--foreground)' }}
                         >
-                            {/* New Badge */}
-                            {new Date(lesson.createdAt).getTime() > new Date().getTime() - 7 * 24 * 60 * 60 * 1000 && (
-                                <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'var(--gold-gradient)', color: '#000', padding: '4px 12px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: '900', zIndex: 20, boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
-                                    NOVO
-                                </div>
-                            )}
-                            <div style={{ position: 'relative', paddingTop: '56.25%', background: info.gradient }}>
-                                {lesson.thumbnailUrl && (
-                                    <div style={{ position: 'absolute', inset: 0 }}>
-                                        <Image
-                                            src={lesson.thumbnailUrl}
-                                            alt={lesson.title}
-                                            fill
-                                            style={{ objectFit: 'cover', pointerEvents: 'none' }}
-                                            unoptimized
-                                        />
-                                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)' }} />
-                                    </div>
-                                )}
-                                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: '50%', width: '60px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.2)' }}>
-                                        <Play size={24} color={info.color} fill={info.color} />
-                                    </div>
-                                </div>
+                            <option value="all">{isMobile ? 'Categorias' : 'Todas Categorias'}</option>
+                            <option value="basico">🌱 Básico</option>
+                            <option value="intermediario">🚀 Intermediário</option>
+                            <option value="avancado">⚡ Avançado</option>
+                        </select>
+                        <button
+                            onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                            style={{
+                                flex: isMobile ? 1 : 'none',
+                                padding: '12px 16px',
+                                borderRadius: '12px',
+                                border: showFavoritesOnly ? '2px solid #ef4444' : '1px solid var(--border)',
+                                fontSize: '0.95rem',
+                                cursor: 'pointer',
+                                background: showFavoritesOnly ? '#fef2f2' : 'var(--paper)',
+                                color: showFavoritesOnly ? '#ef4444' : '#666',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                fontWeight: showFavoritesOnly ? 'bold' : 'normal'
+                            }}
+                        >
+                            <Heart size={18} fill={showFavoritesOnly ? '#ef4444' : 'none'} />
+                            {isMobile ? 'Fav.' : 'Favoritas'}
+                        </button>
+                    </div>
 
-                                {/* Lock indicator */}
-                                {lesson.isLocked && (
-                                    <div style={{
-                                        position: 'absolute',
-                                        top: '12px',
-                                        left: '12px',
-                                        background: isAdmin ? 'rgba(245, 158, 11, 0.95)' : 'rgba(0,0,0,0.7)',
-                                        padding: '8px',
-                                        borderRadius: '12px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        color: 'white',
-                                        fontSize: '0.7rem',
-                                        fontWeight: 900,
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                                        backdropFilter: 'blur(4px)',
-                                        zIndex: 10
-                                    }}>
-                                        {isAdmin ? <Shield size={14} /> : <Lock size={14} />}
-                                        {lesson.isLocked && (isAdmin ? 'BLOQUEADA PARA USUÁRIOS' : 'BLOQUEADA')}
-                                    </div>
-                                )}
-
-                                {lesson.isCompleted && (
-                                    <div style={{ position: 'absolute', top: '12px', right: '12px', background: '#10b981', padding: '6px', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} title="Concluída">
-                                        <CheckCircle size={20} color="white" />
-                                    </div>
-                                )}
-                                {lesson.isFavorite && (
-                                    <div style={{ position: 'absolute', top: lesson.isLocked ? '50px' : '12px', left: '12px', background: 'rgba(255, 255, 255, 0.9)', padding: '6px', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} title="Favorita">
-                                        <Heart size={20} color="#ef4444" fill="#ef4444" />
-                                    </div>
-                                )}
-                                <div style={{ position: 'absolute', bottom: '12px', right: '12px', background: 'rgba(0,0,0,0.8)', padding: '4px 10px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 'bold', color: 'white', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <Clock size={12} />
-                                    {formatDuration(lesson.duration)}
-                                </div>
-                            </div>
-                            <div style={{ padding: '1.5rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: info.color, background: `${info.color}15`, padding: '4px 10px', borderRadius: '20px' }}>
-                                        {info.icon} {info.label}
-                                    </span>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#666', background: 'rgba(0,0,0,0.05)', padding: '4px 10px', borderRadius: '20px' }}>
-                                        Aula {lesson.order || idx + 1}
-                                    </span>
-                                </div>
-                                <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--foreground)', marginBottom: '0.5rem', lineHeight: '1.4' }}>{lesson.title}</h2>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#999', fontSize: '0.875rem' }}>
-                                    <Eye size={16} />
-                                    <span>{lesson.views} visualizações</span>
-                                </div>
-                            </div>
-                            {/* Progress Bar for In-Progress Lessons */}
-                            {lesson.progress && lesson.progress > 0 && !lesson.isCompleted && (
-                                <div style={{ height: '4px', background: 'rgba(0,0,0,0.05)', width: '100%' }}>
-                                    <div style={{ height: '100%', background: info.color, width: `${(lesson.progress / lesson.duration) * 100}%` }} />
-                                </div>
-                            )}
-                        </motion.div>
-                    );
-                })}
-
-                {learnLessons.filter(l =>
-                    (l.title.toLowerCase().includes(learnSearch.toLowerCase()) || l.description?.toLowerCase().includes(learnSearch.toLowerCase())) &&
-                    (learnCategory === 'all' || l.category === learnCategory) &&
-                    (!showFavoritesOnly || l.isFavorite)
-                ).length === 0 && (
-                        <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 2rem', background: 'var(--paper)', borderRadius: '24px', border: '1px dashed var(--border)' }}>
-                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
-                            <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--foreground)' }}>Nenhuma aula encontrada</h3>
-                            <p style={{ color: '#666' }}>Tente ajustar seus filtros ou termos de busca.</p>
-                        </div>
-                    )}
-            </div>
-
-            {/* Pro Tips Section */}
-            <div style={{ marginTop: '3rem', padding: '1.5rem', background: 'rgba(0,0,0,0.01)', borderRadius: '24px', border: '1px solid var(--border)' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--foreground)', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    <TrendingUp size={20} className="gold-text" />
-                    Dicas para Mentores de Elite
-                </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1rem' }}>
-                    {[
-                        { title: 'Conteúdo Curto', text: 'Vídeos de 5-10 min têm 80% mais taxa de conclusão.', icon: '⏱️' },
-                        { title: 'Engajamento', text: 'Peça feedback nos primeiros minutos das lives.', icon: '💬' },
-                        { title: 'Visual Premium', text: 'Use capas atraentes e títulos claros para suas aulas.', icon: '✨' }
-                    ].map((tip, i) => (
-                        <div key={i} className="luxury-card" style={{ background: 'var(--paper)', padding: '1rem', borderRadius: '16px', border: '1px solid var(--border)' }}>
-                            <h4 style={{ fontWeight: 800, fontSize: '0.9rem', marginBottom: '6px', color: '#D4AF37', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <span>{tip.icon}</span> {tip.title}
-                            </h4>
-                            <p style={{ fontSize: '0.8rem', color: '#666', margin: 0, lineHeight: '1.4' }}>{tip.text}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </motion.div>
-    )
-}
-
-{/* MANAGE TAB CONTENT */ }
-{
-    activeTab === 'manage' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
-            {/* Stats */}
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
-                gap: '0.75rem',
-                marginBottom: '1.5rem'
-            }}>
-                {[
-                    { icon: Video, label: 'Aulas', value: manageStats.total, color: '#D4AF37' },
-                    { icon: CheckCircle, label: 'Ativas', value: manageStats.published, color: '#10b981' },
-                    { icon: Clock, label: 'Drafts', value: manageStats.unpublished, color: '#f59e0b' },
-                    { icon: TrendingUp, label: 'Views', value: manageStats.totalViews, color: '#3b82f6' }
-                ].map((stat, idx) => (
-                    <div key={idx} className="luxury-card" style={{
-                        background: 'var(--paper)',
-                        padding: '1rem',
-                        borderRadius: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.75rem',
-                        border: '1px solid var(--border)'
+                    {/* Lessons Grid */}
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))',
+                        gap: '1.5rem',
+                        justifyContent: 'center'
                     }}>
-                        <div style={{ background: `${stat.color}15`, padding: '8px', borderRadius: '10px', color: stat.color }}><stat.icon size={20} /></div>
-                        <div>
-                            <p style={{ fontSize: '0.7rem', color: '#666', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '2px' }}>{stat.label}</p>
-                            <p style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--foreground)', fontFamily: 'var(--font-inter)' }}>{stat.value}</p>
+                        {learnLessons.filter(l =>
+                            (l.title.toLowerCase().includes(learnSearch.toLowerCase()) || l.description?.toLowerCase().includes(learnSearch.toLowerCase())) &&
+                            (learnCategory === 'all' || l.category === learnCategory) &&
+                            (!showFavoritesOnly || l.isFavorite)
+                        ).map((lesson, idx) => {
+                            const info = getCategoryInfo(lesson.category);
+                            return (
+                                <motion.div
+                                    key={lesson._id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: idx * 0.05 }}
+                                    whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(0,0,0,0.12)' }}
+                                    onClick={() => openLesson(lesson)}
+                                    className="luxury-card"
+                                    style={{ background: 'var(--paper)', borderRadius: '20px', overflow: 'hidden', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', border: '1px solid var(--border)', position: 'relative' }}
+                                >
+                                    {/* New Badge */}
+                                    {new Date(lesson.createdAt).getTime() > new Date().getTime() - 7 * 24 * 60 * 60 * 1000 && (
+                                        <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'var(--gold-gradient)', color: '#000', padding: '4px 12px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: '900', zIndex: 20, boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                                            NOVO
+                                        </div>
+                                    )}
+                                    <div style={{ position: 'relative', paddingTop: '56.25%', background: info.gradient }}>
+                                        {lesson.thumbnailUrl && (
+                                            <div style={{ position: 'absolute', inset: 0 }}>
+                                                <Image
+                                                    src={lesson.thumbnailUrl}
+                                                    alt={lesson.title}
+                                                    fill
+                                                    style={{ objectFit: 'cover', pointerEvents: 'none' }}
+                                                    unoptimized
+                                                />
+                                                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)' }} />
+                                            </div>
+                                        )}
+                                        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: '50%', width: '60px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.2)' }}>
+                                                <Play size={24} color={info.color} fill={info.color} />
+                                            </div>
+                                        </div>
+
+                                        {/* Lock indicator */}
+                                        {lesson.isLocked && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: '12px',
+                                                left: '12px',
+                                                background: isAdmin ? 'rgba(245, 158, 11, 0.95)' : 'rgba(0,0,0,0.7)',
+                                                padding: '8px',
+                                                borderRadius: '12px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                color: 'white',
+                                                fontSize: '0.7rem',
+                                                fontWeight: 900,
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                                                backdropFilter: 'blur(4px)',
+                                                zIndex: 10
+                                            }}>
+                                                {isAdmin ? <Shield size={14} /> : <Lock size={14} />}
+                                                {lesson.isLocked && (isAdmin ? 'BLOQUEADA PARA USUÁRIOS' : 'BLOQUEADA')}
+                                            </div>
+                                        )}
+
+                                        {lesson.isCompleted && (
+                                            <div style={{ position: 'absolute', top: '12px', right: '12px', background: '#10b981', padding: '6px', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} title="Concluída">
+                                                <CheckCircle size={20} color="white" />
+                                            </div>
+                                        )}
+                                        {lesson.isFavorite && (
+                                            <div style={{ position: 'absolute', top: lesson.isLocked ? '50px' : '12px', left: '12px', background: 'rgba(255, 255, 255, 0.9)', padding: '6px', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} title="Favorita">
+                                                <Heart size={20} color="#ef4444" fill="#ef4444" />
+                                            </div>
+                                        )}
+                                        <div style={{ position: 'absolute', bottom: '12px', right: '12px', background: 'rgba(0,0,0,0.8)', padding: '4px 10px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 'bold', color: 'white', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <Clock size={12} />
+                                            {formatDuration(lesson.duration)}
+                                        </div>
+                                    </div>
+                                    <div style={{ padding: '1.5rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                            <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: info.color, background: `${info.color}15`, padding: '4px 10px', borderRadius: '20px' }}>
+                                                {info.icon} {info.label}
+                                            </span>
+                                            <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#666', background: 'rgba(0,0,0,0.05)', padding: '4px 10px', borderRadius: '20px' }}>
+                                                Aula {lesson.order || idx + 1}
+                                            </span>
+                                        </div>
+                                        <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--foreground)', marginBottom: '0.5rem', lineHeight: '1.4' }}>{lesson.title}</h2>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#999', fontSize: '0.875rem' }}>
+                                            <Eye size={16} />
+                                            <span>{lesson.views} visualizações</span>
+                                        </div>
+                                    </div>
+                                    {/* Progress Bar for In-Progress Lessons */}
+                                    {lesson.progress && lesson.progress > 0 && !lesson.isCompleted && (
+                                        <div style={{ height: '4px', background: 'rgba(0,0,0,0.05)', width: '100%' }}>
+                                            <div style={{ height: '100%', background: info.color, width: `${(lesson.progress / lesson.duration) * 100}%` }} />
+                                        </div>
+                                    )}
+                                </motion.div>
+                            );
+                        })}
+
+                        {learnLessons.filter(l =>
+                            (l.title.toLowerCase().includes(learnSearch.toLowerCase()) || l.description?.toLowerCase().includes(learnSearch.toLowerCase())) &&
+                            (learnCategory === 'all' || l.category === learnCategory) &&
+                            (!showFavoritesOnly || l.isFavorite)
+                        ).length === 0 && (
+                                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 2rem', background: 'var(--paper)', borderRadius: '24px', border: '1px dashed var(--border)' }}>
+                                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
+                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--foreground)' }}>Nenhuma aula encontrada</h3>
+                                    <p style={{ color: '#666' }}>Tente ajustar seus filtros ou termos de busca.</p>
+                                </div>
+                            )}
+                    </div>
+
+                    {/* Pro Tips Section */}
+                    <div style={{ marginTop: '3rem', padding: '1.5rem', background: 'rgba(0,0,0,0.01)', borderRadius: '24px', border: '1px solid var(--border)' }}>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--foreground)', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            <TrendingUp size={20} className="gold-text" />
+                            Dicas para Mentores de Elite
+                        </h3>
+                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1rem' }}>
+                            {[
+                                { title: 'Conteúdo Curto', text: 'Vídeos de 5-10 min têm 80% mais taxa de conclusão.', icon: '⏱️' },
+                                { title: 'Engajamento', text: 'Peça feedback nos primeiros minutos das lives.', icon: '💬' },
+                                { title: 'Visual Premium', text: 'Use capas atraentes e títulos claros para suas aulas.', icon: '✨' }
+                            ].map((tip, i) => (
+                                <div key={i} className="luxury-card" style={{ background: 'var(--paper)', padding: '1rem', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                                    <h4 style={{ fontWeight: 800, fontSize: '0.9rem', marginBottom: '6px', color: '#D4AF37', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <span>{tip.icon}</span> {tip.title}
+                                    </h4>
+                                    <p style={{ fontSize: '0.8rem', color: '#666', margin: 0, lineHeight: '1.4' }}>{tip.text}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
-                ))}
-            </div>
+                </motion.div>
+            )}
 
-            {/* Information Guide for Mentors */}
-            <div style={{
-                background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(212, 175, 55, 0.02) 100%)',
-                padding: '1.25rem',
-                borderRadius: '20px',
-                marginBottom: '1.5rem',
-                border: '1px solid rgba(212, 175, 55, 0.2)',
-                display: 'flex',
-                flexDirection: isMobile ? 'column' : 'row',
-                alignItems: 'center',
-                gap: '1.25rem'
-            }}>
-                <div style={{ background: 'var(--gold-gradient)', padding: '10px', borderRadius: '50%', color: '#000' }}>
-                    <Award size={24} />
-                </div>
-                <div style={{ flex: 1 }}>
-                    <h3 style={{ margin: '0 0 2px 0', fontSize: '1rem', fontWeight: 800, color: '#D4AF37', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Primeiros Passos</h3>
-                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#666', lineHeight: '1.5' }}>
-                        Clique em <b>+ Nova Aula</b> • Upload seu vídeo ou cole um link • Defina o <b>Público</b> • <b>Publique</b> para liberar o acesso.
-                    </p>
-                </div>
-            </div>
-
-            {/* Actions */}
-            <div style={{
-                display: 'flex',
-                flexDirection: isMobile ? 'column' : 'row',
-                justifyContent: 'space-between',
-                gap: '1rem',
-                marginBottom: '1.25rem'
-            }}>
-                <div style={{ position: 'relative', width: isMobile ? '100%' : '300px' }}>
-                    <Search size={20} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
-                    <input
-                        type="text"
-                        placeholder="Buscar minhas aulas..."
-                        value={manageSearch}
-                        onChange={(e) => setManageSearch(e.target.value)}
-                        style={{ width: '100%', padding: '12px 12px 12px 44px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--paper)', color: 'var(--foreground)' }}
-                    />
-                </div>
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    padding: '10px 20px',
-                    background: 'var(--gold-gradient)',
-                    color: '#000',
-                    border: 'none',
-                    borderRadius: '12px',
-                    fontWeight: 800,
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 15px rgba(212, 175, 55, 0.2)',
-                    width: isMobile ? '100%' : 'auto',
-                    transition: 'all 0.3s'
-                }}
-                    >
-                <Plus size={18} /> Nova Aula
-            </button>
-        </div>
-
-            {/* Management Table */ }
-    <div style={{
-        background: 'var(--paper)',
-        borderRadius: '16px',
-        overflowX: 'auto',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-        border: '1px solid var(--border)'
-    }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: isMobile ? '800px' : 'auto' }}>
-            <thead>
-                <tr style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid var(--border)' }}>
-                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Aula</th>
-                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Categoria</th>
-                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Público</th>
-                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Status</th>
-                    <th style={{ padding: '1rem', textAlign: 'right', color: '#666' }}>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {manageLessons
-                    .filter(l => l.title.toLowerCase().includes(manageSearch.toLowerCase()))
-                    .map((lesson, idx) => (
-                        <tr key={lesson._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                            <td style={{ padding: '1rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    <div style={{ width: '40px', height: '40px', background: 'rgba(0,0,0,0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Video size={20} color="#666" />
-                                    </div>
-                                    <div><p style={{ fontWeight: '600', color: 'var(--foreground)' }}>{lesson.title}</p></div>
-                                </div>
-                            </td>
-                            <td style={{ padding: '1rem' }}>
-                                {(() => {
-                                    const info = getCategoryInfo(lesson.category);
-                                    return (
-                                        <span style={{ fontSize: '0.75rem', fontWeight: 'bold', padding: '4px 10px', borderRadius: '12px', background: `${info.color}15`, color: info.color }}>
-                                            {info.icon} {info.label}
-                                        </span>
-                                    );
-                                })()}
-                            </td>
-                            <td style={{ padding: '1rem' }}>
-                                <span style={{
-                                    fontSize: '0.75rem',
-                                    padding: '4px 8px',
-                                    borderRadius: '8px',
-                                    fontWeight: '600',
-                                    textTransform: 'uppercase',
-                                    background: lesson.targetAudience === 'both' ? '#fef3c7' :
-                                        lesson.targetAudience === 'mentors' ? '#e0f2fe' :
-                                            lesson.targetAudience === 'companies' ? '#f3e8ff' :
-                                                lesson.targetAudience === 'specialists' ? '#fae8ff' :
-                                                    lesson.targetAudience === 'all' ? '#dcfce7' : 'rgba(0,0,0,0.05)',
-                                    color: lesson.targetAudience === 'both' ? '#92400e' :
-                                        lesson.targetAudience === 'mentors' ? '#0369a1' :
-                                            lesson.targetAudience === 'companies' ? '#6b21a8' :
-                                                lesson.targetAudience === 'specialists' ? '#86198f' :
-                                                    lesson.targetAudience === 'all' ? '#166534' : '#4b5563'
-                                }}>
-                                    {lesson.targetAudience === 'both' ? '👥🎓 Ambos' :
-                                        lesson.targetAudience === 'mentors' ? '🎓 Mentor' :
-                                            lesson.targetAudience === 'companies' ? '🏢 Empresa' :
-                                                lesson.targetAudience === 'specialists' ? '⚡ Especialista' :
-                                                    lesson.targetAudience === 'all' ? '🌍 Todos' : '👥 Participante'}
-                                </span>
-                            </td>
-                            <td style={{ padding: '1rem' }}>
-                                <span style={{ fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px', background: lesson.isPublished ? '#dcfce7' : '#fef3c7', color: lesson.isPublished ? '#166534' : '#92400e' }}>
-                                    {lesson.isPublished ? 'Publicada' : 'Rascunho'}
-                                </span>
-                            </td>
-                            <td style={{ padding: '1rem', textAlign: 'right' }}>
-                                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', alignItems: 'center' }}>
-                                    {!manageSearch && (
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                            <button
-                                                onClick={() => moveLesson(idx, 'up')}
-                                                disabled={idx === 0}
-                                                style={{ padding: '4px', border: 'none', background: 'transparent', cursor: idx === 0 ? 'not-allowed' : 'pointer', color: idx === 0 ? '#ccc' : '#666' }}
-                                            >
-                                                <ArrowUp size={14} />
-                                            </button>
-                                            <button
-                                                onClick={() => moveLesson(idx, 'down')}
-                                                disabled={idx === manageLessons.length - 1}
-                                                style={{ padding: '4px', border: 'none', background: 'transparent', cursor: idx === manageLessons.length - 1 ? 'not-allowed' : 'pointer', color: idx === manageLessons.length - 1 ? '#ccc' : '#666' }}
-                                            >
-                                                <ArrowDown size={14} />
-                                            </button>
-                                        </div>
-                                    )}
-                                    <button onClick={() => togglePublish(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#666' }}>
-                                        {lesson.isPublished ? <EyeOff size={18} /> : <Eye size={18} />}
-                                    </button>
-                                    <button onClick={() => openModal(lesson)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#3b82f6' }}>
-                                        <Edit size={18} />
-                                    </button>
-                                    <button onClick={() => handleDelete(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#ef4444' }}>
-                                        <Trash2 size={18} />
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    ))
-                }
-                {manageLessons.filter(l => l.title.toLowerCase().includes(manageSearch.toLowerCase())).length === 0 && (
-                    <tr>
-                        <td colSpan={5} style={{ padding: '4rem 2rem', textAlign: 'center' }}>
-                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎥</div>
-                            <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--foreground)' }}>Nenhuma aula criada</h3>
-                            <p style={{ color: '#666' }}>Comece criando sua primeira aula para seus alunos!</p>
-                            <button
-                                onClick={() => openModal()}
-                                style={{ marginTop: '1.5rem', padding: '12px 24px', background: 'var(--gold-gradient)', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}
-                            >
-                                + Criar Minha Primeira Aula
-                            </button>
-                        </td>
-                    </tr>
-                )}
-            </tbody>
-        </table>
-    </div>
-        </motion.div >
-    )
-}
-
-            <AnimatePresence>
-                {selectedLesson && (
-                    <LessonPlayerModal
-                        lesson={selectedLesson}
-                        onClose={closeLesson}
-                        onComplete={() => {
-                            setLearnLessons(prev => prev.map(l =>
-                                l._id === selectedLesson._id ? { ...l, isCompleted: true } : l
-                            ));
-                        }}
-                    />
-                )}
-            </AnimatePresence>
-
-            <AnimatePresence>
-                {showModal && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3000, padding: '1rem' }}
-                        onClick={closeModal}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, y: 20 }}
-                            animate={{ scale: 1, y: 0 }}
-                            exit={{ scale: 0.9, y: 20 }}
-                            onClick={(e) => e.stopPropagation()}
-                            style={{ background: 'var(--paper)', borderRadius: '20px', padding: '2rem', maxWidth: '600px', width: '100%', maxHeight: '90vh', overflowY: 'auto' }}
-                        >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-                                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--foreground)' }}>{editingLesson ? 'Editar Aula' : 'Nova Aula'}</h2>
-                                <button onClick={closeModal} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--foreground)' }}><X size={24} /></button>
-                            </div>
-                            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {/* MANAGE TAB CONTENT */}
+            {activeTab === 'manage' && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+                    {/* Stats */}
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
+                        gap: '0.75rem',
+                        marginBottom: '1.5rem'
+                    }}>
+                        {[
+                            { icon: Video, label: 'Aulas', value: manageStats.total, color: '#D4AF37' },
+                            { icon: CheckCircle, label: 'Ativas', value: manageStats.published, color: '#10b981' },
+                            { icon: Clock, label: 'Drafts', value: manageStats.unpublished, color: '#f59e0b' },
+                            { icon: TrendingUp, label: 'Views', value: manageStats.totalViews, color: '#3b82f6' }
+                        ].map((stat, idx) => (
+                            <div key={idx} className="luxury-card" style={{
+                                background: 'var(--paper)',
+                                padding: '1rem',
+                                borderRadius: '16px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem',
+                                border: '1px solid var(--border)'
+                            }}>
+                                <div style={{ background: `${stat.color}15`, padding: '8px', borderRadius: '10px', color: stat.color }}><stat.icon size={20} /></div>
                                 <div>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--foreground)' }}>Vídeo</label>
-                                    <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-                                        <button
-                                            type="button"
-                                            onClick={() => setVideoInputMethod('upload')}
-                                            style={{ flex: 1, padding: '10px', background: videoInputMethod === 'upload' ? 'var(--gold-gradient)' : 'rgba(0,0,0,0.05)', color: videoInputMethod === 'upload' ? '#000' : '#666', border: 'none', borderRadius: '8px', fontWeight: '600' }}
-                                        >
-                                            📤 Upload
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setVideoInputMethod('url')}
-                                            style={{ flex: 1, padding: '10px', background: videoInputMethod === 'url' ? 'var(--gold-gradient)' : 'rgba(0,0,0,0.05)', color: videoInputMethod === 'url' ? '#000' : '#666', border: 'none', borderRadius: '8px', fontWeight: '600' }}
-                                        >
-                                            🔗 URL
-                                        </button>
+                                    <p style={{ fontSize: '0.7rem', color: '#666', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.5px', marginBottom: '2px' }}>{stat.label}</p>
+                                    <p style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--foreground)', fontFamily: 'var(--font-inter)' }}>{stat.value}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Information Guide for Mentors */}
+                    <div style={{
+                        background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(212, 175, 55, 0.02) 100%)',
+                        padding: '1.25rem',
+                        borderRadius: '20px',
+                        marginBottom: '1.5rem',
+                        border: '1px solid rgba(212, 175, 55, 0.2)',
+                        display: 'flex',
+                        flexDirection: isMobile ? 'column' : 'row',
+                        alignItems: 'center',
+                        gap: '1.25rem'
+                    }}>
+                        <div style={{ background: 'var(--gold-gradient)', padding: '10px', borderRadius: '50%', color: '#000' }}>
+                            <Award size={24} />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <h3 style={{ margin: '0 0 2px 0', fontSize: '1rem', fontWeight: 800, color: '#D4AF37', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Primeiros Passos</h3>
+                            <p style={{ margin: 0, fontSize: '0.85rem', color: '#666', lineHeight: '1.5' }}>
+                                Clique em <b>+ Nova Aula</b> • Upload seu vídeo ou cole um link • Defina o <b>Público</b> • <b>Publique</b> para liberar o acesso.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: isMobile ? 'column' : 'row',
+                        justifyContent: 'space-between',
+                        gap: '1rem',
+                        marginBottom: '1.25rem'
+                    }}>
+                        <div style={{ position: 'relative', width: isMobile ? '100%' : '300px' }}>
+                            <Search size={20} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
+                            <input
+                                type="text"
+                                placeholder="Buscar minhas aulas..."
+                                value={manageSearch}
+                                onChange={(e) => setManageSearch(e.target.value)}
+                                style={{ width: '100%', padding: '12px 12px 12px 44px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--paper)', color: 'var(--foreground)' }}
+                            />
+                        </div>
+                        <button
+                            onClick={() => openModal()}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                padding: '10px 20px',
+                                background: 'var(--gold-gradient)',
+                                color: '#000',
+                                border: 'none',
+                                borderRadius: '12px',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 15px rgba(212, 175, 55, 0.2)',
+                                width: isMobile ? '100%' : 'auto',
+                                transition: 'all 0.3s'
+                            }}
+                        >
+                            <Plus size={18} /> Nova Aula
+                        </button>
+                    </div>
+
+                    {/* Management Table */}
+                    <div style={{
+                        background: 'var(--paper)',
+                        borderRadius: '16px',
+                        overflowX: 'auto',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                        border: '1px solid var(--border)'
+                    }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: isMobile ? '800px' : 'auto' }}>
+                            <thead>
+                                <tr style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid var(--border)' }}>
+                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Aula</th>
+                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Categoria</th>
+                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Público</th>
+                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Status</th>
+                                    <th style={{ padding: '1rem', textAlign: 'right', color: '#666' }}>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {manageLessons
+                                    .filter(l => l.title.toLowerCase().includes(manageSearch.toLowerCase()))
+                                    .map((lesson, idx) => (
+                                        <tr key={lesson._id} style={{ borderBottom: '1px solid var(--border)' }}>
+                                            <td style={{ padding: '1rem' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                    <div style={{ width: '40px', height: '40px', background: 'rgba(0,0,0,0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        <Video size={20} color="#666" />
+                                                    </div>
+                                                    <div><p style={{ fontWeight: '600', color: 'var(--foreground)' }}>{lesson.title}</p></div>
+                                                </div>
+                                            </td>
+                                            <td style={{ padding: '1rem' }}>
+                                                {(() => {
+                                                    const info = getCategoryInfo(lesson.category);
+                                                    return (
+                                                        <span style={{ fontSize: '0.75rem', fontWeight: 'bold', padding: '4px 10px', borderRadius: '12px', background: `${info.color}15`, color: info.color }}>
+                                                            {info.icon} {info.label}
+                                                        </span>
+                                                    );
+                                                })()}
+                                            </td>
+                                            <td style={{ padding: '1rem' }}>
+                                                <span style={{
+                                                    fontSize: '0.75rem',
+                                                    padding: '4px 8px',
+                                                    borderRadius: '8px',
+                                                    fontWeight: '600',
+                                                    textTransform: 'uppercase',
+                                                    background: lesson.targetAudience === 'both' ? '#fef3c7' :
+                                                        lesson.targetAudience === 'mentors' ? '#e0f2fe' :
+                                                            lesson.targetAudience === 'companies' ? '#f3e8ff' :
+                                                                lesson.targetAudience === 'specialists' ? '#fae8ff' :
+                                                                    lesson.targetAudience === 'all' ? '#dcfce7' : 'rgba(0,0,0,0.05)',
+                                                    color: lesson.targetAudience === 'both' ? '#92400e' :
+                                                        lesson.targetAudience === 'mentors' ? '#0369a1' :
+                                                            lesson.targetAudience === 'companies' ? '#6b21a8' :
+                                                                lesson.targetAudience === 'specialists' ? '#86198f' :
+                                                                    lesson.targetAudience === 'all' ? '#166534' : '#4b5563'
+                                                }}>
+                                                    {lesson.targetAudience === 'both' ? '👥🎓 Ambos' :
+                                                        lesson.targetAudience === 'mentors' ? '🎓 Mentor' :
+                                                            lesson.targetAudience === 'companies' ? '🏢 Empresa' :
+                                                                lesson.targetAudience === 'specialists' ? '⚡ Especialista' :
+                                                                    lesson.targetAudience === 'all' ? '🌍 Todos' : '👥 Participante'}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: '1rem' }}>
+                                                <span style={{ fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px', background: lesson.isPublished ? '#dcfce7' : '#fef3c7', color: lesson.isPublished ? '#166534' : '#92400e' }}>
+                                                    {lesson.isPublished ? 'Publicada' : 'Rascunho'}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: '1rem', textAlign: 'right' }}>
+                                                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', alignItems: 'center' }}>
+                                                    {!manageSearch && (
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                                            <button
+                                                                onClick={() => moveLesson(idx, 'up')}
+                                                                disabled={idx === 0}
+                                                                style={{ padding: '4px', border: 'none', background: 'transparent', cursor: idx === 0 ? 'not-allowed' : 'pointer', color: idx === 0 ? '#ccc' : '#666' }}
+                                                            >
+                                                                <ArrowUp size={14} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => moveLesson(idx, 'down')}
+                                                                disabled={idx === manageLessons.length - 1}
+                                                                style={{ padding: '4px', border: 'none', background: 'transparent', cursor: idx === manageLessons.length - 1 ? 'not-allowed' : 'pointer', color: idx === manageLessons.length - 1 ? '#ccc' : '#666' }}
+                                                            >
+                                                                <ArrowDown size={14} />
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                    <button onClick={() => togglePublish(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#666' }}>
+                                                        {lesson.isPublished ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                    </button>
+                                                    <button onClick={() => openModal(lesson)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#3b82f6' }}>
+                                                        <Edit size={18} />
+                                                    </button>
+                                                    <button onClick={() => handleDelete(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#ef4444' }}>
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                }
+                                {manageLessons.filter(l => l.title.toLowerCase().includes(manageSearch.toLowerCase())).length === 0 && (
+                                    <tr>
+                                        <td colSpan={5} style={{ padding: '4rem 2rem', textAlign: 'center' }}>
+                                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎥</div>
+                                            <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--foreground)' }}>Nenhuma aula criada</h3>
+                                            <p style={{ color: '#666' }}>Comece criando sua primeira aula para seus alunos!</p>
+                                            <button
+                                                onClick={() => openModal()}
+                                                style={{ marginTop: '1.5rem', padding: '12px 24px', background: 'var(--gold-gradient)', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+                                            >
+                                                + Criar Minha Primeira Aula
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+            )}
+
+                    <AnimatePresence>
+                        {selectedLesson && (
+                            <LessonPlayerModal
+                                lesson={selectedLesson}
+                                onClose={closeLesson}
+                                onComplete={() => {
+                                    setLearnLessons(prev => prev.map(l =>
+                                        l._id === selectedLesson._id ? { ...l, isCompleted: true } : l
+                                    ));
+                                }}
+                            />
+                        )}
+                    </AnimatePresence>
+
+                    <AnimatePresence>
+                        {showModal && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3000, padding: '1rem' }}
+                                onClick={closeModal}
+                            >
+                                <motion.div
+                                    initial={{ scale: 0.9, y: 20 }}
+                                    animate={{ scale: 1, y: 0 }}
+                                    exit={{ scale: 0.9, y: 20 }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    style={{ background: 'var(--paper)', borderRadius: '20px', padding: '2rem', maxWidth: '600px', width: '100%', maxHeight: '90vh', overflowY: 'auto' }}
+                                >
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                                        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--foreground)' }}>{editingLesson ? 'Editar Aula' : 'Nova Aula'}</h2>
+                                        <button onClick={closeModal} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--foreground)' }}><X size={24} /></button>
                                     </div>
-                                    {!formData.videoUrl ? (
-                                        <div style={{ border: '2px dashed var(--border)', borderRadius: '12px', padding: '2rem', textAlign: 'center' }}>
-                                            {videoInputMethod === 'upload' ? (
-                                                <input type="file" accept="video/*" onChange={handleVideoUpload} />
+                                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                        <div>
+                                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--foreground)' }}>Vídeo</label>
+                                            <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setVideoInputMethod('upload')}
+                                                    style={{ flex: 1, padding: '10px', background: videoInputMethod === 'upload' ? 'var(--gold-gradient)' : 'rgba(0,0,0,0.05)', color: videoInputMethod === 'upload' ? '#000' : '#666', border: 'none', borderRadius: '8px', fontWeight: '600' }}
+                                                >
+                                                    📤 Upload
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setVideoInputMethod('url')}
+                                                    style={{ flex: 1, padding: '10px', background: videoInputMethod === 'url' ? 'var(--gold-gradient)' : 'rgba(0,0,0,0.05)', color: videoInputMethod === 'url' ? '#000' : '#666', border: 'none', borderRadius: '8px', fontWeight: '600' }}
+                                                >
+                                                    🔗 URL
+                                                </button>
+                                            </div>
+                                            {!formData.videoUrl ? (
+                                                <div style={{ border: '2px dashed var(--border)', borderRadius: '12px', padding: '2rem', textAlign: 'center' }}>
+                                                    {videoInputMethod === 'upload' ? (
+                                                        <input type="file" accept="video/*" onChange={handleVideoUpload} />
+                                                    ) : (
+                                                        <input type="url" placeholder="https://..." value={formData.videoUrl} onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))} style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'transparent', border: '1px solid var(--border)', color: 'var(--foreground)' }} />
+                                                    )}
+                                                </div>
                                             ) : (
-                                                <input type="url" placeholder="https://..." value={formData.videoUrl} onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))} style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'transparent', border: '1px solid var(--border)', color: 'var(--foreground)' }} />
+                                                <div style={{ position: 'relative', aspectRatio: '16/9', background: '#000', borderRadius: '12px', overflow: 'hidden' }}>
+                                                    <video src={formData.videoUrl} controls style={{ width: '100%', height: '100%' }} />
+                                                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, videoUrl: '' }))} style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', color: '#fff', padding: '4px' }}><Trash2 size={16} /></button>
+                                                </div>
                                             )}
                                         </div>
-                                    ) : (
-                                        <div style={{ position: 'relative', aspectRatio: '16/9', background: '#000', borderRadius: '12px', overflow: 'hidden' }}>
-                                            <video src={formData.videoUrl} controls style={{ width: '100%', height: '100%' }} />
-                                            <button type="button" onClick={() => setFormData(prev => ({ ...prev, videoUrl: '' }))} style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', color: '#fff', padding: '4px' }}><Trash2 size={16} /></button>
+                                        <div>
+                                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Título da Aula</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Ex: Como configurar seu primeiro evento"
+                                                value={formData.title}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                                                style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: '1rem', transition: 'all 0.2s' }}
+                                                required
+                                            />
                                         </div>
-                                    )}
-                                </div>
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Título da Aula</label>
-                                    <input
-                                        type="text"
-                                        placeholder="Ex: Como configurar seu primeiro evento"
-                                        value={formData.title}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                                        style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: '1rem', transition: 'all 0.2s' }}
-                                        required
-                                    />
-                                </div>
 
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Descrição</label>
-                                    <textarea
-                                        placeholder="O que os alunos vão aprender nesta aula?"
-                                        value={formData.description}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                                        style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', minHeight: '100px', fontSize: '1rem', resize: 'vertical' }}
-                                    />
-                                </div>
+                                        <div>
+                                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Descrição</label>
+                                            <textarea
+                                                placeholder="O que os alunos vão aprender nesta aula?"
+                                                value={formData.description}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                                                style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', minHeight: '100px', fontSize: '1rem', resize: 'vertical' }}
+                                            />
+                                        </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
-                                    <div>
-                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Nível / Categoria</label>
-                                        <select
-                                            value={formData.category}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as 'basico' | 'intermediario' | 'avancado' }))}
-                                            style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: '1rem', cursor: 'pointer' }}
-                                        >
-                                            <option value="basico">🌱 Básico</option>
-                                            <option value="intermediario">🚀 Intermediário</option>
-                                            <option value="avancado">⚡ Avançado</option>
-                                        </select>
-                                    </div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
+                                            <div>
+                                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Nível / Categoria</label>
+                                                <select
+                                                    value={formData.category}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as 'basico' | 'intermediario' | 'avancado' }))}
+                                                    style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: '1rem', cursor: 'pointer' }}
+                                                >
+                                                    <option value="basico">🌱 Básico</option>
+                                                    <option value="intermediario">🚀 Intermediário</option>
+                                                    <option value="avancado">⚡ Avançado</option>
+                                                </select>
+                                            </div>
 
-                                    <div>
-                                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>
-                                            Público-Alvo
-                                            <div title="Define quem poderá ver esta aula na academia ou nos eventos" style={{ cursor: 'help', color: '#999' }}><Info size={14} /></div>
-                                        </label>
-                                        <select
-                                            value={formData.targetAudience}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all' }))}
-                                            style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: '1rem', cursor: 'pointer' }}
-                                        >
-                                            <option value="mentors">🎓 Experts (Academia)</option>
-                                            <option value="participants">👥 Participantes (Eventos)</option>
-                                            <option value="companies">🏢 Empresas</option>
-                                            <option value="specialists">⚡ Especialistas</option>
-                                            <option value="both">🔄 Experts e Participantes</option>
-                                            <option value="all">🌍 Todos os Públicos</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {mentorEvents.length > 0 && (
-                                    <div>
-                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Vincular a Eventos (Opcional)</label>
-                                        <div style={{
-                                            display: 'grid',
-                                            gridTemplateColumns: '1fr',
-                                            gap: '8px',
-                                            maxHeight: '150px',
-                                            overflowY: 'auto',
-                                            padding: '12px',
-                                            background: 'rgba(0,0,0,0.02)',
-                                            borderRadius: '12px',
-                                            border: '1px solid var(--border)'
-                                        }} className="no-scrollbar">
-                                            {mentorEvents.map(event => (
-                                                <label key={event._id} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', cursor: 'pointer', padding: '4px 0' }}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={formData.associatedEvents?.includes(event._id)}
-                                                        onChange={(e) => {
-                                                            const checked = e.target.checked;
-                                                            setFormData(prev => ({
-                                                                ...prev,
-                                                                associatedEvents: checked
-                                                                    ? [...(prev.associatedEvents || []), event._id]
-                                                                    : (prev.associatedEvents || []).filter(id => id !== event._id)
-                                                            }));
-                                                        }}
-                                                        style={{ width: '18px', height: '18px', accentColor: '#D4AF37' }}
-                                                    />
-                                                    <span style={{ color: 'var(--foreground)' }}>{event.title}</span>
+                                            <div>
+                                                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>
+                                                    Público-Alvo
+                                                    <div title="Define quem poderá ver esta aula na academia ou nos eventos" style={{ cursor: 'help', color: '#999' }}><Info size={14} /></div>
                                                 </label>
-                                            ))}
+                                                <select
+                                                    value={formData.targetAudience}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, targetAudience: e.target.value as 'mentors' | 'participants' | 'companies' | 'specialists' | 'both' | 'all' }))}
+                                                    style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', background: 'var(--paper)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: '1rem', cursor: 'pointer' }}
+                                                >
+                                                    <option value="mentors">🎓 Experts (Academia)</option>
+                                                    <option value="participants">👥 Participantes (Eventos)</option>
+                                                    <option value="companies">🏢 Empresas</option>
+                                                    <option value="specialists">⚡ Especialistas</option>
+                                                    <option value="both">🔄 Experts e Participantes</option>
+                                                    <option value="all">🌍 Todos os Públicos</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
 
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'rgba(0,0,0,0.02)', borderRadius: '12px', border: '1px solid var(--border)' }}>
-                                    <div>
-                                        <p style={{ fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem', margin: 0 }}>Aula Privada / Bloqueada</p>
-                                        <p style={{ fontSize: '0.75rem', color: '#666', margin: '4px 0 0 0' }}>Apenas usuários com acesso podem visualizar</p>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => setFormData(prev => ({ ...prev, isLocked: !prev.isLocked }))}
-                                        style={{
-                                            width: '50px',
-                                            height: '26px',
-                                            borderRadius: '15px',
-                                            background: formData.isLocked ? 'var(--gold-gradient)' : '#ccc',
-                                            position: 'relative',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.3s'
-                                        }}
-                                    >
-                                        <div style={{
-                                            width: '20px',
-                                            height: '20px',
-                                            borderRadius: '50%',
-                                            background: '#fff',
-                                            position: 'absolute',
-                                            top: '3px',
-                                            left: formData.isLocked ? '27px' : '3px',
-                                            transition: 'all 0.3s',
-                                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                                        }} />
-                                    </button>
-                                </div>
+                                        {mentorEvents.length > 0 && (
+                                            <div>
+                                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>Vincular a Eventos (Opcional)</label>
+                                                <div style={{
+                                                    display: 'grid',
+                                                    gridTemplateColumns: '1fr',
+                                                    gap: '8px',
+                                                    maxHeight: '150px',
+                                                    overflowY: 'auto',
+                                                    padding: '12px',
+                                                    background: 'rgba(0,0,0,0.02)',
+                                                    borderRadius: '12px',
+                                                    border: '1px solid var(--border)'
+                                                }} className="no-scrollbar">
+                                                    {mentorEvents.map(event => (
+                                                        <label key={event._id} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', cursor: 'pointer', padding: '4px 0' }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={formData.associatedEvents?.includes(event._id)}
+                                                                onChange={(e) => {
+                                                                    const checked = e.target.checked;
+                                                                    setFormData(prev => ({
+                                                                        ...prev,
+                                                                        associatedEvents: checked
+                                                                            ? [...(prev.associatedEvents || []), event._id]
+                                                                            : (prev.associatedEvents || []).filter(id => id !== event._id)
+                                                                    }));
+                                                                }}
+                                                                style={{ width: '18px', height: '18px', accentColor: '#D4AF37' }}
+                                                            />
+                                                            <span style={{ color: 'var(--foreground)' }}>{event.title}</span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
 
-                                <div style={{ background: 'rgba(212, 175, 55, 0.1)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>
-                                    <p style={{ margin: 0, fontSize: '0.8rem', color: '#856404', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <Award size={16} />
-                                        <span><strong>Dica de Expert:</strong> Títulos claros e descrições detalhadas ajudam seus alunos a encontrar o conteúdo mais rápido.</span>
-                                    </p>
-                                </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'rgba(0,0,0,0.02)', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                                            <div>
+                                                <p style={{ fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem', margin: 0 }}>Aula Privada / Bloqueada</p>
+                                                <p style={{ fontSize: '0.75rem', color: '#666', margin: '4px 0 0 0' }}>Apenas usuários com acesso podem visualizar</p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({ ...prev, isLocked: !prev.isLocked }))}
+                                                style={{
+                                                    width: '50px',
+                                                    height: '26px',
+                                                    borderRadius: '15px',
+                                                    background: formData.isLocked ? 'var(--gold-gradient)' : '#ccc',
+                                                    position: 'relative',
+                                                    border: 'none',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.3s'
+                                                }}
+                                            >
+                                                <div style={{
+                                                    width: '20px',
+                                                    height: '20px',
+                                                    borderRadius: '50%',
+                                                    background: '#fff',
+                                                    position: 'absolute',
+                                                    top: '3px',
+                                                    left: formData.isLocked ? '27px' : '3px',
+                                                    transition: 'all 0.3s',
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                                }} />
+                                            </button>
+                                        </div>
 
-                                <button
-                                    type="submit"
-                                    disabled={!formData.videoUrl || !formData.title || isUploading}
-                                    style={{
-                                        marginTop: '1rem',
-                                        padding: '16px',
-                                        background: isUploading ? '#ccc' : 'var(--gold-gradient)',
-                                        color: '#000',
-                                        borderRadius: '12px',
-                                        fontWeight: '900',
-                                        border: 'none',
-                                        fontSize: '1rem',
-                                        cursor: isUploading ? 'not-allowed' : 'pointer',
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '1px',
-                                        boxShadow: '0 10px 20px rgba(212,175,55,0.2)'
-                                    }}
-                                >
-                                    {isUploading ? <><Loader2 className="animate-spin" size={18} /> Enviando Vídeo...</> : (editingLesson ? 'Salvar Alterações' : 'Publicar Aula')}
-                                </button>
-                            </form>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div >
-    );
+                                        <div style={{ background: 'rgba(212, 175, 55, 0.1)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>
+                                            <p style={{ margin: 0, fontSize: '0.8rem', color: '#856404', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <Award size={16} />
+                                                <span><strong>Dica de Expert:</strong> Títulos claros e descrições detalhadas ajudam seus alunos a encontrar o conteúdo mais rápido.</span>
+                                            </p>
+                                        </div>
+
+                                        <button
+                                            type="submit"
+                                            disabled={!formData.videoUrl || !formData.title || isUploading}
+                                            style={{
+                                                marginTop: '1rem',
+                                                padding: '16px',
+                                                background: isUploading ? '#ccc' : 'var(--gold-gradient)',
+                                                color: '#000',
+                                                borderRadius: '12px',
+                                                fontWeight: '900',
+                                                border: 'none',
+                                                fontSize: '1rem',
+                                                cursor: isUploading ? 'not-allowed' : 'pointer',
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '1px',
+                                                boxShadow: '0 10px 20px rgba(212,175,55,0.2)'
+                                            }}
+                                        >
+                                            {isUploading ? <><Loader2 className="animate-spin" size={18} /> Enviando Vídeo...</> : (editingLesson ? 'Salvar Alterações' : 'Publicar Aula')}
+                                        </button>
+                                    </form>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div >
+            );
 }

@@ -136,7 +136,14 @@ function MentorDashboardContent() {
     const [platformTutorials, setPlatformTutorials] = useState<Lesson[]>([]);
     const [selectedTutorial, setSelectedTutorial] = useState<Lesson | null>(null);
     const [isLabActive, setIsLabActive] = useState(false);
-    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+        "DASHBOARD": true,
+        "CONTEÚDO / PRODUTOS": true,
+        "PARTICIPANTES / GESTÃO": true,
+        "MARKETING / PROMOÇÃO": true,
+        "FINANCEIRO": true,
+        "CONTA / SISTEMA": true
+    });
 
     const toggleSection = (title: string) => {
         setExpandedSections(prev => ({
@@ -576,7 +583,7 @@ function MentorDashboardContent() {
                 </div>
 
                 <nav
-                    className="custom-sidebar-scroll"
+                    className="luxury-scrollbar"
                     style={{
                         padding: '1rem 1.5rem',
                         flex: 1,
@@ -603,7 +610,7 @@ function MentorDashboardContent() {
                         {
                             title: "PARTICIPANTES / GESTÃO",
                             items: [
-                                { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
+                                { id: 'submissions', label: 'Inscrições', icon: <Users size={20} /> },
                                 { id: 'referral', label: 'Indicações & Impacto', icon: <Trophy size={20} /> },
                             ]
                         },
@@ -914,7 +921,7 @@ function MentorDashboardContent() {
                                 lineHeight: 1.1,
                                 margin: 0
                             }}>
-                                {t('common.hello')}, <span style={{ color: '#1a1a1a' }}>{user.name.split(' ')[0]}</span>
+                                {t('common.hello')}, <span style={{ color: 'var(--foreground)' }}>{user.name.split(' ')[0]}</span>
                             </h1>
                         </div>
                     </div>
@@ -2261,17 +2268,17 @@ function StatCard({ icon, label, value, trend }: { icon: React.ReactNode, label:
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             className="luxury-card"
             style={{
-                background: 'rgba(255, 255, 255, 0.85)',
+                background: 'var(--paper)',
                 backdropFilter: 'blur(10px)',
-                padding: '1.25rem',
-                border: '1px solid rgba(255, 255, 255, 0.6)',
+                padding: '1rem',
+                border: '1px solid var(--border)',
                 borderRadius: '20px',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.04)',
                 position: 'relative',
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.75rem'
+                gap: '0.5rem'
             }}
         >
             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', background: 'var(--gold-gradient)' }}></div>
@@ -2280,13 +2287,13 @@ function StatCard({ icon, label, value, trend }: { icon: React.ReactNode, label:
                 <div style={{
                     background: 'rgba(212,175,55,0.08)',
                     color: '#D4AF37',
-                    padding: '8px',
+                    padding: '6px',
                     borderRadius: '10px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
                 }}>
-                    {icon}
+                    {React.cloneElement(icon as React.ReactElement, { size: 18 })}
                 </div>
                 {trend !== '0' && (
                     <div style={{
@@ -2294,18 +2301,18 @@ function StatCard({ icon, label, value, trend }: { icon: React.ReactNode, label:
                         alignItems: 'center',
                         gap: '4px',
                         background: trend.startsWith('+') ? '#f0fdf4' : '#fef2f2',
-                        padding: '2px 8px',
+                        padding: '1px 6px',
                         borderRadius: '20px',
                         border: `1px solid ${trend.startsWith('+') ? '#dcfce7' : '#fee2e2'}`
                     }}>
-                        <span style={{ fontSize: '0.65rem', color: trend.startsWith('+') ? '#16a34a' : '#ef4444', fontWeight: 800 }}>{trend}</span>
+                        <span style={{ fontSize: '0.6rem', color: trend.startsWith('+') ? '#16a34a' : '#ef4444', fontWeight: 800 }}>{trend}</span>
                     </div>
                 )}
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ color: '#64748b', fontWeight: 600, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
-                <h2 style={{ fontSize: '1.6rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#1a1a1a', margin: 0, letterSpacing: '-0.5px' }}>{value}</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
+                <span style={{ color: '#64748b', fontWeight: 600, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
+                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: 'var(--foreground)', margin: 0, letterSpacing: '-0.5px' }}>{value}</h2>
             </div>
 
             {/* Subtle background element */}

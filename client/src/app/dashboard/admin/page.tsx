@@ -358,23 +358,51 @@ export default function AdminDashboard() {
         { label: t('dashboard.approvedSubscriptions'), value: showValues ? stats?.approved || 0 : '••', icon: <CheckCircle size={24} />, color: '#10b981', tab: 'submissions' },
     ];
 
-    const menuItems = [
-        { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
-        { id: 'lessons', label: 'Aulas', icon: <Video size={20} /> },
-        { id: 'users', label: t('dashboard.users'), icon: <Users size={20} /> },
-        { id: 'forms', label: t('dashboard.forms'), icon: <FileText size={20} /> },
-        { id: 'submissions', label: t('dashboard.submissions'), icon: <Database size={20} /> },
-        { id: 'finance', label: t('dashboard.finance.title'), icon: <Wallet size={20} /> },
-        { id: 'newsletter', label: t('dashboard.newsletter'), icon: <Mail size={20} /> },
-        { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={20} /> },
-        { id: 'smartlinks', label: 'SmartLinks', icon: <LinkIcon size={20} /> },
-        { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} /> },
-        { id: 'referrals', label: 'Referenciações', icon: <Trophy size={20} /> },
-        { id: 'marketing', label: 'Marketing & Vendas', icon: <Zap size={20} /> },
-        { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={20} /> },
-        { id: 'payouts', label: 'Repasses PayPal', icon: <DollarSign size={20} /> },
-        { id: 'settings', label: t('dashboard.settings.title') || 'Definições', icon: <Settings size={20} /> },
-    ].filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing') || user?.role === 'SuperAdmin');
+    const menuGroups = [
+        {
+            title: t('dashboard.navigation') || 'Geral',
+            items: [
+                { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={18} /> },
+                { id: 'lessons', label: 'Aulas', icon: <Video size={18} /> },
+                { id: 'users', label: t('dashboard.users'), icon: <Users size={18} /> },
+            ]
+        },
+        {
+            title: t('dashboard.management') || 'Gestão',
+            items: [
+                { id: 'forms', label: t('dashboard.forms'), icon: <FileText size={18} /> },
+                { id: 'submissions', label: 'Inscrições', icon: <Database size={18} /> },
+                { id: 'smartlinks', label: 'SmartLinks', icon: <LinkIcon size={18} /> },
+                { id: 'ads', label: 'Anúncios', icon: <Megaphone size={18} /> },
+                { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={18} /> },
+            ]
+        },
+        {
+            title: 'Marketing & Operações',
+            items: [
+                { id: 'marketing', label: 'Marketing', icon: <Zap size={18} /> },
+                { id: 'referrals', label: 'Referenciações', icon: <Trophy size={18} /> },
+                { id: 'newsletter', label: t('dashboard.newsletter'), icon: <Mail size={18} /> },
+            ]
+        },
+        {
+            title: t('dashboard.finance.title') || 'Financeiro',
+            items: [
+                { id: 'finance', label: 'Financeiro', icon: <Wallet size={18} /> },
+                { id: 'payouts', label: 'PayPal', icon: <DollarSign size={18} /> },
+            ]
+        },
+        {
+            title: 'Sistema',
+            items: [
+                { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={18} /> },
+                { id: 'settings', label: t('dashboard.settings.title') || 'Definições', icon: <Settings size={18} /> },
+            ]
+        }
+    ].map(group => ({
+        ...group,
+        items: group.items.filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing' && item.id !== 'payouts') || user?.role === 'SuperAdmin')
+    }));
 
     return (
         <div className="admin-container" style={{ position: 'relative', overflow: 'hidden' }}>
@@ -405,70 +433,74 @@ export default function AdminDashboard() {
                     )}
                 </div>
 
-                <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
-                    {menuItems.map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => setActiveTab(item.id as Tab)}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                padding: '0.75rem 1rem',
-                                width: '100%',
-                                borderRadius: '12px',
-                                border: 'none',
-                                background: activeTab === item.id ? 'var(--gold-gradient)' : 'transparent',
-                                color: activeTab === item.id ? '#000' : '#888',
-                                fontWeight: activeTab === item.id ? 700 : 500,
-                                cursor: 'pointer',
-                                transition: 'all 0.3s ease',
-                                textAlign: 'left',
-                                fontSize: '0.95rem',
-                                position: 'relative'
-                            }}
-                            id={'admin-nav-' + item.id}
-                        >
-                            {activeTab === item.id && (
-                                <motion.div
-                                    layoutId="active-indicator"
-                                    style={{
-                                        position: 'absolute',
-                                        left: 0,
-                                        width: '4px',
-                                        height: '24px',
-                                        background: '#FFD700',
-                                        borderTopRightRadius: '4px',
-                                        borderBottomRightRadius: '4px'
-                                    }}
-                                />
-                            )}
-                            <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
+                <nav className="luxury-scrollbar" style={{ padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '1.25rem', overflowY: 'auto' }}>
+                    {menuGroups.map((group, gIdx) => (
+                        <div key={gIdx} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                             {!isDesktopSidebarCollapsed && (
-                                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                    {item.label}
-                                </span>
-                            )}
-                            {!isDesktopSidebarCollapsed && item.id === 'support' && unreadCount > 0 && (
-                                <span style={{
-                                    marginLeft: 'auto',
-                                    background: '#ef4444',
-                                    color: '#fff',
-                                    borderRadius: '50%',
-                                    width: '20px',
-                                    height: '20px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '0.7rem',
-                                    fontWeight: 700
+                                <div style={{
+                                    padding: '0 1rem',
+                                    fontSize: '0.65rem',
+                                    fontWeight: 800,
+                                    textTransform: 'uppercase',
+                                    color: '#888',
+                                    letterSpacing: '1px',
+                                    marginBottom: '0.5rem',
+                                    opacity: 0.6
                                 }}>
-                                    {unreadCount > 9 ? '9+' : unreadCount}
-                                </span>
+                                    {group.title}
+                                </div>
                             )}
-                        </button>
+                            {group.items.map((item) => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => setActiveTab(item.id as Tab)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        padding: '10px 14px',
+                                        width: '100%',
+                                        borderRadius: '10px',
+                                        border: 'none',
+                                        background: activeTab === item.id ? 'var(--gold-gradient)' : 'transparent',
+                                        color: activeTab === item.id ? '#000' : '#888',
+                                        fontWeight: activeTab === item.id ? 800 : 500,
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s ease',
+                                        textAlign: 'left',
+                                        fontSize: '0.85rem',
+                                        position: 'relative',
+                                        overflow: 'hidden'
+                                    }}
+                                    id={'admin-nav-' + item.id}
+                                >
+                                    <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '20px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
+                                    {!isDesktopSidebarCollapsed && (
+                                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            {item.label}
+                                        </span>
+                                    )}
+                                    {!isDesktopSidebarCollapsed && item.id === 'support' && unreadCount > 0 && (
+                                        <span style={{
+                                            marginLeft: 'auto',
+                                            background: '#ef4444',
+                                            color: '#fff',
+                                            borderRadius: '50%',
+                                            width: '20px',
+                                            height: '20px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '0.7rem',
+                                            fontWeight: 700
+                                        }}>
+                                            {unreadCount > 9 ? '9+' : unreadCount}
+                                        </span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
                     ))}
-
                 </nav>
 
                 <button
@@ -577,7 +609,7 @@ export default function AdminDashboard() {
                                     fontWeight: 800,
                                     fontFamily: 'var(--font-playfair)',
                                     lineHeight: 1.1,
-                                    color: '#1a1a1a',
+                                    color: 'var(--foreground)',
                                     overflowWrap: 'break-word',
                                     wordWrap: 'break-word',
                                     display: 'flex',
