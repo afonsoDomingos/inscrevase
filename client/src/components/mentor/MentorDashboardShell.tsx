@@ -138,7 +138,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
         {
             title: t('dashboard.management') || 'Gerenciamento',
             items: [
-                { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={18} />, link: '/dashboard/mentor?tab=submissions' },
+                { id: 'submissions', label: 'Inscrições', icon: <Users size={18} />, link: '/dashboard/mentor?tab=submissions' },
                 { id: 'marketing', label: 'Marketing', icon: <Zap size={18} />, link: '/dashboard/mentor?tab=marketing' },
                 { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={18} />, link: '/dashboard/mentor?tab=blog' },
             ]
@@ -316,96 +316,97 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                             ))}
                         </div>
                     ))}
+                </nav>
 
+                <button
+                    title={isSidebarCollapsed ? t('dashboard.settings.guidedTour') : ""}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                        gap: '12px',
+                        padding: '0.75rem 1rem',
+                        width: '100%',
+                        borderRadius: '12px',
+                        border: 'none',
+                        background: 'rgba(212,175,55,0.05)',
+                        color: '#D4AF37',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        marginTop: '0.5rem',
+                        fontSize: '0.85rem'
+                    }}
+                >
+                    <Map size={18} />
+                    {!isSidebarCollapsed && t('dashboard.settings.guidedTour')}
+                </button>
+
+                <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <button
-                        title={isSidebarCollapsed ? t('dashboard.settings.guidedTour') : ""}
+                        onClick={() => router.push('/dashboard/mentor?tab=support')}
+                        title={isSidebarCollapsed ? t('dashboard.support') : ""}
                         style={{
+                            width: '100%',
+                            padding: '0.8rem',
+                            background: '#2a2a2a',
+                            border: '1px solid #FFD700',
+                            borderRadius: '12px',
+                            color: '#FFD700',
+                            cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
-                            gap: '12px',
-                            padding: '0.75rem 1rem',
-                            width: '100%',
-                            borderRadius: '12px',
-                            border: 'none',
-                            background: 'rgba(212,175,55,0.05)',
-                            color: '#D4AF37',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            marginTop: '0.5rem',
-                            fontSize: '0.85rem'
+                            justifyContent: 'center',
+                            gap: '10px',
+                            fontWeight: 600,
+                            position: 'relative'
                         }}
                     >
-                        <Map size={18} />
-                        {!isSidebarCollapsed && t('dashboard.settings.guidedTour')}
+                        <LifeBuoy size={18} />
+                        {!isSidebarCollapsed && t('dashboard.support')}
+                        {unreadCount > 0 && (
+                            <span style={{
+                                position: 'absolute',
+                                top: '-5px',
+                                right: '-5px',
+                                background: '#ef4444',
+                                color: '#fff',
+                                borderRadius: '50%',
+                                width: '20px',
+                                height: '20px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '0.7rem',
+                                fontWeight: 700,
+                                border: '2px solid #1a1a1a'
+                            }}>
+                                {unreadCount > 9 ? '9+' : unreadCount}
+                            </span>
+                        )}
                     </button>
 
-                    <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <button
-                            onClick={() => router.push('/dashboard/mentor?tab=support')}
-                            title={isSidebarCollapsed ? t('dashboard.support') : ""}
-                            style={{
-                                width: '100%',
-                                padding: '0.8rem',
-                                background: '#2a2a2a',
-                                border: '1px solid #FFD700',
-                                borderRadius: '12px',
-                                color: '#FFD700',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '10px',
-                                fontWeight: 600,
-                                position: 'relative'
-                            }}
-                        >
-                            <LifeBuoy size={18} />
-                            {!isSidebarCollapsed && t('dashboard.support')}
-                            {unreadCount > 0 && (
-                                <span style={{
-                                    position: 'absolute',
-                                    top: '-5px',
-                                    right: '-5px',
-                                    background: '#ef4444',
-                                    color: '#fff',
-                                    borderRadius: '50%',
-                                    width: '20px',
-                                    height: '20px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '0.7rem',
-                                    fontWeight: 700,
-                                    border: '2px solid #1a1a1a'
-                                }}>
-                                    {unreadCount > 9 ? '9+' : unreadCount}
-                                </span>
-                            )}
-                        </button>
-
-                        <button
-                            onClick={() => authService.logout()}
-                            title={isSidebarCollapsed ? t('common.logout') : ""}
-                            style={{
-                                width: '100%',
-                                padding: '0.8rem',
-                                background: '#2a2a2a',
-                                border: '1px solid #333',
-                                borderRadius: '12px',
-                                color: '#e53e3e',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '10px',
-                                fontWeight: 600
-                            }}
-                        >
-                            <LogOut size={18} />
-                            {!isSidebarCollapsed && t('common.logout')}
-                        </button>
-                    </div>
+                    <button
+                        onClick={() => authService.logout()}
+                        title={isSidebarCollapsed ? t('common.logout') : ""}
+                        style={{
+                            width: '100%',
+                            padding: '0.8rem',
+                            background: '#2a2a2a',
+                            border: '1px solid #333',
+                            borderRadius: '12px',
+                            color: '#e53e3e',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            fontWeight: 600
+                        }}
+                    >
+                        <LogOut size={18} />
+                        {!isSidebarCollapsed && t('common.logout')}
+                    </button>
+                </div>
             </aside>
 
             {/* Main Content */}
