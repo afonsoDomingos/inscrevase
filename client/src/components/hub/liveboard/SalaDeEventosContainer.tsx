@@ -1782,7 +1782,8 @@ export default function SalaDeEventosContainer({
                     transform: 'translateX(-50%)',
                     background: isDark ? 'rgba(20, 20, 20, 0.9)' : 'rgba(255, 255, 255, 0.9)',
                     backdropFilter: 'blur(20px)',
-                    padding: isMobile ? '6px 8px' : '6px 12px',
+                    padding: isMobile ? '6px 12px' : '6px 15px',
+                    paddingRight: isMobile ? '16px' : '35px',
                     borderRadius: isMobile ? '12px' : '18px',
                     boxShadow: '0 12px 45px rgba(0,0,0,0.25)',
                     display: 'flex',
@@ -1791,7 +1792,6 @@ export default function SalaDeEventosContainer({
                     border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)',
                     zIndex: 200,
                     maxWidth: '98vw',
-                    overflowX: 'auto',
                     scrollbarWidth: 'none',
                     msOverflowStyle: 'none'
                 }}>
@@ -2487,7 +2487,7 @@ export default function SalaDeEventosContainer({
                                         position: 'relative'
                                     }}
                                 >
-                                    <MessageSquare size={12} /> {!isMobile && "Chat"}
+                                    <MessageSquare size={12} /> {(typeof window !== 'undefined' && window.innerWidth > 1000) && "Chat"}
                                     <AnimatePresence>
                                         {unreadCount > 0 && (
                                             <motion.div
