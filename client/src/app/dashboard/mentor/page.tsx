@@ -79,7 +79,8 @@ import {
     Play,
     Shield,
     Package,
-    Megaphone
+    Megaphone,
+    ChevronDown
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -133,6 +134,14 @@ function MentorDashboardContent() {
     const [platformTutorials, setPlatformTutorials] = useState<Lesson[]>([]);
     const [selectedTutorial, setSelectedTutorial] = useState<Lesson | null>(null);
     const [isLabActive, setIsLabActive] = useState(false);
+    const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
+
+    const toggleSection = (title: string) => {
+        setCollapsedSections(prev => ({
+            ...prev,
+            [title]: !prev[title]
+        }));
+    };
 
     const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'superadmin';
 
@@ -526,8 +535,8 @@ function MentorDashboardContent() {
             <aside style={{
                 width: isSidebarCollapsed ? '80px' : '280px',
                 height: '100vh',
-                background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)',
-                borderRight: '1px solid rgba(255, 215, 0, 0.15)',
+                background: '#121212',
+                borderRight: '1px solid rgba(255, 215, 0, 0.1)',
                 position: 'fixed',
                 left: isMobile ? (isMobileSidebarOpen ? '0' : '-100%') : '0',
                 top: 0,
@@ -535,16 +544,21 @@ function MentorDashboardContent() {
                 transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                 display: 'flex',
                 flexDirection: 'column',
-                boxShadow: '10px 0 30px rgba(0,0,0,0.3)',
+                boxShadow: '10px 0 30px rgba(0,0,0,0.5)',
                 overflow: 'hidden'
             }}>
                 <div style={{ padding: '2rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid rgba(255, 215, 0, 0.1)' }}>
                     {!isSidebarCollapsed && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ background: 'var(--gold-gradient)', padding: '8px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(212,175,55,0.3)' }}>
-                                <LayoutDashboard size={20} color="#000" />
-                            </div>
-                            <span style={{ fontWeight: 900, fontSize: '1.2rem', color: '#fff', letterSpacing: '0.5px' }}>INSV</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{
+                                fontWeight: 900,
+                                fontSize: '1.6rem',
+                                color: '#fff',
+                                letterSpacing: '-0.5px',
+                                fontFamily: 'var(--font-playfair)' // Using serif for the logo as in image
+                            }}>
+                                Inscreva<span style={{ color: '#FFD700' }}>.se</span>
+                            </span>
                         </div>
                     )}
                     {!isMobile && (
@@ -562,11 +576,11 @@ function MentorDashboardContent() {
                 <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
                     {[
                         {
-                            title: "1️⃣ DASHBOARD",
+                            title: "DASHBOARD",
                             items: [{ id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> }]
                         },
                         {
-                            title: "2️⃣ CONTEÚDO / PRODUTOS",
+                            title: "CONTEÚDO / PRODUTOS",
                             items: [
                                 { id: 'lessons', label: 'Aulas', icon: <Video size={20} /> },
                                 { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
@@ -576,14 +590,14 @@ function MentorDashboardContent() {
                             ]
                         },
                         {
-                            title: "3️⃣ PARTICIPANTES / GESTÃO",
+                            title: "PARTICIPANTES / GESTÃO",
                             items: [
                                 { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
                                 { id: 'referral', label: 'Indicações & Impacto', icon: <Trophy size={20} /> },
                             ]
                         },
                         {
-                            title: "4️⃣ MARKETING / PROMOÇÃO",
+                            title: "MARKETING / PROMOÇÃO",
                             items: [
                                 { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} /> },
                                 { id: 'smartlinks', label: 'Smartlinks', icon: <LinkIcon size={20} /> },
@@ -591,14 +605,14 @@ function MentorDashboardContent() {
                             ]
                         },
                         {
-                            title: "5️⃣ FINANCEIRO",
+                            title: "FINANCEIRO",
                             items: [
                                 { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
                                 { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
                             ]
                         },
                         {
-                            title: "6️⃣ CONTA / SISTEMA",
+                            title: "CONTA / SISTEMA",
                             items: [
                                 { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
                                 { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
@@ -610,59 +624,83 @@ function MentorDashboardContent() {
                                 <div style={{ height: '1px', background: 'rgba(255,215,0,0.08)', margin: '4px 16px 12px', width: 'auto' }} />
                             )}
                             {!isSidebarCollapsed && (
-                                <div style={{
-                                    fontSize: '0.65rem',
-                                    fontWeight: 900,
-                                    color: 'rgba(255,255,255,0.3)',
-                                    paddingLeft: '16px',
-                                    marginTop: '8px',
-                                    marginBottom: '4px',
-                                    letterSpacing: '1px'
-                                }}>
-                                    {section.title}
+                                <div
+                                    onClick={() => toggleSection(section.title)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        cursor: 'pointer',
+                                        paddingRight: '16px',
+                                        userSelect: 'none'
+                                    }}
+                                >
+                                    <div style={{
+                                        fontSize: '0.65rem',
+                                        fontWeight: 900,
+                                        color: 'rgba(255,255,255,0.3)',
+                                        paddingLeft: '16px',
+                                        marginTop: '8px',
+                                        marginBottom: '4px',
+                                        letterSpacing: '1px'
+                                    }}>
+                                        {section.title}
+                                    </div>
+                                    <motion.div
+                                        animate={{ rotate: collapsedSections[section.title] ? -90 : 0 }}
+                                        transition={{ duration: 0.2 }}
+                                        style={{ marginTop: '4px' }}
+                                    >
+                                        <ChevronDown size={12} color="rgba(255,255,255,0.3)" />
+                                    </motion.div>
                                 </div>
                             )}
-                            {section.items.map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
-                                <Tooltip key={item.id} content={isSidebarCollapsed ? item.label : ""} position="right">
-                                    <button
-                                        id={`mentor-nav-${item.id}`}
-                                        onClick={() => {
-                                            setActiveTab(item.id as Tab);
-                                            if (isMobile) setIsMobileSidebarOpen(false);
-                                            const params = new URLSearchParams(searchParams.toString());
-                                            params.set('tab', item.id);
-                                            router.push(`?${params.toString()}`, { scroll: false });
-                                        }}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
-                                            gap: '12px',
-                                            padding: '0.75rem 1rem',
-                                            width: '100%',
-                                            borderRadius: '12px',
-                                            border: 'none',
-                                            background: activeTab === item.id ? 'var(--gold-gradient)' : 'transparent',
-                                            color: activeTab === item.id ? '#000' : '#888',
-                                            fontWeight: activeTab === item.id ? 800 : 500,
-                                            cursor: 'pointer',
-                                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                            textAlign: 'left',
-                                            position: 'relative',
-                                            fontSize: '0.9rem'
-                                        }}
+                            <AnimatePresence initial={false}>
+                                {(isSidebarCollapsed || !collapsedSections[section.title]) && (
+                                    <motion.div
+                                        initial={isSidebarCollapsed ? false : { height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: '4px' }}
                                     >
-                                        {activeTab === item.id && (
-                                            <motion.div
-                                                layoutId="active-indicator"
-                                                style={{ position: 'absolute', left: 0, width: '4px', height: '24px', background: '#FFD700', borderTopRightRadius: '4px', borderBottomRightRadius: '4px' }}
-                                            />
-                                        )}
-                                        <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
-                                        {!isSidebarCollapsed && <span>{item.label}</span>}
-                                    </button>
-                                </Tooltip>
-                            ))}
+                                        {section.items.map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
+                                            <Tooltip key={item.id} content={isSidebarCollapsed ? item.label : ""} position="right">
+                                                <button
+                                                    id={`mentor-nav-${item.id}`}
+                                                    onClick={() => {
+                                                        setActiveTab(item.id as Tab);
+                                                        if (isMobile) setIsMobileSidebarOpen(false);
+                                                        const params = new URLSearchParams(searchParams.toString());
+                                                        params.set('tab', item.id);
+                                                        router.push(`?${params.toString()}`, { scroll: false });
+                                                    }}
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                                                        gap: '12px',
+                                                        padding: '0.85rem 1rem',
+                                                        width: isSidebarCollapsed ? 'auto' : 'calc(100% - 1rem)',
+                                                        margin: isSidebarCollapsed ? '0' : '0 0.5rem',
+                                                        borderRadius: '12px',
+                                                        border: 'none',
+                                                        background: activeTab === item.id ? '#FFD700' : 'transparent',
+                                                        color: activeTab === item.id ? '#000' : 'rgba(255,255,255,0.6)',
+                                                        fontWeight: activeTab === item.id ? 800 : 500,
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s ease',
+                                                        textAlign: 'left',
+                                                        fontSize: '0.9rem'
+                                                    }}
+                                                >
+                                                    <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
+                                                    {!isSidebarCollapsed && <span>{item.label}</span>}
+                                                </button>
+                                            </Tooltip>
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     ))}
 
@@ -810,50 +848,29 @@ function MentorDashboardContent() {
                                 </div>
                             )}
                         </div>
-                        <div>
-                            <motion.h1
-                                initial={{ x: -20, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                style={{
-                                    fontSize: isMobile ? '1.5rem' : '2rem',
-                                    fontWeight: 800,
-                                    fontFamily: 'var(--font-playfair)',
-                                    color: 'var(--foreground)',
-                                    marginBottom: '0.25rem',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '10px'
-                                }}
-                            >
-                                {t('common.greeting')} {user.name.split(' ')[0]} <span style={{ fontSize: '1.5rem' }}>👋</span>
-                            </motion.h1>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <div style={{
-                                    background: 'rgba(255, 215, 0, 0.1)',
-                                    padding: '4px 12px',
-                                    borderRadius: '8px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px'
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                <Shield size={14} color="#3182ce" />
+                                <span style={{
+                                    fontSize: '0.7rem',
+                                    fontWeight: 900,
+                                    color: '#3182ce',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '1px'
                                 }}>
-                                    <Shield size={14} color="#D4AF37" />
-                                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#D4AF37', textTransform: 'capitalize' }}>{user.role}</span>
-                                </div>
-                                {user.plan && (
-                                    <span style={{
-                                        background: user.plan === 'enterprise' ? 'var(--gold-gradient)' : (user.plan === 'pro' ? '#D4AF37' : 'rgba(0,0,0,0.05)'),
-                                        color: user.plan === 'enterprise' ? '#000' : (user.plan === 'pro' ? '#fff' : 'var(--foreground)'),
-                                        padding: '2px 10px',
-                                        borderRadius: '20px',
-                                        fontSize: '0.65rem',
-                                        fontWeight: 900,
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.5px'
-                                    }}>
-                                        {user.plan} {t('dashboard.account')}
-                                    </span>
-                                )}
+                                    PAINEL DO MENTOR
+                                </span>
                             </div>
+                            <h1 style={{
+                                fontSize: isMobile ? '2rem' : '3.5rem',
+                                fontWeight: 800,
+                                fontFamily: 'var(--font-playfair)',
+                                color: '#FFD700',
+                                lineHeight: 1.1,
+                                margin: 0
+                            }}>
+                                {user.name.split(' ')[0]}
+                            </h1>
                         </div>
                     </div>
 
