@@ -83,7 +83,6 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
-import Tooltip from '@/components/common/Tooltip';
 import EarningsDashboard from '../../../components/EarningsDashboard';
 import PlanUpgradeModal from '../../../components/PlanUpgradeModal';
 
