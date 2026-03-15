@@ -1777,13 +1777,13 @@ export default function SalaDeEventosContainer({
             {!isMinimized && (
                 <div style={{
                     position: 'absolute',
-                    bottom: isMobile ? '15px' : '25px',
+                    bottom: isMobile ? '20px' : '40px',
                     left: '50%',
                     transform: 'translateX(-50%)',
                     background: isDark ? 'rgba(20, 20, 20, 0.9)' : 'rgba(255, 255, 255, 0.9)',
                     backdropFilter: 'blur(20px)',
                     padding: isMobile ? '6px 12px' : '6px 15px',
-                    paddingRight: isMobile ? '16px' : '35px',
+                    paddingRight: isMobile ? '25px' : '55px',
                     borderRadius: isMobile ? '12px' : '18px',
                     boxShadow: '0 12px 45px rgba(0,0,0,0.25)',
                     display: 'flex',
