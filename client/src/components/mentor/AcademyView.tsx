@@ -30,6 +30,7 @@ import {
 import LessonPlayerModal from '@/components/mentor/LessonPlayerModal';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
+import Tooltip from '@/components/common/Tooltip';
 import { useTranslate } from '@/context/LanguageContext';
 import { authService, UserData } from '@/lib/authService';
 
@@ -740,14 +741,18 @@ export default function AcademyView() {
                                         )}
 
                                         {lesson.isCompleted && (
-                                            <div style={{ position: 'absolute', top: '12px', right: '12px', background: '#10b981', padding: '6px', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} title="Concluída">
-                                                <CheckCircle size={20} color="white" />
-                                            </div>
+                                            <Tooltip content="Concluída">
+                                                <div style={{ position: 'absolute', top: '12px', right: '12px', background: '#10b981', padding: '6px', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+                                                    <CheckCircle size={20} color="white" />
+                                                </div>
+                                            </Tooltip>
                                         )}
                                         {lesson.isFavorite && (
-                                            <div style={{ position: 'absolute', top: lesson.isLocked ? '50px' : '12px', left: '12px', background: 'rgba(255, 255, 255, 0.9)', padding: '6px', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} title="Favorita">
-                                                <Heart size={20} color="#ef4444" fill="#ef4444" />
-                                            </div>
+                                            <Tooltip content="Favorita">
+                                                <div style={{ position: 'absolute', top: lesson.isLocked ? '50px' : '12px', left: '12px', background: 'rgba(255, 255, 255, 0.9)', padding: '6px', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+                                                    <Heart size={20} color="#ef4444" fill="#ef4444" />
+                                                </div>
+                                            </Tooltip>
                                         )}
                                         <div style={{ position: 'absolute', bottom: '12px', right: '12px', background: 'rgba(0,0,0,0.8)', padding: '4px 10px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 'bold', color: 'white', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                             <Clock size={12} />
@@ -1005,15 +1010,21 @@ export default function AcademyView() {
                                                             </button>
                                                         </div>
                                                     )}
-                                                    <button onClick={() => togglePublish(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#666' }}>
-                                                        {lesson.isPublished ? <EyeOff size={18} /> : <Eye size={18} />}
-                                                    </button>
-                                                    <button onClick={() => openModal(lesson)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#3b82f6' }}>
-                                                        <Edit size={18} />
-                                                    </button>
-                                                    <button onClick={() => handleDelete(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#ef4444' }}>
-                                                        <Trash2 size={18} />
-                                                    </button>
+                                                    <Tooltip content={lesson.isPublished ? 'Ocultar Aula' : 'Publicar Aula'}>
+                                                        <button onClick={() => togglePublish(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#666' }}>
+                                                            {lesson.isPublished ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                        </button>
+                                                    </Tooltip>
+                                                    <Tooltip content="Editar Aula">
+                                                        <button onClick={() => openModal(lesson)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#3b82f6' }}>
+                                                            <Edit size={18} />
+                                                        </button>
+                                                    </Tooltip>
+                                                    <Tooltip content="Excluir Aula">
+                                                        <button onClick={() => handleDelete(lesson._id)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#ef4444' }}>
+                                                            <Trash2 size={18} />
+                                                        </button>
+                                                    </Tooltip>
                                                 </div>
                                             </td>
                                         </tr>
@@ -1146,7 +1157,9 @@ export default function AcademyView() {
                                     <div>
                                         <label style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontWeight: '700', color: 'var(--foreground)', fontSize: '0.9rem' }}>
                                             Público-Alvo
-                                            <div title="Define quem poderá ver esta aula na academia ou nos eventos" style={{ cursor: 'help', color: '#999' }}><Info size={14} /></div>
+                                            <Tooltip content="Define quem poderá ver esta aula na academia ou nos eventos">
+                                                <div style={{ cursor: 'help', color: '#999' }}><Info size={14} /></div>
+                                            </Tooltip>
                                         </label>
                                         <select
                                             value={formData.targetAudience}

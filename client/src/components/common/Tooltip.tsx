@@ -13,13 +13,35 @@ const Tooltip: React.FC<TooltipProps> = ({ children, content, position = 'top' }
     const getPositionStyles = () => {
         switch (position) {
             case 'bottom':
-                return { top: '100%', left: '50%', transform: 'translateX(-50%) translateY(8px)' };
+                return { top: 'calc(100% + 12px)', left: '50%', x: '-50%' };
             case 'left':
-                return { top: '50%', right: '100%', transform: 'translateY(-50%) translateX(-8px)' };
+                return { top: '50%', right: 'calc(100% + 12px)', y: '-50%' };
             case 'right':
-                return { top: '50%', left: '100%', transform: 'translateY(-50%) translateX(8px)' };
+                return { top: '50%', left: 'calc(100% + 12px)', y: '-50%' };
             default: // top
-                return { bottom: '100%', left: '50%', transform: 'translateX(-50%) translateY(-8px)' };
+                return { bottom: 'calc(100% + 12px)', left: '50%', x: '-50%' };
+        }
+    };
+
+    const getInitialAndExit = () => {
+        switch (position) {
+            case 'bottom': return { opacity: 0, y: -8, scale: 0.9, x: '-50%' };
+            case 'left': return { opacity: 0, x: 8, scale: 0.9, y: '-50%' };
+            case 'right': return { opacity: 0, x: -8, scale: 0.9, y: '-50%' };
+            default: return { opacity: 0, y: 8, scale: 0.9, x: '-50%' };
+        }
+    };
+
+    const getArrowStyles = () => {
+        switch (position) {
+            case 'bottom':
+                return { bottom: '100%', left: '50%', transform: 'translateX(-50%)', borderBottomColor: 'rgba(255,215,0,0.3)' };
+            case 'left':
+                return { left: '100%', top: '50%', transform: 'translateY(-50%)', borderLeftColor: 'rgba(255,215,0,0.3)' };
+            case 'right':
+                return { right: '100%', top: '50%', transform: 'translateY(-50%)', borderRightColor: 'rgba(255,215,0,0.3)' };
+            default:
+                return { top: '100%', left: '50%', transform: 'translateX(-50%)', borderTopColor: 'rgba(255,215,0,0.3)' };
         }
     };
 
@@ -33,25 +55,27 @@ const Tooltip: React.FC<TooltipProps> = ({ children, content, position = 'top' }
             <AnimatePresence>
                 {isVisible && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.8, ...getPositionStyles() }}
-                        animate={{ opacity: 1, scale: 1, ...getPositionStyles() }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                        initial={getInitialAndExit()}
+                        animate={{ opacity: 1, y: position === 'bottom' ? 0 : (position === 'top' ? 0 : '-50%'), x: (position === 'left' || position === 'right') ? 0 : '-50%', scale: 1 }}
+                        exit={getInitialAndExit()}
+                        transition={{ type: 'spring', damping: 20, stiffness: 400 }}
                         style={{
                             position: 'absolute',
-                            zIndex: 2500,
-                            padding: '10px 16px',
-                            background: 'rgba(10, 10, 10, 0.95)',
+                            zIndex: 9999,
+                            padding: '8px 14px',
+                            background: 'linear-gradient(135deg, rgba(20, 20, 20, 0.98), rgba(0, 0, 0, 0.98))',
                             backdropFilter: 'blur(12px)',
                             color: '#fff',
-                            borderRadius: '12px',
-                            fontSize: '0.8rem',
-                            fontWeight: 600,
+                            borderRadius: '10px',
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
                             whiteSpace: 'nowrap',
                             pointerEvents: 'none',
-                            boxShadow: '0 15px 35px rgba(0,0,0,0.4), 0 0 10px rgba(255,215,0,0.1)',
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.5), 0 0 10px rgba(255,215,0,0.05)',
                             border: '1px solid rgba(255,215,0,0.2)',
-                            letterSpacing: '0.3px'
+                            letterSpacing: '0.5px',
+                            textTransform: 'uppercase',
+                            ...getPositionStyles()
                         }}
                     >
                         {content}
@@ -59,16 +83,8 @@ const Tooltip: React.FC<TooltipProps> = ({ children, content, position = 'top' }
                             position: 'absolute',
                             width: 0,
                             height: 0,
-                            borderLeft: '6px solid transparent',
-                            borderRight: '6px solid transparent',
-                            [position === 'bottom' ? 'bottom' : 'top']: position === 'bottom' ? '100%' : 'auto',
-                            [position === 'top' ? 'top' : 'bottom']: position === 'top' ? '100%' : 'auto',
-                            ...((position === 'top' || position === 'bottom') ? {
-                                borderTop: position === 'top' ? '6px solid rgba(255,215,0,0.2)' : 'none',
-                                borderBottom: position === 'bottom' ? '6px solid rgba(255,215,0,0.2)' : 'none',
-                                left: '50%',
-                                transform: 'translateX(-50%)'
-                            } : {})
+                            border: '6px solid transparent',
+                            ...getArrowStyles()
                         }} />
                     </motion.div>
                 )}

@@ -772,13 +772,15 @@ function MentorDashboardContent() {
                             <CurrencySwitcher />
                         </div>
 
-                        <button
-                            onClick={() => authService.logout()}
-                            style={{ width: '100%', padding: '0.75rem 1rem', background: 'transparent', border: '1px solid rgba(229, 62, 62, 0.2)', borderRadius: '12px', color: '#e53e3e', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', fontSize: '0.9rem' }}
-                        >
-                            <LogOut size={20} />
-                            {!isSidebarCollapsed && t('common.logout')}
-                        </button>
+                        <Tooltip content={isSidebarCollapsed ? t('common.logout') : ""} position="right">
+                            <button
+                                onClick={() => authService.logout()}
+                                style={{ width: '100%', padding: '0.75rem 1rem', background: 'transparent', border: '1px solid rgba(229, 62, 62, 0.2)', borderRadius: '12px', color: '#e53e3e', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', fontSize: '0.9rem' }}
+                            >
+                                <LogOut size={20} />
+                                {!isSidebarCollapsed && t('common.logout')}
+                            </button>
+                        </Tooltip>
                     </div>
                 </nav>
 
@@ -995,8 +997,6 @@ function MentorDashboardContent() {
                             </div>
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.5rem' }}>
-                            <LanguageSwitcher />
-                            <CurrencySwitcher />
                             <ThemeToggle />
                             <div ref={notificationBellRef} style={{ position: 'relative' }}>
                                 <Tooltip content={t('dashboard.notifications')}>
@@ -1083,28 +1083,29 @@ function MentorDashboardContent() {
                                 )}
                             </AnimatePresence>
 
-                            <button
-                                onClick={() => authService.logout()}
-                                title={t('common.logout')}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    width: isMobile ? '36px' : '40px',
-                                    height: isMobile ? '36px' : '40px',
-                                    background: '#fff',
-                                    border: '1px solid #fed7d7',
-                                    borderRadius: '12px',
-                                    color: '#e53e3e',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s',
-                                    boxShadow: '0 2px 8px rgba(229, 62, 62, 0.05)'
-                                }}
-                                onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff5f5'; }}
-                                onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff'; }}
-                            >
-                                <LogOut size={20} />
-                            </button>
+                            <Tooltip content={t('common.logout')}>
+                                <button
+                                    onClick={() => authService.logout()}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        width: isMobile ? '36px' : '40px',
+                                        height: isMobile ? '36px' : '40px',
+                                        background: '#fff',
+                                        border: '1px solid #fed7d7',
+                                        borderRadius: '12px',
+                                        color: '#e53e3e',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s',
+                                        boxShadow: '0 2px 8px rgba(229, 62, 62, 0.05)'
+                                    }}
+                                    onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff5f5'; }}
+                                    onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff'; }}
+                                >
+                                    <LogOut size={20} />
+                                </button>
+                            </Tooltip>
                         </div>
                     </div>
                 </header >
@@ -1292,30 +1293,31 @@ function MentorDashboardContent() {
                                                         )}
 
                                                         <div style={{ display: 'flex', gap: '0.75rem', flexDirection: isMobile ? 'row' : 'row' }}>
-                                                            <button
-                                                                onClick={() => copyToClipboard(form.slug)}
-                                                                title={t('common.copyLink')}
-                                                                style={{
-                                                                    flex: 1,
-                                                                    padding: isMobile ? '0.8rem' : '1rem',
-                                                                    background: 'var(--paper)',
-                                                                    border: '1.5px solid var(--border)',
-                                                                    borderRadius: '12px',
-                                                                    cursor: 'pointer',
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    justifyContent: 'center',
-                                                                    gap: '8px',
-                                                                    fontSize: '0.85rem',
-                                                                    fontWeight: 700,
-                                                                    color: 'var(--text-muted)',
-                                                                    transition: 'all 0.2s'
-                                                                }}
-                                                                onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.color = '#000'; }}
-                                                                onMouseOut={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                                                            >
-                                                                <Copy size={16} /> {isMobile ? '' : t('common.link')}
-                                                            </button>
+                                                            <Tooltip content={t('common.copyLink')}>
+                                                                <button
+                                                                    onClick={() => copyToClipboard(form.slug)}
+                                                                    style={{
+                                                                        flex: 1,
+                                                                        padding: isMobile ? '0.8rem' : '1rem',
+                                                                        background: 'var(--paper)',
+                                                                        border: '1.1px solid var(--border)',
+                                                                        borderRadius: '12px',
+                                                                        cursor: 'pointer',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        gap: '8px',
+                                                                        fontSize: '0.85rem',
+                                                                        fontWeight: 700,
+                                                                        color: 'var(--text-muted)',
+                                                                        transition: 'all 0.2s'
+                                                                    }}
+                                                                    onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.color = '#000'; }}
+                                                                    onMouseOut={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                                                                >
+                                                                    <Copy size={16} /> {isMobile ? '' : t('common.link')}
+                                                                </button>
+                                                            </Tooltip>
                                                             <button
                                                                 onClick={() => window.open(`/f/${form.slug}`, '_blank')}
                                                                 style={{

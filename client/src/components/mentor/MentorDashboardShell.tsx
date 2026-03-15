@@ -24,9 +24,17 @@ import {
     Bell,
     User as UserIcon,
     ArrowRight,
-    MessageSquare,
-    Zap
+    Zap,
+    ChevronDown,
+    Link as LinkIcon,
+    Trophy,
+    Package,
+    Monitor,
+    Megaphone
 } from 'lucide-react';
+
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import CurrencySwitcher from '@/components/CurrencySwitcher';
 
 import { authService, UserData } from '@/lib/authService';
 import { supportService } from '@/lib/supportService';
@@ -36,6 +44,7 @@ import ThemeToggle from '@/components/common/ThemeToggle';
 import PremiumBadge from '@/components/common/PremiumBadge';
 import NotificationCenter from '@/components/mentor/NotificationCenter';
 import { useSocket } from '@/context/SocketContext';
+import Tooltip from '@/components/common/Tooltip';
 
 interface MentorDashboardShellProps {
     children: React.ReactNode;
@@ -126,36 +135,64 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
         return () => document.removeEventListener('mousedown', handleClick);
     }, []);
 
+    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+        "DASHBOARD": true,
+        "CONTEÚDO / PRODUTOS": true,
+        "PARTICIPANTES / GESTÃO": true,
+        "MARKETING / PROMOÇÃO": true,
+        "FINANCEIRO": true,
+        "CONTA / SISTEMA": true
+    });
+
+    const toggleSection = (title: string) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [title]: !prev[title]
+        }));
+    };
+
     const navGroups = [
         {
-            title: t('dashboard.navigation') || 'Navegação',
+            title: "DASHBOARD",
+            items: [{ id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} />, link: '/dashboard/mentor' }]
+        },
+        {
+            title: "CONTEÚDO / PRODUTOS",
             items: [
-                { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={18} />, link: '/dashboard/mentor' },
-                { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={18} />, link: '/dashboard/mentor?tab=forms' },
-                { id: 'lessons', label: 'Aulas', icon: <Video size={18} />, link: '/dashboard/mentor?tab=lessons' },
+                { id: 'lessons', label: 'Aulas', icon: <Video size={20} />, link: '/dashboard/mentor?tab=lessons' },
+                { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} />, link: '/dashboard/mentor?tab=forms' },
+                { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} />, link: '/dashboard/mentor?tab=blog' },
+                { id: 'services', label: t('dashboard.services'), icon: <Package size={20} />, link: '/dashboard/mentor?tab=services' },
+                { id: 'liveboard', label: 'Sala de Eventos (Lab)', icon: <Monitor size={20} />, link: '/dashboard/mentor?tab=liveboard' },
             ]
         },
         {
-            title: t('dashboard.management') || 'Gerenciamento',
+            title: "PARTICIPANTES / GESTÃO",
             items: [
-                { id: 'submissions', label: 'Inscrições', icon: <Users size={18} />, link: '/dashboard/mentor?tab=submissions' },
-                { id: 'marketing', label: 'Marketing', icon: <Zap size={18} />, link: '/dashboard/mentor?tab=marketing' },
-                { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={18} />, link: '/dashboard/mentor?tab=blog' },
+                { id: 'submissions', label: 'Inscrições', icon: <Users size={20} />, link: '/dashboard/mentor?tab=submissions' },
+                { id: 'referral', label: 'Indicações & Impacto', icon: <Trophy size={20} />, link: '/dashboard/mentor?tab=referral' },
             ]
         },
         {
-            title: t('dashboard.finance') || 'Financeiro',
+            title: "MARKETING / PROMOÇÃO",
             items: [
-                { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={18} />, link: '/dashboard/mentor?tab=earnings' },
-                { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={18} />, link: '/dashboard/mentor?tab=plans' },
+                { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} />, link: '/dashboard/mentor?tab=ads' },
+                { id: 'smartlinks', label: 'Smartlinks', icon: <LinkIcon size={20} />, link: '/dashboard/mentor?tab=smartlinks' },
+                { id: 'marketing', label: 'Impulsionar Vendas', icon: <Zap size={20} />, link: '/dashboard/mentor?tab=marketing' },
             ]
         },
         {
-            title: t('dashboard.others') || 'Outros',
+            title: "FINANCEIRO",
             items: [
-                { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={18} />, link: '/dashboard/mentor?tab=reports' },
-                { id: 'feedback', label: 'Feedbacks', icon: <MessageSquare size={18} />, link: '/dashboard/mentor?tab=feedback' },
-                { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={18} />, link: '/dashboard/mentor?tab=settings' },
+                { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} />, link: '/dashboard/mentor?tab=earnings' },
+                { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} />, link: '/dashboard/mentor?tab=reports' },
+            ]
+        },
+        {
+            title: "CONTA / SISTEMA",
+            items: [
+                { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} />, link: '/dashboard/mentor?tab=plans' },
+                { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} />, link: '/dashboard/mentor?tab=settings' },
             ]
         }
     ];
@@ -267,145 +304,146 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                     gap: '1.25rem',
                     overflowY: 'auto',
                 }}>
-                    {navGroups.map((group, gIdx) => (
-                        <div key={gIdx} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                            {!isSidebarCollapsed && (
-                                <div style={{
-                                    padding: '0 1rem',
-                                    fontSize: '0.65rem',
-                                    fontWeight: 800,
-                                    textTransform: 'uppercase',
-                                    color: 'var(--text-muted)',
-                                    letterSpacing: '1px',
-                                    marginBottom: '0.5rem',
-                                    opacity: 0.6
-                                }}>
-                                    {group.title}
-                                </div>
+                    {navGroups.map((section, idx) => (
+                        <div key={section.title} style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
+                            {idx > 0 && (
+                                <div style={{ height: '1px', background: 'rgba(255,215,0,0.15)', margin: '4px 16px 12px', width: 'auto' }} />
                             )}
-                            {group.items.map((item) => (
-                                <Link
-                                    key={item.id}
-                                    href={item.link}
-                                    title={isSidebarCollapsed ? item.label : ''}
+                            {!isSidebarCollapsed && (
+                                <div
+                                    onClick={() => toggleSection(section.title)}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '10px',
-                                        justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
-                                        width: '100%',
-                                        padding: '10px 14px',
-                                        background: activeRoute === item.id ? 'var(--gold-gradient)' : 'transparent',
-                                        color: activeRoute === item.id ? '#000' : 'var(--foreground)',
-                                        borderRadius: '10px',
-                                        textDecoration: 'none',
-                                        transition: 'all 0.2s',
-                                        fontWeight: activeRoute === item.id ? 800 : 500,
-                                        position: 'relative',
-                                        overflow: 'hidden',
-                                        fontSize: '0.85rem'
+                                        justifyContent: 'space-between',
+                                        padding: '0.5rem 0.75rem',
+                                        marginBottom: '0.5rem',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: 'rgba(255,255,255,0.3)',
+                                        fontWeight: 700,
+                                        fontSize: '0.75rem',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '1px',
+                                        cursor: 'pointer'
                                     }}
                                 >
-                                    <div style={{ opacity: activeRoute === item.id ? 1 : 0.6, minWidth: '20px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
-                                    {!isSidebarCollapsed && (
-                                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                                            {item.label}
-                                        </span>
-                                    )}
-                                </Link>
-                            ))}
+                                    {section.title}
+                                    <motion.div
+                                        animate={{ rotate: expandedSections[section.title] ? 0 : -90 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <ChevronDown size={14} />
+                                    </motion.div>
+                                </div>
+                            )}
+
+                            <AnimatePresence initial={false}>
+                                {(isSidebarCollapsed || expandedSections[section.title]) && (
+                                    <motion.div
+                                        initial={isSidebarCollapsed ? false : { height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                                        style={{ overflow: 'hidden' }}
+                                    >
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                                            {section.items.map((item) => (
+                                                <Tooltip key={item.id} content={isSidebarCollapsed ? item.label : ''} position="right">
+                                                    <Link
+                                                        href={item.link}
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '12px',
+                                                            justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                                                            width: isSidebarCollapsed ? 'auto' : 'calc(100% - 1rem)',
+                                                            margin: isSidebarCollapsed ? '0' : '0 0.5rem',
+                                                            padding: '0.75rem 1rem',
+                                                            background: activeRoute === item.id ? '#FFD700' : 'transparent',
+                                                            color: activeRoute === item.id ? '#000' : 'rgba(255,255,255,0.6)',
+                                                            borderRadius: '12px',
+                                                            textDecoration: 'none',
+                                                            transition: 'all 0.2s',
+                                                            fontWeight: activeRoute === item.id ? 800 : 500,
+                                                            position: 'relative',
+                                                            overflow: 'hidden',
+                                                            fontSize: '0.9rem'
+                                                        }}
+                                                    >
+                                                        <div style={{ opacity: activeRoute === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
+                                                        {!isSidebarCollapsed && (
+                                                            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                                                                {item.label}
+                                                            </span>
+                                                        )}
+                                                    </Link>
+                                                </Tooltip>
+                                            ))}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     ))}
                 </nav>
 
-                <button
-                    title={isSidebarCollapsed ? t('dashboard.settings.guidedTour') : ""}
-                    style={{
+                <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', padding: '1rem' }}>
+                    {!isSidebarCollapsed && user && (
+                        <div style={{ padding: '1rem', background: 'rgba(255,215,0,0.05)', borderRadius: '15px', border: '1px solid rgba(255,215,0,0.1)', marginBottom: '8px' }}>
+                            <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{t('dashboard.settings.currentPlan')}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Crown size={16} color={user.plan === 'enterprise' ? '#000' : '#FFD700'} />
+                                <span style={{ fontWeight: 800, fontSize: '0.9rem', color: '#fff' }}>{user.plan || 'Free'}</span>
+                            </div>
+                        </div>
+                    )}
+
+                    <Tooltip content={isSidebarCollapsed ? t('dashboard.settings.guidedTour') : ""} position="right">
+                        <button
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', padding: '0.75rem 1rem', width: '100%', borderRadius: '12px', border: 'none', background: 'transparent', color: '#FFD700', fontWeight: 600, cursor: 'pointer', transition: 'all 0.3s ease', fontSize: '0.9rem' }}
+                        >
+                            <Map size={20} />
+                            {!isSidebarCollapsed && t('dashboard.settings.guidedTour')}
+                        </button>
+                    </Tooltip>
+
+                    <Tooltip content={isSidebarCollapsed ? t('dashboard.support') : ""} position="right">
+                        <button
+                            onClick={() => router.push('/dashboard/mentor?tab=support')}
+                            style={{ width: '100%', padding: '0.75rem 1rem', background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.2)', borderRadius: '12px', color: '#FFD700', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', position: 'relative', fontSize: '0.9rem' }}
+                        >
+                            <LifeBuoy size={20} />
+                            {!isSidebarCollapsed && t('dashboard.support')}
+                            {unreadCount > 0 && (
+                                <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#ef4444', color: '#fff', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 700, border: '2px solid var(--paper)' }}>
+                                    {unreadCount > 9 ? '9+' : unreadCount}
+                                </span>
+                            )}
+                        </button>
+                    </Tooltip>
+
+                    <div style={{
                         display: 'flex',
-                        alignItems: 'center',
+                        gap: '10px',
+                        padding: '0.5rem 1rem',
                         justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
-                        gap: '12px',
-                        padding: '0.75rem 1rem',
-                        width: '100%',
-                        borderRadius: '12px',
-                        border: 'none',
-                        background: 'rgba(212,175,55,0.05)',
-                        color: '#D4AF37',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        marginTop: '0.5rem',
-                        fontSize: '0.85rem'
-                    }}
-                >
-                    <Map size={18} />
-                    {!isSidebarCollapsed && t('dashboard.settings.guidedTour')}
-                </button>
+                        alignItems: 'center',
+                        flexWrap: 'wrap'
+                    }}>
+                        <LanguageSwitcher />
+                        <CurrencySwitcher />
+                    </div>
 
-                <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <button
-                        onClick={() => router.push('/dashboard/mentor?tab=support')}
-                        title={isSidebarCollapsed ? t('dashboard.support') : ""}
-                        style={{
-                            width: '100%',
-                            padding: '0.8rem',
-                            background: '#2a2a2a',
-                            border: '1px solid #FFD700',
-                            borderRadius: '12px',
-                            color: '#FFD700',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            fontWeight: 600,
-                            position: 'relative'
-                        }}
-                    >
-                        <LifeBuoy size={18} />
-                        {!isSidebarCollapsed && t('dashboard.support')}
-                        {unreadCount > 0 && (
-                            <span style={{
-                                position: 'absolute',
-                                top: '-5px',
-                                right: '-5px',
-                                background: '#ef4444',
-                                color: '#fff',
-                                borderRadius: '50%',
-                                width: '20px',
-                                height: '20px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '0.7rem',
-                                fontWeight: 700,
-                                border: '2px solid #1a1a1a'
-                            }}>
-                                {unreadCount > 9 ? '9+' : unreadCount}
-                            </span>
-                        )}
-                    </button>
-
-                    <button
-                        onClick={() => authService.logout()}
-                        title={isSidebarCollapsed ? t('common.logout') : ""}
-                        style={{
-                            width: '100%',
-                            padding: '0.8rem',
-                            background: '#2a2a2a',
-                            border: '1px solid #333',
-                            borderRadius: '12px',
-                            color: '#e53e3e',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            fontWeight: 600
-                        }}
-                    >
-                        <LogOut size={18} />
-                        {!isSidebarCollapsed && t('common.logout')}
-                    </button>
+                    <Tooltip content={isSidebarCollapsed ? t('common.logout') : ""} position="right">
+                        <button
+                            onClick={() => authService.logout()}
+                            style={{ width: '100%', padding: '0.75rem 1rem', background: 'transparent', border: '1px solid rgba(229, 62, 62, 0.2)', borderRadius: '12px', color: '#e53e3e', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', fontSize: '0.9rem' }}
+                        >
+                            <LogOut size={20} />
+                            {!isSidebarCollapsed && t('common.logout')}
+                        </button>
+                    </Tooltip>
                 </div>
             </aside>
 
@@ -506,66 +544,67 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.5rem' }}>
                             <ThemeToggle />
                             <div ref={notificationBellRef} style={{ position: 'relative' }}>
-                                <button
-                                    ref={bellButtonRef}
-                                    onClick={(e) => {
-                                        try {
-                                            console.log('🔔 [Bell] click fired, isOpen =', isNotificationsOpen);
-                                            e.stopPropagation();
-                                            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-                                            console.log('🔔 [Bell] rect =', JSON.stringify({ top: rect.top, bottom: rect.bottom, right: rect.right, left: rect.left }));
-                                            const newPos = {
-                                                top: rect.bottom + 8,
-                                                right: window.innerWidth - rect.right
-                                            };
-                                            console.log('🔔 [Bell] dropdownPos =', newPos);
-                                            setDropdownPos(newPos);
-                                            setIsNotificationsOpen(prev => {
-                                                console.log('🔔 [Bell] state toggle:', prev, '->', !prev);
-                                                return !prev;
-                                            });
-                                        } catch (err) {
-                                            console.error('🔴 [Bell] onClick error:', err);
-                                        }
-                                    }}
-                                    title={t('dashboard.notifications')}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        width: isMobile ? '36px' : '40px',
-                                        height: isMobile ? '36px' : '40px',
-                                        background: isNotificationsOpen ? '#FFD700' : 'var(--paper)',
-                                        border: '1px solid #FFD700',
-                                        borderRadius: '12px',
-                                        color: isNotificationsOpen ? '#000' : 'var(--foreground)',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.3s',
-                                        position: 'relative'
-                                    }}
-                                >
-                                    <Bell size={20} />
-                                    {unreadNotifications > 0 && (
-                                        <span style={{
-                                            position: 'absolute',
-                                            top: '-5px',
-                                            right: '-5px',
-                                            background: '#ef4444',
-                                            color: '#fff',
-                                            width: '18px',
-                                            height: '18px',
-                                            borderRadius: '50%',
-                                            fontSize: '0.6rem',
-                                            fontWeight: 900,
+                                <Tooltip content={t('dashboard.notifications')}>
+                                    <button
+                                        ref={bellButtonRef}
+                                        onClick={(e) => {
+                                            try {
+                                                console.log('🔔 [Bell] click fired, isOpen =', isNotificationsOpen);
+                                                e.stopPropagation();
+                                                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                                                console.log('🔔 [Bell] rect =', JSON.stringify({ top: rect.top, bottom: rect.bottom, right: rect.right, left: rect.left }));
+                                                const newPos = {
+                                                    top: rect.bottom + 8,
+                                                    right: window.innerWidth - rect.right
+                                                };
+                                                console.log('🔔 [Bell] dropdownPos =', newPos);
+                                                setDropdownPos(newPos);
+                                                setIsNotificationsOpen(prev => {
+                                                    console.log('🔔 [Bell] state toggle:', prev, '->', !prev);
+                                                    return !prev;
+                                                });
+                                            } catch (err) {
+                                                console.error('🔴 [Bell] onClick error:', err);
+                                            }
+                                        }}
+                                        style={{
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            border: '2px solid #fff'
-                                        }}>
-                                            {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                                        </span>
-                                    )}
-                                </button>
+                                            width: isMobile ? '36px' : '40px',
+                                            height: isMobile ? '36px' : '40px',
+                                            background: isNotificationsOpen ? '#FFD700' : 'var(--paper)',
+                                            border: '1px solid #FFD700',
+                                            borderRadius: '12px',
+                                            color: isNotificationsOpen ? '#000' : 'var(--foreground)',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.3s',
+                                            position: 'relative'
+                                        }}
+                                    >
+                                        <Bell size={20} />
+                                        {unreadNotifications > 0 && (
+                                            <span style={{
+                                                position: 'absolute',
+                                                top: '-5px',
+                                                right: '-5px',
+                                                background: '#ef4444',
+                                                color: '#fff',
+                                                width: '18px',
+                                                height: '18px',
+                                                borderRadius: '50%',
+                                                fontSize: '0.6rem',
+                                                fontWeight: 900,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                border: '2px solid #fff'
+                                            }}>
+                                                {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                            </span>
+                                        )}
+                                    </button>
+                                </Tooltip>
                             </div>
 
                             {/* Notification dropdown rendered at fixed position, immune to parent overflow */}
@@ -589,24 +628,25 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                 )}
                             </AnimatePresence>
 
-                            <button
-                                onClick={() => authService.logout()}
-                                title={t('common.logout')}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    width: isMobile ? '36px' : '40px',
-                                    height: isMobile ? '36px' : '40px',
-                                    background: 'var(--paper)',
-                                    border: '1px solid #333',
-                                    borderRadius: '12px',
-                                    color: '#e53e3e',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                <LogOut size={20} />
-                            </button>
+                            <Tooltip content={t('common.logout')}>
+                                <button
+                                    onClick={() => authService.logout()}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        width: isMobile ? '36px' : '40px',
+                                        height: isMobile ? '36px' : '40px',
+                                        background: 'var(--paper)',
+                                        border: '1px solid #333',
+                                        borderRadius: '12px',
+                                        color: '#e53e3e',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    <LogOut size={20} />
+                                </button>
+                            </Tooltip>
                         </div>
                     </div>
                 </header>
