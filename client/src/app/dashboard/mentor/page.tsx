@@ -1629,34 +1629,62 @@ function MentorDashboardContent() {
                     {activeTab === 'forms' && (
                         <motion.div key="forms" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <div className="luxury-card" style={{ background: 'var(--paper)', border: 'none' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+                                    <colgroup>
+                                        <col style={{ width: '28%' }} />
+                                        <col style={{ width: '10%' }} />
+                                        <col style={{ width: '8%' }} />
+                                        <col style={{ width: '10%' }} />
+                                        <col style={{ width: '8%' }} />
+                                        <col style={{ width: '36%' }} />
+                                    </colgroup>
                                     <thead>
                                         <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Evento</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>{t('common.visibility')}</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Perfil</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Inscritos</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', textAlign: 'center' }}>Visitas</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', textAlign: 'right' }}>Ações</th>
+                                            <th style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Evento</th>
+                                            <th style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('common.visibility')}</th>
+                                            <th style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Perfil</th>
+                                            <th style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Inscritos</th>
+                                            <th style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>Visitas</th>
+                                            <th style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {forms.map((form) => (
                                             <tr key={form._id} style={{ borderBottom: '1px solid #f9f9f9' }}>
-                                                <td style={{ padding: '1rem' }}>
-                                                    <div style={{ fontWeight: 700 }}>{form.title}</div>
-                                                    <div style={{ fontSize: '0.75rem', color: '#999' }}>/{form.slug}</div>
+                                                <td style={{ padding: '0.85rem 1rem', maxWidth: 0 }}>
+                                                    <div
+                                                        title={form.title}
+                                                        style={{
+                                                            fontWeight: 700,
+                                                            fontSize: '0.9rem',
+                                                            overflow: 'hidden',
+                                                            whiteSpace: 'nowrap',
+                                                            textOverflow: 'ellipsis'
+                                                        }}
+                                                    >{form.title}</div>
+                                                    <div
+                                                        title={`/${form.slug}`}
+                                                        style={{
+                                                            fontSize: '0.7rem',
+                                                            color: '#999',
+                                                            overflow: 'hidden',
+                                                            whiteSpace: 'nowrap',
+                                                            textOverflow: 'ellipsis',
+                                                            marginTop: '2px'
+                                                        }}
+                                                    >/{form.slug}</div>
                                                 </td>
-                                                <td style={{ padding: '1rem' }}>
+                                                <td style={{ padding: '0.85rem 1rem' }}>
                                                     <button
                                                         onClick={() => handleToggleStatus(form)}
                                                         style={{
-                                                            padding: '0.3rem 0.6rem',
+                                                            padding: '0.25rem 0.6rem',
                                                             borderRadius: '20px',
                                                             fontSize: '0.7rem',
                                                             fontWeight: 700,
                                                             border: 'none',
                                                             cursor: 'pointer',
+                                                            whiteSpace: 'nowrap',
                                                             background: form.active ? '#38a16915' : '#e53e3e15',
                                                             color: form.active ? '#38a169' : '#e53e3e'
                                                         }}
@@ -1664,18 +1692,19 @@ function MentorDashboardContent() {
                                                         {form.active ? t('common.public') : t('common.private')}
                                                     </button>
                                                 </td>
-                                                <td style={{ padding: '1rem' }}>
+                                                <td style={{ padding: '0.85rem 1rem' }}>
                                                     {user && form.creator._id !== user.id ? (
                                                         <button
                                                             onClick={() => handleToggleProfileVisibility(form)}
                                                             style={{
-                                                                padding: '0.3rem 0.6rem',
+                                                                padding: '0.25rem 0.6rem',
                                                                 borderRadius: '20px',
                                                                 fontSize: '0.7rem',
                                                                 fontWeight: 700,
                                                                 border: '1px solid currentColor',
                                                                 cursor: 'pointer',
                                                                 background: 'transparent',
+                                                                whiteSpace: 'nowrap',
                                                                 color: form.partnersPublic?.includes(user.id) ? '#38a169' : '#e53e3e'
                                                             }}
                                                         >
@@ -1685,18 +1714,18 @@ function MentorDashboardContent() {
                                                         <span style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600 }}>Dono</span>
                                                     )}
                                                 </td>
-                                                <td style={{ padding: '1rem' }}>
-                                                    <div style={{ fontWeight: 600, fontSize: '1rem' }}>{form.submissionCount || 0}</div>
+                                                <td style={{ padding: '0.85rem 1rem' }}>
+                                                    <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{form.submissionCount || 0}</div>
                                                     {form.capacity && (
-                                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{t('dashboard.goal')}: {form.capacity}</div>
+                                                        <div style={{ fontSize: '0.7rem', color: '#999', marginTop: '1px' }}>Meta: {form.capacity}</div>
                                                     )}
                                                 </td>
-                                                <td style={{ padding: '1rem', textAlign: 'center' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '1rem', fontWeight: 600, color: 'var(--foreground)' }}>
-                                                        <Eye size={16} color="#B8860B" /> {form.visits || 0}
+                                                <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontWeight: 700, color: 'var(--foreground)' }}>
+                                                        <Eye size={14} color="#B8860B" /> {form.visits || 0}
                                                     </div>
                                                 </td>
-                                                <td style={{ padding: '1rem', textAlign: 'right' }}>
+                                                <td style={{ padding: '0.85rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>
                                                     <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '8px', flexWrap: 'nowrap' }}>
                                                         {/* Primary Actions — always visible with label */}
                                                         <button
