@@ -43,10 +43,16 @@ const Whiteboard = forwardRef(({
     const imageCache = useRef<Map<string, HTMLImageElement>>(new Map());
     const redrawHistoryRef = useRef<() => void>(() => { });
 
-    const handlersRef = useRef({
-        clearCanvas: (_fromSocket?: boolean) => { },
-        undoAction: (_fromSocket?: boolean) => { },
-        drawData: (_data?: any) => { },
+    const handlersRef = useRef<{
+        clearCanvas: (fromSocket?: boolean) => void;
+        undoAction: (fromSocket?: boolean) => void;
+        drawData: (data?: any) => void;
+        redrawHistory: () => void;
+        redrawBg: () => void;
+    }>({
+        clearCanvas: () => { },
+        undoAction: () => { },
+        drawData: () => { },
         redrawHistory: () => { },
         redrawBg: () => { }
     });
