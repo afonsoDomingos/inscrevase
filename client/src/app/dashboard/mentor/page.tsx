@@ -136,10 +136,10 @@ function MentorDashboardContent() {
     const [platformTutorials, setPlatformTutorials] = useState<Lesson[]>([]);
     const [selectedTutorial, setSelectedTutorial] = useState<Lesson | null>(null);
     const [isLabActive, setIsLabActive] = useState(false);
-    const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
+    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
 
     const toggleSection = (title: string) => {
-        setCollapsedSections(prev => ({
+        setExpandedSections(prev => ({
             ...prev,
             [title]: !prev[title]
         }));
@@ -559,7 +559,7 @@ function MentorDashboardContent() {
                                 letterSpacing: '-0.5px',
                                 fontFamily: 'var(--font-playfair)' // Using serif for the logo as in image
                             }}>
-                                Inscreva<span style={{ color: '#FFD700' }}>.se</span>
+                                INSCREVA<span style={{ color: '#FFD700' }}>.SE</span>
                             </span>
                         </div>
                     )}
@@ -632,7 +632,7 @@ function MentorDashboardContent() {
                     ].map((section, idx) => (
                         <div key={section.title} style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
                             {idx > 0 && (
-                                <div style={{ height: '1px', background: 'rgba(255,215,0,0.08)', margin: '4px 16px 12px', width: 'auto' }} />
+                                <div style={{ height: '1px', background: 'rgba(255,215,0,0.15)', margin: '4px 16px 12px', width: 'auto' }} />
                             )}
                             {!isSidebarCollapsed && (
                                 <div
@@ -660,7 +660,7 @@ function MentorDashboardContent() {
                                     >
                                         <ChevronDown size={14} />
                                     </motion.div>
-                                </button>
+                                </div>
                             )}
 
                             <AnimatePresence initial={false}>
@@ -866,7 +866,7 @@ function MentorDashboardContent() {
                     justifyContent: 'space-between',
                     alignItems: isMobile ? 'flex-start' : 'center',
                     gap: isMobile ? '1.5rem' : '3rem',
-                    marginBottom: '3rem'
+                    marginBottom: '2rem'
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                         <div
@@ -907,14 +907,14 @@ function MentorDashboardContent() {
                                 </span>
                             </div>
                             <h1 style={{
-                                fontSize: isMobile ? '2rem' : '3.5rem',
+                                fontSize: isMobile ? '1.8rem' : '2.8rem',
                                 fontWeight: 800,
                                 fontFamily: 'var(--font-playfair)',
                                 color: '#FFD700',
                                 lineHeight: 1.1,
                                 margin: 0
                             }}>
-                                {user.name.split(' ')[0]}
+                                {t('common.hello')}, <span style={{ color: '#fff' }}>{user.name.split(' ')[0]}</span>
                             </h1>
                         </div>
                     </div>
@@ -1112,7 +1112,7 @@ function MentorDashboardContent() {
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (
                         <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                            <div id="mentor-stats-grid" className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'} mb-8`}>
+                            <div id="mentor-stats-grid" className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'} mb-8`}>
                                 <StatCard
                                     icon={<Users className="gold-text" />}
                                     label={t('dashboard.totalSubscribers')}
@@ -1318,6 +1318,7 @@ function MentorDashboardContent() {
                                                                     border: 'none',
                                                                     display: 'flex',
                                                                     height: isMobile ? '45px' : '52px',
+
                                                                     cursor: 'pointer',
                                                                     transition: 'transform 0.2s'
                                                                 }}
@@ -1540,7 +1541,7 @@ function MentorDashboardContent() {
                                                             }}
                                                         >{form.title}</div>
                                                     </Tooltip>
-                                                    <Tooltip content={`/${form.slug}`}>
+                                                    <Tooltip content={`/ ${form.slug}`}>
                                                         <div
                                                             style={{
                                                                 fontSize: '0.7rem',
@@ -2236,8 +2237,8 @@ function MentorDashboardContent() {
                         onSuccess={refreshData}
                     />
                 )}
-            </main >
-        </div >
+            </main>
+        </div>
     );
 }
 
@@ -2256,60 +2257,59 @@ export default function MentorDashboard() {
 function StatCard({ icon, label, value, trend }: { icon: React.ReactNode, label: string, value: string | number, trend: string }) {
     return (
         <motion.div
-            whileHover={{ y: -8, scale: 1.02 }}
+            whileHover={{ y: -4, scale: 1.01 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             className="luxury-card"
             style={{
-                background: 'rgba(255, 255, 255, 0.8)',
+                background: 'rgba(255, 255, 255, 0.85)',
                 backdropFilter: 'blur(10px)',
-                padding: '2rem 1.5rem',
-                border: '1px solid rgba(255, 255, 255, 0.5)',
-                borderRadius: '24px',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.03)',
+                padding: '1.25rem',
+                border: '1px solid rgba(255, 255, 255, 0.6)',
+                borderRadius: '20px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.04)',
                 position: 'relative',
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'space-between'
+                gap: '0.75rem'
             }}
         >
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: 'var(--gold-gradient)' }}></div>
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', background: 'var(--gold-gradient)' }}></div>
 
-            <div style={{ marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                    <div style={{
-                        background: 'linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.02))',
-                        color: '#D4AF37',
-                        padding: '12px',
-                        borderRadius: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 10px rgba(212,175,55,0.1)'
-                    }}>
-                        {icon}
-                    </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{
+                    background: 'rgba(212,175,55,0.08)',
+                    color: '#D4AF37',
+                    padding: '8px',
+                    borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    {icon}
+                </div>
+                {trend !== '0' && (
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: '4px',
                         background: trend.startsWith('+') ? '#f0fdf4' : '#fef2f2',
-                        padding: '4px 10px',
-                        borderRadius: '30px',
+                        padding: '2px 8px',
+                        borderRadius: '20px',
                         border: `1px solid ${trend.startsWith('+') ? '#dcfce7' : '#fee2e2'}`
                     }}>
-                        <span style={{ fontSize: '0.7rem', color: trend.startsWith('+') ? '#16a34a' : '#ef4444', fontWeight: 900 }}>{trend}</span>
+                        <span style={{ fontSize: '0.65rem', color: trend.startsWith('+') ? '#16a34a' : '#ef4444', fontWeight: 800 }}>{trend}</span>
                     </div>
-                </div>
-                <span style={{ color: '#64748b', fontWeight: 600, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</span>
+                )}
             </div>
 
-            <div>
-                <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', color: '#1a1a1a', letterSpacing: '-0.5px' }}>{value}</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <span style={{ color: '#64748b', fontWeight: 600, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
+                <h2 style={{ fontSize: '1.6rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#1a1a1a', margin: 0, letterSpacing: '-0.5px' }}>{value}</h2>
             </div>
 
-            {/* Subtle Sparkle/Light effect */}
-            <div style={{ position: 'absolute', bottom: '-20px', right: '-20px', width: '80px', height: '80px', background: 'radial-gradient(circle, rgba(212,175,55,0.05) 0%, transparent 70%)', borderRadius: '50%' }} />
+            {/* Subtle background element */}
+            <div style={{ position: 'absolute', bottom: '-15px', right: '-15px', width: '60px', height: '60px', background: 'radial-gradient(circle, rgba(212,175,55,0.03) 0%, transparent 70%)', borderRadius: '50%' }} />
         </motion.div>
     );
 }

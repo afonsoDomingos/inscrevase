@@ -41,6 +41,8 @@ import { formService } from '@/lib/formService';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import ThemeToggle from '@/components/common/ThemeToggle';
 import Image from 'next/image';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import CurrencySwitcher from '@/components/CurrencySwitcher';
 
 type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts';
 
@@ -394,7 +396,7 @@ export default function AdminDashboard() {
                 <div style={{ padding: '1.5rem', textAlign: 'center', borderBottom: '1px solid #333' }}>
                     {!isDesktopSidebarCollapsed ? (
                         <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>
-                            Inscreva<span className="gold-text">.se</span>
+                            INSCREVA<span className="gold-text">.SE</span>
                         </h2>
                     ) : (
                         <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#FFD700' }}>
@@ -516,6 +518,10 @@ export default function AdminDashboard() {
                     >
                         <Settings size={18} /> {!isDesktopSidebarCollapsed && t('events.profile.title')}
                     </button>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem', justifyContent: isDesktopSidebarCollapsed ? 'center' : 'flex-start' }}>
+                        <LanguageSwitcher />
+                        <CurrencySwitcher />
+                    </div>
                     <button
                         onClick={() => authService.logout()}
                         style={{
@@ -592,6 +598,8 @@ export default function AdminDashboard() {
                         flexWrap: 'wrap',
                         alignItems: 'center'
                     }}>
+                        <LanguageSwitcher />
+                        <CurrencySwitcher />
                         <ThemeToggle />
                         <div style={{ position: 'relative' }}>
                             <button
@@ -795,12 +803,12 @@ export default function AdminDashboard() {
                                     <motion.div
                                         key={index}
                                         variants={itemVariants}
-                                        whileHover={{ y: -5, scale: 1.02 }}
+                                        whileHover={{ y: -4, scale: 1.01 }}
                                         whileTap={{ scale: 0.98 }}
                                         onMouseMove={handleMouseMove}
                                         onClick={() => setActiveTab(card.tab as Tab)}
                                         className="luxury-card"
-                                        style={{ background: 'rgba(255,255,255,0.7)', padding: '1.5rem', border: 'none', cursor: 'pointer' }}
+                                        style={{ background: 'rgba(255,255,255,0.7)', padding: '1.25rem', border: 'none', cursor: 'pointer' }}
                                     >
                                         <div className="spotlight" />
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '1rem', position: 'relative' }}>
@@ -809,7 +817,7 @@ export default function AdminDashboard() {
                                             </div>
                                             <span style={{ color: '#1a1a1a', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{card.label}</span>
                                         </div>
-                                        <h2 style={{ fontSize: '2.2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', position: 'relative' }}>{card.value}</h2>
+                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', position: 'relative' }}>{card.value}</h2>
                                     </motion.div>
                                 ))}
                             </div>
@@ -859,6 +867,7 @@ export default function AdminDashboard() {
                                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem' }}>
                                                     <motion.div variants={itemVariants} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e0e0e0' }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
+
                                                             <div style={{ background: 'rgba(212, 175, 55, 0.1)', padding: '10px', borderRadius: '12px' }}>
                                                                 <Clock size={22} className="gold-text" />
                                                             </div>
@@ -978,12 +987,12 @@ export default function AdminDashboard() {
                                         >
                                             <div className="stats-grid" style={{ padding: '1.5rem 0.5rem' }}>
                                                 {activityCards.map((card, idx) => (
-                                                    <div key={idx} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #f0f0f0', borderRadius: '20px' }}>
+                                                    <div key={idx} className="luxury-card" style={{ background: '#fff', padding: '1.25rem', border: '1px solid #f0f0f0', borderRadius: '16px' }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
                                                             <div style={{ background: `${card.color}15`, color: card.color, padding: '8px', borderRadius: '10px' }}>{card.icon}</div>
                                                             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#444', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{card.label}</span>
                                                         </div>
-                                                        <div style={{ fontSize: '2rem', fontWeight: 800, color: '#000', fontFamily: 'var(--font-inter)' }}>{card.value}</div>
+                                                        <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#000', fontFamily: 'var(--font-inter)' }}>{card.value}</div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -1496,7 +1505,7 @@ export default function AdminDashboard() {
                                             marginBottom: '2rem'
                                         }}>
                                             <ShieldAlert size={18} className="gold-text" />
-                                            <span style={{ color: '#FFD700', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '2px', textTransform: 'uppercase' }}>Sistema Elite</span>
+                                            <span style={{ color: '#FFD700', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '2px', textTransform: 'uppercase' }}>INSCREVA<span style={{ color: '#FFD700' }}>.SE</span></span>
                                         </div>
 
                                         <h2 style={{
@@ -1973,7 +1982,7 @@ export default function AdminDashboard() {
                         }
                     }
                 `}</style>
-            </main >
-        </div >
+            </main>
+        </div>
     );
 }
