@@ -29,6 +29,7 @@ import { stripeService } from '@/lib/stripeService';
 import { lessonService } from '@/lib/lessonService';
 import { motion, AnimatePresence } from 'framer-motion';
 import TableScrollWrapper from '../common/TableScrollWrapper';
+import Tooltip from '../common/Tooltip';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import { toast } from 'sonner';
@@ -424,11 +425,19 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '110px' }}>{t('events.submissions.contact')}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '130px' }}>{t('events.submissions.event')}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '100px' }}>{t('events.submissions.date')}</th>
-                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '100px' }}>{t('events.submissions.proof')}</th>
+                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '100px' }}>
+                                            <Tooltip content="Documento que comprova o pagamento">
+                                                {t('events.submissions.proof')}
+                                            </Tooltip>
+                                        </th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '90px' }}>{t('events.submissions.status')}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '100px' }}>{t('events.submissions.progress') || 'Progresso'}</th>
                                         <th style={{ padding: '0.6rem 0.8rem', minWidth: '120px', textAlign: 'center' }}>{t('events.submissions.registration')}</th>
-                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '160px', textAlign: 'right' }}>{t('events.submissions.actions')}</th>
+                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '160px', textAlign: 'right' }}>
+                                            <Tooltip content="Gerenciar inscrições">
+                                                {t('events.submissions.actions')}
+                                            </Tooltip>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -539,47 +548,52 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                             </td>
                                             <td style={{ padding: '1rem', textAlign: 'center' }}>
                                                 <div style={{ display: 'flex', gap: '5px', justifyContent: 'center' }}>
-                                                    <button
-                                                        onClick={() => setSelectedSubmission(submission)}
-                                                        style={{
-                                                            display: 'inline-flex', alignItems: 'center', gap: '5px',
-                                                            padding: '0.5rem 1rem', borderRadius: '8px',
-                                                            border: 'none', background: '#f4f4f4',
-                                                            color: '#000', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 800
-                                                        }}
-                                                    >
-                                                        <Eye size={14} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleViewProgress(submission._id)}
-                                                        disabled={submission.status !== 'approved'}
-                                                        title={submission.status !== 'approved' ? t('events.submissions.approveToViewProgress') : t('events.submissions.viewProgress')}
-                                                        style={{
-                                                            display: 'inline-flex', alignItems: 'center', gap: '5px',
-                                                            padding: '0.5rem 1rem', borderRadius: '8px',
-                                                            border: '1px solid var(--gold-active)', background: 'transparent',
-                                                            color: '#D4AF37', cursor: submission.status !== 'approved' ? 'not-allowed' : 'pointer', fontSize: '0.75rem', fontWeight: 800,
-                                                            opacity: submission.status !== 'approved' ? 0.3 : 1
-                                                        }}
-                                                    >
-                                                        {loadingProgress ? <Loader2 size={14} className="animate-spin" /> : <BarChart3 size={14} />} {t('events.submissions.progress')}
-                                                    </button>
-                                                    <a
-                                                        href={`/hub/${submission._id}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        style={{
-                                                            display: 'inline-flex', alignItems: 'center', gap: '5px',
-                                                            padding: '0.5rem 1rem', borderRadius: '8px',
-                                                            border: 'none', background: '#000',
-                                                            color: '#FFD700', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 800,
-                                                            boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-                                                            textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                            textDecoration: 'none'
-                                                        }}
-                                                    >
-                                                        <ExternalLink size={14} /> HUB
-                                                    </a>
+                                                    <Tooltip content={t('events.submissions.viewDetails')}>
+                                                        <button
+                                                            onClick={() => setSelectedSubmission(submission)}
+                                                            style={{
+                                                                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                                padding: '0.5rem 1rem', borderRadius: '8px',
+                                                                border: 'none', background: '#f4f4f4',
+                                                                color: '#000', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 800
+                                                            }}
+                                                        >
+                                                            <Eye size={14} />
+                                                        </button>
+                                                    </Tooltip>
+                                                    <Tooltip content={t('events.submissions.viewProgress')}>
+                                                        <button
+                                                            onClick={() => handleViewProgress(submission._id)}
+                                                            disabled={submission.status !== 'approved'}
+                                                            style={{
+                                                                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                                padding: '0.5rem 1rem', borderRadius: '8px',
+                                                                border: '1px solid var(--gold-active)', background: 'transparent',
+                                                                color: '#D4AF37', cursor: submission.status !== 'approved' ? 'not-allowed' : 'pointer', fontSize: '0.75rem', fontWeight: 800,
+                                                                opacity: submission.status !== 'approved' ? 0.3 : 1
+                                                            }}
+                                                        >
+                                                            {loadingProgress ? <Loader2 size={14} className="animate-spin" /> : <BarChart3 size={14} />} {t('events.submissions.progress')}
+                                                        </button>
+                                                    </Tooltip>
+                                                    <Tooltip content={t('common.viewEventHub')}>
+                                                        <a
+                                                            href={`/hub/${submission._id}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            style={{
+                                                                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                                padding: '0.5rem 1rem', borderRadius: '8px',
+                                                                border: 'none', background: '#000',
+                                                                color: '#FFD700', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 800,
+                                                                boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                                                                textTransform: 'uppercase', letterSpacing: '0.5px',
+                                                                textDecoration: 'none'
+                                                            }}
+                                                        >
+                                                            <ExternalLink size={14} /> HUB
+                                                        </a>
+                                                    </Tooltip>
                                                 </div>
                                             </td>
                                             <td style={{ padding: '1rem', textAlign: 'right' }}>

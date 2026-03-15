@@ -62,18 +62,12 @@ import {
     Eye,
     Crown,
     Lock,
-    AlertCircle,
     Bell,
     Map,
     ChevronLeft,
     Menu,
     Newspaper,
     Video,
-    Award,
-    Briefcase,
-    Package,
-    Megaphone,
-    AlertTriangle,
     Trophy,
     ExternalLink,
     Monitor,
@@ -82,10 +76,14 @@ import {
     Share2,
     Clock,
     Info,
-    Play
+    Play,
+    Shield,
+    Package,
+    Megaphone
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
+import Tooltip from '@/components/common/Tooltip';
 import EarningsDashboard from '../../../components/EarningsDashboard';
 import PlanUpgradeModal from '../../../components/PlanUpgradeModal';
 
@@ -526,47 +524,36 @@ function MentorDashboardContent() {
             </AnimatePresence>
 
             {/* Sidebar */}
-            {/* Sidebar */}
             <aside style={{
-                width: isMobile ? '280px' : (isSidebarCollapsed ? '80px' : '280px'),
-                transform: isMobile ? (isMobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)') : 'none',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                background: 'var(--paper)',
-                color: 'var(--foreground)',
+                width: isSidebarCollapsed ? '80px' : '280px',
+                height: '100vh',
+                background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)',
+                borderRight: '1px solid rgba(255, 215, 0, 0.15)',
+                position: 'fixed',
+                left: isMobile ? (isMobileSidebarOpen ? '0' : '-100%') : '0',
+                top: 0,
+                zIndex: 1000,
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                 display: 'flex',
                 flexDirection: 'column',
-                position: 'fixed',
-                height: '100vh',
-                left: 0,
-                top: 0,
-                zIndex: 2000,
-                boxShadow: isMobile && !isMobileSidebarOpen ? 'none' : '4px 0 20px rgba(0,0,0,0.2)',
-                overflowX: 'hidden'
+                boxShadow: '10px 0 30px rgba(0,0,0,0.3)',
+                overflow: 'hidden'
             }}>
-                <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid #333' }}>
+                <div style={{ padding: '2rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid rgba(255, 215, 0, 0.1)' }}>
                     {!isSidebarCollapsed && (
-                        <motion.h2
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: 'var(--foreground)', margin: 0 }}
-                        >
-                            Inscreva<span className="gold-text">.se</span>
-                        </motion.h2>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ background: 'var(--gold-gradient)', padding: '8px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(212,175,55,0.3)' }}>
+                                <LayoutDashboard size={20} color="#000" />
+                            </div>
+                            <span style={{ fontWeight: 900, fontSize: '1.2rem', color: '#fff', letterSpacing: '0.5px' }}>INSV</span>
+                        </div>
                     )}
                     {!isMobile && (
                         <button
                             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                color: isSidebarCollapsed ? '#FFD700' : '#666',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                padding: '4px',
-                                transition: 'color 0.2s'
-                            }}
+                            style={{ background: 'rgba(255,215,0,0.1)', border: 'none', borderRadius: '8px', color: '#FFD700', padding: '6px', cursor: 'pointer', transition: 'all 0.3s' }}
+                            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,215,0,0.2)'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,215,0,0.1)'}
                         >
                             {isSidebarCollapsed ? <Menu size={24} /> : <ChevronLeft size={20} />}
                         </button>
@@ -575,240 +562,156 @@ function MentorDashboardContent() {
 
                 <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
                     {[
-                        { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
-                        { id: 'lessons', label: 'Aulas', icon: <Video size={20} /> },
-                        { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
-                        { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
-                        { id: 'services', label: t('dashboard.services'), icon: <Package size={20} /> },
-                        { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
-                        { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} /> },
-                        { id: 'smartlinks', label: 'Smartlinks', icon: <LinkIcon size={20} /> },
-                        { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
-                        { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
-                        { id: 'referral', label: 'Indicações & Impacto', icon: <Trophy size={20} /> },
-                        { id: 'marketing', label: 'Impulsionar Vendas', icon: <Zap size={20} /> },
-                        { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
-                        { id: 'liveboard', label: 'Sala de Eventos (Lab)', icon: <Monitor size={20} /> },
-                        { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
-                    ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
-                        <Tooltip content={isSidebarCollapsed ? item.label : ""} position="right">
-                            <button
-                                key={item.id}
-                                id={`mentor-nav-${item.id}`}
-                                onClick={() => {
-                                    if (item.link) {
-                                        router.push(item.link);
-                                    } else if (item.id === 'referral') {
-                                        setIsReferralModalOpen(true);
-                                    } else {
-                                        setActiveTab(item.id as Tab);
-                                        if (isMobile) setIsMobileSidebarOpen(false);
-                                        const params = new URLSearchParams(searchParams.toString());
-                                        params.set('tab', item.id);
-                                        router.push(`?${params.toString()}`, { scroll: false });
-                                    }
-                                }}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
-                                    gap: '12px',
-                                    padding: '0.75rem 1rem',
-                                    width: '100%',
-                                    borderRadius: '12px',
-                                    border: 'none',
-                                    background: activeTab === item.id ? 'var(--gold-gradient)' : 'transparent',
-                                    color: activeTab === item.id ? '#000' : '#888',
-                                    fontWeight: activeTab === item.id ? 800 : 500,
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                    textAlign: 'left',
-                                    position: 'relative',
-                                    fontSize: '0.95rem',
-                                    boxShadow: activeTab === item.id ? '0 10px 20px rgba(0,0,0,0.1)' : 'none'
-                                }}
-                                onMouseOver={(e) => {
-                                    if (activeTab !== item.id) {
-                                        e.currentTarget.style.background = 'rgba(255, 215, 0, 0.05)';
-                                        e.currentTarget.style.color = '#fff';
-                                    }
-                                }}
-                                onMouseOut={(e) => {
-                                    if (activeTab !== item.id) {
-                                        e.currentTarget.style.background = 'transparent';
-                                        e.currentTarget.style.color = '#888';
-                                    }
-                                }}
-                            >
-                                {activeTab === item.id && (
-                                    <motion.div
-                                        layoutId="active-indicator"
-                                        style={{
-                                            position: 'absolute',
-                                            left: 0,
-                                            width: '4px',
-                                            height: '24px',
-                                            background: '#FFD700',
-                                            borderTopRightRadius: '4px',
-                                            borderBottomRightRadius: '4px'
+                        {
+                            title: "1️⃣ DASHBOARD",
+                            items: [{ id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> }]
+                        },
+                        {
+                            title: "2️⃣ CONTEÚDO / PRODUTOS",
+                            items: [
+                                { id: 'lessons', label: 'Aulas', icon: <Video size={20} /> },
+                                { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
+                                { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
+                                { id: 'services', label: t('dashboard.services'), icon: <Package size={20} /> },
+                                { id: 'liveboard', label: 'Sala de Eventos (Lab)', icon: <Monitor size={20} /> },
+                            ]
+                        },
+                        {
+                            title: "3️⃣ PARTICIPANTES / GESTÃO",
+                            items: [
+                                { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
+                                { id: 'referral', label: 'Indicações & Impacto', icon: <Trophy size={20} /> },
+                            ]
+                        },
+                        {
+                            title: "4️⃣ MARKETING / PROMOÇÃO",
+                            items: [
+                                { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} /> },
+                                { id: 'smartlinks', label: 'Smartlinks', icon: <LinkIcon size={20} /> },
+                                { id: 'marketing', label: 'Impulsionar Vendas', icon: <Zap size={20} /> },
+                            ]
+                        },
+                        {
+                            title: "5️⃣ FINANCEIRO",
+                            items: [
+                                { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
+                                { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
+                            ]
+                        },
+                        {
+                            title: "6️⃣ CONTA / SISTEMA",
+                            items: [
+                                { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
+                                { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
+                            ]
+                        }
+                    ].map((section, idx) => (
+                        <div key={section.title} style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
+                            {idx > 0 && (
+                                <div style={{ height: '1px', background: 'rgba(255,215,0,0.08)', margin: '4px 16px 12px', width: 'auto' }} />
+                            )}
+                            {!isSidebarCollapsed && (
+                                <div style={{
+                                    fontSize: '0.65rem',
+                                    fontWeight: 900,
+                                    color: 'rgba(255,255,255,0.3)',
+                                    paddingLeft: '16px',
+                                    marginTop: '8px',
+                                    marginBottom: '4px',
+                                    letterSpacing: '1px'
+                                }}>
+                                    {section.title}
+                                </div>
+                            )}
+                            {section.items.map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
+                                <Tooltip key={item.id} content={isSidebarCollapsed ? item.label : ""} position="right">
+                                    <button
+                                        id={`mentor-nav-${item.id}`}
+                                        onClick={() => {
+                                            setActiveTab(item.id as Tab);
+                                            if (isMobile) setIsMobileSidebarOpen(false);
+                                            const params = new URLSearchParams(searchParams.toString());
+                                            params.set('tab', item.id);
+                                            router.push(`?${params.toString()}`, { scroll: false });
                                         }}
-                                    />
-                                )}
-                                <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
-                                {!isSidebarCollapsed && (
-                                    <motion.span
-                                        initial={{ opacity: 0, width: 0 }}
-                                        animate={{ opacity: 1, width: 'auto' }}
-                                        style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                                            gap: '12px',
+                                            padding: '0.75rem 1rem',
+                                            width: '100%',
+                                            borderRadius: '12px',
+                                            border: 'none',
+                                            background: activeTab === item.id ? 'var(--gold-gradient)' : 'transparent',
+                                            color: activeTab === item.id ? '#000' : '#888',
+                                            fontWeight: activeTab === item.id ? 800 : 500,
+                                            cursor: 'pointer',
+                                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                            textAlign: 'left',
+                                            position: 'relative',
+                                            fontSize: '0.9rem'
+                                        }}
                                     >
-                                        {item.label}
-                                    </motion.span>
-                                )}
-                                {!isSidebarCollapsed && (item.id === 'submissions' || item.id === 'certificates') && stats?.pendingCertificates && stats.pendingCertificates > 0 ? (
-                                    <span style={{
-                                        marginLeft: 'auto',
-                                        background: activeTab === item.id ? '#000' : 'var(--gold-gradient)',
-                                        color: activeTab === item.id ? '#FFD700' : '#000',
-                                        fontSize: '0.65rem',
-                                        fontWeight: 900,
-                                        padding: '2px 6px',
-                                        borderRadius: '10px',
-                                        minWidth: '18px',
-                                        textAlign: 'center',
-                                        boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
-                                    }}>
-                                        {stats.pendingCertificates}
+                                        {activeTab === item.id && (
+                                            <motion.div
+                                                layoutId="active-indicator"
+                                                style={{ position: 'absolute', left: 0, width: '4px', height: '24px', background: '#FFD700', borderTopRightRadius: '4px', borderBottomRightRadius: '4px' }}
+                                            />
+                                        )}
+                                        <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
+                                        {!isSidebarCollapsed && <span>{item.label}</span>}
+                                    </button>
+                                </Tooltip>
+                            ))}
+                        </div>
+                    ))}
+
+                    <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {!isSidebarCollapsed && (
+                            <div style={{ padding: '1rem', background: 'rgba(255,215,0,0.05)', borderRadius: '15px', border: '1px solid rgba(255,215,0,0.1)', marginBottom: '8px' }}>
+                                <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{t('dashboard.settings.currentPlan')}</div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Crown size={16} color={user.plan === 'enterprise' ? '#000' : '#FFD700'} />
+                                    <span style={{ fontWeight: 800, fontSize: '0.9rem', color: '#fff' }}>{user.plan || 'Free'}</span>
+                                </div>
+                            </div>
+                        )}
+
+                        <Tooltip content={isSidebarCollapsed ? t('dashboard.settings.guidedTour') : ""} position="right">
+                            <button
+                                onClick={() => window.dispatchEvent(new Event('start-onboarding'))}
+                                style={{ display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', padding: '0.75rem 1rem', width: '100%', borderRadius: '12px', border: 'none', background: 'transparent', color: '#FFD700', fontWeight: 600, cursor: 'pointer', transition: 'all 0.3s ease', fontSize: '0.9rem' }}
+                            >
+                                <Map size={20} />
+                                {!isSidebarCollapsed && t('dashboard.settings.guidedTour')}
+                            </button>
+                        </Tooltip>
+
+                        <Tooltip content={isSidebarCollapsed ? t('dashboard.support') : ""} position="right">
+                            <button
+                                onClick={() => setIsSupportOpen(true)}
+                                style={{ width: '100%', padding: '0.75rem 1rem', background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.2)', borderRadius: '12px', color: '#FFD700', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', position: 'relative', fontSize: '0.9rem' }}
+                            >
+                                <LifeBuoy size={20} />
+                                {!isSidebarCollapsed && t('dashboard.support')}
+                                {unreadCount > 0 && (
+                                    <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#ef4444', color: '#fff', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 700, border: '2px solid var(--paper)' }}>
+                                        {unreadCount > 9 ? '9+' : unreadCount}
                                     </span>
-                                ) : null}
-                                {isSidebarCollapsed && (item.id === 'submissions' || item.id === 'certificates') && stats?.pendingCertificates && stats.pendingCertificates > 0 && (
-                                    <span style={{
-                                        position: 'absolute',
-                                        top: '8px',
-                                        right: '8px',
-                                        background: 'var(--gold-gradient)',
-                                        width: '8px',
-                                        height: '8px',
-                                        borderRadius: '50%',
-                                        border: '1.5px solid var(--paper)'
-                                    }} />
                                 )}
                             </button>
                         </Tooltip>
-                    ))}
-
-                    <Tooltip content={isSidebarCollapsed ? t('dashboard.settings.guidedTour') : ""} position="right">
-                        <button
-                            onClick={() => window.dispatchEvent(new Event('start-onboarding'))}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
-                                gap: '12px',
-                                padding: '0.75rem 1rem',
-                                width: '100%',
-                                borderRadius: '12px',
-                                border: 'none',
-                                background: 'transparent',
-                                color: '#FFD700',
-                                fontWeight: 600,
-                                cursor: 'pointer',
-                                transition: 'all 0.3s ease',
-                                textAlign: 'left',
-                                fontSize: '0.95rem'
-                            }}
-                            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 215, 0, 0.1)'}
-                            onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
-                        >
-                            <Map size={20} />
-                            {!isSidebarCollapsed && t('dashboard.settings.guidedTour')}
-                        </button>
-                    </Tooltip>
-
-                    {!isSidebarCollapsed && (
-                        <div style={{ marginTop: 'auto', padding: '1rem', background: 'rgba(255,215,0,0.05)', borderRadius: '15px', border: '1px solid rgba(255,215,0,0.1)' }}>
-                            <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{t('dashboard.settings.currentPlan')}</div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <Crown size={16} color={user.plan === 'enterprise' ? '#000' : '#FFD700'} />
-                                <span style={{ fontWeight: 800, fontSize: '0.9rem', color: '#fff', textTransform: 'capitalize' }}>
-                                    {user.plan || 'Free'}
-                                </span>
-                            </div>
-                        </div>
-                    )}
-                </nav>
-
-                <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <Tooltip content={isSidebarCollapsed ? t('dashboard.support') : ""} position="right">
-                        <button
-                            id="mentor-support-btn"
-                            onClick={() => setIsSupportOpen(true)}
-                            style={{
-                                width: '100%',
-                                padding: '0.8rem',
-                                background: '#2a2a2a',
-                                border: '1px solid #FFD700',
-                                borderRadius: '12px',
-                                color: '#FFD700',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '10px',
-                                fontWeight: 600,
-                                transition: 'all 0.2s',
-                                position: 'relative'
-                            }}
-                            onMouseOver={(e) => e.currentTarget.style.background = '#333'}
-                            onMouseOut={(e) => e.currentTarget.style.background = '#2a2a2a'}
-                        >
-                            <LifeBuoy size={18} />
-                            {!isSidebarCollapsed && t('dashboard.support')}
-                            {unreadCount > 0 && (
-                                <span style={{
-                                    position: 'absolute',
-                                    top: '-5px',
-                                    right: '-5px',
-                                    background: '#ef4444',
-                                    color: '#fff',
-                                    borderRadius: '50%',
-                                    width: '20px',
-                                    height: '20px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '0.7rem',
-                                    fontWeight: 700,
-                                    border: '2px solid #1a1a1a'
-                                }}>
-                                    {unreadCount > 9 ? '9+' : unreadCount}
-                                </span>
-                            )}
-                        </button>
-
 
                         <button
                             onClick={() => authService.logout()}
-                            title={isSidebarCollapsed ? t('common.logout') : ""}
-                            style={{
-                                width: '100%',
-                                padding: '0.8rem',
-                                background: '#2a2a2a',
-                                border: '1px solid #333',
-                                borderRadius: '12px',
-                                color: '#e53e3e',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '10px',
-                                fontWeight: 600,
-                                transition: 'all 0.2s'
-                            }}
+                            style={{ width: '100%', padding: '0.75rem 1rem', background: 'transparent', border: '1px solid rgba(229, 62, 62, 0.2)', borderRadius: '12px', color: '#e53e3e', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', fontSize: '0.9rem' }}
                         >
-                            <LogOut size={18} />
+                            <LogOut size={20} />
                             {!isSidebarCollapsed && t('common.logout')}
                         </button>
-                </div>
+                    </div>
+                </nav>
             </aside>
 
             {/* Main Content */}
@@ -829,54 +732,22 @@ function MentorDashboardContent() {
                         style={{
                             background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
                             border: '1px solid rgba(255, 215, 0, 0.3)',
-                            borderRadius: isMobile ? '12px' : '24px',
-                            padding: isMobile ? '12px' : '30px',
-                            marginBottom: isMobile ? '16px' : '40px',
+                            padding: '1.25rem 1.5rem',
+                            borderRadius: '16px',
+                            marginBottom: '2rem',
                             display: 'flex',
-                            flexDirection: isMobile ? 'column' : 'row',
-                            alignItems: isMobile ? 'flex-start' : 'center',
+                            alignItems: 'center',
                             justifyContent: 'space-between',
-                            gap: isMobile ? '10px' : '24px',
-                            boxShadow: '0 20px 50px rgba(0,0,0,0.5), 0 0 20px rgba(255, 215, 0, 0.05)',
-                            position: 'relative',
-                            overflow: 'hidden'
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
                         }}
                     >
-                        {/* Shimmer Effect */}
-                        <motion.div
-                            animate={{ x: ['-200%', '200%'] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                            style={{
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                width: '50%',
-                                height: '100%',
-                                background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.05), transparent)',
-                                pointerEvents: 'none'
-                            }}
-                        />
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '24px', zIndex: 1 }}>
-                            <div style={{
-                                background: 'var(--gold-gradient)',
-                                padding: isMobile ? '8px' : '14px',
-                                borderRadius: isMobile ? '10px' : '18px',
-                                boxShadow: '0 0 20px rgba(212,175,55,0.4)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                flexShrink: 0
-                            }}>
-                                <AlertTriangle color="#000" size={isMobile ? 18 : 32} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ background: 'rgba(255, 215, 0, 0.1)', padding: '10px', borderRadius: '12px' }}>
+                                <Info size={20} color="#FFD700" />
                             </div>
                             <div>
-                                <h4 style={{ color: '#FFD700', margin: 0, fontWeight: 900, fontSize: isMobile ? '0.9rem' : '1.4rem', fontFamily: 'var(--font-playfair)', letterSpacing: '0.5px' }}>
-                                    {t('auth.verifyEmailTitle')}
-                                </h4>
-                                <p style={{ color: 'rgba(255,255,255,0.8)', margin: isMobile ? '4px 0 0 0' : '10px 0 0 0', fontSize: isMobile ? '0.75rem' : '1.05rem', maxWidth: '700px', lineHeight: 1.6, fontWeight: 500 }}>
-                                    {t('auth.unverifiedNotice')}
-                                </p>
+                                <h4 style={{ color: '#fff', fontWeight: 800, fontSize: '0.95rem', marginBottom: '2px' }}>{t('dashboard.verifyEmailTitle')}</h4>
+                                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>{t('dashboard.verifyEmailMessage')}</p>
                             </div>
                         </div>
                         <button
@@ -884,41 +755,29 @@ function MentorDashboardContent() {
                             disabled={isResending}
                             style={{
                                 background: 'var(--gold-gradient)',
-                                border: 'none',
                                 color: '#000',
-                                padding: isMobile ? '8px 16px' : '14px 32px',
-                                borderRadius: isMobile ? '10px' : '16px',
-                                fontWeight: 900,
-                                fontSize: isMobile ? '0.75rem' : '0.95rem',
-                                cursor: 'pointer',
-                                whiteSpace: 'nowrap',
-                                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                                zIndex: 1,
+                                border: 'none',
+                                padding: '0.6rem 1.2rem',
+                                borderRadius: '10px',
+                                fontWeight: 800,
+                                fontSize: '0.85rem',
+                                cursor: isResending ? 'not-allowed' : 'pointer',
+                                transition: 'all 0.2s',
+                                opacity: isResending ? 0.7 : 1,
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '10px',
-                                boxShadow: '0 10px 20px rgba(212,175,55,0.2)',
-                                textTransform: 'uppercase',
-                                letterSpacing: '1px'
+                                gap: '8px'
                             }}
-                            onMouseOver={(e) => {
-                                if (!isResending) {
-                                    e.currentTarget.style.transform = 'translateY(-3px)';
-                                    e.currentTarget.style.boxShadow = '0 15px 30px rgba(212,175,55,0.4)';
-                                }
-                            }}
-                            onMouseOut={(e) => {
-                                if (!isResending) {
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = '0 10px 20px rgba(212,175,55,0.2)';
-                                }
-                            }}
+                            onMouseOver={(e) => !isResending && (e.currentTarget.style.transform = 'scale(1.02)')}
+                            onMouseOut={(e) => !isResending && (e.currentTarget.style.transform = 'scale(1)')}
                         >
-                            {isResending ? <Loader2 className="animate-spin" size={20} /> : t('auth.resendVerification')}
+                            {isResending ? <Loader2 className="animate-spin" size={16} /> : null}
+                            {t('dashboard.resendEmail')}
                         </button>
                     </motion.div>
                 )}
-                {/* Header */}
+
+                {/* Header Section */}
                 <header style={{
                     display: 'flex',
                     flexDirection: isMobile ? 'column' : 'row',
@@ -960,65 +819,31 @@ function MentorDashboardContent() {
                                     fontSize: isMobile ? '1.5rem' : '2rem',
                                     fontWeight: 800,
                                     fontFamily: 'var(--font-playfair)',
-                                    lineHeight: 1.2,
                                     color: 'var(--foreground)',
+                                    marginBottom: '0.25rem',
                                     display: 'flex',
-                                    flexWrap: 'wrap',
                                     alignItems: 'center',
-                                    gap: '8px'
+                                    gap: '10px'
                                 }}
                             >
-                                <span className="gold-text" style={{ wordBreak: 'break-word' }}>
-                                    {(user.businessName || user.name).split(' ')[0]}
-                                </span>
-                                {user.isVerified && <PremiumBadge type="verified" size="md" showLabel={false} />}
+                                {t('common.greeting')} {user.name.split(' ')[0]} <span style={{ fontSize: '1.5rem' }}>👋</span>
                             </motion.h1>
-                            {/* Role Identifier Badge */}
-                            <div style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                marginTop: '0.5rem',
-                                marginBottom: '0.5rem',
-                                padding: '6px 14px',
-                                borderRadius: '20px',
-                                background: '#1a1a1a', // Sóbrio e premium
-                                color: '#FFD700', // Destaque em ouro
-                                fontSize: '0.75rem',
-                                fontWeight: 800,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.5px',
-                                border: '1px solid rgba(255, 215, 0, 0.3)',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-                            }}>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gold-gradient)', borderRadius: '50%', padding: '4px', color: '#000' }}>
-                                    {user.role === 'company' && <Briefcase size={12} />}
-                                    {user.role === 'specialist' && <Award size={12} />}
-                                    {user.role === 'mentor' && <UserIcon size={12} />}
-                                </div>
-                                <span style={{ textShadow: '0 0 10px rgba(255,215,0,0.2)' }}>
-                                    {user.role === 'company' ? t('dashboard.rolesHeader.company') :
-                                        user.role === 'specialist' ? t('dashboard.rolesHeader.specialist') :
-                                            user.role === 'mentor' ? t('dashboard.rolesHeader.mentor') :
-                                                t('dashboard.rolesHeader.admin')}
-                                </span>
-                            </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <p style={{
-                                    color: '#666',
-                                    marginTop: '0.4rem',
-                                    fontSize: isMobile ? '0.9rem' : '1.05rem',
-                                    fontWeight: 500,
-                                    maxWidth: isMobile ? '280px' : 'none',
-                                    lineHeight: 1.4
+                                <div style={{
+                                    background: 'rgba(255, 215, 0, 0.1)',
+                                    padding: '4px 12px',
+                                    borderRadius: '8px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
                                 }}>
-                                    {t('dashboard.readyToManage')}
-                                </p>
-                                {!isMobile && (
+                                    <Shield size={14} color="#D4AF37" />
+                                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#D4AF37', textTransform: 'capitalize' }}>{user.role}</span>
+                                </div>
+                                {user.plan && (
                                     <span style={{
-                                        marginTop: '4px',
-                                        background: user.plan === 'enterprise' ? '#000' : user.plan === 'pro' ? 'var(--gold-gradient)' : 'var(--muted)',
-                                        color: user.plan === 'enterprise' ? '#FFD700' : (user.plan === 'pro' ? '#000' : 'var(--foreground)'),
+                                        background: user.plan === 'enterprise' ? 'var(--gold-gradient)' : (user.plan === 'pro' ? '#D4AF37' : 'rgba(0,0,0,0.05)'),
+                                        color: user.plan === 'enterprise' ? '#000' : (user.plan === 'pro' ? '#fff' : 'var(--foreground)'),
                                         padding: '2px 10px',
                                         borderRadius: '20px',
                                         fontSize: '0.65rem',
@@ -1033,36 +858,6 @@ function MentorDashboardContent() {
                         </div>
                     </div>
 
-                    {
-                        user.canCreateEvents === false && (
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                style={{
-                                    background: 'linear-gradient(90deg, #fff5f5 0%, #fff 100%)',
-                                    borderLeft: '4px solid #c53030',
-                                    padding: '1.2rem 1.5rem',
-                                    borderRadius: '12px',
-                                    marginBottom: '2rem',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '15px',
-                                    boxShadow: '0 4px 12px rgba(197, 48, 48, 0.08)'
-                                }}
-                            >
-                                <div style={{ background: '#c53030', color: '#fff', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <AlertCircle size={20} />
-                                </div>
-                                <div>
-                                    <h4 style={{ color: '#c53030', fontWeight: 800, fontSize: '0.95rem', marginBottom: '2px' }}>{t('dashboard.settings.creationBlockedTitle')}</h4>
-                                    <p style={{ color: '#666', fontSize: '0.85rem' }}>
-                                        {t('dashboard.settings.creationBlockedDesc')}
-                                    </p>
-                                </div>
-                            </motion.div>
-                        )
-                    }
-
                     <div style={{ display: 'flex', gap: isMobile ? '0.35rem' : '0.5rem', width: isMobile ? '100.5%' : 'auto', overflowX: 'auto', paddingBottom: isMobile ? '5px' : '0', alignItems: 'center' }} className="no-scrollbar">
                         <Link
                             href="/"
@@ -1070,49 +865,49 @@ function MentorDashboardContent() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                padding: '0.5rem 1rem',
-                                background: 'var(--paper)',
-                                border: '1px solid #FFD700',
-                                borderRadius: '10px',
+                                padding: '0.75rem 1.25rem',
+                                borderRadius: '12px',
+                                background: 'rgba(0,0,0,0.03)',
+                                border: '1px solid rgba(0,0,0,0.05)',
                                 color: 'var(--foreground)',
                                 fontWeight: 700,
+                                fontSize: '0.85rem',
                                 textDecoration: 'none',
-                                transition: 'all 0.3s',
-                                fontSize: isMobile ? '0.75rem' : '0.9rem',
-                                whiteSpace: 'nowrap',
-                                height: isMobile ? '36px' : '40px'
+                                transition: 'all 0.3s'
                             }}
-                            onMouseOver={(e) => e.currentTarget.style.background = 'var(--paper-hover)'}
-                            onMouseOut={(e) => e.currentTarget.style.background = 'var(--paper)'}
+                            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                            onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                         >
                             <ArrowRight size={18} /> {!isMobile && t('nav.home')}
                         </Link>
+
                         {user.canCreateEvents !== false && (user.isEmailVerified || user.role === 'admin' || user.role === 'SuperAdmin') ? (
-                            <button
-                                id="mentor-create-btn"
-                                onClick={() => setIsEventModalOpen(true)}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    padding: '0.5rem 1rem',
-                                    background: 'var(--gold-gradient)',
-                                    border: 'none',
-                                    borderRadius: '10px',
-                                    color: '#000',
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                    boxShadow: '0 4px 15px rgba(212,175,55,0.3)',
-                                    transition: 'all 0.3s',
-                                    fontSize: isMobile ? '0.75rem' : '0.9rem',
-                                    whiteSpace: 'nowrap',
-                                    height: isMobile ? '36px' : '40px'
-                                }}
-                                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                            >
-                                <Plus size={18} /> {t('common.createEvent')}
-                            </button>
+                            <Tooltip content={t('common.createEvent')}>
+                                <button
+                                    onClick={() => setIsEventModalOpen(true)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        padding: '0.5rem 1rem',
+                                        background: 'var(--gold-gradient)',
+                                        border: 'none',
+                                        borderRadius: '10px',
+                                        color: '#000',
+                                        fontWeight: 700,
+                                        cursor: 'pointer',
+                                        boxShadow: '0 4px 15px rgba(212,175,55,0.3)',
+                                        transition: 'all 0.3s',
+                                        fontSize: isMobile ? '0.75rem' : '0.9rem',
+                                        whiteSpace: 'nowrap',
+                                        height: isMobile ? '36px' : '40px'
+                                    }}
+                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                >
+                                    <Plus size={18} /> {t('common.createEvent')}
+                                </button>
+                            </Tooltip>
                         ) : (
                             <div style={{
                                 display: 'flex',
@@ -1975,7 +1770,7 @@ function MentorDashboardContent() {
                                             <button
                                                 onClick={() => {
                                                     const message = encodeURIComponent("Olá! Estou no dashboard e tenho dúvidas sobre como funciona o Programa de Aceleração 360º. Podem ajudar?");
-                                                    window.open(`https://wa.me/244923456789?text=${message}`, '_blank');
+                                                    window.open(`https://wa.me/+258856079576?text=${message}`, '_blank');
                                                 }}
                                                 style={{
                                                     padding: '1.2rem 2rem',
@@ -2124,7 +1919,7 @@ function MentorDashboardContent() {
                                 <button
                                     onClick={() => {
                                         const message = encodeURIComponent("Olá! Tenho algumas dúvidas sobre o Acelerador de Vendas da Inscreva-se. Podem me explicar melhor?");
-                                        window.open(`https://wa.me/244923456789?text=${message}`, '_blank');
+                                        window.open(`https://wa.me/+258856079576?text=${message}`, '_blank');
                                     }}
                                     style={{ padding: '0.8rem 2rem', background: 'var(--paper)', border: '1px solid #D4AF37', color: '#D4AF37', borderRadius: '12px', fontWeight: 900, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '10px' }}
                                 >

@@ -39,18 +39,19 @@ const Tooltip: React.FC<TooltipProps> = ({ children, content, position = 'top' }
                         transition={{ type: 'spring', damping: 20, stiffness: 300 }}
                         style={{
                             position: 'absolute',
-                            zIndex: 1000,
-                            padding: '6px 12px',
-                            background: 'rgba(0, 0, 0, 0.85)',
-                            backdropFilter: 'blur(8px)',
+                            zIndex: 2500,
+                            padding: '10px 16px',
+                            background: 'rgba(10, 10, 10, 0.95)',
+                            backdropFilter: 'blur(12px)',
                             color: '#fff',
-                            borderRadius: '8px',
-                            fontSize: '0.75rem',
+                            borderRadius: '12px',
+                            fontSize: '0.8rem',
                             fontWeight: 600,
                             whiteSpace: 'nowrap',
                             pointerEvents: 'none',
-                            boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
-                            border: '1px solid rgba(255,255,255,0.1)'
+                            boxShadow: '0 15px 35px rgba(0,0,0,0.4), 0 0 10px rgba(255,215,0,0.1)',
+                            border: '1px solid rgba(255,215,0,0.2)',
+                            letterSpacing: '0.3px'
                         }}
                     >
                         {content}
@@ -58,13 +59,13 @@ const Tooltip: React.FC<TooltipProps> = ({ children, content, position = 'top' }
                             position: 'absolute',
                             width: 0,
                             height: 0,
-                            borderLeft: '5px solid transparent',
-                            borderRight: '5px solid transparent',
+                            borderLeft: '6px solid transparent',
+                            borderRight: '6px solid transparent',
                             [position === 'bottom' ? 'bottom' : 'top']: position === 'bottom' ? '100%' : 'auto',
                             [position === 'top' ? 'top' : 'bottom']: position === 'top' ? '100%' : 'auto',
                             ...((position === 'top' || position === 'bottom') ? {
-                                borderTop: position === 'top' ? '5px solid rgba(0,0,0,0.85)' : 'none',
-                                borderBottom: position === 'bottom' ? '5px solid rgba(0,0,0,0.85)' : 'none',
+                                borderTop: position === 'top' ? '6px solid rgba(255,215,0,0.2)' : 'none',
+                                borderBottom: position === 'bottom' ? '6px solid rgba(255,215,0,0.2)' : 'none',
                                 left: '50%',
                                 transform: 'translateX(-50%)'
                             } : {})
