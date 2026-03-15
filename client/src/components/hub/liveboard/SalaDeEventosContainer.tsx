@@ -308,7 +308,7 @@ export default function SalaDeEventosContainer({
             newSocket.emit('live_board:join', formId);
         });
 
-        newSocket.on('live_board:hand_raised', ({ socketId, userData }: any) => {
+        newSocket.on('live_board:hand_raised', ({ socketId, userData: _userData }: any) => {
             if (isMentor) {
                 if (socketId) {
                     setRaisedHands(prev => {
@@ -323,14 +323,8 @@ export default function SalaDeEventosContainer({
                     });
                 }
 
+                // Only play sound — the floating panel already shows who raised their hand
                 playSoundRef.current('hand_raised');
-                toast(tRef.current('hub.salaDeEventos.handRaisedToast', { name: userData.name }), {
-                    description: "O participante tem uma pergunta.",
-                    action: {
-                        label: "Ok",
-                        onClick: () => console.log("Hand raise acknowledged")
-                    }
-                });
             }
         });
 
@@ -1325,45 +1319,7 @@ export default function SalaDeEventosContainer({
                                 </div>
                             )}
 
-                            {/* Raised Hands Indicator for Mentor - HEADER */}
-                            {isMentor && raisedHands.size > 0 && (
-                                <div style={{ display: 'flex', gap: '8px', marginLeft: '15px', alignItems: 'center', flexWrap: 'nowrap', overflowX: 'auto', maxWidth: '400px', scrollbarWidth: 'none' }}>
-                                    <AnimatePresence>
-                                        {participants.filter(p => raisedHands.has(p.socketId)).map(p => (
-                                            <motion.div
-                                                key={`header-hand-${p.socketId}`}
-                                                initial={{ scale: 0, x: 20 }}
-                                                animate={{ scale: 1, x: 0 }}
-                                                exit={{ scale: 0, x: 20 }}
-                                                onClick={() => mentorLowerHand(p.socketId)}
-                                                style={{
-                                                    background: '#3b82f6',
-                                                    color: '#fff',
-                                                    padding: '6px 14px',
-                                                    borderRadius: '24px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '8px',
-                                                    fontSize: '0.8rem',
-                                                    fontWeight: 900,
-                                                    boxShadow: '0 6px 15px rgba(59,130,246,0.3)',
-                                                    cursor: 'pointer',
-                                                    border: '2px solid rgba(255,255,255,0.3)',
-                                                    flexShrink: 0,
-                                                    textTransform: 'uppercase'
-                                                }}
-                                                whileHover={{ scale: 1.05, background: '#ef4444' }}
-                                                title="Clique para abaixar a mão"
-                                            >
-                                                <div style={{ width: '22px', height: '22px', borderRadius: '50%', overflow: 'hidden', background: '#fff', flexShrink: 0, border: '1px solid #fff' }}>
-                                                    <Image src={p.photo || '/default-avatar.png'} width={22} height={22} style={{ objectFit: 'cover' }} alt="" />
-                                                </div>
-                                                <span style={{ whiteSpace: 'nowrap' }}>{p.name.split(' ')[0]} ✋</span>
-                                            </motion.div>
-                                        ))}
-                                    </AnimatePresence>
-                                </div>
-                            )}
+                            {/* Raised Hands are shown in the floating panel — not duplicated here */}
                             <span style={{ marginLeft: isMobile ? '0' : '12px', fontSize: '0.75rem', fontWeight: 700, color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                 {isMobile && <Users size={14} />}
                                 {participants.length} {!isMobile && (participants.length === 1 ? 'conetado' : 'conectados')}
