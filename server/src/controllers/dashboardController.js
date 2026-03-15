@@ -3,6 +3,7 @@ const User = require('../models/User');
 const Form = require('../models/Form');
 const Submission = require('../models/Submission');
 const Transaction = require('../models/Transaction');
+const exchangeRateService = require('../services/exchangeRateService');
 
 exports.getAdminStats = async (req, res) => {
     try {
@@ -15,11 +16,11 @@ exports.getAdminStats = async (req, res) => {
         // Financial Stats
         const allTx = await Transaction.find({ status: 'completed' });
         const summary = allTx.reduce((acc, tx) => {
-            acc.totalRevenue += tx.amount;
+            acc.totalRevenue += tx.baseAmount || tx.amount; // Use baseAmount (MZN) if available
             if (tx.type === 'subscription') {
-                acc.subscriptionRevenue += tx.amount;
+                acc.subscriptionRevenue += tx.baseAmount || tx.amount;
             } else {
-                acc.eventFeeRevenue += tx.platformFee;
+                acc.eventFeeRevenue += tx.basePlatformFee || tx.platformFee;
             }
             return acc;
         }, { totalRevenue: 0, subscriptionRevenue: 0, eventFeeRevenue: 0 });
@@ -93,10 +94,21 @@ exports.getMentorStats = async (req, res) => {
         });
 
         let revenue = 0;
+        const rates = await exchangeRateService.getCurrentRates();
+
         approvedSubs.forEach(sub => {
             const form = formsMap[sub.form.toString()];
             if (form && form.paymentConfig && form.paymentConfig.enabled) {
-                revenue += (form.paymentConfig.price || 0);
+                const price = form.paymentConfig.price || 0;
+                const currency = form.paymentConfig.currency || 'USD';
+
+                if (currency === 'MZN' || currency === 'MT') {
+                    revenue += price;
+                } else {
+                    // Convert to MZN for consistent dashboard reporting
+                    const rate = rates.MZN / (rates[currency] || 1);
+                    revenue += price * rate;
+                }
             }
         });
 

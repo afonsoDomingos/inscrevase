@@ -38,7 +38,8 @@ import {
     Image as ImageIcon,
     Maximize2,
     Settings,
-    Activity
+    Activity,
+    Plus
 } from 'lucide-react';
 import Image from 'next/image';
 import Whiteboard from './Whiteboard';
@@ -170,6 +171,7 @@ export default function SalaDeEventosContainer({
 
     // Chat
     const [messages, setMessages] = useState<any[]>([]);
+    const [showAllBrushes, setShowAllBrushes] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
     const [chatInput, setChatInput] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -1797,8 +1799,8 @@ export default function SalaDeEventosContainer({
                     {(isMentor || drawingPermissions.has((window as any).__liveBoardSocketId || '')) ? (
                         <>
                             {/* Colors (Brushes) */}
-                            <div style={{ display: 'flex', gap: '3px', paddingRight: '4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0 }}>
-                                {['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ffffff', '#000000'].map((c) => (
+                            <div style={{ display: 'flex', gap: '3px', paddingRight: '4px', borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f0f0f0', flexShrink: 0, alignItems: 'center' }}>
+                                {['#000000', '#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ffffff'].slice(0, showAllBrushes ? 7 : 2).map((c) => (
                                     <RealisticBrush
                                         key={c}
                                         color={c}
@@ -1808,6 +1810,30 @@ export default function SalaDeEventosContainer({
                                         onClick={() => { setColor(c); if (tool === 'eraser' || tool === 'select') setTool('pen'); }}
                                     />
                                 ))}
+
+                                <button
+                                    onClick={() => setShowAllBrushes(!showAllBrushes)}
+                                    style={{
+                                        width: isMobile ? '24px' : '28px',
+                                        height: isMobile ? '24px' : '28px',
+                                        borderRadius: '50%',
+                                        background: isDark ? 'rgba(255,255,255,0.1)' : '#f3f4f6',
+                                        border: `1.5px dashed ${isDark ? 'rgba(255,255,255,0.3)' : '#ccc'}`,
+                                        color: isDark ? '#fff' : '#666',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        transform: showAllBrushes ? 'rotate(45deg)' : 'rotate(0deg)',
+                                        marginLeft: '2px',
+                                        padding: 0
+                                    }}
+                                    title={showAllBrushes ? "Ver menos" : "Ver mais cores"}
+                                >
+                                    <Plus size={isMobile ? 12 : 14} />
+                                </button>
+
                                 <RealisticEraser
                                     isActive={tool === 'eraser'}
                                     isMobile={isMobile}
