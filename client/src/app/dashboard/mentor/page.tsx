@@ -91,6 +91,8 @@ import PlansSection from '@/components/common/PlansSection';
 import PremiumBadge from '@/components/common/PremiumBadge';
 import InternalBlogView from '@/components/common/InternalBlogView';
 import ThemeToggle from '@/components/common/ThemeToggle';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import CurrencySwitcher from '@/components/CurrencySwitcher';
 
 type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard';
 
@@ -573,7 +575,16 @@ function MentorDashboardContent() {
                     )}
                 </div>
 
-                <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
+                <nav
+                    className="custom-sidebar-scroll"
+                    style={{
+                        padding: '1rem 1.5rem',
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.5rem',
+                        overflowY: 'auto'
+                    }}>
                     {[
                         {
                             title: "DASHBOARD",
@@ -630,74 +641,76 @@ function MentorDashboardContent() {
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
-                                        cursor: 'pointer',
-                                        paddingRight: '16px',
-                                        userSelect: 'none'
+                                        padding: '0.5rem 0.75rem',
+                                        marginBottom: '0.5rem',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: 'rgba(255,255,255,0.3)',
+                                        fontWeight: 700,
+                                        fontSize: '0.75rem',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '1px',
+                                        cursor: 'pointer'
                                     }}
                                 >
-                                    <div style={{
-                                        fontSize: '0.65rem',
-                                        fontWeight: 900,
-                                        color: 'rgba(255,255,255,0.3)',
-                                        paddingLeft: '16px',
-                                        marginTop: '8px',
-                                        marginBottom: '4px',
-                                        letterSpacing: '1px'
-                                    }}>
-                                        {section.title}
-                                    </div>
+                                    {section.title}
                                     <motion.div
-                                        animate={{ rotate: collapsedSections[section.title] ? -90 : 0 }}
-                                        transition={{ duration: 0.2 }}
-                                        style={{ marginTop: '4px' }}
+                                        animate={{ rotate: expandedSections[section.title] ? 0 : -90 }}
+                                        transition={{ duration: 0.3 }}
                                     >
-                                        <ChevronDown size={12} color="rgba(255,255,255,0.3)" />
+                                        <ChevronDown size={14} />
                                     </motion.div>
-                                </div>
+                                </button>
                             )}
+
                             <AnimatePresence initial={false}>
-                                {(isSidebarCollapsed || !collapsedSections[section.title]) && (
+                                {(isSidebarCollapsed || expandedSections[section.title]) && (
                                     <motion.div
                                         initial={isSidebarCollapsed ? false : { height: 0, opacity: 0 }}
                                         animate={{ height: 'auto', opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
-                                        style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: '4px' }}
+                                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                                        style={{ overflow: 'hidden' }}
                                     >
-                                        {section.items.map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
-                                            <Tooltip key={item.id} content={isSidebarCollapsed ? item.label : ""} position="right">
-                                                <button
-                                                    id={`mentor-nav-${item.id}`}
-                                                    onClick={() => {
-                                                        setActiveTab(item.id as Tab);
-                                                        if (isMobile) setIsMobileSidebarOpen(false);
-                                                        const params = new URLSearchParams(searchParams.toString());
-                                                        params.set('tab', item.id);
-                                                        router.push(`?${params.toString()}`, { scroll: false });
-                                                    }}
-                                                    style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
-                                                        gap: '12px',
-                                                        padding: '0.85rem 1rem',
-                                                        width: isSidebarCollapsed ? 'auto' : 'calc(100% - 1rem)',
-                                                        margin: isSidebarCollapsed ? '0' : '0 0.5rem',
-                                                        borderRadius: '12px',
-                                                        border: 'none',
-                                                        background: activeTab === item.id ? '#FFD700' : 'transparent',
-                                                        color: activeTab === item.id ? '#000' : 'rgba(255,255,255,0.6)',
-                                                        fontWeight: activeTab === item.id ? 800 : 500,
-                                                        cursor: 'pointer',
-                                                        transition: 'all 0.2s ease',
-                                                        textAlign: 'left',
-                                                        fontSize: '0.9rem'
-                                                    }}
-                                                >
-                                                    <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
-                                                    {!isSidebarCollapsed && <span>{item.label}</span>}
-                                                </button>
-                                            </Tooltip>
-                                        ))}
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                                            {section.items.map((item) => (
+                                                <Tooltip key={item.id} content={isSidebarCollapsed ? item.label : ""} position="right">
+                                                    <button
+                                                        id={`mentor-nav-${item.id}`}
+                                                        onClick={() => {
+                                                            setActiveTab(item.id as Tab);
+                                                            if (isMobile) setIsMobileSidebarOpen(false);
+                                                            const params = new URLSearchParams(searchParams.toString());
+                                                            params.set('tab', item.id);
+                                                            router.push(`?${params.toString()}`, { scroll: false });
+                                                        }}
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                                                            gap: '12px',
+                                                            padding: '0.75rem 1rem',
+                                                            width: isSidebarCollapsed ? 'auto' : 'calc(100% - 1rem)',
+                                                            margin: isSidebarCollapsed ? '0' : '0 0.5rem',
+                                                            borderRadius: '12px',
+                                                            border: 'none',
+                                                            background: activeTab === item.id ? '#FFD700' : 'transparent',
+                                                            color: activeTab === item.id ? '#000' : 'rgba(255,255,255,0.6)',
+                                                            fontWeight: activeTab === item.id ? 800 : 500,
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s ease',
+                                                            textAlign: 'left',
+                                                            fontSize: '0.9rem'
+                                                        }}
+                                                    >
+                                                        <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>
+                                                            {item.icon}
+                                                        </div>
+                                                        {!isSidebarCollapsed && <span>{item.label}</span>}
+                                                    </button>
+                                                </Tooltip>
+                                            ))}
+                                        </div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -740,6 +753,18 @@ function MentorDashboardContent() {
                             </button>
                         </Tooltip>
 
+                        <div style={{
+                            display: 'flex',
+                            gap: '10px',
+                            padding: '0.5rem 1rem',
+                            justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                            alignItems: 'center',
+                            flexWrap: 'wrap'
+                        }}>
+                            <LanguageSwitcher />
+                            <CurrencySwitcher />
+                        </div>
+
                         <button
                             onClick={() => authService.logout()}
                             style={{ width: '100%', padding: '0.75rem 1rem', background: 'transparent', border: '1px solid rgba(229, 62, 62, 0.2)', borderRadius: '12px', color: '#e53e3e', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', fontSize: '0.9rem' }}
@@ -749,6 +774,26 @@ function MentorDashboardContent() {
                         </button>
                     </div>
                 </nav>
+
+                <style jsx>{`
+                    .custom-sidebar-scroll::-webkit-scrollbar {
+                        width: 4px;
+                    }
+                    .custom-sidebar-scroll::-webkit-scrollbar-track {
+                        background: transparent;
+                    }
+                    .custom-sidebar-scroll::-webkit-scrollbar-thumb {
+                        background: rgba(255, 215, 0, 0.2);
+                        border-radius: 10px;
+                    }
+                    .custom-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+                        background: rgba(255, 215, 0, 0.4);
+                    }
+                    .custom-sidebar-scroll {
+                        scrollbar-width: thin;
+                        scrollbar-color: rgba(255, 215, 0, 0.2) transparent;
+                    }
+                `}</style>
             </aside>
 
             {/* Main Content */}
@@ -943,6 +988,8 @@ function MentorDashboardContent() {
                             </div>
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.5rem' }}>
+                            <LanguageSwitcher />
+                            <CurrencySwitcher />
                             <ThemeToggle />
                             <div ref={notificationBellRef} style={{ position: 'relative' }}>
                                 <Tooltip content={t('dashboard.notifications')}>
