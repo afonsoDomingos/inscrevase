@@ -61,7 +61,7 @@ export default function CurrencySwitcher() {
                         overflowY: 'auto',
                         maxHeight: '300px',
                         minWidth: '150px',
-                        zIndex: 1000,
+                        zIndex: 9999,
                         padding: '4px'
                     }} className="custom-scrollbar">
                         {currencies.map((c) => (

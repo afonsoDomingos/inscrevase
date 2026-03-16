@@ -61,7 +61,7 @@ export default function LanguageSwitcher() {
                         boxShadow: '0 10px 30px rgba(0,0,0,0.12)',
                         overflow: 'hidden',
                         minWidth: '130px',
-                        zIndex: 1000,
+                        zIndex: 9999,
                         padding: '4px'
                     }}>
                         {languages.map((lang) => (

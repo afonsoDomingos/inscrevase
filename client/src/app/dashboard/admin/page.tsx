@@ -405,7 +405,7 @@ export default function AdminDashboard() {
     }));
 
     return (
-        <div className="admin-container" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div className="admin-container" style={{ position: 'relative' }}>
             <div className="bg-mesh" />
             <button
                 className="admin-mobile-toggle"
