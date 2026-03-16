@@ -1837,7 +1837,7 @@ function MentorDashboardContent() {
                                             <button
                                                 onClick={() => {
                                                     const message = encodeURIComponent("Olá! Estou no dashboard e tenho dúvidas sobre como funciona o Programa de Aceleração 360º. Podem ajudar?");
-                                                    window.open(`https://wa.me/+258856079576?text=${message}`, '_blank');
+                                                    window.open(`https://wa.me/258856079576?text=${message}`, '_blank');
                                                 }}
                                                 style={{
                                                     padding: '1.2rem 2rem',
@@ -1986,7 +1986,7 @@ function MentorDashboardContent() {
                                 <button
                                     onClick={() => {
                                         const message = encodeURIComponent("Olá! Tenho algumas dúvidas sobre o Acelerador de Vendas da Inscreva-se. Podem me explicar melhor?");
-                                        window.open(`https://wa.me/+258856079576?text=${message}`, '_blank');
+                                        window.open(`https://wa.me/258856079576?text=${message}`, '_blank');
                                     }}
                                     style={{ padding: '0.8rem 2rem', background: 'var(--paper)', border: '1px solid #D4AF37', color: '#D4AF37', borderRadius: '12px', fontWeight: 900, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '10px' }}
                                 >

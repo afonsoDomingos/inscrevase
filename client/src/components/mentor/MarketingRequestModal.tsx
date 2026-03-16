@@ -98,7 +98,7 @@ export default function MarketingRequestModal({ isOpen, onClose, serviceType, se
 
     const handleWhatsAppSupport = () => {
         const message = encodeURIComponent(`Olá! Sou o ${formData.contactName || 'um Mentor'} e gostaria de tirar algumas dúvidas sobre o ${serviceName}.`);
-        window.open(`https://wa.me/244923456789?text=${message}`, '_blank');
+        window.open(`https://wa.me/258856079576?text=${message}`, '_blank');
     };
 
     return (
@@ -223,7 +223,7 @@ export default function MarketingRequestModal({ isOpen, onClose, serviceType, se
                                                             required
                                                             value={formData.whatsapp}
                                                             onChange={e => setFormData({ ...formData, whatsapp: e.target.value })}
-                                                            placeholder="+244 ..."
+                                                            placeholder="+258 ..."
                                                             style={{ width: '100%', padding: '0.8rem 1rem', background: '#f8f9fa', border: '1px solid #eee', borderRadius: '12px', fontSize: '0.9rem' }}
                                                         />
                                                     </div>
