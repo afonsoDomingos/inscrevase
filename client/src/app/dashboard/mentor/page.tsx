@@ -1519,14 +1519,14 @@ function MentorDashboardContent() {
                     {activeTab === 'forms' && (
                         <motion.div key="forms" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <div className="luxury-card" style={{ background: 'var(--paper)', border: 'none' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
                                     <colgroup>
-                                        <col style={{ minWidth: '220px' }} />
-                                        <col style={{ width: '100px' }} />
-                                        <col style={{ width: '80px' }} />
-                                        <col style={{ width: '110px' }} />
-                                        <col style={{ width: '90px' }} />
-                                        <col style={{ width: 'auto' }} />
+                                        <col style={{ width: '25%' }} />
+                                        <col style={{ width: '10%' }} />
+                                        <col style={{ width: '10%' }} />
+                                        <col style={{ width: '10%' }} />
+                                        <col style={{ width: '10%' }} />
+                                        <col style={{ width: '35%' }} />
                                     </colgroup>
                                     <thead>
                                         <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
@@ -1618,49 +1618,48 @@ function MentorDashboardContent() {
                                                     </div>
                                                 </td>
                                                 <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
-                                                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px' }}>
-                                                        {/* Primary Actions */}
-                                                        <Tooltip content={t('common.viewPublicForm')}>
-                                                            <button
-                                                                onClick={() => window.open(`/f/${form.slug}`, '_blank')}
-                                                                style={{
-                                                                    display: 'flex', alignItems: 'center', gap: '5px',
-                                                                    padding: '6px 12px', borderRadius: '8px',
-                                                                    background: 'rgba(184,134,11,0.1)', color: '#B8860B',
-                                                                    border: '1.5px solid rgba(184,134,11,0.3)',
-                                                                    cursor: 'pointer', fontWeight: 700, fontSize: '0.75rem',
-                                                                    whiteSpace: 'nowrap', transition: 'all 0.2s'
-                                                                }}
-                                                                onMouseOver={e => { e.currentTarget.style.background = 'rgba(184,134,11,0.2)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                                                                onMouseOut={e => { e.currentTarget.style.background = 'rgba(184,134,11,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                                                            >
-                                                                <ExternalLink size={14} /> Página Pública
-                                                            </button>
-                                                        </Tooltip>
-                                                        <Tooltip content={t('common.viewEventHub')}>
-                                                            <button
-                                                                onClick={() => window.open(`/hub/${form.slug}`, '_blank')}
-                                                                style={{
-                                                                    display: 'flex', alignItems: 'center', gap: '5px',
-                                                                    padding: '6px 12px', borderRadius: '8px',
-                                                                    background: 'var(--gold-gradient)', color: '#000',
-                                                                    border: 'none',
-                                                                    cursor: 'pointer', fontWeight: 800, fontSize: '0.75rem',
-                                                                    whiteSpace: 'nowrap', transition: 'all 0.2s',
-                                                                    boxShadow: '0 2px 8px rgba(212,175,55,0.25)'
-                                                                }}
-                                                                onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(212,175,55,0.4)'; }}
-                                                                onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(212,175,55,0.25)'; }}
-                                                            >
-                                                                <Monitor size={14} /> Página do Inscrito
-                                                            </button>
-                                                        </Tooltip>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+                                                        {/* Row 1: Primary Actions */}
+                                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                            <Tooltip content={t('common.viewPublicForm')}>
+                                                                <button
+                                                                    onClick={() => window.open(`/f/${form.slug}`, '_blank')}
+                                                                    style={{
+                                                                        display: 'flex', alignItems: 'center', gap: '5px',
+                                                                        padding: '6px 12px', borderRadius: '8px',
+                                                                        background: 'rgba(184,134,11,0.1)', color: '#B8860B',
+                                                                        border: '1.5px solid rgba(184,134,11,0.3)',
+                                                                        cursor: 'pointer', fontWeight: 700, fontSize: '0.7rem',
+                                                                        whiteSpace: 'nowrap', transition: 'all 0.2s'
+                                                                    }}
+                                                                    onMouseOver={e => { e.currentTarget.style.background = 'rgba(184,134,11,0.2)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                                                                    onMouseOut={e => { e.currentTarget.style.background = 'rgba(184,134,11,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                                                                >
+                                                                    <ExternalLink size={14} /> Página Pública
+                                                                </button>
+                                                            </Tooltip>
+                                                            <Tooltip content={t('common.viewEventHub')}>
+                                                                <button
+                                                                    onClick={() => window.open(`/hub/${form.slug}`, '_blank')}
+                                                                    style={{
+                                                                        display: 'flex', alignItems: 'center', gap: '5px',
+                                                                        padding: '6px 12px', borderRadius: '8px',
+                                                                        background: 'var(--gold-gradient)', color: '#000',
+                                                                        border: 'none',
+                                                                        cursor: 'pointer', fontWeight: 800, fontSize: '0.7rem',
+                                                                        whiteSpace: 'nowrap', transition: 'all 0.2s',
+                                                                        boxShadow: '0 2px 8px rgba(212,175,55,0.25)'
+                                                                    }}
+                                                                    onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(212,175,55,0.4)'; }}
+                                                                    onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(212,175,55,0.25)'; }}
+                                                                >
+                                                                    <Monitor size={14} /> Página do Inscrito
+                                                                </button>
+                                                            </Tooltip>
+                                                        </div>
 
-                                                        {/* Divider */}
-                                                        <div style={{ width: '1px', height: '24px', background: 'rgba(0,0,0,0.1)', margin: '0 8px', flexShrink: 0 }} />
-
-                                                        {/* Secondary icon-only actions */}
-                                                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                                        {/* Row 2: Secondary icon-only actions */}
+                                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: 'rgba(0,0,0,0.02)', padding: '4px 8px', borderRadius: '10px' }}>
                                                             <Tooltip content={t('common.editEvent')}>
                                                                 <button onClick={() => setEditModalData({ isOpen: true, form })} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce', padding: '4px', borderRadius: '6px' }}><Pencil size={18} /></button>
                                                             </Tooltip>
@@ -1673,6 +1672,7 @@ function MentorDashboardContent() {
                                                             <Tooltip content={t('common.viewSubmissions')}>
                                                                 <button onClick={() => { setSelectedSubmissionFormId(form._id); setActiveTab('submissions'); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px' }}><Users size={18} /></button>
                                                             </Tooltip>
+                                                            <div style={{ width: '1px', height: '14px', background: '#ddd', margin: '0 2px' }} />
                                                             <Tooltip content={t('common.delete')}>
                                                                 <button onClick={() => handleDeleteForm(form._id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e', padding: '4px', borderRadius: '6px' }}><Trash2 size={18} /></button>
                                                             </Tooltip>
