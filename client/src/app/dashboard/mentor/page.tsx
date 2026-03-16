@@ -1519,23 +1519,23 @@ function MentorDashboardContent() {
                     {activeTab === 'forms' && (
                         <motion.div key="forms" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <div className="luxury-card" style={{ background: 'var(--paper)', border: 'none' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto' }}>
                                     <colgroup>
-                                        <col style={{ width: '18%' }} />
-                                        <col style={{ width: '10%' }} />
-                                        <col style={{ width: '8%' }} />
-                                        <col style={{ width: '10%' }} />
-                                        <col style={{ width: '10%' }} />
-                                        <col style={{ width: '44%' }} />
+                                        <col style={{ minWidth: '220px' }} />
+                                        <col style={{ width: '100px' }} />
+                                        <col style={{ width: '80px' }} />
+                                        <col style={{ width: '110px' }} />
+                                        <col style={{ width: '90px' }} />
+                                        <col style={{ width: 'auto' }} />
                                     </colgroup>
                                     <thead>
                                         <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
-                                            <th style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Evento</th>
-                                            <th style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('common.visibility')}</th>
-                                            <th style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Perfil</th>
-                                            <th style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Inscritos</th>
-                                            <th style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>Visitas</th>
-                                            <th style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Ações</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Evento</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('common.visibility')}</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Perfil</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Inscritos</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>Visitas</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1613,12 +1613,12 @@ function MentorDashboardContent() {
                                                     )}
                                                 </td>
                                                 <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontWeight: 700, color: 'var(--foreground)' }}>
-                                                        <Eye size={14} color="#B8860B" /> {form.visits || 0}
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: 800, color: 'var(--foreground)', fontSize: '1rem' }}>
+                                                        <Eye size={16} color="#B8860B" /> {form.visits || 0}
                                                     </div>
                                                 </td>
-                                                <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
-                                                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '10px' }}>
+                                                <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px' }}>
                                                         {/* Primary Actions */}
                                                         <Tooltip content={t('common.viewPublicForm')}>
                                                             <button
@@ -1657,10 +1657,10 @@ function MentorDashboardContent() {
                                                         </Tooltip>
 
                                                         {/* Divider */}
-                                                        <div style={{ width: '1px', height: '24px', background: 'var(--border)', margin: '0 4px', flexShrink: 0 }} />
+                                                        <div style={{ width: '1px', height: '24px', background: 'rgba(0,0,0,0.1)', margin: '0 8px', flexShrink: 0 }} />
 
                                                         {/* Secondary icon-only actions */}
-                                                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                                                             <Tooltip content={t('common.editEvent')}>
                                                                 <button onClick={() => setEditModalData({ isOpen: true, form })} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce', padding: '4px', borderRadius: '6px' }}><Pencil size={18} /></button>
                                                             </Tooltip>
