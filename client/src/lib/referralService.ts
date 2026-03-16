@@ -29,6 +29,7 @@ export interface ReferralRanking {
     referralPoints: number;
     referralCount: number;
     plan: string;
+    profilePhoto?: string;
 }
 
 export const referralService = {
