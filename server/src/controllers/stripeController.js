@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const exchangeRateService = require('../services/exchangeRateService');
 const axios = require('axios');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
@@ -386,7 +387,11 @@ const completeOrder = async (session) => {
             // Create transaction for platform revenue (Admin view)
             console.log('💰 Logging transaction for Ad Purchase...');
             try {
-                const rate = expandedSession.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+                const rates = await exchangeRateService.getCurrentRates();
+                const currentCurrency = expandedSession.currency.toUpperCase();
+                const mznRate = rates['MZN'] || 63.8;
+                const sourceCurrencyRate = rates[currentCurrency] || (currentCurrency === 'USD' ? 1 : 0.92);
+                const rate = mznRate / sourceCurrencyRate;
                 const amount = expandedSession.amount_total / 100;
 
                 const transaction = new Transaction({
@@ -431,7 +436,12 @@ const completeOrder = async (session) => {
         console.log('Submission created:', submission._id);
 
         // 5. Create transaction for mentor dashboard
-        const rate = expandedSession.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+        const rates = await exchangeRateService.getCurrentRates();
+        const currentCurrency = expandedSession.currency.toUpperCase();
+        const mznRate = rates['MZN'] || 63.8;
+        const sourceCurrencyRate = rates[currentCurrency] || (currentCurrency === 'USD' ? 1 : 0.92);
+        const rate = mznRate / sourceCurrencyRate;
+
         const amount = expandedSession.amount_total / 100;
 
         let platformFee = (paymentIntent.application_fee_amount || 0) / 100;
@@ -655,7 +665,11 @@ exports.handleWebhook = async (req, res) => {
                 // Check if transaction already created by invoice.paid
                 const existingTx = await Transaction.findOne({ stripeSessionId: session.id });
                 if (!existingTx) {
-                    const rate = session.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+                    const rates = await exchangeRateService.getCurrentRates();
+                    const currentCurrency = session.currency.toUpperCase();
+                    const mznRate = rates['MZN'] || 63.8;
+                    const sourceCurrencyRate = rates[currentCurrency] || (currentCurrency === 'USD' ? 1 : 0.92);
+                    const rate = mznRate / sourceCurrencyRate;
                     const amount = session.amount_total / 100;
 
                     const tx = new Transaction({
@@ -721,7 +735,11 @@ exports.handleWebhook = async (req, res) => {
 
                 const existingTx = await Transaction.findOne({ subscriptionId: invoice.subscription, amount: invoice.amount_paid / 100 });
                 if (!existingTx) {
-                    const rate = invoice.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+                    const rates = await exchangeRateService.getCurrentRates();
+                    const currentCurrency = invoice.currency.toUpperCase();
+                    const mznRate = rates['MZN'] || 63.8;
+                    const sourceCurrencyRate = rates[currentCurrency] || (currentCurrency === 'USD' ? 1 : 0.92);
+                    const rate = mznRate / sourceCurrencyRate;
                     const amount = invoice.amount_paid / 100;
 
                     const tx = new Transaction({
@@ -990,10 +1008,14 @@ exports.syncSubscription = async (req, res) => {
             // or if previous sync failed halfway.
             const existingTx = await Transaction.findOne({ subscriptionId: activeSub.id });
             if (!existingTx) {
-                const priceItem = activeSub.items.data[0].price;
-                const amount = priceItem.unit_amount / 100;
-                const currency = activeSub.currency.toUpperCase();
-                const rate = currency === 'USD' ? await getLatestRate() : 1;
+                const rates = await exchangeRateService.getCurrentRates();
+                const activePrice = activeSub.items.data[0].price;
+                const amount = activePrice.unit_amount / 100;
+                const currentCurrency = activeSub.currency.toUpperCase();
+
+                const mznRate = rates['MZN'] || 63.8;
+                const sourceCurrencyRate = rates[currentCurrency] || (currentCurrency === 'USD' ? 1 : 0.92);
+                const rate = mznRate / sourceCurrencyRate;
 
                 const tx = new Transaction({
                     type: 'subscription',

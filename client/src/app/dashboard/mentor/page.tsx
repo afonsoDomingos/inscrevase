@@ -80,7 +80,9 @@ import {
     Shield,
     Package,
     Megaphone,
-    ChevronDown
+    ChevronDown,
+    TrendingUp,
+    Wallet
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';

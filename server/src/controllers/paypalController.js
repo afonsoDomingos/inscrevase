@@ -1,4 +1,5 @@
 const paypalService = require('../services/paypalService');
+const exchangeRateService = require('../services/exchangeRateService');
 const User = require('../models/User');
 const Form = require('../models/Form');
 const Transaction = require('../models/Transaction');
@@ -147,6 +148,13 @@ exports.captureOrder = async (req, res) => {
         console.log('✅ PayPal Payment Captured:', capture.id);
         console.log('📦 Parsed Custom Data:', customData);
 
+        const rates = await exchangeRateService.getCurrentRates();
+        const currentCurrency = capture.amount.currency_code;
+        // Rate is (Target MZN) / (Source Currency Rate in USD terms)
+        // Since rates are USD-based: 1 USD = rates['MZN'] MZN, 1 USD = rates[currentCurrency] CurrentCurrency
+        // So 1 CurrentCurrency = rates['MZN'] / rates[currentCurrency] MZN
+        const rate = (rates['MZN'] || 63.8) / (rates[currentCurrency] || (currentCurrency === 'USD' ? 1 : 0.92));
+
         if (customData.type === 'subscription') {
             const { userId, plan } = customData;
             const user = await User.findById(userId);
@@ -163,7 +171,6 @@ exports.captureOrder = async (req, res) => {
             await User.findByIdAndUpdate(userId, updateData);
 
             const amount = parseFloat(capture.amount.value);
-            const rate = await getLatestRate();
             const tx = new Transaction({
                 type: 'subscription',
                 subscriptionPlan: plan,
@@ -215,7 +222,6 @@ exports.captureOrder = async (req, res) => {
 
             // Create transaction for mentor dashboard
             const amount = parseFloat(capture.amount.value);
-            const rate = await getLatestRate();
             const fee = capture.seller_receivable_breakdown?.platform_fees?.[0]?.amount?.value || 0;
             const mentorEarnings = amount - parseFloat(fee);
 
