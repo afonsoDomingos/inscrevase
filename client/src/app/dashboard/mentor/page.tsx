@@ -96,7 +96,7 @@ import ThemeToggle from '@/components/common/ThemeToggle';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard';
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard' | 'referral';
 
 import { Suspense } from 'react';
 
@@ -1726,6 +1726,138 @@ function MentorDashboardContent() {
                             exit={{ opacity: 0, y: -10 }}
                         >
                             <SmartLinksManager />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'referral' && (
+                        <motion.div
+                            key="referral"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <div style={{
+                                background: 'var(--paper)',
+                                borderRadius: '24px',
+                                padding: '2.5rem',
+                                border: '1px solid rgba(255, 215, 0, 0.2)',
+                                boxShadow: '0 10px 40px rgba(0,0,0,0.05)'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '2.5rem' }}>
+                                    <div style={{ background: 'var(--gold-gradient)', padding: '15px', borderRadius: '20px', color: '#000', boxShadow: '0 8px 20px rgba(212, 175, 55, 0.3)' }}>
+                                        <Trophy size={32} />
+                                    </div>
+                                    <div>
+                                        <h2 style={{ fontSize: '2rem', fontWeight: 900, margin: 0, fontFamily: 'var(--font-playfair)' }}>{t('referral.ranking')}</h2>
+                                        <p style={{ color: '#666', margin: '5px 0 0' }}>Sua rede de influência e impacto na comunidade</p>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '3rem' }}>
+                                    <div style={{ background: 'rgba(255, 215, 0, 0.05)', padding: '1.5rem', borderRadius: '20px', border: '1px solid rgba(255, 215, 0, 0.1)' }}>
+                                        <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Meus Pontos</div>
+                                        <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#FFD700' }}>
+                                            {(referralRanking.find(r => r.name === user?.name)?.referralPoints || 0)} pts
+                                        </div>
+                                    </div>
+                                    <div style={{ background: 'rgba(0,0,0,0.02)', padding: '1.5rem', borderRadius: '20px', border: '1px solid #eee' }}>
+                                        <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Convites Convertidos</div>
+                                        <div style={{ fontSize: '1.8rem', fontWeight: 900 }}>
+                                            {(referralRanking.find(r => r.name === user?.name)?.referralCount || 0)}
+                                        </div>
+                                    </div>
+                                    <div style={{ background: 'var(--gold-gradient)', padding: '1.5rem', borderRadius: '20px', color: '#000' }}>
+                                        <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem', opacity: 0.8 }}>Minha Posição</div>
+                                        <div style={{ fontSize: '1.8rem', fontWeight: 900 }}>
+                                            #{referralRanking.findIndex(r => r.name === user?.name) + 1 || '-'}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem' }}>Líderes de Impacto</h3>
+                                    {referralRanking.map((r, i) => (
+                                        <div key={r._id} style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            padding: '1.2rem',
+                                            background: i === 0 ? 'rgba(255, 215, 0, 0.08)' : (r.name === user?.name ? 'rgba(0,0,0,0.05)' : '#fcfcfc'),
+                                            borderRadius: '18px',
+                                            border: i === 0 ? '1px solid rgba(255, 215, 0, 0.3)' : '1px solid #eee',
+                                            transition: 'transform 0.2s'
+                                        }} className="hover:scale-[1.01]">
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
+                                                <div style={{
+                                                    width: '40px',
+                                                    height: '40px',
+                                                    borderRadius: '12px',
+                                                    background: i === 0 ? 'var(--gold-gradient)' : (i === 1 ? '#e2e8f0' : (i === 2 ? '#fff7ed' : '#f1f5f9')),
+                                                    color: i === 0 ? '#000' : '#475569',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontWeight: 900,
+                                                    fontSize: '1rem'
+                                                }}>
+                                                    {i + 1}
+                                                </div>
+                                                <div style={{ width: '45px', height: '45px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #fff', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+                                                    <Image
+                                                        src={r.profilePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=random`}
+                                                        alt={r.name}
+                                                        width={45}
+                                                        height={45}
+                                                        unoptimized
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <div style={{ fontWeight: 800, fontSize: '1rem', color: '#1a1a1a' }}>
+                                                        {r.name === user?.name ? 'Você (Mestre de Impacto)' : r.name}
+                                                    </div>
+                                                    <div style={{ fontSize: '0.8rem', color: '#666', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                        <Users size={12} /> {r.referralCount} mentores convidados
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style={{ textAlign: 'right' }}>
+                                                <div style={{ fontWeight: 900, color: '#FFD700', fontSize: '1.2rem' }}>{r.referralPoints} pts</div>
+                                                <div style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#999' }}>Sócio Fundador</div>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    {referralRanking.length === 0 && (
+                                        <div style={{ textAlign: 'center', padding: '4rem', color: '#999' }}>
+                                            <Trophy size={48} style={{ opacity: 0.2, marginBottom: '1rem' }} />
+                                            <p>O ranking de impacto começará a crescer em breve! 🚀</p>
+                                        </div>
+                                    )}
+
+                                    <div style={{ marginTop: '2rem', padding: '2rem', borderRadius: '24px', background: 'linear-gradient(135deg, #111 0%, #333 100%)', color: '#fff', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+                                        <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '150px', height: '150px', background: 'rgba(255,215,0,0.1)', borderRadius: '50%', filter: 'blur(30px)' }} />
+                                        <h4 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '1rem' }}>Sua influência gera recompensas reais</h4>
+                                        <p style={{ color: '#aaa', fontSize: '0.9rem', maxWidth: '500px', margin: '0 auto 1.5rem' }}>Ao convidar novos mentores de elite para a Inscreva-se, você acumula pontos que podem ser trocados por meses de Plano Pro, destaque em anúncios e benefícios exclusivos.</p>
+                                        <button
+                                            onClick={() => setIsReferralModalOpen(true)}
+                                            style={{
+                                                background: 'var(--gold-gradient)',
+                                                color: '#000',
+                                                border: 'none',
+                                                padding: '1rem 2.5rem',
+                                                borderRadius: '15px',
+                                                fontWeight: 900,
+                                                cursor: 'pointer',
+                                                fontSize: '1rem',
+                                                boxShadow: '0 10px 25px rgba(212, 175, 55, 0.3)'
+                                            }}
+                                            className="hover:scale-105 transition-transform"
+                                        >
+                                            Convidar & Expandir minha Rede
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </motion.div>
                     )}
 
