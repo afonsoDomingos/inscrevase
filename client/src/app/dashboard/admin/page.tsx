@@ -571,21 +571,19 @@ export default function AdminDashboard() {
                 >
                     <LogOut size={18} /> {!isDesktopSidebarCollapsed && t('common.logout')}
                 </button>
-        </div>
-            </aside >
+            </aside>
 
-        {/* Main Content */ }
-        < main className = {`admin-main ${isDesktopSidebarCollapsed ? 'expanded' : ''}`
-}>
-    {/* Header */ }
-    < header className = "admin-header" style = {{
-    display: 'flex',
-        justifyContent: 'space-between',
-            alignItems: 'flex-start',
-                gap: '1.5rem',
+            {/* Main Content */}
+            <main className={`admin-main ${isDesktopSidebarCollapsed ? 'expanded' : ''}`}>
+                {/* Header */}
+                <header className="admin-header" style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    gap: '1.5rem',
                     marginBottom: '3rem',
-                        flexWrap: 'wrap'
-}}>
+                    flexWrap: 'wrap'
+                }}>
                     <div style={{ flex: '1 1 300px', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
                         <button
                             className="desktop-sidebar-toggle"
@@ -811,14 +809,14 @@ export default function AdminDashboard() {
                     </div>
                 </header >
 
-    {/* Sponsored Ads Section */ }
-{
-    sponsoredItems.length > 0 && (
-        <div style={{ marginBottom: '2.5rem' }}>
-            <SponsoredAdCard events={sponsoredItems} />
-        </div>
-    )
-}
+                {/* Sponsored Ads Section */}
+                {
+                    sponsoredItems.length > 0 && (
+                        <div style={{ marginBottom: '2.5rem' }}>
+                            <SponsoredAdCard events={sponsoredItems} />
+                        </div>
+                    )
+                }
 
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (
@@ -1867,7 +1865,7 @@ export default function AdminDashboard() {
                     }}
                 />
 
-{/* Audit Modal */ }
+                {/* Audit Modal */}
                 <AnimatePresence>
                     {isAuditModalOpen && auditUser && (
                         <div style={{

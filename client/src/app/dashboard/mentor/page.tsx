@@ -1120,22 +1120,22 @@ function MentorDashboardContent() {
                                     trend="+12%"
                                 />
                                 <StatCard
-                                    icon={<FileText className="gold-text" />}
-                                    label={t('dashboard.activeEvents')}
-                                    value={forms.filter(f => f.active).length}
-                                    trend="0"
+                                    icon={<TrendingUp className="gold-text" />}
+                                    label={t('dashboard.estimatedRevenue')}
+                                    value={formatPrice(stats?.revenue || 0, 'MZN', currency)}
+                                    trend="+18%"
+                                />
+                                <StatCard
+                                    icon={<Wallet className="gold-text" />}
+                                    label={t('dashboard.finance.yourEarnings')}
+                                    value={formatPrice(stats?.earnings || 0, 'MZN', currency)}
+                                    trend="+15%"
                                 />
                                 <StatCard
                                     icon={<CheckCircle className="gold-text" />}
                                     label={t('dashboard.approvedSubscriptions')}
                                     value={stats?.approved || 0}
                                     trend="+5%"
-                                />
-                                <StatCard
-                                    icon={<DollarSign className="gold-text" />}
-                                    label={t('dashboard.estimatedRevenue')}
-                                    value={formatPrice(stats?.revenue || 0, 'MZN', currency)}
-                                    trend="+18%"
                                 />
                             </div>
 

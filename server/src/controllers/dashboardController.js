@@ -87,30 +87,26 @@ exports.getMentorStats = async (req, res) => {
             status: 'approved'
         });
 
-        // 3. Revenue
-        const approvedSubs = await Submission.find({
-            form: { $in: formIds },
-            status: 'approved'
-        });
-
-        let revenue = 0;
-        const rates = await exchangeRateService.getCurrentRates();
-
-        approvedSubs.forEach(sub => {
-            const form = formsMap[sub.form.toString()];
-            if (form && form.paymentConfig && form.paymentConfig.enabled) {
-                const price = form.paymentConfig.price || 0;
-                const currency = form.paymentConfig.currency || 'USD';
-
-                if (currency === 'MZN' || currency === 'MT') {
-                    revenue += price;
-                } else {
-                    // Convert to MZN for consistent dashboard reporting
-                    const rate = rates.MZN / (rates[currency] || 1);
-                    revenue += price * rate;
+        // 3. Financials from Transactions (more accurate than summing form prices)
+        const financeStats = await Transaction.aggregate([
+            {
+                $match: {
+                    mentor: new mongoose.Types.ObjectId(userId),
+                    status: 'completed',
+                    type: 'event_registration'
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: "$baseAmount" },
+                    totalEarnings: { $sum: "$baseMentorEarnings" },
+                    totalFees: { $sum: "$basePlatformFee" }
                 }
             }
-        });
+        ]);
+
+        const summary = financeStats[0] || { totalRevenue: 0, totalEarnings: 0, totalFees: 0 };
 
         const pendingCertificates = await Submission.countDocuments({
             form: { $in: formIds },
@@ -122,7 +118,9 @@ exports.getMentorStats = async (req, res) => {
             submissions: totalSubmissions,
             approved: approvedSubmissions,
             pendingCertificates: pendingCertificates,
-            revenue: revenue
+            revenue: summary.totalRevenue,
+            earnings: summary.totalEarnings,
+            fees: summary.totalFees
         });
     } catch (err) {
         console.error(err);

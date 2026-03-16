@@ -524,16 +524,16 @@ exports.getEarningsDashboard = async (req, res) => {
                     $group: {
                         _id: null,
                         totalRevenue: {
-                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$amount", 0] }
+                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$baseAmount", 0] }
                         },
                         totalEarnings: {
-                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$mentorEarnings", 0] }
+                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$baseMentorEarnings", 0] }
                         },
                         totalFees: {
-                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$platformFee", 0] }
+                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$basePlatformFee", 0] }
                         },
                         pendingFees: {
-                            $sum: { $cond: [{ $eq: ["$status", "pending"] }, "$platformFee", 0] }
+                            $sum: { $cond: [{ $eq: ["$status", "pending"] }, "$basePlatformFee", 0] }
                         }
                     }
                 }
@@ -550,7 +550,7 @@ exports.getEarningsDashboard = async (req, res) => {
                 {
                     $group: {
                         _id: { $dateToString: { format: "%d/%m", date: "$createdAt" } },
-                        revenue: { $sum: "$amount" },
+                        revenue: { $sum: "$baseAmount" },
                         fullDate: { $min: "$createdAt" }
                     }
                 },

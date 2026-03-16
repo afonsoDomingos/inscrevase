@@ -11,6 +11,8 @@ export interface AdminStats {
     approved: number;
     pendingCertificates?: number;
     revenue?: number;
+    earnings?: number;
+    fees?: number;
     subscriptionRevenue?: number;
     eventFeeRevenue?: number;
     authStats?: {
