@@ -31,7 +31,8 @@ import { useCurrency } from '@/context/CurrencyContext';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
 import AdminEmailModal from '@/components/admin/AdminEmailModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
-import { Bar, XAxis, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
+import { Bar, XAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
+
 
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useSocket } from '@/context/SocketContext';
@@ -1149,7 +1150,8 @@ export default function AdminDashboard() {
                                                                 <Cell fill="#db4437" />
                                                                 <Cell fill="#0077b5" />
                                                             </Pie>
-                                                            <Tooltip contentStyle={{ borderRadius: '12px' }} />
+                                                            <RechartsTooltip contentStyle={{ borderRadius: '12px' }} />
+
                                                         </PieChart>
                                                     </ResponsiveContainer>
                                                 </div>
@@ -1207,7 +1209,8 @@ export default function AdminDashboard() {
                                                         <PolarAngleAxis dataKey="subject" tick={{ fill: '#999', fontSize: 10 }} />
                                                         <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
                                                         <Radar name="Performance" dataKey="A" stroke="#D4AF37" fill="#D4AF37" fillOpacity={0.6} />
-                                                        <Tooltip contentStyle={{ borderRadius: '12px' }} />
+                                                        <RechartsTooltip contentStyle={{ borderRadius: '12px' }} />
+
                                                     </RadarChart>
                                                 </ResponsiveContainer>
                                             </div>
@@ -1339,9 +1342,10 @@ export default function AdminDashboard() {
                                                             align="center"
                                                             wrapperStyle={{ paddingTop: '20px', fontWeight: 600, fontSize: '0.85rem' }}
                                                         />
-                                                        <Tooltip
+                                                        <RechartsTooltip
                                                             contentStyle={{ borderRadius: '15px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
                                                         />
+
                                                     </RadialBarChart>
                                                 </ResponsiveContainer>
                                             </div>
@@ -1373,7 +1377,8 @@ export default function AdminDashboard() {
                                                     <ComposedChart key={`composed-${expandedSections.performance}`} data={trafficStats?.trafficByHour || []}>
                                                         <XAxis dataKey="hour" tickFormatter={(h) => `${h}h`} stroke="#888" fontSize={11} tickLine={false} axisLine={false} />
                                                         <YAxis stroke="#888" fontSize={11} tickLine={false} axisLine={false} />
-                                                        <Tooltip cursor={{ fill: '#f4f4f4' }} contentStyle={{ borderRadius: '15px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
+                                                        <RechartsTooltip cursor={{ fill: '#f4f4f4' }} contentStyle={{ borderRadius: '15px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
+
                                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                                                         <Bar dataKey="count" fill="#FFD700" radius={[4, 4, 0, 0]} name={t('dashboard.visitsToday')} />
                                                         <Line type="monotone" dataKey="count" stroke="#1a1a1a" strokeWidth={3} dot={{ r: 4 }} name={t('dashboard.trend')} />
@@ -1413,7 +1418,8 @@ export default function AdminDashboard() {
                                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
                                                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#666' }} />
                                                         <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#666' }} />
-                                                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                                                        <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+
                                                         <Area type="monotone" dataKey="count" stroke="#D4AF37" fillOpacity={1} fill="url(#colorVisits)" strokeWidth={3} />
                                                     </AreaChart>
                                                 </ResponsiveContainer>
