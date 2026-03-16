@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { authService, UserData } from '@/lib/authService';
 import { dashboardService, AdminStats, TrafficStats, TopMentor } from '@/lib/dashboardService';
