@@ -80,7 +80,7 @@ interface Stats {
 }
 
 export default function AcademyView() {
-    useTranslate();
+    const { t } = useTranslate();
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<'learn' | 'manage'>('learn');
     const [user, setUser] = useState<UserData | null>(null);
@@ -233,9 +233,9 @@ export default function AcademyView() {
 
     const getCategoryInfo = (category: string) => {
         const categories = {
-            basico: { label: 'Básico', color: '#10b981', gradient: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)', icon: '🌱' },
-            intermediario: { label: 'Intermediário', color: '#f59e0b', gradient: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)', icon: '🚀' },
-            avancado: { label: 'Avançado', color: '#ef4444', gradient: 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)', icon: '⚡' }
+            basico: { label: t('academy.categories.basico'), color: '#10b981', gradient: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)', icon: '🌱' },
+            intermediario: { label: t('academy.categories.intermediario'), color: '#f59e0b', gradient: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)', icon: '🚀' },
+            avancado: { label: t('academy.categories.avancado'), color: '#ef4444', gradient: 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)', icon: '⚡' }
         };
         return categories[category as keyof typeof categories] || categories.basico;
     };
@@ -509,7 +509,7 @@ export default function AcademyView() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        Aprender
+                        {t('academy.learn')}
                     </button>
                     <button
                         onClick={() => setActiveTab('manage')}
@@ -527,7 +527,7 @@ export default function AcademyView() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        Gerir Aulas
+                        {t('academy.manage')}
                     </button>
                 </div>
             </div>
@@ -552,11 +552,11 @@ export default function AcademyView() {
                         <div style={{ position: 'relative', zIndex: 1 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '0.4rem' }}>
                                 <h1 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 800, color: 'var(--foreground)', margin: 0, fontFamily: 'var(--font-playfair)' }}>
-                                    Área de Aprendizado
+                                    {t('academy.areaTitle')}
                                 </h1>
                             </div>
                             <p style={{ fontSize: '0.95rem', color: '#666', maxWidth: '600px', lineHeight: '1.5', margin: 0 }}>
-                                Domine a plataforma com cursos exclusivos. Configure eventos, gerencie mentorias e potencialize resultados.
+                                {t('academy.areaDesc')}
                             </p>
 
                         </div>
@@ -564,7 +564,7 @@ export default function AcademyView() {
                         <div style={{ background: 'rgba(0,0,0,0.03)', padding: '1rem', borderRadius: '18px', border: '1px solid var(--border)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', color: 'var(--foreground)', fontWeight: '700', fontSize: '0.95rem' }}>
                                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    Seu Progresso
+                                    {t('academy.yourProgress')}
                                 </span>
                                 <span style={{ color: '#D4AF37' }}>{Math.round((learnLessons.filter(l => l.isCompleted).length / (learnLessons.length || 1)) * 100)}%</span>
                             </div>
@@ -577,11 +577,11 @@ export default function AcademyView() {
                                 />
                             </div>
                             <div style={{ marginTop: '10px', fontSize: '0.85rem', color: '#666', fontWeight: '500' }}>
-                                {learnLessons.filter(l => l.isCompleted).length} de {learnLessons.length} aulas concluídas
+                                {t('academy.lessonsCompleted', { completed: learnLessons.filter(l => l.isCompleted).length, total: learnLessons.length })}
                             </div>
                             {learnLessons.filter(l => l.isCompleted).length === 0 && learnLessons.length > 0 && (
                                 <div style={{ marginTop: '1rem', padding: '8px 12px', background: 'var(--border)', borderRadius: '10px', fontSize: '0.8rem', color: 'var(--foreground)' }}>
-                                    👋 <b>Bem-vindo!</b> Comece pela primeira aula para entender como usar a plataforma.
+                                    {t('academy.welcomeMsg')}
                                 </div>
                             )}
                             {Math.round((learnLessons.filter(l => l.isCompleted).length / (learnLessons.length || 1)) * 100) === 100 && (
@@ -610,7 +610,7 @@ export default function AcademyView() {
                                     whileTap={{ scale: 0.98 }}
                                 >
                                     <Award size={18} />
-                                    Emitir Certificado
+                                    {t('academy.generateCert')}
                                 </motion.button>
                             )}
                         </div>
@@ -619,7 +619,7 @@ export default function AcademyView() {
                     {/* Section Title */}
                     <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <div style={{ width: '4px', height: '24px', background: 'var(--gold-gradient)', borderRadius: '2px' }} />
-                        <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--foreground)', margin: 0 }}>Explorar Conteúdo</h2>
+                        <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--foreground)', margin: 0 }}>{t('common.explore')}</h2>
                     </div>
 
                     {/* Filters */}
@@ -628,7 +628,7 @@ export default function AcademyView() {
                             <Search size={20} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
                             <input
                                 type="text"
-                                placeholder="Buscar aulas..."
+                                placeholder={t('academy.searchPlaceholder')}
                                 value={learnSearch}
                                 onChange={(e) => setLearnSearch(e.target.value)}
                                 style={{ width: '100%', padding: '12px 12px 12px 44px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '1rem', background: 'var(--paper)', color: 'var(--foreground)' }}
@@ -639,10 +639,10 @@ export default function AcademyView() {
                             onChange={(e) => setLearnCategory(e.target.value)}
                             style={{ flex: isMobile ? 1 : 'none', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '0.95rem', cursor: 'pointer', background: 'var(--paper)', color: 'var(--foreground)' }}
                         >
-                            <option value="all">{isMobile ? 'Categorias' : 'Todas Categorias'}</option>
-                            <option value="basico">🌱 Básico</option>
-                            <option value="intermediario">🚀 Intermediário</option>
-                            <option value="avancado">⚡ Avançado</option>
+                            <option value="all">{t('academy.categories.all')}</option>
+                            <option value="basico">🌱 {t('academy.categories.basico')}</option>
+                            <option value="intermediario">🚀 {t('academy.categories.intermediario')}</option>
+                            <option value="avancado">⚡ {t('academy.categories.avancado')}</option>
                         </select>
                         <button
                             onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}

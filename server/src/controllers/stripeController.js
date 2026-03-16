@@ -534,13 +534,46 @@ exports.getEarningsDashboard = async (req, res) => {
                     $group: {
                         _id: null,
                         totalRevenue: {
-                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$baseAmount", 0] }
+                            $sum: {
+                                $cond: [
+                                    {
+                                        $or: [
+                                            { $eq: ["$status", "completed"] },
+                                            { $and: [{ $eq: ["$status", "pending"] }, { $eq: ["$paymentMethod", "manual"] }] }
+                                        ]
+                                    },
+                                    "$baseAmount",
+                                    0
+                                ]
+                            }
                         },
                         totalEarnings: {
-                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$baseMentorEarnings", 0] }
+                            $sum: {
+                                $cond: [
+                                    {
+                                        $or: [
+                                            { $eq: ["$status", "completed"] },
+                                            { $and: [{ $eq: ["$status", "pending"] }, { $eq: ["$paymentMethod", "manual"] }] }
+                                        ]
+                                    },
+                                    "$baseMentorEarnings",
+                                    0
+                                ]
+                            }
                         },
                         totalFees: {
-                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$basePlatformFee", 0] }
+                            $sum: {
+                                $cond: [
+                                    {
+                                        $or: [
+                                            { $eq: ["$status", "completed"] },
+                                            { $and: [{ $eq: ["$status", "pending"] }, { $eq: ["$paymentMethod", "manual"] }] }
+                                        ]
+                                    },
+                                    "$basePlatformFee",
+                                    0
+                                ]
+                            }
                         },
                         pendingFees: {
                             $sum: { $cond: [{ $eq: ["$status", "pending"] }, "$basePlatformFee", 0] }
@@ -553,7 +586,10 @@ exports.getEarningsDashboard = async (req, res) => {
                 {
                     $match: {
                         mentor: new mongoose.Types.ObjectId(mentorId),
-                        status: "completed",
+                        $or: [
+                            { status: "completed" },
+                            { $and: [{ status: "pending" }, { paymentMethod: "manual" }] }
+                        ],
                         createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
                     }
                 },
@@ -567,7 +603,13 @@ exports.getEarningsDashboard = async (req, res) => {
                 { $sort: { fullDate: 1 } }
             ]),
             // 3. Last 10 transactions
-            Transaction.find({ mentor: mentorId, status: 'completed' })
+            Transaction.find({
+                mentor: mentorId,
+                $or: [
+                    { status: 'completed' },
+                    { paymentMethod: 'manual', status: 'pending' }
+                ]
+            })
                 .populate('form', 'title slug')
                 .sort({ createdAt: -1 })
                 .limit(10)
@@ -1237,19 +1279,25 @@ exports.getAdminFinancialSummary = async (req, res) => {
         const allTransactions = await Transaction.find().populate('mentor', 'name businessName');
 
         const summary = allTransactions.reduce((acc, tx) => {
-            if (tx.status === 'completed') {
-                const amount = tx.baseAmount || tx.amount; // Fallback for old transactions
+            const isCompleted = tx.status === 'completed';
+            const isManualPending = tx.status === 'pending' && tx.paymentMethod === 'manual';
+
+            if (isCompleted || isManualPending) {
+                const amount = tx.baseAmount || tx.amount;
                 const platformFee = tx.basePlatformFee || tx.platformFee;
 
                 acc.totalRevenue += amount;
+
                 if (tx.type === 'subscription') {
                     acc.subscriptionRevenue += amount;
-                    acc.collectedFees += amount;
+                    if (isCompleted) acc.collectedFees += amount;
                 } else {
                     acc.eventFeeRevenue += platformFee;
-                    acc.collectedFees += platformFee;
+                    if (isCompleted) acc.collectedFees += platformFee;
                 }
-            } else if (tx.status === 'pending') {
+            }
+
+            if (tx.status === 'pending') {
                 acc.pendingFees += tx.basePlatformFee || tx.platformFee;
             }
             return acc;
@@ -1265,7 +1313,9 @@ exports.getAdminFinancialSummary = async (req, res) => {
 
         allTransactions.forEach(tx => {
             const date = new Date(tx.createdAt);
-            if (date.getFullYear() === currentYear && tx.status === 'completed') {
+            const isValid = tx.status === 'completed' || (tx.status === 'pending' && tx.paymentMethod === 'manual');
+
+            if (date.getFullYear() === currentYear && isValid) {
                 const month = date.getMonth();
                 const amount = tx.baseAmount || tx.amount;
                 const platformFee = tx.basePlatformFee || tx.platformFee;
@@ -1291,7 +1341,8 @@ exports.getAdminFinancialSummary = async (req, res) => {
         // Top Mentors by Revenue (Platform Fee generated)
         const mentorRevenue = {};
         allTransactions.forEach(tx => {
-            if (tx.status === 'completed' && tx.mentor) {
+            const isValid = tx.status === 'completed' || (tx.status === 'pending' && tx.paymentMethod === 'manual');
+            if (isValid && tx.mentor) {
                 const mentorId = tx.mentor._id.toString();
                 const amount = tx.baseAmount || tx.amount;
                 const platformFee = tx.basePlatformFee || tx.platformFee;

@@ -726,6 +726,102 @@
                 "experts": "View Experts",
                 "blog": "Read Blog"
             }
+        },
+        "navigation": "Navigation",
+        "management": "Management",
+        "marketingAndOps": "Marketing & Operations",
+        "system": "System",
+        "usersList": {
+            "title": "User Management",
+            "results": "{count} results",
+            "result": "{count} result",
+            "searchPlaceholder": "Search by name or email...",
+            "allOrigins": "All Origins",
+            "allRoles": "All Roles",
+            "allStatus": "All Status",
+            "verification": "Verification",
+            "verified": "Verified",
+            "pending": "Pending",
+            "unverified": "Unverified",
+            "onlineOffline": "Online/Offline",
+            "onlineNow": "Online Now",
+            "offline": "Offline",
+            "clearFilters": "Clear Filters",
+            "table": {
+                "name": "Name",
+                "origin": "Origin",
+                "registration": "Registration",
+                "role": "Role",
+                "plan": "Plan",
+                "visibility": "Visibility",
+                "status": "Status",
+                "online": "Online",
+                "accesses": "Accesses",
+                "actions": "Actions"
+            },
+            "status": {
+                "active": "Active",
+                "blocked": "Blocked",
+                "published": "Published",
+                "private": "Private"
+            },
+            "pagination": "Showing {start}-{end} of {total} users"
+        }
+    },
+    "academy": {
+        "title": "Academy",
+        "subtitle": "Learn from experts or share your knowledge",
+        "learn": "Learn",
+        "manage": "Manage Lessons",
+        "areaTitle": "Learning Area",
+        "areaDesc": "Master the platform with exclusive courses. Set up events, manage mentorships and boost results.",
+        "yourProgress": "Your Progress",
+        "lessonsCompleted": "{completed} of {total} lessons completed",
+        "welcomeMsg": "👋 <b>Welcome!</b> Start with the first lesson to understand how to use the platform.",
+        "generateCert": "Generate Certificate of Excellence",
+        "orderUpdated": "Order updated!",
+        "moveError": "Error moving lesson",
+        "certSuccess": "Certificate generated successfully! You will be redirected.",
+        "certError": "Error generating certificate.",
+        "stats": {
+            "total": "Total Lessons",
+            "published": "Published",
+            "drafts": "Drafts",
+            "views": "Views"
+        },
+        "searchPlaceholder": "Search lessons...",
+        "newLesson": "New Lesson",
+        "editLesson": "Edit Lesson",
+        "deleteConfirm": "Are you sure you want to delete this lesson?",
+        "table": {
+            "lesson": "Lesson",
+            "category": "Category",
+            "duration": "Duration",
+            "views": "Views",
+            "audience": "Audience",
+            "status": "Status",
+            "access": "Access",
+            "actions": "Actions"
+        },
+        "categories": {
+            "all": "All Categories",
+            "basico": "Basic",
+            "intermediario": "Intermediate",
+            "avancado": "Advanced"
+        },
+        "audience": {
+            "mentors": "Mentor",
+            "participants": "Participant",
+            "companies": "Company",
+            "specialists": "Specialist",
+            "both": "Both",
+            "all": "All"
+        },
+        "status": {
+            "published": "Published",
+            "draft": "Draft",
+            "locked": "Locked",
+            "free": "Free"
         }
     },
     "plans": {
@@ -1770,6 +1866,14 @@
         "wallOfLove": {
             "title": "Voice of Inspiration",
             "subtitle": "What our experts and students are saying about the new era of Inscreva-se."
+        }
+    },
+    "marketing": {
+        "accelerator": {
+            "title": "Sales",
+            "highlight": "Accelerator",
+            "description": "Your knowledge deserves to be seen. We take care of all the strategy to convert your courses, workshops, lectures or services into a sales success.",
+            "upgrade": "Upgrade Plan"
         }
     }
 }

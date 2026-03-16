@@ -27,7 +27,7 @@ import {
     XAxis,
     YAxis,
     CartesianGrid,
-    Tooltip,
+    Tooltip as RechartsTooltip,
     ResponsiveContainer,
     Cell,
     PieChart,
@@ -35,6 +35,7 @@ import {
 } from 'recharts';
 import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
+import Tooltip from '@/components/common/Tooltip';
 
 export default function AdminFinance() {
     const { t } = useTranslate();
@@ -236,38 +237,39 @@ export default function AdminFinance() {
                             <p style={{ fontSize: '0.85rem', color: '#1a1a1a', fontWeight: 600 }}>Receita Total ({currency}) por mês</p>
                         </div>
                         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                            <motion.button
-                                whileHover={{
-                                    scale: 1.03,
-                                    backgroundColor: '#111',
-                                    boxShadow: '0 12px 30px rgba(212, 175, 55, 0.25)'
-                                }}
-                                whileTap={{ scale: 0.97 }}
-                                onClick={handleRefreshRate}
-                                disabled={isRefreshingRate}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '10px',
-                                    padding: '0.8rem 1.6rem',
-                                    borderRadius: '18px',
-                                    background: isRefreshingRate ? '#f8f9fa' : '#000',
-                                    color: isRefreshingRate ? '#cbd5e1' : '#FFD700',
-                                    border: isRefreshingRate ? '1px solid #e2e8f0' : '2px solid #D4AF37',
-                                    fontSize: '0.75rem',
-                                    fontWeight: 900,
-                                    cursor: isRefreshingRate ? 'not-allowed' : 'pointer',
-                                    boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.1em',
-                                    whiteSpace: 'nowrap',
-                                    transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-                                }}
-                                title="Atualizar taxa de câmbio via API agora"
-                            >
-                                <RefreshCcw size={18} className={isRefreshingRate ? 'animate-spin' : ''} />
-                                {isRefreshingRate ? 'Sincronizando...' : 'Sincronizar Câmbio'}
-                            </motion.button>
+                            <Tooltip content="Atualizar taxa de câmbio via API agora">
+                                <motion.button
+                                    whileHover={{
+                                        scale: 1.03,
+                                        backgroundColor: '#111',
+                                        boxShadow: '0 12px 30px rgba(212, 175, 55, 0.25)'
+                                    }}
+                                    whileTap={{ scale: 0.97 }}
+                                    onClick={handleRefreshRate}
+                                    disabled={isRefreshingRate}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        padding: '0.8rem 1.6rem',
+                                        borderRadius: '18px',
+                                        background: isRefreshingRate ? '#f8f9fa' : '#000',
+                                        color: isRefreshingRate ? '#cbd5e1' : '#FFD700',
+                                        border: isRefreshingRate ? '1px solid #e2e8f0' : '2px solid #D4AF37',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 900,
+                                        cursor: isRefreshingRate ? 'not-allowed' : 'pointer',
+                                        boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.1em',
+                                        whiteSpace: 'nowrap',
+                                        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                                    }}
+                                >
+                                    <RefreshCcw size={18} className={isRefreshingRate ? 'animate-spin' : ''} />
+                                    {isRefreshingRate ? 'Sincronizando...' : 'Sincronizar Câmbio'}
+                                </motion.button>
+                            </Tooltip>
 
                         </div>
                     </div>
@@ -283,7 +285,7 @@ export default function AdminFinance() {
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} dy={10} />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} />
-                                <Tooltip
+                                <RechartsTooltip
                                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
                                     formatter={(value: string | number | undefined) => [formatPrice(Number(value || 0), 'MZN', currency), 'Taxa Plataforma']}
                                 />
@@ -478,54 +480,58 @@ export default function AdminFinance() {
                                     <td style={{ padding: '1.2rem', textAlign: 'right' }}>
                                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                                             {tx.proofUrl && (
-                                                <button
-                                                    onClick={() => setSelectedProof(tx.proofUrl!)}
-                                                    style={{
-                                                        background: '#fff', border: '1px solid #ddd', padding: '0.6rem',
-                                                        borderRadius: '8px', cursor: 'pointer', color: '#1a1a1a',
-                                                        display: 'flex', alignItems: 'center', gap: '5px'
-                                                    }}
-                                                    title="Ver Comprovativo"
-                                                >
-                                                    <Eye size={14} />
-                                                </button>
+                                                <Tooltip content="Ver Comprovativo">
+                                                    <button
+                                                        onClick={() => setSelectedProof(tx.proofUrl!)}
+                                                        style={{
+                                                            background: '#fff', border: '1px solid #ddd', padding: '0.6rem',
+                                                            borderRadius: '8px', cursor: 'pointer', color: '#1a1a1a',
+                                                            display: 'flex', alignItems: 'center', gap: '5px'
+                                                        }}
+                                                    >
+                                                        <Eye size={14} />
+                                                    </button>
+                                                </Tooltip>
                                             )}
                                             {tx.status === 'pending' && (
                                                 <>
-                                                    <button
-                                                        onClick={() => handleConfirmPayment(tx._id)}
-                                                        style={{
-                                                            background: '#000', color: '#FFD700', border: 'none', padding: '0.6rem 0.8rem',
-                                                            borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer',
-                                                            display: 'flex', alignItems: 'center', gap: '5px'
-                                                        }}
-                                                        title="Aprovar"
-                                                    >
-                                                        <CheckCircle size={14} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleRejectPayment(tx._id)}
-                                                        style={{
-                                                            background: '#fee2e2', color: '#ef4444', border: 'none', padding: '0.6rem 0.8rem',
-                                                            borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer',
-                                                            display: 'flex', alignItems: 'center', gap: '5px'
-                                                        }}
-                                                        title="Rejeitar"
-                                                    >
-                                                        <XCircle size={14} />
-                                                    </button>
+                                                    <Tooltip content="Aprovar">
+                                                        <button
+                                                            onClick={() => handleConfirmPayment(tx._id)}
+                                                            style={{
+                                                                background: '#000', color: '#FFD700', border: 'none', padding: '0.6rem 0.8rem',
+                                                                borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer',
+                                                                display: 'flex', alignItems: 'center', gap: '5px'
+                                                            }}
+                                                        >
+                                                            <CheckCircle size={14} />
+                                                        </button>
+                                                    </Tooltip>
+                                                    <Tooltip content="Rejeitar">
+                                                        <button
+                                                            onClick={() => handleRejectPayment(tx._id)}
+                                                            style={{
+                                                                background: '#fee2e2', color: '#ef4444', border: 'none', padding: '0.6rem 0.8rem',
+                                                                borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer',
+                                                                display: 'flex', alignItems: 'center', gap: '5px'
+                                                            }}
+                                                        >
+                                                            <XCircle size={14} />
+                                                        </button>
+                                                    </Tooltip>
                                                 </>
                                             )}
-                                            <button
-                                                onClick={() => handleDeleteTransaction(tx._id)}
-                                                style={{
-                                                    background: '#fff', border: '1px solid #ddd', color: '#999', padding: '0.6rem',
-                                                    borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px'
-                                                }}
-                                                title="Eliminar Registro"
-                                            >
-                                                <Trash2 size={14} />
-                                            </button>
+                                            <Tooltip content="Eliminar Registro">
+                                                <button
+                                                    onClick={() => handleDeleteTransaction(tx._id)}
+                                                    style={{
+                                                        background: '#fff', border: '1px solid #ddd', color: '#999', padding: '0.6rem',
+                                                        borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px'
+                                                    }}
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            </Tooltip>
                                         </div>
                                     </td>
                                 </motion.tr>
@@ -640,19 +646,50 @@ export default function AdminFinance() {
 
 function StatsCard({ title, value, icon, color, subtitle, formattedValue }: { title: string, value: number, icon: React.ReactNode, color: string, subtitle: string, formattedValue?: string }) {
     return (
-        <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #eee', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <div style={{ background: `${color}15`, color: color, width: '45px', height: '45px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="luxury-card"
+            style={{
+                background: '#fff',
+                padding: '1.5rem',
+                border: '1px solid #eee',
+                borderRadius: '24px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.04)',
+                position: 'relative',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.8rem'
+            }}
+        >
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: 'var(--gold-gradient)' }}></div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{
+                    background: `${color}15`,
+                    color: color,
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
                     {icon}
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '0.85rem', color: '#000', fontWeight: 800 }}>{title}</div>
-                    <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#000' }}>
-                        {formattedValue ? formattedValue : `${value.toLocaleString()} MT`}
-                    </div>
-                </div>
             </div>
-            <p style={{ fontSize: '0.8rem', color: '#333', borderTop: '1px solid #f5f5f5', paddingTop: '0.8rem', fontWeight: 600 }}>{subtitle}</p>
-        </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <span style={{ color: '#64748b', fontWeight: 700, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title}</span>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#1a1a1a', margin: 0, letterSpacing: '-0.5px' }}>
+                    {formattedValue ? formattedValue : `${value.toLocaleString()} MT`}
+                </h2>
+                <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px', fontWeight: 500 }}>{subtitle}</p>
+            </div>
+
+            {/* Subtle background element */}
+            <div style={{ position: 'absolute', bottom: '-15px', right: '-15px', width: '60px', height: '60px', background: `radial-gradient(circle, ${color}08 0%, transparent 70%)`, borderRadius: '50%' }} />
+        </motion.div>
     );
 }

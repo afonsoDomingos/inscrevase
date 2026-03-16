@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { smartLinkService, SmartLinkModel } from '@/lib/smartLinkService';
 import { Trash2, ExternalLink, ShieldAlert, ShieldCheck, Search, Link as LinkIcon, User, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Tooltip from '../common/Tooltip';
 import TableScrollWrapper from '../common/TableScrollWrapper';
 import { toast } from 'sonner';
 
@@ -165,52 +166,56 @@ export default function SmartLinkList({ onEmailMentor }: SmartLinkListProps) {
                                 </td>
                                 <td style={{ padding: '1.2rem 1rem', textAlign: 'right' }}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                                        <a
-                                            href={link.type === 'bio' ? `/l/${link.slug}/bio` : `/l/${link.slug}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{ color: '#3182ce', display: 'flex', alignItems: 'center', gap: '4px' }}
-                                            title="Ver Link"
-                                        >
-                                            <ExternalLink size={18} />
-                                        </a>
+                                        <Tooltip content="Ver Link">
+                                            <a
+                                                href={link.type === 'bio' ? `/l/${link.slug}/bio` : `/l/${link.slug}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ color: '#3182ce', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                            >
+                                                <ExternalLink size={18} />
+                                            </a>
+                                        </Tooltip>
 
                                         {(() => {
                                             const mentor = link.userId && typeof link.userId === 'object' ? link.userId : null;
                                             if (onEmailMentor && mentor) {
                                                 return (
-                                                    <button
-                                                        onClick={() => onEmailMentor(mentor._id, mentor.name)}
-                                                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
-                                                        title="Contactar Mentor"
-                                                    >
-                                                        <Mail size={18} />
-                                                    </button>
+                                                    <Tooltip content="Contactar Mentor">
+                                                        <button
+                                                            onClick={() => onEmailMentor(mentor._id, mentor.name)}
+                                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
+                                                        >
+                                                            <Mail size={18} />
+                                                        </button>
+                                                    </Tooltip>
                                                 );
                                             }
                                             return null;
                                         })()}
 
                                         {link._id && (
-                                            <button
-                                                onClick={() => handleAudit(link._id!)}
-                                                style={{
-                                                    background: 'none', border: 'none', cursor: 'pointer',
-                                                    color: link.status === 'banned' ? '#38a169' : '#e53e3e'
-                                                }}
-                                                title={link.status === 'banned' ? 'Reativar' : 'Banir / Suspender'}
-                                            >
-                                                {link.status === 'banned' ? <ShieldCheck size={20} /> : <ShieldAlert size={20} />}
-                                            </button>
+                                            <Tooltip content={link.status === 'banned' ? 'Reativar' : 'Banir / Suspender'}>
+                                                <button
+                                                    onClick={() => handleAudit(link._id!)}
+                                                    style={{
+                                                        background: 'none', border: 'none', cursor: 'pointer',
+                                                        color: link.status === 'banned' ? '#38a169' : '#e53e3e'
+                                                    }}
+                                                >
+                                                    {link.status === 'banned' ? <ShieldCheck size={20} /> : <ShieldAlert size={20} />}
+                                                </button>
+                                            </Tooltip>
                                         )}
 
-                                        <button
-                                            onClick={() => { if (link._id) handleDelete(link._id); }}
-                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}
-                                            title="Excluir Definitivamente"
-                                        >
-                                            <Trash2 size={20} />
-                                        </button>
+                                        <Tooltip content="Excluir Definitivamente">
+                                            <button
+                                                onClick={() => { if (link._id) handleDelete(link._id); }}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}
+                                            >
+                                                <Trash2 size={20} />
+                                            </button>
+                                        </Tooltip>
                                     </div>
                                 </td>
                             </motion.tr>

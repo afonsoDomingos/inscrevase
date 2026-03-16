@@ -920,7 +920,16 @@ function MentorDashboardContent() {
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: isMobile ? '0.35rem' : '0.5rem', width: isMobile ? '100.5%' : 'auto', overflowX: isMobile ? 'auto' : 'visible', paddingBottom: isMobile ? '5px' : '0', alignItems: 'center' }} className="no-scrollbar">
+                    <div style={{
+                        display: 'flex',
+                        gap: isMobile ? '0.35rem' : '0.5rem',
+                        width: isMobile ? '100%' : 'auto',
+                        flexWrap: isMobile ? 'wrap' : 'nowrap',
+                        justifyContent: isMobile ? 'flex-start' : 'flex-end',
+                        overflowX: 'visible',
+                        paddingBottom: isMobile ? '5px' : '0',
+                        alignItems: 'center'
+                    }}>
                         <Link
                             href="/"
                             style={{
@@ -1778,10 +1787,10 @@ function MentorDashboardContent() {
                         <motion.div key="marketing" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <div style={{ marginBottom: '2.5rem' }}>
                                 <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', color: '#1a1a1a', marginBottom: '0.5rem' }}>
-                                    Acelerador de <span className="gold-text">Vendas</span>
+                                    {t('marketing.accelerator.title')} <span className="gold-text">{t('marketing.accelerator.highlight')}</span>
                                 </h2>
                                 <p style={{ color: '#888', fontSize: '1.1rem', maxWidth: '600px' }}>
-                                    O seu conhecimento merece ser visto. Nós cuidamos de toda a estratégia para converter os seus <strong>cursos, workshops, palestras ou serviços</strong> em um sucesso de vendas.
+                                    {t('marketing.accelerator.description')}
                                 </p>
                             </div>
 
@@ -1792,7 +1801,7 @@ function MentorDashboardContent() {
                                     <div style={{ position: 'absolute', inset: 0, opacity: 0.4 }}>
                                         <Image
                                             src="/marketing/hero.png"
-                                            alt="Aceleração de Vendas"
+                                            alt={t('marketing.accelerator.title') + " " + t('marketing.accelerator.highlight')}
                                             fill
                                             style={{ objectFit: 'cover' }}
                                         />

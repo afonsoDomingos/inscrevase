@@ -742,6 +742,102 @@
                 "experts": "Ver Especialistas",
                 "blog": "Ler Blog"
             }
+        },
+        "navigation": "Navegação",
+        "management": "Gestão",
+        "marketingAndOps": "Marketing & Operações",
+        "system": "Sistema",
+        "usersList": {
+            "title": "Gestão de Usuários",
+            "results": "{count} resultados",
+            "result": "{count} resultado",
+            "searchPlaceholder": "Buscar por nome ou email...",
+            "allOrigins": "Todas Origens",
+            "allRoles": "Todos Cargos",
+            "allStatus": "Todos Status",
+            "verification": "Verificação",
+            "verified": "Verificados",
+            "pending": "Pendentes",
+            "unverified": "Não Verificados",
+            "onlineOffline": "Online/Offline",
+            "onlineNow": "Online Agora",
+            "offline": "Offline",
+            "clearFilters": "Limpar Filtros",
+            "table": {
+                "name": "Nome",
+                "origin": "Origem",
+                "registration": "Cadastro",
+                "role": "Cargo",
+                "plan": "Plano",
+                "visibility": "Visibilidade",
+                "status": "Status",
+                "online": "Online",
+                "accesses": "Acessos",
+                "actions": "Ações"
+            },
+            "status": {
+                "active": "Ativo",
+                "blocked": "Bloqueado",
+                "published": "Publicado",
+                "private": "Privado"
+            },
+            "pagination": "Mostrando {start}-{end} de {total} usuários"
+        }
+    },
+    "academy": {
+        "title": "Academia",
+        "subtitle": "Aprenda com especialistas ou compartilhe seu conhecimento",
+        "learn": "Aprender",
+        "manage": "Gerir Aulas",
+        "areaTitle": "Área de Aprendizado",
+        "areaDesc": "Domine a plataforma com cursos exclusivos. Configure eventos, gerencie mentorias e potencialize resultados.",
+        "yourProgress": "Seu Progresso",
+        "lessonsCompleted": "{completed} de {total} aulas concluídas",
+        "welcomeMsg": "👋 <b>Bem-vindo!</b> Comece pela primeira aula para entender como usar a plataforma.",
+        "generateCert": "Gerar Certificado de Excelência",
+        "orderUpdated": "Ordem atualizada!",
+        "moveError": "Erro ao mover aula",
+        "certSuccess": "Certificado gerado com sucesso! Você será redirecionado.",
+        "certError": "Erro ao gerar certificado.",
+        "stats": {
+            "total": "Total de Aulas",
+            "published": "Publicadas",
+            "drafts": "Rascunhos",
+            "views": "Visualizações"
+        },
+        "searchPlaceholder": "Buscar aulas...",
+        "newLesson": "Nova Aula",
+        "editLesson": "Editar Aula",
+        "deleteConfirm": "Tem certeza que deseja deletar esta aula?",
+        "table": {
+            "lesson": "Aula",
+            "category": "Categoria",
+            "duration": "Duração",
+            "views": "Viz.",
+            "audience": "Público",
+            "status": "Status",
+            "access": "Acesso",
+            "actions": "Ações"
+        },
+        "categories": {
+            "all": "Todas Categorias",
+            "basico": "Básico",
+            "intermediario": "Intermediário",
+            "avancado": "Avançado"
+        },
+        "audience": {
+            "mentors": "Mentor",
+            "participants": "Participante",
+            "companies": "Empresa",
+            "specialists": "Especialista",
+            "both": "Ambos",
+            "all": "Todos"
+        },
+        "status": {
+            "published": "Publicada",
+            "draft": "Rascunho",
+            "locked": "Bloqueada",
+            "free": "Livre"
         }
     },
     "plans": {
@@ -1861,6 +1957,14 @@
             "education": "O conhecimento é a única riqueza que cresce quando é partilhada.",
             "networking": "A sua rede é o seu património líquido. Traga os melhores para perto.",
             "value": "Crie valor real para a sua comunidade através da Inscreva.se."
+        }
+    },
+    "marketing": {
+        "accelerator": {
+            "title": "Acelerador de",
+            "highlight": "Vendas",
+            "description": "O seu conhecimento merece ser visto. Nós cuidamos de toda a estratégia para converter os seus cursos, workshops, palestras ou serviços em um sucesso de vendas.",
+            "upgrade": "Fazer Upgrade de Plano"
         }
     }
 }

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Edit3, Save, X, Globe, Check, Loader2, ChevronDown } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { toast } from 'sonner';
+import Tooltip from '../common/Tooltip';
 
 interface ManualPaymentMethod {
     id: string;
@@ -224,19 +225,24 @@ export default function ManualPaymentMethodsManager() {
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                     {/* Active toggle */}
-                                                    <button
-                                                        onClick={() => handleToggleActive(method.id, method.active)}
-                                                        title={method.active ? 'Desativar' : 'Ativar'}
-                                                        style={{ background: method.active ? '#dcfce7' : '#f3f4f6', border: 'none', borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700, color: method.active ? '#16a34a' : '#9ca3af' }}
-                                                    >
-                                                        {method.active ? '● Ativo' : '○ Inativo'}
-                                                    </button>
-                                                    <button onClick={() => setEditingId(method.id)} style={iconBtnStyle} title="Editar">
-                                                        <Edit3 size={15} color="#6b7280" />
-                                                    </button>
-                                                    <button onClick={() => handleDeleteMethod(method.id)} style={iconBtnStyle} title="Remover">
-                                                        <Trash2 size={15} color="#ef4444" />
-                                                    </button>
+                                                    <Tooltip content={method.active ? 'Desativar' : 'Ativar'}>
+                                                        <button
+                                                            onClick={() => handleToggleActive(method.id, method.active)}
+                                                            style={{ background: method.active ? '#dcfce7' : '#f3f4f6', border: 'none', borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700, color: method.active ? '#16a34a' : '#9ca3af' }}
+                                                        >
+                                                            {method.active ? '● Ativo' : '○ Inativo'}
+                                                        </button>
+                                                    </Tooltip>
+                                                    <Tooltip content="Editar">
+                                                        <button onClick={() => setEditingId(method.id)} style={iconBtnStyle}>
+                                                            <Edit3 size={15} color="#6b7280" />
+                                                        </button>
+                                                    </Tooltip>
+                                                    <Tooltip content="Remover">
+                                                        <button onClick={() => handleDeleteMethod(method.id)} style={iconBtnStyle}>
+                                                            <Trash2 size={15} color="#ef4444" />
+                                                        </button>
+                                                    </Tooltip>
                                                 </div>
                                             </div>
                                         )}

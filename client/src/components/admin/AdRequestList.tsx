@@ -12,6 +12,8 @@ import { adService, AdRequestModel } from '@/lib/adService';
 import { useCurrency } from '@/context/CurrencyContext';
 import Image from 'next/image';
 import { toast } from 'sonner';
+import Tooltip from '../common/Tooltip';
+
 
 const cardStyles = `
     .ad-card-container {
@@ -454,100 +456,119 @@ export default function AdRequestList() {
                                         <div className="ad-action-bar" style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                                             <div className="ad-action-buttons" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                                 {req.paymentProofUrl && (
-                                                    <a href={req.paymentProofUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-                                                        <div style={{
-                                                            padding: '8px 16px', background: '#f1f5f9', color: '#475569',
-                                                            borderRadius: '10px', fontSize: '0.85rem', fontWeight: 800,
-                                                            display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
-                                                            transition: 'all 0.2s'
-                                                        }}>
-                                                            <CreditCard size={16} /> Comprovativo
-                                                        </div>
-                                                    </a>
+                                                    <Tooltip content="Ver comprovativo de pagamento">
+                                                        <a href={req.paymentProofUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                                                            <div style={{
+                                                                padding: '8px 16px', background: '#f1f5f9', color: '#475569',
+                                                                borderRadius: '10px', fontSize: '0.85rem', fontWeight: 800,
+                                                                display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
+                                                                transition: 'all 0.2s'
+                                                            }}>
+                                                                <CreditCard size={16} /> Comprovativo
+                                                            </div>
+                                                        </a>
+                                                    </Tooltip>
                                                 )}
+
                                                 {req.targetUrl && (
-                                                    <a href={req.targetUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-                                                        <div style={{
-                                                            padding: '8px 16px', background: '#f1f5f9', color: '#475569',
-                                                            borderRadius: '10px', fontSize: '0.85rem', fontWeight: 800,
-                                                            display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
-                                                            transition: 'all 0.2s'
-                                                        }}>
-                                                            <ExternalLink size={16} /> Link Destino
-                                                        </div>
-                                                    </a>
+                                                    <Tooltip content="Visitar link de destino do anúncio">
+                                                        <a href={req.targetUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                                                            <div style={{
+                                                                padding: '8px 16px', background: '#f1f5f9', color: '#475569',
+                                                                borderRadius: '10px', fontSize: '0.85rem', fontWeight: 800,
+                                                                display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
+                                                                transition: 'all 0.2s'
+                                                            }}>
+                                                                <ExternalLink size={16} /> Link Destino
+                                                            </div>
+                                                        </a>
+                                                    </Tooltip>
                                                 )}
+
                                             </div>
 
                                             <div className="ad-action-buttons" style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
                                                 {req.status === 'pending' && (
                                                     <>
-                                                        <button
-                                                            onClick={() => req._id && handleUpdateStatus(req._id, 'rejected')}
-                                                            style={{
-                                                                padding: '10px 20px', background: 'transparent', color: '#ef4444',
-                                                                border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '12px',
-                                                                fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer'
-                                                            }}
-                                                        >
-                                                            Recusar
-                                                        </button>
-                                                        <button
-                                                            onClick={() => req._id && handleUpdateStatus(req._id, 'approved')}
-                                                            style={{
-                                                                padding: '10px 24px', background: '#000', color: '#FFD700',
-                                                                border: 'none', borderRadius: '12px',
-                                                                fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer',
-                                                                boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
-                                                            }}
-                                                        >
-                                                            Aprovar & Publicar
-                                                        </button>
+                                                        <Tooltip content="Recusar este anúncio">
+                                                            <button
+                                                                onClick={() => req._id && handleUpdateStatus(req._id, 'rejected')}
+                                                                style={{
+                                                                    padding: '10px 20px', background: 'transparent', color: '#ef4444',
+                                                                    border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '12px',
+                                                                    fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer'
+                                                                }}
+                                                            >
+                                                                Recusar
+                                                            </button>
+                                                        </Tooltip>
+                                                        <Tooltip content="Aprovar e publicar anúncio imediatamente">
+                                                            <button
+                                                                onClick={() => req._id && handleUpdateStatus(req._id, 'approved')}
+                                                                style={{
+                                                                    padding: '10px 24px', background: '#000', color: '#FFD700',
+                                                                    border: 'none', borderRadius: '12px',
+                                                                    fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer',
+                                                                    boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+                                                                }}
+                                                            >
+                                                                Aprovar & Publicar
+                                                            </button>
+                                                        </Tooltip>
                                                     </>
                                                 )}
 
+
                                                 {(req.status === 'approved' || req.status === 'suspended') && (
                                                     <>
-                                                        <button
-                                                            onClick={() => req._id && handleUpdateStatus(req._id, req.status === 'suspended' ? 'approved' : 'suspended')}
-                                                            style={{
-                                                                padding: '10px 20px',
-                                                                background: req.status === 'suspended' ? '#ecfdf5' : '#fff7ed',
-                                                                color: req.status === 'suspended' ? '#059669' : '#d97706',
-                                                                border: req.status === 'suspended' ? '1px solid #a7f3d0' : '1px solid #ffedd5',
-                                                                borderRadius: '12px', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer'
-                                                            }}
-                                                        >
-                                                            {req.status === 'suspended' ? 'Reativar' : 'Suspender'}
-                                                        </button>
-                                                        {req.status === 'approved' && (
+                                                        <Tooltip content={req.status === 'suspended' ? 'Reativar anúncio suspenso' : 'Suspender anúncio temporariamente'}>
                                                             <button
-                                                                onClick={() => req._id && handleToggleActive(req._id, req.isActive)}
+                                                                onClick={() => req._id && handleUpdateStatus(req._id, req.status === 'suspended' ? 'approved' : 'suspended')}
                                                                 style={{
                                                                     padding: '10px 20px',
-                                                                    background: req.isActive ? '#f8fafc' : '#eff6ff',
-                                                                    color: req.isActive ? '#64748b' : '#2563eb',
-                                                                    border: req.isActive ? '1px solid #e2e8f0' : '1px solid #bfdbfe',
+                                                                    background: req.status === 'suspended' ? '#ecfdf5' : '#fff7ed',
+                                                                    color: req.status === 'suspended' ? '#059669' : '#d97706',
+                                                                    border: req.status === 'suspended' ? '1px solid #a7f3d0' : '1px solid #ffedd5',
                                                                     borderRadius: '12px', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer'
                                                                 }}
                                                             >
-                                                                {req.isActive ? 'Pausar Exibição' : 'Retomar Exibição'}
+                                                                {req.status === 'suspended' ? 'Reativar' : 'Suspender'}
                                                             </button>
+                                                        </Tooltip>
+                                                        {req.status === 'approved' && (
+                                                            <Tooltip content={req.isActive ? 'Pausar exibição do anúncio' : 'Retomar exibição do anúncio'}>
+                                                                <button
+                                                                    onClick={() => req._id && handleToggleActive(req._id, req.isActive)}
+                                                                    style={{
+                                                                        padding: '10px 20px',
+                                                                        background: req.isActive ? '#f8fafc' : '#eff6ff',
+                                                                        color: req.isActive ? '#64748b' : '#2563eb',
+                                                                        border: req.isActive ? '1px solid #e2e8f0' : '1px solid #bfdbfe',
+                                                                        borderRadius: '12px', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer'
+                                                                    }}
+                                                                >
+                                                                    {req.isActive ? 'Pausar Exibição' : 'Retomar Exibição'}
+                                                                </button>
+                                                            </Tooltip>
                                                         )}
                                                     </>
                                                 )}
 
-                                                <button
-                                                    onClick={() => req._id && handleDelete(req._id)}
-                                                    style={{
-                                                        padding: '10px', background: 'transparent', color: '#cbd5e1',
-                                                        border: 'none', cursor: 'pointer', transition: 'color 0.2s'
-                                                    }}
-                                                    onMouseOver={e => e.currentTarget.style.color = '#ef4444'}
-                                                    onMouseOut={e => e.currentTarget.style.color = '#cbd5e1'}
-                                                >
-                                                    <Trash2 size={20} />
-                                                </button>
+
+                                                <Tooltip content="Excluir anúncio permanentemente">
+                                                    <button
+                                                        onClick={() => req._id && handleDelete(req._id)}
+                                                        style={{
+                                                            padding: '10px', background: 'transparent', color: '#cbd5e1',
+                                                            border: 'none', cursor: 'pointer', transition: 'color 0.2s'
+                                                        }}
+                                                        onMouseOver={e => e.currentTarget.style.color = '#ef4444'}
+                                                        onMouseOut={e => e.currentTarget.style.color = '#cbd5e1'}
+                                                    >
+                                                        <Trash2 size={20} />
+                                                    </button>
+                                                </Tooltip>
+
                                             </div>
                                         </div>
                                     </div>

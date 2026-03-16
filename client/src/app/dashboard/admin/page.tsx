@@ -30,7 +30,7 @@ import { useCurrency } from '@/context/CurrencyContext';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
 import AdminEmailModal from '@/components/admin/AdminEmailModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
-import { Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
+import { Bar, XAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
@@ -43,6 +43,7 @@ import ThemeToggle from '@/components/common/ThemeToggle';
 import Image from 'next/image';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
+import Tooltip from '@/components/common/Tooltip';
 
 type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts';
 
@@ -339,12 +340,12 @@ export default function AdminDashboard() {
     const totalUsers = (stats?.mentors || 0) + (stats?.participants || 0);
 
     const vitalCards = [
-        { label: 'Total Utilizadores', value: showValues ? (stats?.totalUsers || totalUsers) : '••', icon: <Users size={24} />, color: '#6366f1', tab: 'users' },
+        { label: t('dashboard.usersList.table.name') || 'Total Utilizadores', value: showValues ? (stats?.totalUsers || totalUsers) : '••', icon: <Users size={24} />, color: '#6366f1', tab: 'users' },
         { label: 'Experts / Mentors', value: showValues ? stats?.mentors || 0 : '••', icon: <Trophy size={24} />, color: '#D4AF37', tab: 'users' },
-        { label: 'Participantes', value: showValues ? stats?.participants || 0 : '••', icon: <Users size={24} />, color: '#10b981', tab: 'users' },
+        { label: t('dashboard.usersList.audience.participants') || 'Participantes', value: showValues ? stats?.participants || 0 : '••', icon: <Users size={24} />, color: '#10b981', tab: 'users' },
         { label: t('dashboard.onlineNow'), value: onlineUsers.length, icon: <Wifi size={24} />, color: '#38a169', tab: 'users' },
         { label: t('dashboard.visitsToday'), value: trafficStats?.visitsToday || 0, icon: <Eye size={24} />, color: '#ed8936', tab: 'overview' },
-        { label: 'Total Visitantes', value: trafficStats?.totalVisits || 0, icon: <Globe size={24} />, color: '#3182ce', tab: 'overview' },
+        { label: t('dashboard.usersList.onlineNow') || 'Total Visitantes', value: trafficStats?.totalVisits || 0, icon: <Globe size={24} />, color: '#3182ce', tab: 'overview' },
         { label: t('dashboard.finance.totalRevenue'), value: showValues ? formatPrice(stats?.revenue || 0, 'MZN', currency) : '••••', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
         { label: t('dashboard.submissions'), value: showValues ? stats?.submissions || 0 : '••', icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
     ];
@@ -363,7 +364,7 @@ export default function AdminDashboard() {
             title: t('dashboard.navigation') || 'Geral',
             items: [
                 { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={18} /> },
-                { id: 'lessons', label: 'Aulas', icon: <Video size={18} /> },
+                { id: 'lessons', label: t('academy.title') || 'Aulas', icon: <Video size={18} /> },
                 { id: 'users', label: t('dashboard.users'), icon: <Users size={18} /> },
             ]
         },
@@ -371,34 +372,35 @@ export default function AdminDashboard() {
             title: t('dashboard.management') || 'Gestão',
             items: [
                 { id: 'forms', label: t('dashboard.forms'), icon: <FileText size={18} /> },
-                { id: 'submissions', label: 'Inscrições', icon: <Database size={18} /> },
+                { id: 'submissions', label: t('dashboard.submissions') || 'Inscrições', icon: <Database size={18} /> },
                 { id: 'smartlinks', label: 'SmartLinks', icon: <LinkIcon size={18} /> },
-                { id: 'ads', label: 'Anúncios', icon: <Megaphone size={18} /> },
+                { id: 'ads', label: t('dashboard.ads') || 'Anúncios', icon: <Megaphone size={18} /> },
                 { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={18} /> },
             ]
         },
         {
-            title: 'Marketing & Operações',
+            title: t('dashboard.marketingAndOps') || 'Marketing & Operações',
             items: [
                 { id: 'marketing', label: 'Marketing', icon: <Zap size={18} /> },
-                { id: 'referrals', label: 'Referenciações', icon: <Trophy size={18} /> },
+                { id: 'referrals', label: t('referral.title') || 'Referenciações', icon: <Trophy size={18} /> },
                 { id: 'newsletter', label: t('dashboard.newsletter'), icon: <Mail size={18} /> },
             ]
         },
         {
             title: t('dashboard.finance.title') || 'Financeiro',
             items: [
-                { id: 'finance', label: 'Financeiro', icon: <Wallet size={18} /> },
+                { id: 'finance', label: t('dashboard.finance.title') || 'Financeiro', icon: <Wallet size={18} /> },
                 { id: 'payouts', label: 'PayPal', icon: <DollarSign size={18} /> },
             ]
         },
         {
-            title: 'Sistema',
+            title: t('dashboard.system') || 'Sistema',
             items: [
                 { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={18} /> },
                 { id: 'settings', label: t('dashboard.settings.title') || 'Definições', icon: <Settings size={18} /> },
             ]
         }
+
     ].map(group => ({
         ...group,
         items: group.items.filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing' && item.id !== 'payouts') || user?.role === 'SuperAdmin')
@@ -411,7 +413,7 @@ export default function AdminDashboard() {
                 className="admin-mobile-toggle"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             >
-                {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+                {isSidebarOpen ? <Plus style={{ transform: 'rotate(45deg)' }} size={24} /> : <Menu size={24} />}
             </button>
 
             <div
@@ -585,13 +587,14 @@ export default function AdminDashboard() {
                     flexWrap: 'wrap'
                 }}>
                     <div style={{ flex: '1 1 300px', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                        <button
-                            className="desktop-sidebar-toggle"
-                            onClick={() => setIsDesktopSidebarCollapsed(!isDesktopSidebarCollapsed)}
-                            title={isDesktopSidebarCollapsed ? "Mostrar Menu" : "Ocultar Menu"}
-                        >
-                            <Menu size={24} />
-                        </button>
+                        <Tooltip content={isDesktopSidebarCollapsed ? "Mostrar Menu" : "Ocultar Menu"}>
+                            <button
+                                className="desktop-sidebar-toggle"
+                                onClick={() => setIsDesktopSidebarCollapsed(!isDesktopSidebarCollapsed)}
+                            >
+                                <Menu size={24} />
+                            </button>
+                        </Tooltip>
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', marginBottom: '0.4rem' }}>
                                 <ShieldAlert size={16} />
@@ -630,46 +633,47 @@ export default function AdminDashboard() {
                         <CurrencySwitcher />
                         <ThemeToggle />
                         <div style={{ position: 'relative' }}>
-                            <button
-                                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                                title="Notificações"
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    width: '40px',
-                                    height: '40px',
-                                    background: '#fff',
-                                    border: '1px solid #FFD700',
-                                    borderRadius: '12px',
-                                    color: '#000',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s',
-                                    position: 'relative'
-                                }}
-                            >
-                                <Bell size={20} />
-                                {unreadNotifications > 0 && (
-                                    <span style={{
-                                        position: 'absolute',
-                                        top: '-5px',
-                                        right: '-5px',
-                                        background: 'var(--gold-gradient)',
-                                        color: '#000',
-                                        width: '20px',
-                                        height: '20px',
-                                        borderRadius: '50%',
-                                        fontSize: '0.7rem',
-                                        fontWeight: 900,
+                            <Tooltip content="Notificações">
+                                <button
+                                    onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                                    style={{
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        border: '2px solid #fff'
-                                    }}>
-                                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                                    </span>
-                                )}
-                            </button>
+                                        width: '40px',
+                                        height: '40px',
+                                        background: '#fff',
+                                        border: '1px solid #FFD700',
+                                        borderRadius: '12px',
+                                        color: '#000',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s',
+                                        position: 'relative'
+                                    }}
+                                >
+                                    <Bell size={20} />
+                                    {unreadNotifications > 0 && (
+                                        <span style={{
+                                            position: 'absolute',
+                                            top: '-5px',
+                                            right: '-5px',
+                                            background: 'var(--gold-gradient)',
+                                            color: '#000',
+                                            width: '20px',
+                                            height: '20px',
+                                            borderRadius: '50%',
+                                            fontSize: '0.7rem',
+                                            fontWeight: 900,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            border: '2px solid #fff'
+                                        }}>
+                                            {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                        </span>
+                                    )}
+                                </button>
+                            </Tooltip>
 
                             <AnimatePresence>
                                 {isNotificationsOpen && (
@@ -787,25 +791,26 @@ export default function AdminDashboard() {
                         >
                             <Eye size={16} /> {t('dashboard.visitor')}
                         </Link>
-                        <button
-                            onClick={() => authService.logout()}
-                            title={t('common.logout')}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '40px',
-                                height: '40px',
-                                background: '#fff',
-                                border: '1px solid #fed7d7',
-                                borderRadius: '50%',
-                                color: '#e53e3e',
-                                cursor: 'pointer',
-                                transition: 'all 0.3s'
-                            }}
-                        >
-                            <LogOut size={18} />
-                        </button>
+                        <Tooltip content={t('common.logout')}>
+                            <button
+                                onClick={() => authService.logout()}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '40px',
+                                    height: '40px',
+                                    background: '#fff',
+                                    border: '1px solid #fed7d7',
+                                    borderRadius: '50%',
+                                    color: '#e53e3e',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s'
+                                }}
+                            >
+                                <LogOut size={18} />
+                            </button>
+                        </Tooltip>
                     </div>
                 </header >
 
@@ -828,27 +833,16 @@ export default function AdminDashboard() {
                             exit={{ opacity: 0, y: -20 }}
                         >
                             {/* Vital Stats Grid */}
-                            <div className="stats-grid" style={{ marginBottom: '1.5rem' }}>
+                            <div id="admin-stats-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" style={{ marginBottom: '2.5rem' }}>
                                 {vitalCards.map((card, index) => (
-                                    <motion.div
+                                    <StatCard
                                         key={index}
-                                        variants={itemVariants}
-                                        whileHover={{ y: -4, scale: 1.01 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onMouseMove={handleMouseMove}
+                                        icon={card.icon}
+                                        label={card.label}
+                                        value={card.value}
+                                        color={card.color}
                                         onClick={() => setActiveTab(card.tab as Tab)}
-                                        className="luxury-card"
-                                        style={{ background: 'rgba(255,255,255,0.7)', padding: '1.25rem', border: 'none', cursor: 'pointer' }}
-                                    >
-                                        <div className="spotlight" />
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '1rem', position: 'relative' }}>
-                                            <div style={{ background: `${card.color}15`, color: card.color, padding: '0.6rem', borderRadius: '10px' }}>
-                                                {card.icon}
-                                            </div>
-                                            <span style={{ color: '#1a1a1a', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{card.label}</span>
-                                        </div>
-                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', position: 'relative' }}>{card.value}</h2>
-                                    </motion.div>
+                                    />
                                 ))}
                             </div>
 
@@ -2014,5 +2008,52 @@ export default function AdminDashboard() {
                 `}</style>
             </main >
         </div >
+    );
+}
+
+function StatCard({ icon, label, value, color, onClick }: { icon: React.ReactNode, label: string, value: string | number, color: string, onClick?: () => void }) {
+    return (
+        <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            onClick={onClick}
+            className="luxury-card"
+            style={{
+                background: '#fff',
+                padding: '1.5rem',
+                border: '1px solid #eee',
+                borderRadius: '24px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.04)',
+                position: 'relative',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.8rem',
+                cursor: onClick ? 'pointer' : 'default'
+            }}
+        >
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: 'var(--gold-gradient)' }}></div>
+
+            <div style={{
+                background: `${color}15`,
+                color: color,
+                width: '44px',
+                height: '44px',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
+                {React.cloneElement(icon as React.ReactElement, { size: 22 })}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <span style={{ color: '#64748b', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
+                <h2 style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#1a1a1a', margin: 0, letterSpacing: '-0.5px' }}>{value}</h2>
+            </div>
+
+            {/* Subtle background element */}
+            <div style={{ position: 'absolute', bottom: '-15px', right: '-15px', width: '70px', height: '70px', background: `radial-gradient(circle, ${color}08 0%, transparent 70%)`, borderRadius: '50%' }} />
+        </motion.div>
     );
 }

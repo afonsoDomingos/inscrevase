@@ -14,7 +14,12 @@ exports.getAdminStats = async (req, res) => {
         const approvedSubmissions = await Submission.countDocuments({ status: 'approved' });
 
         // Financial Stats
-        const allTx = await Transaction.find({ status: 'completed' });
+        const allTx = await Transaction.find({
+            $or: [
+                { status: 'completed' },
+                { paymentMethod: 'manual', status: 'pending' }
+            ]
+        });
         const summary = allTx.reduce((acc, tx) => {
             acc.totalRevenue += tx.baseAmount || tx.amount; // Use baseAmount (MZN) if available
             if (tx.type === 'subscription') {
@@ -92,7 +97,10 @@ exports.getMentorStats = async (req, res) => {
             {
                 $match: {
                     mentor: new mongoose.Types.ObjectId(userId),
-                    status: 'completed',
+                    $or: [
+                        { status: 'completed' },
+                        { paymentMethod: 'manual', status: 'pending' }
+                    ],
                     type: 'event_registration'
                 }
             },

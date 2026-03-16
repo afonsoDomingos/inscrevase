@@ -7,6 +7,7 @@ import { Trash2, ExternalLink, Eye, EyeOff, Search, FileText, Zap, Pencil, Mail 
 import { motion } from 'framer-motion';
 import EditEventModal from '@/components/mentor/EditEventModal';
 import TableScrollWrapper from '../common/TableScrollWrapper';
+import Tooltip from '../common/Tooltip';
 
 interface FormListProps {
     onEmailMentor?: (mentorId: string, mentorName: string, formDetails: FormModel) => void;
@@ -172,54 +173,60 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                                 </td>
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                                        <a
-                                            href={`/f/${form.slug}`}
-                                            target="_blank"
-                                            style={{ color: '#3182ce' }}
-                                            title="Visualizar Público"
-                                        >
-                                            <ExternalLink size={18} />
-                                        </a>
-                                        {onEmailMentor && form.creator && (
-                                            <button
-                                                onClick={() => onEmailMentor(form.creator._id || '', form.creator.name, form)}
-                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
-                                                title="Enviar Email ao Mentor"
+                                        <Tooltip content="Visualizar Público">
+                                            <a
+                                                href={`/f/${form.slug}`}
+                                                target="_blank"
+                                                style={{ color: '#3182ce' }}
                                             >
-                                                <Mail size={18} />
-                                            </button>
+                                                <ExternalLink size={18} />
+                                            </a>
+                                        </Tooltip>
+                                        {onEmailMentor && form.creator && (
+                                            <Tooltip content="Enviar Email ao Mentor">
+                                                <button
+                                                    onClick={() => onEmailMentor(form.creator._id || '', form.creator.name, form)}
+                                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
+                                                >
+                                                    <Mail size={18} />
+                                                </button>
+                                            </Tooltip>
                                         )}
-                                        <button
-                                            onClick={() => {
-                                                setSelectedForm(form);
-                                                setIsEditModalOpen(true);
-                                            }}
-                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce' }}
-                                            title="Editar Evento"
-                                        >
-                                            <Pencil size={18} />
-                                        </button>
-                                        <button
-                                            onClick={() => handleToggleSponsor(form)}
-                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.isSponsored ? '#FFA500' : '#888' }}
-                                            title={form.isSponsored ? 'Remover Destaque' : 'Promover Evento'}
-                                        >
-                                            <Zap size={18} fill={form.isSponsored ? '#FFA500' : 'none'} />
-                                        </button>
-                                        <button
-                                            onClick={() => handleToggleStatus(form)}
-                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.active ? '#888' : '#38a169' }}
-                                            title={form.active ? 'Desativar' : 'Ativar'}
-                                        >
-                                            {form.active ? <EyeOff size={18} /> : <Eye size={18} />}
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(form._id)}
-                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e' }}
-                                            title="Excluir"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
+                                        <Tooltip content="Editar Evento">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedForm(form);
+                                                    setIsEditModalOpen(true);
+                                                }}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce' }}
+                                            >
+                                                <Pencil size={18} />
+                                            </button>
+                                        </Tooltip>
+                                        <Tooltip content={form.isSponsored ? 'Remover Destaque' : 'Promover Evento'}>
+                                            <button
+                                                onClick={() => handleToggleSponsor(form)}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.isSponsored ? '#FFA500' : '#888' }}
+                                            >
+                                                <Zap size={18} fill={form.isSponsored ? '#FFA500' : 'none'} />
+                                            </button>
+                                        </Tooltip>
+                                        <Tooltip content={form.active ? 'Desativar' : 'Ativar'}>
+                                            <button
+                                                onClick={() => handleToggleStatus(form)}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.active ? '#888' : '#38a169' }}
+                                            >
+                                                {form.active ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                        </Tooltip>
+                                        <Tooltip content="Excluir">
+                                            <button
+                                                onClick={() => handleDelete(form._id)}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e' }}
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </Tooltip>
                                     </div>
                                 </td>
                             </motion.tr>
