@@ -550,44 +550,42 @@ export default function AdminDashboard() {
                     >
                         <Settings size={18} /> {!isDesktopSidebarCollapsed && t('events.profile.title')}
                     </button>
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem', justifyContent: isDesktopSidebarCollapsed ? 'center' : 'flex-start' }}>
-                        <LanguageSwitcher />
-                        <CurrencySwitcher />
-                    </div>
-                    <button
-                        onClick={() => authService.logout()}
-                        style={{
-                            width: '100%',
-                            padding: '1rem',
-                            background: '#2a2a2a',
-                            border: '1px solid #333',
-                            borderRadius: '12px',
-                            color: '#e53e3e',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            fontWeight: 600,
-                            transition: 'all 0.2s'
-                        }}
-                    >
-                        <LogOut size={18} /> {!isDesktopSidebarCollapsed && t('common.logout')}
-                    </button>
                 </div>
-            </aside>
+                <button
+                    onClick={() => authService.logout()}
+                    style={{
+                        width: '100%',
+                        padding: '1rem',
+                        background: '#2a2a2a',
+                        border: '1px solid #333',
+                        borderRadius: '12px',
+                        color: '#e53e3e',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '10px',
+                        fontWeight: 600,
+                        transition: 'all 0.2s'
+                    }}
+                >
+                    <LogOut size={18} /> {!isDesktopSidebarCollapsed && t('common.logout')}
+                </button>
+        </div>
+            </aside >
 
-            {/* Main Content */}
-            <main className={`admin-main ${isDesktopSidebarCollapsed ? 'expanded' : ''}`}>
-                {/* Header */}
-                <header className="admin-header" style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    gap: '1.5rem',
+        {/* Main Content */ }
+        < main className = {`admin-main ${isDesktopSidebarCollapsed ? 'expanded' : ''}`
+}>
+    {/* Header */ }
+    < header className = "admin-header" style = {{
+    display: 'flex',
+        justifyContent: 'space-between',
+            alignItems: 'flex-start',
+                gap: '1.5rem',
                     marginBottom: '3rem',
-                    flexWrap: 'wrap'
-                }}>
+                        flexWrap: 'wrap'
+}}>
                     <div style={{ flex: '1 1 300px', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
                         <button
                             className="desktop-sidebar-toggle"
@@ -811,14 +809,16 @@ export default function AdminDashboard() {
                             <LogOut size={18} />
                         </button>
                     </div>
-                </header>
+                </header >
 
-                {/* Sponsored Ads Section */}
-                {sponsoredItems.length > 0 && (
-                    <div style={{ marginBottom: '2.5rem' }}>
-                        <SponsoredAdCard events={sponsoredItems} />
-                    </div>
-                )}
+    {/* Sponsored Ads Section */ }
+{
+    sponsoredItems.length > 0 && (
+        <div style={{ marginBottom: '2.5rem' }}>
+            <SponsoredAdCard events={sponsoredItems} />
+        </div>
+    )
+}
 
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (
@@ -1867,7 +1867,7 @@ export default function AdminDashboard() {
                     }}
                 />
 
-                {/* Audit Modal */}
+{/* Audit Modal */ }
                 <AnimatePresence>
                     {isAuditModalOpen && auditUser && (
                         <div style={{
@@ -2014,7 +2014,7 @@ export default function AdminDashboard() {
                         }
                     }
                 `}</style>
-            </main>
-        </div>
+            </main >
+        </div >
     );
 }

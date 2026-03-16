@@ -760,17 +760,7 @@ function MentorDashboardContent() {
                             </button>
                         </Tooltip>
 
-                        <div style={{
-                            display: 'flex',
-                            gap: '10px',
-                            padding: '0.5rem 1rem',
-                            justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
-                            alignItems: 'center',
-                            flexWrap: 'wrap'
-                        }}>
-                            <LanguageSwitcher />
-                            <CurrencySwitcher />
-                        </div>
+
 
                         <Tooltip content={isSidebarCollapsed ? t('common.logout') : ""} position="right">
                             <button
@@ -997,6 +987,8 @@ function MentorDashboardContent() {
                             </div>
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.5rem' }}>
+                            <LanguageSwitcher />
+                            <CurrencySwitcher />
                             <ThemeToggle />
                             <div ref={notificationBellRef} style={{ position: 'relative' }}>
                                 <Tooltip content={t('dashboard.notifications')}>
