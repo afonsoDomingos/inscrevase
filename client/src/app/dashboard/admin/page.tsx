@@ -19,7 +19,8 @@ import MarketingRequestList from '@/components/admin/MarketingRequestList';
 import PaypalPayouts from '@/components/admin/PaypalPayouts';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Plus } from 'lucide-react';
+
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
@@ -30,7 +31,8 @@ import { useCurrency } from '@/context/CurrencyContext';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
 import AdminEmailModal from '@/components/admin/AdminEmailModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
-import { Bar, XAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
+import { Bar, XAxis, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
+
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
