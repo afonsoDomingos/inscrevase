@@ -1148,6 +1148,37 @@ function MentorDashboardContent() {
                                     value={stats?.approved || 0}
                                     trend="+5%"
                                 />
+                                
+                                {/* Botão de Suporte WhatsApp */}
+                                <a
+                                    href={`https://wa.me/258847877405?text=${encodeURIComponent('Olá Afonso Domingos, preciso de suporte no painel.')}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '12px',
+                                        background: '#1a1a1a',
+                                        color: '#fff',
+                                        padding: '1.5rem',
+                                        borderRadius: '24px',
+                                        textDecoration: 'none',
+                                        fontWeight: 800,
+                                        fontSize: '1.1rem',
+                                        boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                                        border: '1px solid rgba(255,215,0,0.2)',
+                                        transition: 'all 0.3s',
+                                        gridColumn: isMobile ? 'auto' : 'span 2'
+                                    }}
+                                    //@ts-ignore
+                                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = '#FFD700'; }}
+                                    //@ts-ignore
+                                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(255,215,0,0.2)'; }}
+                                >
+                                    <LifeBuoy size={24} color="#FFD700" />
+                                    Pedir Suporte
+                                </a>
                             </div>
 
                             {/* Smart AI Insights */}
