@@ -766,7 +766,10 @@
                 "published": "Published",
                 "private": "Private"
             },
-            "pagination": "Showing {start}-{end} of {total} users"
+            "pagination": "Showing {start}-{end} of {total} users",
+            "audience": {
+                "participants": "Participants"
+            }
         }
     },
     "academy": {
@@ -1126,6 +1129,10 @@
                 "title": "Participant Hub",
                 "description": "This is the logged-in area for the participant. After registration, this is where they access lessons, materials, and the event certificate."
             }
+        },
+        "participant": "Participant",
+        "create": {
+            "manual": "Manual"
         },
         "createEvent": "Create Event",
         "editEvent": "Edit Event",

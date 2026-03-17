@@ -782,7 +782,10 @@
                 "published": "Publicado",
                 "private": "Privado"
             },
-            "pagination": "Mostrando {start}-{end} de {total} usuários"
+            "pagination": "Mostrando {start}-{end} de {total} usuários",
+            "audience": {
+                "participants": "Participantes"
+            }
         }
     },
     "academy": {
@@ -1148,6 +1151,10 @@
                 "title": "Hub do Inscrito",
                 "description": "É a área logada do participante. Após a inscrição, é aqui que eles acessam as aulas, materiais e o certificado do evento."
             }
+        },
+        "participant": "Participante",
+        "create": {
+            "manual": "Manual (Nativo)"
         },
         "createEvent": "Criar Evento",
         "editEvent": "Editar Evento",
