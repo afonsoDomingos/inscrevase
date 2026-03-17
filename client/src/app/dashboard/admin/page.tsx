@@ -343,12 +343,12 @@ export default function AdminDashboard() {
     const totalUsers = (stats?.mentors || 0) + (stats?.participants || 0);
 
     const vitalCards = [
-        { label: t('dashboard.usersList.table.name') || 'Total Utilizadores', value: showValues ? (stats?.totalUsers || totalUsers) : '••', icon: <Users size={24} />, color: '#6366f1', tab: 'users' },
+        { label: t('dashboard.totalUsers') || 'Total Utilizadores', value: showValues ? (stats?.totalUsers || totalUsers) : '••', icon: <Users size={24} />, color: '#6366f1', tab: 'users' },
         { label: 'Experts / Mentors', value: showValues ? stats?.mentors || 0 : '••', icon: <Trophy size={24} />, color: '#D4AF37', tab: 'users' },
         { label: t('dashboard.usersList.audience.participants') || 'Participantes', value: showValues ? stats?.participants || 0 : '••', icon: <Users size={24} />, color: '#10b981', tab: 'users' },
         { label: t('dashboard.onlineNow'), value: onlineUsers.length, icon: <Wifi size={24} />, color: '#38a169', tab: 'users' },
         { label: t('dashboard.visitsToday'), value: trafficStats?.visitsToday || 0, icon: <Eye size={24} />, color: '#ed8936', tab: 'overview' },
-        { label: t('dashboard.usersList.onlineNow') || 'Total Visitantes', value: trafficStats?.totalVisits || 0, icon: <Globe size={24} />, color: '#3182ce', tab: 'overview' },
+        { label: t('dashboard.totalVisitors') || 'Total Visitantes', value: trafficStats?.totalVisits || 0, icon: <Globe size={24} />, color: '#3182ce', tab: 'overview' },
         { label: t('dashboard.finance.totalRevenue'), value: showValues ? formatPrice(stats?.revenue || 0, 'MZN', currency) : '••••', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
         { label: t('dashboard.submissions'), value: showValues ? stats?.submissions || 0 : '••', icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
     ];

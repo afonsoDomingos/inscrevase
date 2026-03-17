@@ -392,6 +392,8 @@
         "account": "conta",
         "restrictedAccess": "Acesso Restrito",
         "emailUnverified": "E-mail não verificado",
+        "totalUsers": "Total Utilizadores",
+        "totalVisitors": "Total Visitantes",
         "rolesHeader": {
             "company": "Empresa",
             "specialist": "Especialista",

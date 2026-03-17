@@ -377,6 +377,8 @@
         "account": "account",
         "restrictedAccess": "Restricted Access",
         "emailUnverified": "Email not verified",
+        "totalUsers": "Total Users",
+        "totalVisitors": "Total Visitors",
         "rolesHeader": {
             "company": "Company",
             "specialist": "Specialist",
