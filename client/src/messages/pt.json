@@ -393,10 +393,12 @@
         "restrictedAccess": "Acesso Restrito",
         "emailUnverified": "E-mail não verificado",
         "rolesHeader": {
-            "company": "VOCÊ É UMA EMPRESA",
-            "specialist": "VOCÊ É UM ESPECIALISTA",
-            "mentor": "VOCÊ É UM MENTOR",
-            "admin": "ADMINISTRADOR"
+            "company": "Empresa",
+            "specialist": "Especialista",
+            "mentor": "Mentor",
+            "admin": "Admin",
+            "superadmin": "Super Admin",
+            "participant": "Participante"
         },
         "notifications": "Notificações",
         "discoverPlatform": "DESCUBRA NOSSA PLATAFORMA",

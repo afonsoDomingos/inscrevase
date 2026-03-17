@@ -378,10 +378,12 @@
         "restrictedAccess": "Restricted Access",
         "emailUnverified": "Email not verified",
         "rolesHeader": {
-            "company": "YOU ARE A COMPANY",
-            "specialist": "YOU ARE A SPECIALIST",
-            "mentor": "YOU ARE A MENTOR",
-            "admin": "ADMINISTRATOR"
+            "company": "Company",
+            "specialist": "Specialist",
+            "mentor": "Mentor",
+            "admin": "Admin",
+            "superadmin": "Super Admin",
+            "participant": "Participant"
         },
         "notifications": "Notifications",
         "discoverPlatform": "DISCOVER OUR PLATFORM",
