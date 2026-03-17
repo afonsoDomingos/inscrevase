@@ -58,10 +58,14 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
 
     const loadUsers = async () => {
         try {
+            console.log('🔄 A iniciar o carregamento de utilizadores pelo UsersList...');
             const data = await userService.getAllUsers();
+            console.log('✅ Utilizadores carregados com sucesso do Backend!', data?.length, 'registos encontrados.');
             setUsers(data);
         } catch (error: unknown) {
-            console.error(error);
+            console.error('❌ ERRO AO CARREGAR UTILIZADORES no UsersList:', error);
+            const errDetails = error instanceof Error ? error.stack : JSON.stringify(error);
+            console.error('Detalhes do erro:', errDetails);
         } finally {
             setLoading(false);
         }
