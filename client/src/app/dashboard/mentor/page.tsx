@@ -1171,9 +1171,9 @@ function MentorDashboardContent() {
                                         transition: 'all 0.3s',
                                         gridColumn: isMobile ? 'auto' : 'span 2'
                                     }}
-                                    //@ts-ignore
+                                    //@ts-expect-error
                                     onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = '#FFD700'; }}
-                                    //@ts-ignore
+                                    //@ts-expect-error
                                     onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(255,215,0,0.2)'; }}
                                 >
                                     <LifeBuoy size={24} color="#FFD700" />
