@@ -1152,7 +1152,7 @@ function MentorDashboardContent() {
                                 {/* Botão de Suporte WhatsApp */}
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'center' : 'flex-start', gridColumn: isMobile ? 'auto' : 'span 2' }}>
                                     <a
-                                        href={`https://wa.me/258847877405?text=${encodeURIComponent('Olá Afonso Domingos, preciso de suporte no painel.')}`}
+                                        href={`https://wa.me/258847877405?text=${encodeURIComponent('Saudacoes Afonso!')}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         style={{
