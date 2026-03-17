@@ -9,7 +9,7 @@ import EditUserModal from './EditUserModal';
 import PremiumBadge from '../common/PremiumBadge';
 import { useSocket } from '@/context/SocketContext';
 import TableScrollWrapper from '../common/TableScrollWrapper';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@/context/LanguageContext';
 import Tooltip from '../common/Tooltip';
 
 interface UsersListProps {
@@ -18,7 +18,7 @@ interface UsersListProps {
 }
 
 export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps) {
-    const t = useTranslations();
+    const { t } = useTranslate();
     const [users, setUsers] = useState<UserData[]>([]);
     const { onlineUsers } = useSocket();
     const [loading, setLoading] = useState(true);
