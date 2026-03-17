@@ -406,6 +406,30 @@
         "discoverPlatform": "DESCUBRA NOSSA PLATAFORMA",
         "adminDashboard": "Painel Administrativo",
         "mentorDashboard": "Painel do Mentor",
+        "supportBtn": "Pedir Suporte",
+        "sidebarGroups": {
+            "dashboard": "DASHBOARD",
+            "content": "CONTEÚDO / PRODUTOS",
+            "management": "PARTICIPANTES / GESTÃO",
+            "marketing": "MARKETING / PROMOÇÃO",
+            "finance": "FINANCEIRO",
+            "account": "CONTA / SISTEMA"
+        },
+        "menuItems": {
+            "lessons": "Aulas",
+            "liveboard": "Sala de Eventos (Lab)",
+            "submissions": "Inscrições",
+            "referral": "Indicações & Impacto",
+            "ads": "Anúncios",
+            "smartlinks": "Smartlinks",
+            "boostSales": "Impulsionar Vendas"
+        },
+        "adsPromo": {
+            "badge": "Novidade: Portal de Destaques",
+            "title": "Destaque seu Evento hoje!",
+            "desc": "Aumente sua visibilidade em até 10x aparecendo nas seções patrocinadas de toda a plataforma.",
+            "btn": "Solicitar Destaque"
+        },
         "broadcast": "Comunicado",
         "visitor": "Visitante",
         "activeMentors": "Mentores Ativos",

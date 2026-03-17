@@ -391,6 +391,30 @@
         "discoverPlatform": "DISCOVER OUR PLATFORM",
         "adminDashboard": "Admin Dashboard",
         "mentorDashboard": "Mentor Dashboard",
+        "supportBtn": "Contact Support",
+        "sidebarGroups": {
+            "dashboard": "DASHBOARD",
+            "content": "CONTENT / PRODUCTS",
+            "management": "PARTICIPANTS / MGMT",
+            "marketing": "MARKETING / PROMO",
+            "finance": "FINANCIAL",
+            "account": "ACCOUNT / SYSTEM"
+        },
+        "menuItems": {
+            "lessons": "Classes",
+            "liveboard": "Live Room (Lab)",
+            "submissions": "Registrations",
+            "referral": "Referrals & Impact",
+            "ads": "Advertisements",
+            "smartlinks": "Smartlinks",
+            "boostSales": "Boost Sales"
+        },
+        "adsPromo": {
+            "badge": "New: Ad Portal",
+            "title": "Highlight your Event today!",
+            "desc": "Increase your visibility up to 10x by appearing in sponsored sections across the platform.",
+            "btn": "Request Ad"
+        },
         "broadcast": "Broadcast",
         "visitor": "Visitor",
         "activeMentors": "Active Mentors",

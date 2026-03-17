@@ -596,43 +596,43 @@ function MentorDashboardContent() {
                     }}>
                     {[
                         {
-                            title: "DASHBOARD",
+                            title: t('dashboard.sidebarGroups.dashboard') || "DASHBOARD",
                             items: [{ id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> }]
                         },
                         {
-                            title: "CONTEÚDO / PRODUTOS",
+                            title: t('dashboard.sidebarGroups.content') || "CONTEÚDO / PRODUTOS",
                             items: [
-                                { id: 'lessons', label: 'Aulas', icon: <Video size={20} /> },
+                                { id: 'lessons', label: t('dashboard.menuItems.lessons') || 'Aulas', icon: <Video size={20} /> },
                                 { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
                                 { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
                                 { id: 'services', label: t('dashboard.services'), icon: <Package size={20} /> },
-                                { id: 'liveboard', label: 'Sala de Eventos (Lab)', icon: <Monitor size={20} /> },
+                                { id: 'liveboard', label: t('dashboard.menuItems.liveboard') || 'Sala de Eventos (Lab)', icon: <Monitor size={20} /> },
                             ]
                         },
                         {
-                            title: "PARTICIPANTES / GESTÃO",
+                            title: t('dashboard.sidebarGroups.management') || "PARTICIPANTES / GESTÃO",
                             items: [
-                                { id: 'submissions', label: 'Inscrições', icon: <Users size={20} /> },
-                                { id: 'referral', label: 'Indicações & Impacto', icon: <Trophy size={20} /> },
+                                { id: 'submissions', label: t('dashboard.menuItems.submissions') || 'Inscrições', icon: <Users size={20} /> },
+                                { id: 'referral', label: t('dashboard.menuItems.referral') || 'Indicações & Impacto', icon: <Trophy size={20} /> },
                             ]
                         },
                         {
-                            title: "MARKETING / PROMOÇÃO",
+                            title: t('dashboard.sidebarGroups.marketing') || "MARKETING / PROMOÇÃO",
                             items: [
-                                { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} /> },
-                                { id: 'smartlinks', label: 'Smartlinks', icon: <LinkIcon size={20} /> },
-                                { id: 'marketing', label: 'Impulsionar Vendas', icon: <Zap size={20} /> },
+                                { id: 'ads', label: t('dashboard.menuItems.ads') || 'Anúncios', icon: <Megaphone size={20} /> },
+                                { id: 'smartlinks', label: t('dashboard.menuItems.smartlinks') || 'Smartlinks', icon: <LinkIcon size={20} /> },
+                                { id: 'marketing', label: t('dashboard.menuItems.boostSales') || 'Impulsionar Vendas', icon: <Zap size={20} /> },
                             ]
                         },
                         {
-                            title: "FINANCEIRO",
+                            title: t('dashboard.sidebarGroups.finance') || "FINANCEIRO",
                             items: [
                                 { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
                                 { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
                             ]
                         },
                         {
-                            title: "CONTA / SISTEMA",
+                            title: t('dashboard.sidebarGroups.account') || "CONTA / SISTEMA",
                             items: [
                                 { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
                                 { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
@@ -1175,7 +1175,7 @@ function MentorDashboardContent() {
                                         onMouseOut={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(255,215,0,0.2)'; }}
                                     >
                                         <LifeBuoy size={18} color="#FFD700" />
-                                        Pedir Suporte
+                                        {t('dashboard.supportBtn') || 'Pedir Suporte'}
                                     </a>
                                 </div>
                             </div>
@@ -1239,11 +1239,11 @@ function MentorDashboardContent() {
 
                                         <div style={{ flex: 1, position: 'relative', zIndex: 2 }}>
                                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'var(--gold-gradient)', borderRadius: '100px', fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', color: '#000', marginBottom: '1rem' }}>
-                                                <Zap size={12} fill="#000" /> Novidade: Portal de Destaques
+                                                <Zap size={12} fill="#000" /> {t('dashboard.adsPromo.badge') || 'Novidade: Portal de Destaques'}
                                             </div>
-                                            <h4 style={{ color: '#fff', fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>Destaque seu Evento hoje!</h4>
+                                            <h4 style={{ color: '#fff', fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>{t('dashboard.adsPromo.title') || 'Destaque seu Evento hoje!'}</h4>
                                             <p style={{ color: '#aaa', fontSize: '0.9rem', lineHeight: 1.5 }}>
-                                                Aumente sua visibilidade em até 10x aparecendo nas seções patrocinadas de toda a plataforma.
+                                                {t('dashboard.adsPromo.desc') || 'Aumente sua visibilidade em até 10x aparecendo nas seções patrocinadas de toda a plataforma.'}
                                             </p>
                                         </div>
 
@@ -1268,7 +1268,7 @@ function MentorDashboardContent() {
                                             onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.transform = 'translateY(-3px)'}
                                             onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.transform = 'translateY(0)'}
                                         >
-                                            Solicitar Destaque <Megaphone size={18} />
+                                            {t('dashboard.adsPromo.btn') || 'Solicitar Destaque'} <Megaphone size={18} />
                                         </button>
                                     </motion.div>
 
