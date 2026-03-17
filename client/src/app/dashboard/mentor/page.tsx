@@ -1150,33 +1150,34 @@ function MentorDashboardContent() {
                                 />
                                 
                                 {/* Botão de Suporte WhatsApp */}
-                                <a
-                                    href={`https://wa.me/258847877405?text=${encodeURIComponent('Olá Afonso Domingos, preciso de suporte no painel.')}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '12px',
-                                        background: '#1a1a1a',
-                                        color: '#fff',
-                                        padding: '1.5rem',
-                                        borderRadius: '24px',
-                                        textDecoration: 'none',
-                                        fontWeight: 800,
-                                        fontSize: '1.1rem',
-                                        boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                                        border: '1px solid rgba(255,215,0,0.2)',
-                                        transition: 'all 0.3s',
-                                        gridColumn: isMobile ? 'auto' : 'span 2'
-                                    }}
-                                    onMouseOver={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = '#FFD700'; }}
-                                    onMouseOut={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(255,215,0,0.2)'; }}
-                                >
-                                    <LifeBuoy size={24} color="#FFD700" />
-                                    Pedir Suporte
-                                </a>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'center' : 'flex-start', gridColumn: isMobile ? 'auto' : 'span 2' }}>
+                                    <a
+                                        href={`https://wa.me/258847877405?text=${encodeURIComponent('Olá Afonso Domingos, preciso de suporte no painel.')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '8px',
+                                            background: '#1a1a1a',
+                                            color: '#fff',
+                                            padding: '0.6rem 1.2rem',
+                                            borderRadius: '10px',
+                                            textDecoration: 'none',
+                                            fontWeight: 700,
+                                            fontSize: '0.85rem',
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                            border: '1px solid rgba(255,215,0,0.2)',
+                                            transition: 'all 0.3s'
+                                        }}
+                                        onMouseOver={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = '#FFD700'; }}
+                                        onMouseOut={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(255,215,0,0.2)'; }}
+                                    >
+                                        <LifeBuoy size={18} color="#FFD700" />
+                                        Pedir Suporte
+                                    </a>
+                                </div>
                             </div>
 
                             {/* Smart AI Insights */}
