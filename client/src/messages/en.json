@@ -1807,7 +1807,16 @@
             "giveDrawing": "Allow drawing",
             "closeMic": "Close Mic",
             "openMic": "Open Mic",
-            "callStudentsTooltip": "Send email to registrants who haven't joined yet"
+            "callStudentsTooltip": "Send email to registrants who haven't joined yet",
+            "activateBoard": "Activate Live Board",
+            "exclusiveMentor": "Feature exclusive for mentors",
+            "selectCountdown": "Select Countdown",
+            "seconds_5": "5 seconds",
+            "seconds_10": "10 seconds",
+            "seconds_30": "30 seconds",
+            "minutes_1": "1 minute",
+            "minutes_5": "5 minutes",
+            "startNow": "Start Now"
         },
         "status": {
             "pending": "Pending",

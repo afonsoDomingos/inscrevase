@@ -1872,7 +1872,16 @@
             "giveDrawing": "Dar Giz",
             "closeMic": "Fechar Mic",
             "openMic": "Abrir Mic",
-            "callStudentsTooltip": "Enviar e-mail para inscritos que ainda não entraram"
+            "callStudentsTooltip": "Enviar e-mail para inscritos que ainda não entraram",
+            "activateBoard": "Ativar Live Board",
+            "exclusiveMentor": "Funcionalidade exclusiva para mentores",
+            "selectCountdown": "Selecionar Contagem",
+            "seconds_5": "5 segundos",
+            "seconds_10": "10 segundos",
+            "seconds_30": "30 segundos",
+            "minutes_1": "1 minuto",
+            "minutes_5": "5 minutos",
+            "startNow": "Começar Agora"
         },
         "communityTitle": "Comunidade",
         "chatSubscribersOnly": "Apenas participantes inscritos podem interagir no chat.",
