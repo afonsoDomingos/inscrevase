@@ -377,7 +377,7 @@ export default function AdminDashboard() {
                 { id: 'forms', label: t('dashboard.forms'), icon: <FileText size={18} /> },
                 { id: 'submissions', label: t('dashboard.submissions') || 'Inscrições', icon: <Database size={18} /> },
                 { id: 'smartlinks', label: 'SmartLinks', icon: <LinkIcon size={18} /> },
-                { id: 'ads', label: t('dashboard.ads') || 'Anúncios', icon: <Megaphone size={18} /> },
+                { id: 'ads', label: t('dashboard.menuItems.ads') || 'Anúncios', icon: <Megaphone size={18} /> },
                 { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={18} /> },
             ]
         },

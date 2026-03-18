@@ -420,10 +420,10 @@ export default function AdRequestList() {
                                                     </div>
                                                     <div>
                                                         <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#1e293b' }}>
-                                                            {typeof req.userId === 'object' ? req.userId.name : 'Vendedor/Mentor'}
+                                                            {(typeof req.userId === 'object' && req.userId !== null) ? req.userId.name : 'Vendedor/Mentor'}
                                                         </div>
                                                         <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
-                                                            {typeof req.userId === 'object' ? req.userId.email : 'Proprietário do anúncio'}
+                                                            {(typeof req.userId === 'object' && req.userId !== null) ? req.userId.email : 'Proprietário do anúncio'}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -431,7 +431,7 @@ export default function AdRequestList() {
                                                     <div style={{ fontSize: '0.6rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Pagamento</div>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end' }}>
                                                         <span style={{ fontSize: '0.75rem', fontWeight: 900, color: req.paymentMethod === 'stripe' ? '#4f46e5' : '#ea580c' }}>
-                                                            {req.paymentMethod.toUpperCase()}
+                                                            {req.paymentMethod?.toUpperCase() || 'MANUAL'}
                                                         </span>
                                                         <div style={{
                                                             display: 'flex', alignItems: 'center', gap: '4px',
