@@ -227,7 +227,9 @@
         "nextEvent": "Próximo Evento",
         "promoteCTA": "Anunciar aqui / Promover Evento",
         "palop": "África (PALOP)",
-        "dataIsPower": "Dados são Poder"
+        "dataIsPower": "Dados são Poder",
+        "you": "Você",
+        "pts": "pts"
     },
     "nav": {
         "home": "Início",
@@ -556,7 +558,18 @@
             "participantOrigin": "Origem dos Participantes",
             "topProvincesHelp": "Top províncias (baseado nos dados do formulário)",
             "noGeoData": "Ainda não há dados geográficos suficientes.",
-            "geoDataHelp": "Certifique-se de que seus formulários perguntam a \"Província\" ou \"Cidade\"."
+            "geoDataHelp": "Certifique-se de que seus formulários perguntam a \"Província\" ou \"Cidade\".",
+            "totalViews": "Visualizações Totais",
+            "last14Days": "Últimos 14 dias",
+            "conversionRate": "Taxa de Conversão",
+            "visitsVsSubmissions": "Visitas vs Inscrições",
+            "insightOfWeek": "Insight da Semana",
+            "insightGood": "Sua conversão está excelente! Continue impulsionando tráfego.",
+            "insightImprove": "Dica: Melhore a descrição ou imagem de capa para aumentar conversões.",
+            "trafficAndConversions": "Tráfego e Conversões (Últimos 14 dias)",
+            "submissions": "Inscrições",
+            "visits": "Visitas",
+            "geoDistribution": "Distribuição geográfica por província"
         },
         "settings": {
             "title": "Configurações do Perfil",
@@ -814,7 +827,11 @@
             "audience": {
                 "participants": "Participantes"
             }
-        }
+        },
+        "impactRankingEmpty": "O ranking de impacto começará a crescer em breve! 🚀",
+        "participateAndEarn": "Participar & Ganhar Recompensas",
+        "platformTutorials": "Tutoriais da Plataforma",
+        "convertedInvites": "convites convertidos"
     },
     "academy": {
         "title": "Academia",

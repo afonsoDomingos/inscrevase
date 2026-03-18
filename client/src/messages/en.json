@@ -214,7 +214,9 @@
             "uploadSuccess": "Upload completed successfully!"
         },
         "palop": "Africa (PALOP)",
-        "dataIsPower": "Data is Power"
+        "dataIsPower": "Data is Power",
+        "you": "You",
+        "pts": "pts"
     },
     "nav": {
         "home": "Home",
@@ -542,7 +544,18 @@
             "participantOrigin": "Participant Origin",
             "topProvincesHelp": "Top provinces (based on form data)",
             "noGeoData": "There is not enough geographic data yet.",
-            "geoDataHelp": "Ensure your forms ask for \"Province\" or \"City\"."
+            "geoDataHelp": "Ensure your forms ask for \"Province\" or \"City\".",
+            "totalViews": "Total Views",
+            "last14Days": "Last 14 days",
+            "conversionRate": "Conversion Rate",
+            "visitsVsSubmissions": "Visits vs Registrations",
+            "insightOfWeek": "Insight of the Week",
+            "insightGood": "Your conversion is excellent! Keep driving traffic.",
+            "insightImprove": "Tip: Improve your description or cover image to increase conversions.",
+            "trafficAndConversions": "Traffic and Conversions (Last 14 days)",
+            "submissions": "Registrations",
+            "visits": "Visits",
+            "geoDistribution": "Geographic distribution by province"
         },
         "settings": {
             "title": "Profile Settings",
@@ -798,7 +811,11 @@
             "audience": {
                 "participants": "Participants"
             }
-        }
+        },
+        "impactRankingEmpty": "The impact ranking will start growing soon! 🚀",
+        "participateAndEarn": "Participate & Earn Rewards",
+        "platformTutorials": "Platform Tutorials",
+        "convertedInvites": "converted invites"
     },
     "academy": {
         "title": "Academy",

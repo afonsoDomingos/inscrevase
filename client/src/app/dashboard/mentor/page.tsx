@@ -904,7 +904,7 @@ function MentorDashboardContent() {
                                     textTransform: 'uppercase',
                                     letterSpacing: '1px'
                                 }}>
-                                    PAINEL DO MENTOR
+                                    {t('dashboard.mentorDashboard').toUpperCase() || 'PAINEL DO MENTOR'}
                                 </span>
                             </div>
                             <h1 style={{
@@ -1442,17 +1442,17 @@ function MentorDashboardContent() {
                                                         {i + 1}
                                                     </div>
                                                     <div>
-                                                        <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{r.name === user.name ? 'Você' : r.name}</div>
-                                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{r.referralCount} convites convertidos</div>
+                                                        <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{r.name === user.name ? (t('common.you') || 'Você') : r.name}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{r.referralCount} {t('dashboard.convertedInvites') || 'convites convertidos'}</div>
                                                     </div>
                                                 </div>
-                                                <div style={{ fontWeight: 900, color: '#FFD700' }}>{r.referralPoints} pts</div>
+                                                <div style={{ fontWeight: 900, color: '#FFD700' }}>{r.referralPoints} {t('common.pts') || 'pts'}</div>
                                             </div>
                                         ))}
 
                                         {referralRanking.length === 0 && (
                                             <div style={{ textAlign: 'center', padding: '2rem', color: '#666', fontSize: '0.9rem' }}>
-                                                O ranking de impacto começará a crescer em breve! 🚀
+                                                {t('dashboard.impactRankingEmpty') || 'O ranking de impacto começará a crescer em breve! 🚀'}
                                             </div>
                                         )}
 
@@ -1471,7 +1471,7 @@ function MentorDashboardContent() {
                                                 fontSize: '0.9rem'
                                             }}
                                         >
-                                            Participar & Ganhar Recompensas
+                                            {t('dashboard.participateAndEarn') || 'Participar & Ganhar Recompensas'}
                                         </button>
                                     </div>
                                 </div>
@@ -1487,7 +1487,7 @@ function MentorDashboardContent() {
                                         border: '1px solid rgba(255, 215, 0, 0.1)'
                                     }}>
                                         <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1.5rem', fontFamily: 'var(--font-playfair)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <Video size={20} color="#FFD700" /> Tutoriais da Plataforma
+                                            <Video size={20} color="#FFD700" /> {t('dashboard.platformTutorials') || 'Tutoriais da Plataforma'}
                                         </h3>
 
                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
