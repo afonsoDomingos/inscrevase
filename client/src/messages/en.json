@@ -1989,5 +1989,39 @@
         "feature3Desc": "Get used to the focus timer to manage the practical exercises in your lesson.",
         "labEventTitle": "TEST LABORATORY",
         "labMentorTitle": "MENTOR (TEST MODE)"
+    },
+    "ads": {
+        "myAds": "My",
+        "myAdsHighlight": "Ads",
+        "subtitle": "Premium ad management to scale your reach",
+        "createNew": "Create New Ad",
+        "totalCampaigns": "Total Campaigns",
+        "activeNow": "Active Now",
+        "awaitingVerification": "Awaiting Verification",
+        "emptyTitle": "Start Scaling Today",
+        "emptyDesc": "Put your brand in front of thousands of potential clients with our targeted premium advertising.",
+        "createFirst": "Create My First Ad",
+        "statusApproved": "Approved",
+        "statusPending": "Pending",
+        "statusSuspended": "Suspended",
+        "statusRejected": "Rejected",
+        "active": "Active",
+        "paused": "Paused",
+        "pause": "Pause",
+        "activate": "Activate"
+    },
+    "referral": {
+        "networkSubtitle": "Your network of influence and community impact",
+        "myPoints": "My Points",
+        "convertedInvites": "Converted Invites",
+        "myPosition": "My Position",
+        "impactLeaders": "Impact Leaders",
+        "rankingEmpty": "The impact ranking will start growing soon! 🚀",
+        "youImpactMaster": "You (Impact Master)",
+        "mentorsInvited": "mentors invited",
+        "foundingPartner": "Founding Partner",
+        "ctaTitle": "Your influence generates real rewards",
+        "ctaDesc": "By inviting new elite mentors to Inscreva-se, you accumulate points that can be exchanged for Pro Plan months, ad highlights, and exclusive benefits.",
+        "inviteBtn": "Invite & Expand My Network"
     }
 }

@@ -6,6 +6,7 @@ import { adService, AdRequestModel } from '@/lib/adService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
 import { useCurrency } from '@/context/CurrencyContext';
+import { useTranslate } from '@/context/LanguageContext';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -24,6 +25,7 @@ export default function AdManagement() {
     const [whatsappNumber, setWhatsappNumber] = useState('');
     const [whatsappMessage, setWhatsappMessage] = useState('Saudações, vi o seu anúncio no Inscreva-se e gostaria de obter mais informações.');
     const { formatPrice, convertAmount } = useCurrency();
+    const { t } = useTranslate();
 
     const PRICING_PER_WEEK = 5; // USD
 
@@ -1022,10 +1024,10 @@ export default function AdManagement() {
                         </div>
                         <div>
                             <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-1.5px', fontFamily: 'var(--font-playfair)' }}>
-                                Meus <span style={{ color: '#D4AF37' }}>Anúncios</span>
+                                {t('ads.myAds')} <span style={{ color: '#D4AF37' }}>{t('ads.myAdsHighlight')}</span>
                             </h2>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', margin: '6px 0 0', fontWeight: 500 }}>
-                                <Zap size={14} fill="#FFD700" color="#FFD700" /> Gestão de publicidade premium para escalar seu alcance
+                                <Zap size={14} fill="#FFD700" color="#FFD700" /> {t('ads.subtitle')}
                             </div>
                         </div>
                     </div>
@@ -1073,7 +1075,7 @@ export default function AdManagement() {
                             boxShadow: '0 8px 20px rgba(212, 175, 55, 0.2)'
                         }}
                     >
-                        <Plus size={22} strokeWidth={3} /> Criar Novo Anúncio
+                        <Plus size={22} strokeWidth={3} /> {t('ads.createNew')}
                     </motion.button>
                 </div>
 
@@ -1086,7 +1088,7 @@ export default function AdManagement() {
                             <Megaphone size={22} color="#64748b" />
                         </div>
                         <div>
-                            <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.5px' }}>Total de Campanhas</div>
+                            <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.5px' }}>{t('ads.totalCampaigns')}</div>
                             <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a' }}>{ads.length}</div>
                         </div>
                     </motion.div>
@@ -1099,7 +1101,7 @@ export default function AdManagement() {
                             <Activity size={22} color="#16a34a" />
                         </div>
                         <div>
-                            <div style={{ fontSize: '0.65rem', color: '#16a34a', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.5px' }}>Ativos Agora</div>
+                            <div style={{ fontSize: '0.65rem', color: '#16a34a', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.5px' }}>{t('ads.activeNow')}</div>
                             <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#15803d' }}>{ads.filter(a => a.isActive && a.status === 'approved').length}</div>
                         </div>
                     </motion.div>
@@ -1112,7 +1114,7 @@ export default function AdManagement() {
                             <Clock size={22} color="#2563eb" />
                         </div>
                         <div>
-                            <div style={{ fontSize: '0.65rem', color: '#2563eb', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.5px' }}>Aguardando Verificação</div>
+                            <div style={{ fontSize: '0.65rem', color: '#2563eb', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.5px' }}>{t('ads.awaitingVerification')}</div>
                             <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#1d4ed8' }}>{ads.filter(a => a.status === 'pending').length}</div>
                         </div>
                     </motion.div>
@@ -1155,9 +1157,9 @@ export default function AdManagement() {
                             <Plus size={16} />
                         </motion.div>
                     </div>
-                    <h3 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1rem', fontFamily: 'var(--font-playfair)', color: '#0f172a' }}>Comece a Escalar Hoje</h3>
+                    <h3 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1rem', fontFamily: 'var(--font-playfair)', color: '#0f172a' }}>{t('ads.emptyTitle')}</h3>
                     <p style={{ color: '#64748b', maxWidth: '500px', margin: '0 auto 2.5rem', fontSize: '1.1rem', lineHeight: 1.6, fontWeight: 500 }}>
-                        Posicione sua marca na frente de milhares de potenciais clientes com nossa publicidade premium segmentada.
+                        {t('ads.emptyDesc')}
                     </p>
                     <motion.button
                         whileHover={{ scale: 1.05 }}
@@ -1178,7 +1180,7 @@ export default function AdManagement() {
                             gap: '10px'
                         }}
                     >
-                        Criar Meu Primeiro Anúncio <Zap size={18} fill="#FFD700" color="#FFD700" />
+                        {t('ads.createFirst')} <Zap size={18} fill="#FFD700" color="#FFD700" />
                     </motion.button>
                 </motion.div>
             ) : (
@@ -1235,9 +1237,9 @@ export default function AdManagement() {
                                         alignItems: 'center',
                                         gap: '6px'
                                     }}>
-                                        {ad.status === 'approved' ? <><CheckCircle2 size={12} /> Aprovado</> :
-                                            ad.status === 'pending' ? <><Clock size={12} /> Pendente</> :
-                                                ad.status === 'suspended' ? <><AlertCircle size={12} /> Suspenso</> : <><XCircle size={12} /> Rejeitado</>}
+                                        {ad.status === 'approved' ? <><CheckCircle2 size={12} /> {t('ads.statusApproved')}</> :
+                                            ad.status === 'pending' ? <><Clock size={12} /> {t('ads.statusPending')}</> :
+                                                ad.status === 'suspended' ? <><AlertCircle size={12} /> {t('ads.statusSuspended')}</> : <><XCircle size={12} /> {t('ads.statusRejected')}</>}
                                     </div>
 
                                     {ad.status === 'approved' && (
@@ -1252,7 +1254,7 @@ export default function AdManagement() {
                                             border: '1px solid rgba(0,0,0,0.05)'
                                         }}>
                                             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: ad.isActive ? '#000' : '#888' }} />
-                                            {ad.isActive ? 'Ativo' : 'Pausado'}
+                                            {ad.isActive ? t('ads.active') : t('ads.paused')}
                                         </div>
                                     )}
                                 </div>
@@ -1324,7 +1326,7 @@ export default function AdManagement() {
                                             boxShadow: ad.isActive ? 'none' : '0 4px 12px rgba(212, 175, 55, 0.2)'
                                         }}
                                     >
-                                        {ad.isActive ? <><PowerOff size={14} /> Pausar</> : <><Power size={14} /> Ativar</>}
+                                        {ad.isActive ? <><PowerOff size={14} /> {t('ads.pause')}</> : <><Power size={14} /> {t('ads.activate')}</>}
                                     </motion.button>
                                     <motion.button
                                         whileTap={{ scale: 0.95 }}

@@ -2056,7 +2056,19 @@
             "education": "O conhecimento é a única riqueza que cresce quando é partilhada.",
             "networking": "A sua rede é o seu património líquido. Traga os melhores para perto.",
             "value": "Crie valor real para a sua comunidade através da Inscreva.se."
-        }
+        },
+        "networkSubtitle": "Sua rede de influência e impacto na comunidade",
+        "myPoints": "Meus Pontos",
+        "convertedInvites": "Convites Convertidos",
+        "myPosition": "Minha Posição",
+        "impactLeaders": "Líderes de Impacto",
+        "rankingEmpty": "O ranking de impacto começará a crescer em breve! 🚀",
+        "youImpactMaster": "Você (Mestre de Impacto)",
+        "mentorsInvited": "mentores convidados",
+        "foundingPartner": "Sócio Fundador",
+        "ctaTitle": "Sua influência gera recompensas reais",
+        "ctaDesc": "Ao convidar novos mentores de elite para a Inscreva-se, você acumula pontos que podem ser trocados por meses de Plano Pro, destaque em anúncios e benefícios exclusivos.",
+        "inviteBtn": "Convidar & Expandir minha Rede"
     },
     "marketing": {
         "accelerator": {
@@ -2080,5 +2092,25 @@
         "feature3Desc": "Habitue-se a usar o temporizador de foco para gerir os exercícios práticos da sua aula.",
         "labEventTitle": "LABORATÓRIO DE TESTES",
         "labMentorTitle": "MENTOR (MODO TESTE)"
+    },
+    "ads": {
+        "myAds": "Meus",
+        "myAdsHighlight": "Anúncios",
+        "subtitle": "Gestão de publicidade premium para escalar seu alcance",
+        "createNew": "Criar Novo Anúncio",
+        "totalCampaigns": "Total de Campanhas",
+        "activeNow": "Ativos Agora",
+        "awaitingVerification": "Aguardando Verificação",
+        "emptyTitle": "Comece a Escalar Hoje",
+        "emptyDesc": "Posicione sua marca na frente de milhares de potenciais clientes com nossa publicidade premium segmentada.",
+        "createFirst": "Criar Meu Primeiro Anúncio",
+        "statusApproved": "Aprovado",
+        "statusPending": "Pendente",
+        "statusSuspended": "Suspenso",
+        "statusRejected": "Rejeitado",
+        "active": "Ativo",
+        "paused": "Pausado",
+        "pause": "Pausar",
+        "activate": "Ativar"
     }
 }

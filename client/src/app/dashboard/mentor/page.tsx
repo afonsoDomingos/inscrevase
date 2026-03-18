@@ -1779,25 +1779,25 @@ function MentorDashboardContent() {
                                     </div>
                                     <div>
                                         <h2 style={{ fontSize: '2rem', fontWeight: 900, margin: 0, fontFamily: 'var(--font-playfair)' }}>{t('referral.ranking')}</h2>
-                                        <p style={{ color: '#666', margin: '5px 0 0' }}>Sua rede de influência e impacto na comunidade</p>
+                                        <p style={{ color: '#666', margin: '5px 0 0' }}>{t('referral.networkSubtitle')}</p>
                                     </div>
                                 </div>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '3rem' }}>
                                     <div style={{ background: 'rgba(255, 215, 0, 0.05)', padding: '1.5rem', borderRadius: '20px', border: '1px solid rgba(255, 215, 0, 0.1)' }}>
-                                        <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Meus Pontos</div>
+                                        <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>{t('referral.myPoints')}</div>
                                         <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#FFD700' }}>
                                             {(referralRanking.find(r => r.name === user?.name)?.referralPoints || 0)} pts
                                         </div>
                                     </div>
                                     <div style={{ background: 'rgba(0,0,0,0.02)', padding: '1.5rem', borderRadius: '20px', border: '1px solid #eee' }}>
-                                        <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Convites Convertidos</div>
+                                        <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>{t('referral.convertedInvites')}</div>
                                         <div style={{ fontSize: '1.8rem', fontWeight: 900 }}>
                                             {(referralRanking.find(r => r.name === user?.name)?.referralCount || 0)}
                                         </div>
                                     </div>
                                     <div style={{ background: 'var(--gold-gradient)', padding: '1.5rem', borderRadius: '20px', color: '#000' }}>
-                                        <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem', opacity: 0.8 }}>Minha Posição</div>
+                                        <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem', opacity: 0.8 }}>{t('referral.myPosition')}</div>
                                         <div style={{ fontSize: '1.8rem', fontWeight: 900 }}>
                                             #{referralRanking.findIndex(r => r.name === user?.name) + 1 || '-'}
                                         </div>
@@ -1805,7 +1805,7 @@ function MentorDashboardContent() {
                                 </div>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem' }}>Líderes de Impacto</h3>
+                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem' }}>{t('referral.impactLeaders')}</h3>
                                     {referralRanking.map((r, i) => (
                                         <div key={r._id} style={{
                                             display: 'flex',
@@ -1843,16 +1843,16 @@ function MentorDashboardContent() {
                                                 </div>
                                                 <div>
                                                     <div style={{ fontWeight: 800, fontSize: '1rem', color: '#1a1a1a' }}>
-                                                        {r.name === user?.name ? 'Você (Mestre de Impacto)' : r.name}
+                                                        {r.name === user?.name ? t('referral.youImpactMaster') : r.name}
                                                     </div>
                                                     <div style={{ fontSize: '0.8rem', color: '#666', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                        <Users size={12} /> {r.referralCount} mentores convidados
+                                                        <Users size={12} /> {r.referralCount} {t('referral.mentorsInvited')}
                                                     </div>
                                                 </div>
                                             </div>
                                             <div style={{ textAlign: 'right' }}>
                                                 <div style={{ fontWeight: 900, color: '#FFD700', fontSize: '1.2rem' }}>{r.referralPoints} pts</div>
-                                                <div style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#999' }}>Sócio Fundador</div>
+                                                <div style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#999' }}>{t('referral.foundingPartner')}</div>
                                             </div>
                                         </div>
                                     ))}
@@ -1860,14 +1860,14 @@ function MentorDashboardContent() {
                                     {referralRanking.length === 0 && (
                                         <div style={{ textAlign: 'center', padding: '4rem', color: '#999' }}>
                                             <Trophy size={48} style={{ opacity: 0.2, marginBottom: '1rem' }} />
-                                            <p>O ranking de impacto começará a crescer em breve! 🚀</p>
+                                            <p>{t('referral.rankingEmpty')}</p>
                                         </div>
                                     )}
 
                                     <div style={{ marginTop: '2rem', padding: '2rem', borderRadius: '24px', background: 'linear-gradient(135deg, #111 0%, #333 100%)', color: '#fff', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
                                         <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '150px', height: '150px', background: 'rgba(255,215,0,0.1)', borderRadius: '50%', filter: 'blur(30px)' }} />
-                                        <h4 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '1rem' }}>Sua influência gera recompensas reais</h4>
-                                        <p style={{ color: '#aaa', fontSize: '0.9rem', maxWidth: '500px', margin: '0 auto 1.5rem' }}>Ao convidar novos mentores de elite para a Inscreva-se, você acumula pontos que podem ser trocados por meses de Plano Pro, destaque em anúncios e benefícios exclusivos.</p>
+                                        <h4 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '1rem' }}>{t('referral.ctaTitle')}</h4>
+                                        <p style={{ color: '#aaa', fontSize: '0.9rem', maxWidth: '500px', margin: '0 auto 1.5rem' }}>{t('referral.ctaDesc')}</p>
                                         <button
                                             onClick={() => setIsReferralModalOpen(true)}
                                             style={{
@@ -1883,7 +1883,7 @@ function MentorDashboardContent() {
                                             }}
                                             className="hover:scale-105 transition-transform"
                                         >
-                                            Convidar & Expandir minha Rede
+                                            {t('referral.inviteBtn')}
                                         </button>
                                     </div>
                                 </div>
