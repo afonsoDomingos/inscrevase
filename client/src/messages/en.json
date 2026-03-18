@@ -1816,7 +1816,9 @@
             "seconds_30": "30 seconds",
             "minutes_1": "1 minute",
             "minutes_5": "5 minutes",
-            "startNow": "Start Now"
+            "startNow": "Start Now",
+            "countdownTitle": "Countdown Starting",
+            "countdownMessage": "Get your materials ready, we start in {seconds} seconds! 🚀"
         },
         "status": {
             "pending": "Pending",

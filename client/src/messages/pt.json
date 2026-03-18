@@ -1881,7 +1881,9 @@
             "seconds_30": "30 segundos",
             "minutes_1": "1 minuto",
             "minutes_5": "5 minutos",
-            "startNow": "Começar Agora"
+            "startNow": "Começar Agora",
+            "countdownTitle": "Contagem Decrescente",
+            "countdownMessage": "Prepare o seu material, começamos em {seconds} segundos! 🚀"
         },
         "communityTitle": "Comunidade",
         "chatSubscribersOnly": "Apenas participantes inscritos podem interagir no chat.",
