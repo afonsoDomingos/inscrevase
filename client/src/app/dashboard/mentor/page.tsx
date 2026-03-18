@@ -1560,12 +1560,12 @@ function MentorDashboardContent() {
                                     </colgroup>
                                     <thead>
                                         <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Evento</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('common.visibility')}</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Perfil</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Inscritos</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>Visitas</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Ações</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('dashboard.mentor.eventsTable.event')}</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('dashboard.mentor.eventsTable.visibility')}</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('dashboard.mentor.eventsTable.profile')}</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('dashboard.mentor.eventsTable.registrants')}</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>{t('dashboard.mentor.eventsTable.visits')}</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>{t('dashboard.mentor.eventsTable.actions')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1630,16 +1630,16 @@ function MentorDashboardContent() {
                                                                 color: form.partnersPublic?.includes(user.id) ? '#38a169' : '#e53e3e'
                                                             }}
                                                         >
-                                                            {form.partnersPublic?.includes(user.id) ? 'Visível' : 'Oculto'}
+                                                            {form.partnersPublic?.includes(user.id) ? t('dashboard.mentor.eventsTable.visible') : t('dashboard.mentor.eventsTable.hidden')}
                                                         </button>
                                                     ) : (
-                                                        <span style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600 }}>Dono</span>
+                                                        <span style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600 }}>{t('dashboard.mentor.eventsTable.owner')}</span>
                                                     )}
                                                 </td>
                                                 <td style={{ padding: '0.85rem 1rem' }}>
                                                     <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{form.submissionCount || 0}</div>
                                                     {form.capacity && (
-                                                        <div style={{ fontSize: '0.7rem', color: '#999', marginTop: '1px' }}>Meta: {form.capacity}</div>
+                                                        <div style={{ fontSize: '0.7rem', color: '#999', marginTop: '1px' }}>{t('dashboard.mentor.eventsTable.goal')}: {form.capacity}</div>
                                                     )}
                                                 </td>
                                                 <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
@@ -1665,7 +1665,7 @@ function MentorDashboardContent() {
                                                                     onMouseOver={e => { e.currentTarget.style.background = 'rgba(184,134,11,0.2)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                                                                     onMouseOut={e => { e.currentTarget.style.background = 'rgba(184,134,11,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                                                                 >
-                                                                    <ExternalLink size={14} /> Página Pública
+                                                                    <ExternalLink size={14} /> {t('dashboard.mentor.eventsTable.publicPage')}
                                                                 </button>
                                                             </Tooltip>
                                                             <Tooltip content={t('common.viewEventHub')}>
@@ -1683,7 +1683,7 @@ function MentorDashboardContent() {
                                                                     onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(212,175,55,0.4)'; }}
                                                                     onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(212,175,55,0.25)'; }}
                                                                 >
-                                                                    <Monitor size={14} /> Página do Inscrito
+                                                                    <Monitor size={14} /> {t('dashboard.mentor.eventsTable.participantPage')}
                                                                 </button>
                                                             </Tooltip>
                                                         </div>

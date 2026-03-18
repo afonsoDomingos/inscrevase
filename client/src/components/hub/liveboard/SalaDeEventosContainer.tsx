@@ -158,11 +158,11 @@ export default function SalaDeEventosContainer({
     const [showAnnouncementMenu, setShowAnnouncementMenu] = useState(false);
 
     const announcementsList = [
-        { id: 'welcome', label: 'Boas-vindas', message: 'Bem-vindo à nossa aula em direto! Prepare o seu material, começamos em instantes. 🚀', icon: '✨', color: '#3b82f6' },
-        { id: 'break', label: 'Pausa Rápida', message: 'Pausa rápida para hidratar o conhecimento. Volto em 2 minutos! ☕💧', icon: '☕', color: '#f59e0b' },
-        { id: 'exercise', label: 'Mão na Massa', message: 'Momento de Exercício! Use este tempo para resolver o desafio desenhado no ecrã. ✍️', icon: '🎯', color: '#10b981' },
-        { id: 'qa', label: 'Dúvidas (Q&A)', message: 'Momento de Dúvidas! Se tiver questões, levante a mão (✋) ou escreva no chat!', icon: '❓', color: '#8b5cf6' },
-        { id: 'focus', label: 'Foco Total', message: 'Foco Absoluto! Desligue as notificações e mergulhe no conteúdo agora. 🛡️', icon: '🛡️', color: '#ef4444' },
+        { id: 'welcome', label: t('hub.salaDeEventos.announcements.welcome.label'), message: t('hub.salaDeEventos.announcements.welcome.message'), icon: '✨', color: '#3b82f6' },
+        { id: 'break', label: t('hub.salaDeEventos.announcements.break.label'), message: t('hub.salaDeEventos.announcements.break.message'), icon: '☕', color: '#f59e0b' },
+        { id: 'exercise', label: t('hub.salaDeEventos.announcements.exercise.label'), message: t('hub.salaDeEventos.announcements.exercise.message'), icon: '🎯', color: '#10b981' },
+        { id: 'qa', label: t('hub.salaDeEventos.announcements.qa.label'), message: t('hub.salaDeEventos.announcements.qa.message'), icon: '❓', color: '#8b5cf6' },
+        { id: 'focus', label: t('hub.salaDeEventos.announcements.focus.label'), message: t('hub.salaDeEventos.announcements.focus.message'), icon: '🛡️', color: '#ef4444' },
     ];
 
     // Page Management
@@ -1322,7 +1322,7 @@ export default function SalaDeEventosContainer({
                             {/* Raised Hands are shown in the floating panel — not duplicated here */}
                             <span style={{ marginLeft: isMobile ? '0' : '12px', fontSize: '0.75rem', fontWeight: 700, color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                 {isMobile && <Users size={14} />}
-                                {participants.length} {!isMobile && (participants.length === 1 ? 'conetado' : 'conectados')}
+                                {participants.length} {!isMobile && (participants.length === 1 ? t('hub.salaDeEventos.connected') : t('hub.salaDeEventos.connected_plural'))}
                             </span>
                         </div>
 
@@ -1368,9 +1368,9 @@ export default function SalaDeEventosContainer({
                                         fontSize: '0.75rem',
                                         opacity: isNotifying ? 0.6 : 1
                                     }}
-                                    title="Enviar e-mail para inscritos que ainda não entraram"
+                                    title={t('hub.salaDeEventos.callStudentsTooltip')}
                                 >
-                                    <Mail size={14} /> {!isMobile && "Chamar Inscritos"}
+                                    <Mail size={14} /> {!isMobile && t('hub.salaDeEventos.callStudents')}
                                 </button>
 
                                 <div style={{ position: 'relative' }}>
@@ -1412,7 +1412,7 @@ export default function SalaDeEventosContainer({
                                                     gap: '8px'
                                                 }}
                                             >
-                                                <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#888', marginBottom: '4px' }}>ESTABELECER FOCO</span>
+                                                <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#888', marginBottom: '4px' }}>{t('hub.salaDeEventos.setFocus')}</span>
                                                 {[1, 2, 5, 10, 15].map(min => (
                                                     <button
                                                         key={min}
@@ -1422,7 +1422,7 @@ export default function SalaDeEventosContainer({
                                                         }}
                                                         style={{ padding: '8px', borderRadius: '8px', border: 'none', background: isDark ? '#333' : '#f5f5f5', color: isDark ? '#fff' : '#444', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}
                                                     >
-                                                        {min} {min === 1 ? 'minuto' : 'minutos'}
+                                                        {min} {min === 1 ? t('hub.salaDeEventos.minute') : t('hub.salaDeEventos.minutes')}
                                                     </button>
                                                 ))}
                                                 {isTimerActive && (
@@ -1433,7 +1433,7 @@ export default function SalaDeEventosContainer({
                                                         }}
                                                         style={{ marginTop: '4px', padding: '8px', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#ef4444', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}
                                                     >
-                                                        Parar Timer
+                                                        {t('hub.salaDeEventos.stopTimer')}
                                                     </button>
                                                 )}
                                             </motion.div>
@@ -1455,7 +1455,7 @@ export default function SalaDeEventosContainer({
                             color: isDark ? '#fff' : '#444'
                         }}>
                             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ff4757' }} className="animate-pulse" />
-                            <span>SALA DE {!isMobile && "EVENTOS"}</span>
+                            <span>{t('hub.salaDeEventos.eventRoom')}</span>
                         </div>
 
                         {isMentor ? (
@@ -1475,7 +1475,7 @@ export default function SalaDeEventosContainer({
                                     gap: '6px'
                                 }}
                             >
-                                <X size={14} /> {!isMobile && "Encerramento"}
+                                <X size={14} /> {!isMobile && t('hub.salaDeEventos.endSession')}
                             </button>
                         ) : (
                             <button
@@ -1494,7 +1494,7 @@ export default function SalaDeEventosContainer({
                                     gap: '6px'
                                 }}
                             >
-                                <X size={16} /> {!isMobile && "Minimizar"}
+                                <X size={16} /> {!isMobile && t('hub.salaDeEventos.minimize')}
                             </button>
                         )}
                     </div>
@@ -1562,7 +1562,7 @@ export default function SalaDeEventosContainer({
                                 letterSpacing: '0.5px'
                             }}
                         >
-                            <Maximize2 size={16} strokeWidth={3} /> Maximizar
+                            <Maximize2 size={16} strokeWidth={3} /> {t('hub.salaDeEventos.maximize_label')}
                         </motion.div>
                     </motion.div>
                 )}
@@ -1603,7 +1603,7 @@ export default function SalaDeEventosContainer({
                                 marginTop: '2px',
                                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                             }}>
-                                Mentor
+                                {t('hub.salaDeEventos.mentor')}
                             </div>
                         </motion.div>
                     )
@@ -1701,7 +1701,7 @@ export default function SalaDeEventosContainer({
                                         </div>
                                     </div>
                                     <span style={{ fontSize: '0.7rem', fontWeight: 800, color: isDark ? '#fff' : '#111' }}>
-                                        {mentorData.name} a falar
+                                        {mentorData.name} {t('hub.salaDeEventos.speaking')}
                                     </span>
                                 </motion.div>
                             )}
@@ -1909,7 +1909,7 @@ export default function SalaDeEventosContainer({
                                         justifyContent: 'center',
                                         flexShrink: 0
                                     }}
-                                    title="Pincel Livre"
+                                    title={t('hub.salaDeEventos.freehandBrush')}
                                 >
                                     <svg width={isMobile ? "14" : "16"} height={isMobile ? "14" : "16"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                                 </button>
@@ -1929,7 +1929,7 @@ export default function SalaDeEventosContainer({
                                         justifyContent: 'center',
                                         flexShrink: 0
                                     }}
-                                    title="Mover Sólidos"
+                                    title={t('hub.salaDeEventos.moveShapes')}
                                 >
                                     <Hand size={isMobile ? 12 : 14} />
                                 </button>
@@ -1951,10 +1951,10 @@ export default function SalaDeEventosContainer({
                             )}
 
                             <div style={{ display: 'flex', gap: '0px', flexShrink: 0 }}>
-                                <button onClick={() => setUndoTrigger(prev => prev + 1)} style={{ width: isMobile ? '26px' : '30px', height: isMobile ? '26px' : '30px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Desfazer (Undo)"><Undo size={isMobile ? 12 : 14} /></button>
+                                <button onClick={() => setUndoTrigger(prev => prev + 1)} style={{ width: isMobile ? '26px' : '30px', height: isMobile ? '26px' : '30px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#fff' : '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={t('hub.salaDeEventos.undo_title')}><Undo size={isMobile ? 12 : 14} /></button>
                                 <button
                                     onClick={() => setShowClearConfirm(true)}
-                                    style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#ff4757' : '#ff4757', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Apagar Tudo"
+                                    style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', cursor: 'pointer', color: isDark ? '#ff4757' : '#ff4757', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={t('hub.salaDeEventos.clear_title')}
                                 >
                                     <Eraser size={isMobile ? 12 : 14} />
                                 </button>
@@ -1973,7 +1973,7 @@ export default function SalaDeEventosContainer({
                                     <button
                                         onClick={() => setShowParticipantsPanel(!showParticipantsPanel)}
                                         style={{ width: isMobile ? '26px' : '30px', height: isMobile ? '26px' : '30px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: showParticipantsPanel ? primaryColor : 'transparent', color: showParticipantsPanel ? '#fff' : (isDark ? '#fff' : '#666'), display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
-                                        title="Permissões de Desenho"
+                                        title={t('hub.salaDeEventos.drawingPermissions')}
                                     >
                                         <PenLine size={isMobile ? 12 : 14} />
                                         {isMentor && raisedHands.size > 0 && (
@@ -2023,26 +2023,26 @@ export default function SalaDeEventosContainer({
                                                 }}
                                             >
                                                 <div style={{ fontSize: '0.65rem', fontWeight: 900, color: '#888', marginBottom: '10px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Users size={12} /> Giz (Permissões)</div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Users size={12} /> {t('hub.salaDeEventos.chalkboard')}</div>
                                                     {participants.length > 0 && (
                                                         <div style={{ display: 'flex', gap: '4px' }}>
                                                             <button
                                                                 onClick={grantAllDrawingPermissions}
                                                                 style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981', border: 'none', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 800, cursor: 'pointer' }}
                                                             >
-                                                                Tudo
+                                                                {t('hub.salaDeEventos.all')}
                                                             </button>
                                                             <button
                                                                 onClick={revokeAllDrawingPermissions}
                                                                 style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 800, cursor: 'pointer' }}
                                                             >
-                                                                Limpar
+                                                                {t('hub.salaDeEventos.clear')}
                                                             </button>
                                                         </div>
                                                     )}
                                                 </div>
                                                 {participants.length === 0 ? (
-                                                    <p style={{ fontSize: '0.8rem', color: '#999', textAlign: 'center', padding: '10px 0' }}>Nenhum participante conectado.</p>
+                                                    <p style={{ fontSize: '0.8rem', color: '#999', textAlign: 'center', padding: '10px 0' }}>{t('hub.salaDeEventos.noParticipants')}</p>
                                                 ) : (
                                                     participants.map((p: any) => (
                                                         <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '8px 0', borderBottom: isDark ? '1px solid #333' : '1px solid #f5f5f5' }}>
@@ -2209,7 +2209,7 @@ export default function SalaDeEventosContainer({
                                             justifyContent: 'center',
                                             transition: 'all 0.2s'
                                         }}
-                                        title="Testar Som e Microfone"
+                                        title={t('hub.salaDeEventos.audioSettings')}
                                     >
                                         <Settings size={14} />
                                     </button>
@@ -2237,11 +2237,11 @@ export default function SalaDeEventosContainer({
                                                     gap: '10px'
                                                 }}
                                             >
-                                                <div style={{ fontSize: '0.75rem', fontWeight: 800, color: isDark ? '#cbd5e1' : '#64748b' }}>Teste de Áudio</div>
+                                                <div style={{ fontSize: '0.75rem', fontWeight: 800, color: isDark ? '#cbd5e1' : '#64748b' }}>{t('hub.salaDeEventos.audioTestTitle')}</div>
 
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                        <span style={{ fontSize: '0.65rem' }}>Microfone:</span>
+                                                        <span style={{ fontSize: '0.65rem' }}>{t('hub.salaDeEventos.micLabel')}</span>
                                                         <Activity size={12} color={testMicLevel > 10 ? '#22c55e' : '#94a3b8'} />
                                                     </div>
                                                     <div style={{ height: '6px', background: isDark ? '#334155' : '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
@@ -2269,7 +2269,7 @@ export default function SalaDeEventosContainer({
                                                         justifyContent: 'center'
                                                     }}
                                                 >
-                                                    <Volume2 size={12} /> Testar Saída (Som)
+                                                    <Volume2 size={12} /> {t('hub.salaDeEventos.testSpeakers')}
                                                 </button>
 
                                                 <button
@@ -2285,7 +2285,7 @@ export default function SalaDeEventosContainer({
                                                         cursor: 'pointer'
                                                     }}
                                                 >
-                                                    Fechar
+                                                    {t('hub.salaDeEventos.close')}
                                                 </button>
                                             </motion.div>
                                         )}
@@ -2298,7 +2298,7 @@ export default function SalaDeEventosContainer({
                                             if (isMutingAll) return;
                                             setIsMutingAll(true);
                                             socket?.emit('live_board:mute_all', formId);
-                                            toast.success('🔇 Todos os microfones foram mutados.');
+                                            toast.success(t('hub.salaDeEventos.mutingAllToast'));
                                             setTimeout(() => setIsMutingAll(false), 2000);
                                         }}
                                         disabled={isMutingAll}
@@ -2320,10 +2320,10 @@ export default function SalaDeEventosContainer({
                                             transition: 'all 0.2s',
                                             opacity: isMutingAll ? 0.7 : 1
                                         }}
-                                        title="Mutar todos os participantes"
+                                        title={t('hub.salaDeEventos.muteAllTitle')}
                                     >
                                         {isMutingAll ? <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}><VolumeX size={14} /></motion.div> : <VolumeX size={14} />}
-                                        {!isMobile && (isMutingAll ? 'A Mutar...' : 'Mutar Todos')}
+                                        {!isMobile && (isMutingAll ? t('hub.salaDeEventos.muting') : t('hub.salaDeEventos.muteAll'))}
                                     </button>
                                 )}
 
@@ -2347,9 +2347,9 @@ export default function SalaDeEventosContainer({
                                                 fontSize: '0.65rem',
                                                 flexShrink: 0
                                             }}
-                                            title="Enviar avisos e alertas para os alunos"
+                                            title={t('hub.salaDeEventos.announcementsTitle')}
                                         >
-                                            <Megaphone size={14} /> {!isMobile && "Avisos"}
+                                            <Megaphone size={14} /> {!isMobile && t('hub.salaDeEventos.announcementsBtn')}
                                         </button>
 
 
@@ -2370,7 +2370,7 @@ export default function SalaDeEventosContainer({
                                                 justifyContent: 'center',
                                                 flexShrink: 0
                                             }}
-                                            title="Criar Quiz"
+                                            title={t('hub.salaDeEventos.createQuizTitle')}
                                         >
                                             <HelpCircle size={isMobile ? 12 : 14} />
                                         </button>
@@ -2379,7 +2379,7 @@ export default function SalaDeEventosContainer({
 
                                         <div style={{ display: 'flex', gap: '3px', flexShrink: 0 }}>
                                             <button
-                                                onClick={() => sendReaction('Sim')}
+                                                onClick={() => sendReaction(t('hub.salaDeEventos.yes'))}
                                                 style={{
                                                     background: '#22c55e',
                                                     color: '#fff',
@@ -2394,10 +2394,10 @@ export default function SalaDeEventosContainer({
                                                     flexShrink: 0
                                                 }}
                                             >
-                                                SIM
+                                                {t('hub.salaDeEventos.yes')}
                                             </button>
                                             <button
-                                                onClick={() => sendReaction('Não')}
+                                                onClick={() => sendReaction(t('hub.salaDeEventos.no'))}
                                                 style={{
                                                     background: '#ef4444',
                                                     color: '#fff',
@@ -2412,7 +2412,7 @@ export default function SalaDeEventosContainer({
                                                     flexShrink: 0
                                                 }}
                                             >
-                                                NÃO
+                                                {t('hub.salaDeEventos.no')}
                                             </button>
                                         </div>
                                     </div>
@@ -2443,7 +2443,7 @@ export default function SalaDeEventosContainer({
                                         position: 'relative'
                                     }}
                                 >
-                                    <MessageSquare size={12} /> {(typeof window !== 'undefined' && window.innerWidth > 1000) && "Chat"}
+                                    <MessageSquare size={12} /> {(typeof window !== 'undefined' && window.innerWidth > 1000) && t('hub.salaDeEventos.chat')}
                                     <AnimatePresence>
                                         {unreadCount > 0 && (
                                             <motion.div
@@ -2529,7 +2529,7 @@ export default function SalaDeEventosContainer({
                                                 transition: 'all 0.2s',
                                                 flexShrink: 0
                                             }}
-                                            title="Testar Som e Microfone"
+                                            title={t('hub.salaDeEventos.audioSettings')}
                                         >
                                             <Settings size={14} />
                                         </button>
@@ -2557,11 +2557,11 @@ export default function SalaDeEventosContainer({
                                                         gap: '10px'
                                                     }}
                                                 >
-                                                    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: isDark ? '#cbd5e1' : '#64748b' }}>Teste de Áudio</div>
+                                                    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: isDark ? '#cbd5e1' : '#64748b' }}>{t('hub.salaDeEventos.audioTestTitle')}</div>
 
                                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                            <span style={{ fontSize: '0.65rem' }}>Microfone:</span>
+                                                            <span style={{ fontSize: '0.65rem' }}>{t('hub.salaDeEventos.micLabel')}</span>
                                                             <Activity size={12} color={testMicLevel > 10 ? '#22c55e' : '#94a3b8'} />
                                                         </div>
                                                         <div style={{ height: '6px', background: isDark ? '#334155' : '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
@@ -2589,7 +2589,7 @@ export default function SalaDeEventosContainer({
                                                             justifyContent: 'center'
                                                         }}
                                                     >
-                                                        <Volume2 size={12} /> Testar Saída (Som)
+                                                        <Volume2 size={12} /> {t('hub.salaDeEventos.testSpeakers')}
                                                     </button>
 
                                                     <button
@@ -2605,7 +2605,7 @@ export default function SalaDeEventosContainer({
                                                             cursor: 'pointer'
                                                         }}
                                                     >
-                                                        Fechar
+                                                        {t('hub.salaDeEventos.close')}
                                                     </button>
                                                 </motion.div>
                                             )}
