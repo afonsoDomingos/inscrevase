@@ -1267,6 +1267,8 @@
         "instructionsPlaceholder": "Ex: Pagamento via M-Pesa para 841234567 (Nome)...",
         "defaultFieldName": "Nome Completo",
         "defaultFieldEmail": "Email",
+        "defaultFieldPhone": "Telefone / WhatsApp",
+        "titleRequired": "O título do evento é obrigatório",
         "capacityPlaceholder": "Ex: 50",
         "noIdentification": "Sem identificação",
         "loading": "Carregando inscrições...",
@@ -1347,39 +1349,39 @@
             "title": "Tipo de Evento",
             "palestra": {
                 "title": "Palestra",
-                "description": "Focada em inspiração e partilha de conhecimento."
+                "description": "1 a 2 horas, focado em inspirar e transmitir conhecimento geral sobre um tema."
             },
             "workshop": {
                 "title": "Workshop",
-                "description": "Prático, onde os participantes aprendem fazendo."
+                "description": "Focado na prática. Os participantes executam e aplicam a teoria em tempo real."
             },
             "mentoria": {
                 "title": "Mentoria",
-                "description": "Acompanhamento personalizado em grupos pequenos."
+                "description": "Encontros focados num grupo seleto para orientação passo a passo e direcionamento."
             },
             "curso": {
-                "title": "Curso",
-                "description": "Formação estruturada com várias aulas ou módulos."
+                "title": "Curso Prático",
+                "description": "Formação completa com vários módulos, aulas e material de apoio focado no aprendizado profundo."
             },
             "treinamento": {
-                "title": "Treinamento",
-                "description": "Desenvolvimento de habilidades específicas."
+                "title": "Treinamento Corporativo",
+                "description": "Focado em melhorar as habilidades técnicas de equipas de empresas."
             },
             "seminario": {
                 "title": "Seminário",
-                "description": "Discussão técnica ou académica com especialistas."
+                "description": "Apresentação e debate avançado sobre temas técnicos com especialistas."
             },
             "masterclass": {
                 "title": "Masterclass",
-                "description": "Aula avançada conduzida por um especialista."
+                "description": "Aula aprofundada dada por um especialista sobre um tema específico de grande valor."
             },
             "aulaaberta": {
-                "title": "Aula Aberta",
-                "description": "Aula única rápida para atrair novos alunos e compartilhar valor."
+                "title": "Aula Aberta (Ao Vivo)",
+                "description": "Aula de amostra grátis ou lançamentos de produtos."
             },
             "conferencia": {
                 "title": "Conferência",
-                "description": "Grande evento com múltiplos palestrantes e sessões complexas."
+                "description": "Evento de grande porte com vários painéis, palestras e oportunidades de networking."
             }
         },
         "steps": {

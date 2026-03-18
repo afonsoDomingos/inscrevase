@@ -1231,6 +1231,8 @@
         "instructionsPlaceholder": "Ex: Payment via M-Pesa to 841234567 (Name)...",
         "defaultFieldName": "Full Name",
         "defaultFieldEmail": "Email",
+        "defaultFieldPhone": "Phone / WhatsApp",
+        "titleRequired": "Event title is required",
         "capacityPlaceholder": "Ex: 50",
         "noIdentification": "No identification",
         "loading": "Loading registrations...",
@@ -1298,39 +1300,39 @@
             "title": "Event Type",
             "palestra": {
                 "title": "Talk / Lecture",
-                "description": "Focused on inspiration and knowledge sharing."
+                "description": "1 to 2 hours, focused on inspiring and sharing general knowledge about a topic."
             },
             "workshop": {
                 "title": "Workshop",
-                "description": "Practical, where participants learn by doing."
+                "description": "Practice-focused. Participants execute and apply theory in real-time."
             },
             "mentoria": {
                 "title": "Mentorship",
-                "description": "Personalized guidance in small groups."
+                "description": "Meetings focused on a select group for step-by-step guidance and direction."
             },
             "curso": {
-                "title": "Course",
-                "description": "Structured training with several lessons or modules."
+                "title": "Practical Course",
+                "description": "Complete training with multiple modules, lessons, and support material focused on deep learning."
             },
             "treinamento": {
-                "title": "Training",
-                "description": "Development of specific skills."
+                "title": "Corporate Training",
+                "description": "Focused on improving the technical skills of corporate teams."
             },
             "seminario": {
                 "title": "Seminar",
-                "description": "Technical or academic discussion with experts."
+                "description": "Advanced presentation and debate on technical topics with experts."
             },
             "masterclass": {
                 "title": "Masterclass",
-                "description": "Advanced class led by an expert."
+                "description": "In-depth class given by an expert on a specific, high-value topic."
             },
             "aulaaberta": {
-                "title": "Open Class",
-                "description": "Short single session to attract students and share quick value."
+                "title": "Open Class (Live)",
+                "description": "Free sample class or product launches."
             },
             "conferencia": {
                 "title": "Conference",
-                "description": "Large scale event with multiple speakers and topics."
+                "description": "Large-scale event with multiple panels, lectures, and networking opportunities."
             }
         },
         "steps": {
