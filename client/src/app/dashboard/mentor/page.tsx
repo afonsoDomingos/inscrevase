@@ -2184,13 +2184,13 @@ function MentorDashboardContent() {
 
                                     <div style={{ position: 'relative', zIndex: 1, maxWidth: '700px' }}>
                                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', background: 'rgba(255, 215, 0, 0.15)', border: '1px solid rgba(255, 215, 0, 0.3)', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#FFD700', marginBottom: '1.5rem' }}>
-                                            🛸 Ambiente de Testes
+                                            🛸 {t('liveRoom.testEnv')}
                                         </div>
                                         <h2 style={{ fontSize: isMobile ? '2rem' : '3.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, marginBottom: '1.5rem', color: '#fff' }}>
-                                            Laboratório <span className="gold-text">Sala de Eventos</span>
+                                            {t('liveRoom.labTitle')} <span className="gold-text">{t('liveRoom.labSubtitle')}</span>
                                         </h2>
                                         <p style={{ fontSize: '1.1rem', color: '#888', lineHeight: 1.6, marginBottom: '2.5rem' }}>
-                                            Este é o seu espaço privado para praticar. Teste todos os recursos da Sala de Eventos — pincéis, cronómetros, quizzes e sincronização — para garantir que a sua próxima aula em direto seja impecável.
+                                            {t('liveRoom.labDesc')}
                                         </p>
 
                                         <button
@@ -2213,16 +2213,16 @@ function MentorDashboardContent() {
                                             onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)'}
                                             onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.transform = 'translateY(0) scale(1)'}
                                         >
-                                            ENTRAR NO LABORATÓRIO <Monitor size={22} />
+                                            {t('liveRoom.enterLab')} <Monitor size={22} />
                                         </button>
                                     </div>
                                 </div>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '2rem' }}>
                                     {[
-                                        { title: "Dominar Ferramentas", desc: "Pratique o uso de formas, textos e desenhos à mão livre para tornar a sua explicação visualmente rica.", icon: <Palette size={24} /> },
-                                        { title: "Testar Quizzes", desc: "Crie e visualize como os alunos interagem com as perguntas em tempo real para maximizar a retenção.", icon: <CheckCircle size={24} /> },
-                                        { title: "Gestão de Tempo", desc: "Habitue-se a usar o temporizador de foco para gerir os exercícios práticos da sua aula.", icon: <Clock size={24} /> }
+                                        { title: t('liveRoom.feature1Title'), desc: t('liveRoom.feature1Desc'), icon: <Palette size={24} /> },
+                                        { title: t('liveRoom.feature2Title'), desc: t('liveRoom.feature2Desc'), icon: <CheckCircle size={24} /> },
+                                        { title: t('liveRoom.feature3Title'), desc: t('liveRoom.feature3Desc'), icon: <Clock size={24} /> }
                                     ].map((feature, i) => (
                                         <div key={i} style={{ padding: '2.5rem', borderRadius: '32px', background: 'var(--paper)', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
                                             <div style={{ color: '#D4AF37', marginBottom: '1.5rem', background: 'rgba(212, 175, 55, 0.05)', width: '60px', height: '60px', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -2250,11 +2250,11 @@ function MentorDashboardContent() {
                         <SalaDeEventosContainer
                             formId={`lab-${user._id}`}
                             isMentor={true}
-                            eventTitle="LABORATÓRIO DE TESTES"
+                            eventTitle={t('liveRoom.labEventTitle')}
                             mentorData={{
                                 name: user.name,
                                 photo: user.profilePhoto || "",
-                                title: "MENTOR (MODO TESTE)",
+                                title: t('liveRoom.labMentorTitle'),
                                 socialLinks: {},
                                 whatsapp: ""
                             }}

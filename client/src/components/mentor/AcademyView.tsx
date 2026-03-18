@@ -316,7 +316,7 @@ export default function AcademyView() {
                 closeModal();
             } else {
                 const err = await response.json();
-                alert(err.message || 'Erro ao salvar aula');
+                alert(err.message || t('academy.errorSaving'));
             }
         } catch (error) {
             console.error('Error saving lesson:', error);
@@ -324,7 +324,7 @@ export default function AcademyView() {
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Tem certeza que deseja deletar esta aula?')) return;
+        if (!confirm(t('academy.deleteConfirm'))) return;
         try {
             const token = Cookies.get('token');
             await fetch(`${API_URL}/lessons/${id}`, {
@@ -389,10 +389,10 @@ export default function AcademyView() {
                 })
             ]);
 
-            toast.success('Ordem atualizada!');
+            toast.success(t('academy.orderUpdated'));
         } catch (error) {
             console.error('Error moving lesson:', error);
-            toast.error('Erro ao mover aula');
+            toast.error(t('academy.errorMoving'));
             fetchManageLessons();
         }
     };
@@ -443,7 +443,7 @@ export default function AcademyView() {
             await axios.post(`${API_URL}/certificates/generate`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            toast.success('Certificado gerado com sucesso! Você será redirecionado.');
+            toast.success(t('academy.certGenSuccess'));
             setTimeout(() => {
                 router.push('/dashboard/mentor/certificates');
             }, 1000);
@@ -453,7 +453,7 @@ export default function AcademyView() {
             if (err.response?.data?.message) {
                 toast.error(err.response.data.message);
             } else {
-                toast.error('Erro ao gerar certificado.');
+                toast.error(t('academy.certGenError'));
             }
         }
     };
@@ -480,7 +480,7 @@ export default function AcademyView() {
                     }}>
                         🎓 Academia <span className="gold-text">Inscreva-se</span>
                     </h1>
-                    <p style={{ color: '#666', fontSize: '0.9rem', opacity: 0.8 }}>Aprenda com especialistas ou compartilhe seu conhecimento</p>
+                    <p style={{ color: '#666', fontSize: '0.9rem', opacity: 0.8 }}>{t('academy.subtitle')}</p>
                 </div>
 
                 <div style={{
@@ -663,7 +663,7 @@ export default function AcademyView() {
                             }}
                         >
                             <Heart size={18} fill={showFavoritesOnly ? '#ef4444' : 'none'} />
-                            {isMobile ? 'Fav.' : 'Favoritas'}
+                            {isMobile ? t('academy.favoritesMobile') : t('academy.favorites')}
                         </button>
                     </div>
 
@@ -694,7 +694,7 @@ export default function AcademyView() {
                                     {/* New Badge */}
                                     {new Date(lesson.createdAt).getTime() > new Date().getTime() - 7 * 24 * 60 * 60 * 1000 && (
                                         <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'var(--gold-gradient)', color: '#000', padding: '4px 12px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: '900', zIndex: 20, boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
-                                            NOVO
+                                            {t('academy.newBadge')}
                                         </div>
                                     )}
                                     <div style={{ position: 'relative', paddingTop: '56.25%', background: info.gradient }}>
@@ -736,19 +736,19 @@ export default function AcademyView() {
                                                 zIndex: 10
                                             }}>
                                                 {isAdmin ? <Shield size={14} /> : <Lock size={14} />}
-                                                {lesson.isLocked && (isAdmin ? 'BLOQUEADA PARA USUÁRIOS' : 'BLOQUEADA')}
+                                                {lesson.isLocked && (isAdmin ? t('academy.lockedForUsers') : t('academy.locked'))}
                                             </div>
                                         )}
 
                                         {lesson.isCompleted && (
-                                            <Tooltip content="Concluída">
+                                            <Tooltip content={t('academy.completed')}>
                                                 <div style={{ position: 'absolute', top: '12px', right: '12px', background: '#10b981', padding: '6px', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
                                                     <CheckCircle size={20} color="white" />
                                                 </div>
                                             </Tooltip>
                                         )}
                                         {lesson.isFavorite && (
-                                            <Tooltip content="Favorita">
+                                            <Tooltip content={t('academy.favoriteLabel')}>
                                                 <div style={{ position: 'absolute', top: lesson.isLocked ? '50px' : '12px', left: '12px', background: 'rgba(255, 255, 255, 0.9)', padding: '6px', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
                                                     <Heart size={20} color="#ef4444" fill="#ef4444" />
                                                 </div>
@@ -765,13 +765,13 @@ export default function AcademyView() {
                                                 {info.icon} {info.label}
                                             </span>
                                             <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#666', background: 'rgba(0,0,0,0.05)', padding: '4px 10px', borderRadius: '20px' }}>
-                                                Aula {lesson.order || idx + 1}
+                                                {t('academy.lessonWord')} {lesson.order || idx + 1}
                                             </span>
                                         </div>
                                         <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--foreground)', marginBottom: '0.5rem', lineHeight: '1.4' }}>{lesson.title}</h2>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#999', fontSize: '0.875rem' }}>
                                             <Eye size={16} />
-                                            <span>{lesson.views} visualizações</span>
+                                            <span>{lesson.views} {t('academy.views')}</span>
                                         </div>
                                     </div>
                                     {/* Progress Bar for In-Progress Lessons */}
@@ -791,8 +791,8 @@ export default function AcademyView() {
                         ).length === 0 && (
                                 <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 2rem', background: 'var(--paper)', borderRadius: '24px', border: '1px dashed var(--border)' }}>
                                     <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
-                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--foreground)' }}>Nenhuma aula encontrada</h3>
-                                    <p style={{ color: '#666' }}>Tente ajustar seus filtros ou termos de busca.</p>
+                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--foreground)' }}>{t('academy.noLessonsFound')}</h3>
+                                    <p style={{ color: '#666' }}>{t('academy.noLessonsHint')}</p>
                                 </div>
                             )}
                     </div>
@@ -801,13 +801,13 @@ export default function AcademyView() {
                     <div style={{ marginTop: '3rem', padding: '1.5rem', background: 'rgba(0,0,0,0.01)', borderRadius: '24px', border: '1px solid var(--border)' }}>
                         <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--foreground)', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                             <TrendingUp size={20} className="gold-text" />
-                            Dicas para Mentores de Elite
+                            {t('academy.tipsSectionTitle')}
                         </h3>
                         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1rem' }}>
                             {[
-                                { title: 'Conteúdo Curto', text: 'Vídeos de 5-10 min têm 80% mais taxa de conclusão.', icon: '⏱️' },
-                                { title: 'Engajamento', text: 'Peça feedback nos primeiros minutos das lives.', icon: '💬' },
-                                { title: 'Visual Premium', text: 'Use capas atraentes e títulos claros para suas aulas.', icon: '✨' }
+                                { title: t('academy.tip1Title'), text: t('academy.tip1Text'), icon: '⏱️' },
+                                { title: t('academy.tip2Title'), text: t('academy.tip2Text'), icon: '💬' },
+                                { title: t('academy.tip3Title'), text: t('academy.tip3Text'), icon: '✨' }
                             ].map((tip, i) => (
                                 <div key={i} className="luxury-card" style={{ background: 'var(--paper)', padding: '1rem', borderRadius: '16px', border: '1px solid var(--border)' }}>
                                     <h4 style={{ fontWeight: 800, fontSize: '0.9rem', marginBottom: '6px', color: '#D4AF37', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -832,10 +832,10 @@ export default function AcademyView() {
                         marginBottom: '1.5rem'
                     }}>
                         {[
-                            { icon: Video, label: 'Aulas', value: manageStats.total, color: '#D4AF37' },
-                            { icon: CheckCircle, label: 'Ativas', value: manageStats.published, color: '#10b981' },
-                            { icon: Clock, label: 'Drafts', value: manageStats.unpublished, color: '#f59e0b' },
-                            { icon: TrendingUp, label: 'Views', value: manageStats.totalViews, color: '#3b82f6' }
+                            { icon: Video, label: t('academy.manageStat1'), value: manageStats.total, color: '#D4AF37' },
+                            { icon: CheckCircle, label: t('academy.manageStat2'), value: manageStats.published, color: '#10b981' },
+                            { icon: Clock, label: t('academy.manageStat3'), value: manageStats.unpublished, color: '#f59e0b' },
+                            { icon: TrendingUp, label: t('academy.manageStat4'), value: manageStats.totalViews, color: '#3b82f6' }
                         ].map((stat, idx) => (
                             <div key={idx} className="luxury-card" style={{
                                 background: 'var(--paper)',
@@ -871,9 +871,9 @@ export default function AcademyView() {
                             <Award size={24} />
                         </div>
                         <div style={{ flex: 1 }}>
-                            <h3 style={{ margin: '0 0 2px 0', fontSize: '1rem', fontWeight: 800, color: '#D4AF37', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Primeiros Passos</h3>
+                            <h3 style={{ margin: '0 0 2px 0', fontSize: '1rem', fontWeight: 800, color: '#D4AF37', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('academy.firstStepsTitle')}</h3>
                             <p style={{ margin: 0, fontSize: '0.85rem', color: '#666', lineHeight: '1.5' }}>
-                                Clique em <b>+ Nova Aula</b> • Upload seu vídeo ou cole um link • Defina o <b>Público</b> • <b>Publique</b> para liberar o acesso.
+                                {t('academy.firstStepsText')}
                             </p>
                         </div>
                     </div>
@@ -890,7 +890,7 @@ export default function AcademyView() {
                             <Search size={20} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
                             <input
                                 type="text"
-                                placeholder="Buscar minhas aulas..."
+                                placeholder={t('academy.searchMyLessons')}
                                 value={manageSearch}
                                 onChange={(e) => setManageSearch(e.target.value)}
                                 style={{ width: '100%', padding: '12px 12px 12px 44px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--paper)', color: 'var(--foreground)' }}
@@ -915,7 +915,7 @@ export default function AcademyView() {
                                 transition: 'all 0.3s'
                             }}
                         >
-                            <Plus size={18} /> Nova Aula
+                            <Plus size={18} /> {t('academy.newLesson')}
                         </button>
                     </div>
 
@@ -930,11 +930,11 @@ export default function AcademyView() {
                         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: isMobile ? '800px' : 'auto' }}>
                             <thead>
                                 <tr style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid var(--border)' }}>
-                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Aula</th>
-                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Categoria</th>
-                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Público</th>
-                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>Status</th>
-                                    <th style={{ padding: '1rem', textAlign: 'right', color: '#666' }}>Ações</th>
+                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>{t('academy.tableLesson')}</th>
+                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>{t('academy.tableCategory')}</th>
+                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>{t('academy.tableAudience')}</th>
+                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>{t('academy.tableStatus')}</th>
+                                    <th style={{ padding: '1rem', textAlign: 'right', color: '#666' }}>{t('academy.tableActions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -978,16 +978,16 @@ export default function AcademyView() {
                                                                 lesson.targetAudience === 'specialists' ? '#86198f' :
                                                                     lesson.targetAudience === 'all' ? '#166534' : '#4b5563'
                                                 }}>
-                                                    {lesson.targetAudience === 'both' ? '👥🎓 Ambos' :
-                                                        lesson.targetAudience === 'mentors' ? '🎓 Mentor' :
-                                                            lesson.targetAudience === 'companies' ? '🏢 Empresa' :
-                                                                lesson.targetAudience === 'specialists' ? '⚡ Especialista' :
-                                                                    lesson.targetAudience === 'all' ? '🌍 Todos' : '👥 Participante'}
+                                                    {lesson.targetAudience === 'both' ? `👥🎓 ${t('academy.audienceBoth')}` :
+                                                        lesson.targetAudience === 'mentors' ? `🎓 ${t('academy.audienceMentor')}` :
+                                                            lesson.targetAudience === 'companies' ? `🏢 ${t('academy.audienceCompany')}` :
+                                                                lesson.targetAudience === 'specialists' ? `⚡ ${t('academy.audienceSpecialist')}` :
+                                                                    lesson.targetAudience === 'all' ? `🌍 ${t('academy.audienceAll')}` : `👥 ${t('academy.audienceParticipant')}`}
                                                 </span>
                                             </td>
                                             <td style={{ padding: '1rem' }}>
                                                 <span style={{ fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px', background: lesson.isPublished ? '#dcfce7' : '#fef3c7', color: lesson.isPublished ? '#166534' : '#92400e' }}>
-                                                    {lesson.isPublished ? 'Publicada' : 'Rascunho'}
+                                                    {lesson.isPublished ? t('academy.published') : t('academy.draft')}
                                                 </span>
                                             </td>
                                             <td style={{ padding: '1rem', textAlign: 'right' }}>
