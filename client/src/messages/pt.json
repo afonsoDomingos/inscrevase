@@ -1799,7 +1799,9 @@
         "pendingStatus": "Não iniciada",
         "markAsComplete": "Concluir Aula",
         "lessonCompleted": "Aula Concluída!",
-        "lessonLockedError": "Complete a aula anterior para desbloquear esta!"
+        "lessonLockedError": "Complete a aula anterior para desbloquear esta!",
+        "professionalTip": "Dica Profissional",
+        "guestIncentiveText": "Sabias que podes guardar todos os teus materiais, submissões e futuros certificados num só lugar? Cria já a tua conta gratuita de Participante com o mesmo email usado nesta inscrição."
     },
     "cookies": {
         "title": "Ajude-nos a melhorar o nosso website com cookies",

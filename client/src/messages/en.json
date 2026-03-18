@@ -1742,7 +1742,9 @@
         "pendingStatus": "Not started",
         "markAsComplete": "Mark as Complete",
         "lessonCompleted": "Lesson Completed!",
-        "lessonLockedError": "Complete the previous lesson to unlock this one!"
+        "lessonLockedError": "Complete the previous lesson to unlock this one!",
+        "professionalTip": "Pro Tip",
+        "guestIncentiveText": "Did you know you can keep all your materials, submissions, and future certificates in one place? Create your free Participant account now using the same email from this registration."
     },
     "cookies": {
         "title": "Help us improve our website with cookies",

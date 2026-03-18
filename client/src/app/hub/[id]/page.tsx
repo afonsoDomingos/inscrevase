@@ -186,6 +186,7 @@ function HubContent() {
     const [boardStartCountdown, setBoardStartCountdown] = useState(0);
     const [showBoardActivationOptions, setShowBoardActivationOptions] = useState(false);
     const [isBoardMinimized, setIsBoardMinimized] = useState(false);
+    const [showGuestBanner, setShowGuestBanner] = useState(false);
     const statusSocketRef = useRef<any>(null);
 
     useEffect(() => {
@@ -349,6 +350,16 @@ function HubContent() {
         }
         return () => clearInterval(timer);
     }, [isBoardStarting, boardStartCountdown, currentUser?._id, submission, currentUser?.role]);
+
+    // Guest Banner Logic
+    useEffect(() => {
+        if (!loading && submission && !currentUser) {
+            const timer = setTimeout(() => {
+                setShowGuestBanner(true);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [loading, submission, currentUser]);
 
     const markLessonComplete = async (lessonId: string) => {
         try {
@@ -1751,6 +1762,71 @@ function HubContent() {
                 eventTitle={form.title}
                 creatorId={form.creator?._id}
             />
+
+            {/* Guest Incentive Banner */}
+            <AnimatePresence>
+                {showGuestBanner && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50, x: -20, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 50, scale: 0.95 }}
+                        style={{
+                            position: 'fixed',
+                            bottom: '24px',
+                            left: '24px',
+                            zIndex: 9999,
+                            background: isDark ? 'linear-gradient(135deg, #111, #000)' : '#fff',
+                            border: isDark ? `1px solid ${primaryColor}40` : `1px solid rgba(0,0,0,0.08)`,
+                            boxShadow: isDark ? `0 20px 40px rgba(0,0,0,0.8), 0 0 20px ${primaryColor}10` : '0 20px 40px rgba(0,0,0,0.1)',
+                            borderRadius: '16px',
+                            padding: '24px',
+                            maxWidth: '340px',
+                            color: textColor,
+                            backdropFilter: 'blur(12px)'
+                        }}
+                    >
+                        <button 
+                            onClick={() => setShowGuestBanner(false)}
+                            style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: 'none', color: secondaryTextColor, cursor: 'pointer', padding: '4px' }}
+                        >
+                            <X size={16} />
+                        </button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                            <div style={{ background: `${primaryColor}15`, color: primaryColor, padding: '10px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <SparklesIcon size={20} />
+                            </div>
+                            <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>{t('hub.professionalTip') || 'Dica Profissional'}</h4>
+                        </div>
+                        <p style={{ margin: '0 0 20px', fontSize: '0.85rem', color: secondaryTextColor, lineHeight: 1.6 }}>
+                            {t('hub.guestIncentiveText') || 'Sabias que podes guardar todos os teus materiais, submissões e futuros certificados num só lugar? Cria já a tua conta gratuita de Participante.'}
+                        </p>
+                        <button
+                            onClick={() => router.push(`/cadastro?redirect=/hub/${id}&role=participant`)}
+                            style={{
+                                width: '100%',
+                                background: primaryColor,
+                                color: '#fff',
+                                border: 'none',
+                                padding: '14px',
+                                borderRadius: '12px',
+                                fontWeight: 800,
+                                fontSize: '0.9rem',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                boxShadow: `0 4px 15px ${primaryColor}40`,
+                                transition: 'all 0.2s ease'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                        >
+                            <UserCircle size={18} /> {t('common.createAccount') || 'Criar Conta Gratuita'}
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <style jsx>{`
                 @media (max-width: 1024px) {
