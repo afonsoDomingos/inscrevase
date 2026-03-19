@@ -850,7 +850,11 @@
             "topMentorsElite": "Elite Top Mentors",
             "topCountries": "Top Countries",
             "formsSubCount": "Registrants",
-            "visitsLabel": "Visits"
+            "visitsLabel": "Visits",
+            "todayPeakInsight": "Today's Insight",
+            "todayPeakMessage": "Today's peak was at {hour}h with {count} users.",
+            "patternPeakMessage": "Typically, the highest volume occurs on {day}.",
+            "peakNow": "Today's Peak"
         }
     },
     "academy": {

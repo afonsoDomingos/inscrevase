@@ -75,6 +75,22 @@ export default function AdminDashboard() {
         t('common.months.oct'), t('common.months.nov'), t('common.months.dec')
     ];
 
+    const peakHourToday = trafficStats?.trafficByHour?.length 
+        ? [...trafficStats.trafficByHour].sort((a,b) => b.count - a.count)[0] 
+        : null;
+        
+    const peakDayPatternData = trafficStats?.peakDays?.length 
+        ? [...trafficStats.peakDays].sort((a,b) => b.count - a.count)[0] 
+        : null;
+        
+    const peakDayPatternName = peakDayPatternData 
+        ? [
+            t('common.days.sun'), t('common.days.mon'), t('common.days.tue'),
+            t('common.days.wed'), t('common.days.thu'), t('common.days.fri'),
+            t('common.days.sat')
+          ][peakDayPatternData.day - 1] 
+        : null;
+
     const adminSteps: Step[] = [
         {
             targetId: 'welcome-modal',
@@ -1506,6 +1522,66 @@ export default function AdminDashboard() {
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {/* Intelligent Insight Message */}
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            style={{
+                                                marginTop: '2.5rem',
+                                                padding: '1.5rem 2rem',
+                                                background: 'linear-gradient(90deg, rgba(212, 175, 55, 0.08) 0%, rgba(212, 175, 55, 0.02) 100%)',
+                                                border: '1px solid rgba(212, 175, 55, 0.2)',
+                                                borderRadius: '20px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '24px'
+                                            }}
+                                        >
+                                            <div style={{ 
+                                                background: 'var(--gold-gradient)', 
+                                                color: '#000', 
+                                                padding: '12px', 
+                                                borderRadius: '14px',
+                                                boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
+                                            }}>
+                                                <Zap size={24} fill="#000" />
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ 
+                                                    fontSize: '0.75rem', 
+                                                    textTransform: 'uppercase', 
+                                                    fontWeight: 900, 
+                                                    color: '#B8860B', 
+                                                    letterSpacing: '1px',
+                                                    marginBottom: '4px' 
+                                                }}>
+                                                    {t('dashboard.admin.todayPeakInsight')}
+                                                </div>
+                                                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1a1a1a', lineHeight: 1.4 }}>
+                                                    {peakHourToday 
+                                                        ? t('dashboard.admin.todayPeakMessage')
+                                                            .replace('{hour}', peakHourToday.hour.toString())
+                                                            .replace('{count}', peakHourToday.count.toString())
+                                                        : t('common.loading') + '...'}
+                                                </div>
+                                                {peakDayPatternName && (
+                                                    <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '4px', fontWeight: 500 }}>
+                                                        {t('dashboard.admin.patternPeakMessage').replace('{day}', peakDayPatternName)}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            <div style={{ 
+                                                background: 'rgba(0,0,0,0.03)', 
+                                                padding: '10px 18px', 
+                                                borderRadius: '12px',
+                                                textAlign: 'center'
+                                            }}>
+                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#999', fontWeight: 700 }}>{t('dashboard.admin.peakNow')}</div>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1a1a1a' }}>{peakHourToday?.hour || 0}h</div>
+                                            </div>
+                                        </motion.div>
                                     </motion.div>
 
                                     {/* Pages and Geography */}

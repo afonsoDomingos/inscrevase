@@ -866,7 +866,11 @@
             "topMentorsElite": "Top Mentores de Elite",
             "topCountries": "Principais Países",
             "formsSubCount": "Inscritos",
-            "visitsLabel": "Visitas"
+            "visitsLabel": "Visitas",
+            "todayPeakInsight": "Insight de Hoje",
+            "todayPeakMessage": "Hoje o momento de pico foi às {hour}h com {count} usuários.",
+            "patternPeakMessage": "Geralmente, o maior volume ocorre aos {day}.",
+            "peakNow": "Pico de Hoje"
         }
     },
     "academy": {
