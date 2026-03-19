@@ -229,7 +229,16 @@
         "palop": "África (PALOP)",
         "dataIsPower": "Dados são Poder",
         "you": "Você",
-        "pts": "pts"
+        "pts": "pts",
+        "days": {
+            "sun": "Dom",
+            "mon": "Seg",
+            "tue": "Ter",
+            "wed": "Qua",
+            "thu": "Qui",
+            "fri": "Sex",
+            "sat": "Sáb"
+        }
     },
     "nav": {
         "home": "Início",
@@ -847,6 +856,17 @@
                 "publicPage": "Página Pública",
                 "participantPage": "Página do Inscrito"
             }
+        },
+        "admin": {
+            "peakAnalyticsTitle": "Análise de Horários de Pico",
+            "usagePattern": "Padrão de Uso (Últimos 30 dias)",
+            "peakDaysTitle": "Dias da Semana",
+            "peakHoursTitle": "Horas do Dia",
+            "accessEvolutionYear": "Evolução de Acessos (Ano)",
+            "topMentorsElite": "Top Mentores de Elite",
+            "topCountries": "Principais Países",
+            "formsSubCount": "Inscritos",
+            "visitsLabel": "Visitas"
         }
     },
     "academy": {

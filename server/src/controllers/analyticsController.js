@@ -88,7 +88,10 @@ exports.getAnalyticsStats = async (req, res) => {
             { $limit: 5 }
         ]);
 
-        // 6. Pico de Tráfego (Visitas por hora - nas últimas 24h ou Hoje)
+        // 6. Pico de Tráfego (Visitas por hora - Últimos 30 dias para padrão)
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
         const trafficByHour = await Visit.aggregate([
             { $match: { timestamp: { $gte: today } } },
             {
@@ -100,8 +103,30 @@ exports.getAnalyticsStats = async (req, res) => {
             { $sort: { _id: 1 } }
         ]);
 
-        // 7. Visitas por Mês (Últimos 12 meses ou Ano Atual)
-        // Vamos pegar o ano atual para facilitar a visualização "Jan - Dez"
+        const peakHours = await Visit.aggregate([
+            { $match: { timestamp: { $gte: thirtyDaysAgo } } },
+            {
+                $project: {
+                    hour: { $hour: "$timestamp" }
+                }
+            },
+            { $group: { _id: "$hour", count: { $sum: 1 } } },
+            { $sort: { _id: 1 } }
+        ]);
+
+        // 7. Visitas por Dia da Semana (Últimos 30 dias)
+        const peakDays = await Visit.aggregate([
+            { $match: { timestamp: { $gte: thirtyDaysAgo } } },
+            {
+                $project: {
+                    day: { $dayOfWeek: "$timestamp" } // 1 (Sunday) to 7 (Saturday)
+                }
+            },
+            { $group: { _id: "$day", count: { $sum: 1 } } },
+            { $sort: { _id: 1 } }
+        ]);
+
+        // 8. Visitas por Mês (Últimos 12 meses ou Ano Atual)
         const startOfYear = new Date(new Date().getFullYear(), 0, 1);
         const trafficByMonth = await Visit.aggregate([
             { $match: { timestamp: { $gte: startOfYear } } },
@@ -120,6 +145,8 @@ exports.getAnalyticsStats = async (req, res) => {
             topPages: topPages.map(p => ({ page: p._id, count: p.count })),
             topCountries: topCountries.map(c => ({ country: c._id, count: c.count })),
             trafficByHour: trafficByHour.map(t => ({ hour: t._id, count: t.count })),
+            peakHours: peakHours.map(t => ({ hour: t._id, count: t.count })),
+            peakDays: peakDays.map(t => ({ day: t._id, count: t.count })),
             trafficByMonth: trafficByMonth.map(m => ({ month: m._id, count: m.count }))
         });
     } catch (error) {

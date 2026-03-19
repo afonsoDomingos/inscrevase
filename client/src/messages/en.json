@@ -216,7 +216,16 @@
         "palop": "Africa (PALOP)",
         "dataIsPower": "Data is Power",
         "you": "You",
-        "pts": "pts"
+        "pts": "pts",
+        "days": {
+            "sun": "Sun",
+            "mon": "Mon",
+            "tue": "Tue",
+            "wed": "Wed",
+            "thu": "Thu",
+            "fri": "Fri",
+            "sat": "Sat"
+        }
     },
     "nav": {
         "home": "Home",
@@ -831,6 +840,17 @@
                 "publicPage": "Public Page",
                 "participantPage": "Attendee Page"
             }
+        },
+        "admin": {
+            "peakAnalyticsTitle": "Peak Time Analysis",
+            "usagePattern": "Usage Pattern (Last 30 Days)",
+            "peakDaysTitle": "Days of Week",
+            "peakHoursTitle": "Hours of Day",
+            "accessEvolutionYear": "Access Evolution (Year)",
+            "topMentorsElite": "Elite Top Mentors",
+            "topCountries": "Top Countries",
+            "formsSubCount": "Registrants",
+            "visitsLabel": "Visits"
         }
     },
     "academy": {

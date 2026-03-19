@@ -31,7 +31,7 @@ import { useCurrency } from '@/context/CurrencyContext';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
 import AdminEmailModal from '@/components/admin/AdminEmailModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
-import { Bar, XAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
 
 
 import ErrorBoundary from '@/components/common/ErrorBoundary';
@@ -1235,7 +1235,7 @@ export default function AdminDashboard() {
                                                 <div style={{ background: '#FFD700', padding: '6px', borderRadius: '50%', color: '#000' }}>
                                                     <TrendingUp size={16} />
                                                 </div>
-                                                Top Mentores de Elite
+                                                {t('dashboard.admin.topMentorsElite')}
                                             </h3>
 
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', position: 'relative', zIndex: 1 }}>
@@ -1278,11 +1278,11 @@ export default function AdminDashboard() {
                                                         <div style={{ display: 'flex', gap: '15px', textAlign: 'right' }}>
                                                             <div>
                                                                 <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>{mentor.submissions}</div>
-                                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.7 }}>Inscritos</div>
+                                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.7 }}>{t('dashboard.admin.formsSubCount')}</div>
                                                             </div>
                                                             <div>
                                                                 <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>{mentor.visits}</div>
-                                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.7 }}>Visitas</div>
+                                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.7 }}>{t('dashboard.admin.visitsLabel')}</div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1387,7 +1387,7 @@ export default function AdminDashboard() {
                                             </div>
                                         </motion.div>
 
-                                        {/* Monthly Growth Chart */}
+                                        {/* Monthly Growth Chart (Access Evolution) */}
                                         <motion.div
                                             variants={itemVariants}
                                             onMouseMove={handleMouseMove}
@@ -1404,7 +1404,7 @@ export default function AdminDashboard() {
                                                 <div style={{ background: 'rgba(212, 175, 55, 0.15)', padding: '8px', borderRadius: '12px' }}>
                                                     <BarChart3 className="gold-text" size={24} />
                                                 </div>
-                                                Evolução de Acessos (Ano)
+                                                {t('dashboard.admin.accessEvolutionYear')}
                                             </h3>
                                             <div style={{ height: '300px', width: '100%' }}>
                                                 <ResponsiveContainer width="100%" height="100%">
@@ -1427,6 +1427,87 @@ export default function AdminDashboard() {
                                         </motion.div>
                                     </div>
 
+                                    {/* NEW: Peak Time Analysis */}
+                                    <motion.div
+                                        variants={itemVariants}
+                                        onMouseMove={handleMouseMove}
+                                        className="luxury-card"
+                                        style={{
+                                            padding: '2.5rem',
+                                            background: '#fff',
+                                            marginBottom: '2.5rem',
+                                            border: '1px solid rgba(212, 175, 55, 0.1)',
+                                            boxShadow: '0 10px 40px rgba(0,0,0,0.03)',
+                                            borderRadius: '24px'
+                                        }}
+                                    >
+                                        <div className="spotlight" />
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '15px' }}>
+                                            <h3 style={{ fontSize: '1.4rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '12px', color: '#1a1a1a', fontFamily: 'var(--font-playfair)', margin: 0 }}>
+                                                <div style={{ background: 'rgba(212, 175, 55, 0.12)', padding: '8px', borderRadius: '12px' }}>
+                                                    <Clock className="gold-text" size={24} />
+                                                </div>
+                                                {t('dashboard.admin.peakAnalyticsTitle')}
+                                            </h3>
+                                            <div style={{ fontSize: '0.8rem', color: '#888', fontWeight: 700, background: '#f8f8f8', padding: '6px 12px', borderRadius: '50px' }}>
+                                                {t('dashboard.admin.usagePattern')}
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '40px' }}>
+                                            {/* Days of Week Chart */}
+                                            <div>
+                                                <div style={{ marginBottom: '1.5rem', fontSize: '0.95rem', fontWeight: 800, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <div style={{ width: '4px', height: '16px', background: '#D4AF37', borderRadius: '2px' }} />
+                                                    {t('dashboard.admin.peakDaysTitle')}
+                                                </div>
+                                                <div style={{ height: '280px' }}>
+                                                    <ResponsiveContainer width="100%" height="100%">
+                                                        <BarChart data={[1, 2, 3, 4, 5, 6, 7].map(d => {
+                                                            const dayMatch = trafficStats?.peakDays?.find(p => p.day === d);
+                                                            const daysList = [
+                                                                t('common.days.sun'), t('common.days.mon'), t('common.days.tue'),
+                                                                t('common.days.wed'), t('common.days.thu'), t('common.days.fri'),
+                                                                t('common.days.sat')
+                                                            ];
+                                                            return { name: daysList[d - 1], count: dayMatch ? dayMatch.count : 0 };
+                                                        })}>
+                                                            <XAxis dataKey="name" fontSize={11} axisLine={false} tickLine={false} tick={{ fill: '#888' }} />
+                                                            <RechartsTooltip cursor={{ fill: '#f8f8f8' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
+                                                            <Bar dataKey="count" fill="#D4AF37" radius={[6, 6, 0, 0]} barSize={24} />
+                                                        </BarChart>
+                                                    </ResponsiveContainer>
+                                                </div>
+                                            </div>
+
+                                            {/* Hours of Day Pattern */}
+                                            <div>
+                                                <div style={{ marginBottom: '1.5rem', fontSize: '0.95rem', fontWeight: 800, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <div style={{ width: '4px', height: '16px', background: '#1a1a1a', borderRadius: '2px' }} />
+                                                    {t('dashboard.admin.peakHoursTitle')}
+                                                </div>
+                                                <div style={{ height: '280px' }}>
+                                                    <ResponsiveContainer width="100%" height="100%">
+                                                        <AreaChart data={Array.from({ length: 24 }, (_, i) => {
+                                                            const hourMatch = trafficStats?.peakHours?.find(p => p.hour === i);
+                                                            return { hour: i, count: hourMatch ? hourMatch.count : 0 };
+                                                        })}>
+                                                            <defs>
+                                                                <linearGradient id="colorHourPeak" x1="0" y1="0" x2="0" y2="1">
+                                                                    <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.4}/>
+                                                                    <stop offset="95%" stopColor="#D4AF37" stopOpacity={0}/>
+                                                                </linearGradient>
+                                                            </defs>
+                                                            <XAxis dataKey="hour" tickFormatter={(h) => `${h}h`} fontSize={10} axisLine={false} tickLine={false} tick={{ fill: '#888' }} />
+                                                            <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
+                                                            <Area type="monotone" dataKey="count" stroke="#1a1a1a" fillOpacity={1} fill="url(#colorHourPeak)" strokeWidth={3} dot={false} />
+                                                        </AreaChart>
+                                                    </ResponsiveContainer>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+
                                     {/* Pages and Geography */}
                                     <div className="split-grid" style={{ marginTop: '2rem' }}>
                                         <div className="luxury-card" style={{
@@ -1439,7 +1520,7 @@ export default function AdminDashboard() {
                                                 <div style={{ background: 'rgba(212, 175, 55, 0.15)', padding: '8px', borderRadius: '12px' }}>
                                                     <Globe className="gold-text" size={24} />
                                                 </div>
-                                                Top Países
+                                                {t('dashboard.admin.topCountries')}
                                             </h3>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                                 {(trafficStats?.topCountries || []).slice(0, 5).map((item, idx) => {
