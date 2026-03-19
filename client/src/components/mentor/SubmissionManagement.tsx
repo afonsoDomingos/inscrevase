@@ -1026,7 +1026,7 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                                     <div style={{ flex: 1 }}>
                                                         <label style={{ display: 'block', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, color: '#999', marginBottom: '0.4rem', letterSpacing: '0.5px' }}>
-                                                            {key}
+                                                            {t(key)}
                                                         </label>
                                                         <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#000', wordBreak: 'break-word' }}>
                                                             {String(value)}

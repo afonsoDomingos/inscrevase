@@ -325,7 +325,10 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
             setVideoUrl((form as any).videoUrl || '');
             setVideoOrientation((form as any).videoOrientation || 'vertical');
             setLogo(form.logo || '');
-            setFields(form.fields || []);
+            setFields((form.fields || []).map(f => ({
+                ...f,
+                label: t(f.label)
+            })));
             if (form.whatsappConfig) {
                 setWhatsappConfig({
                     phoneNumber: form.whatsappConfig.phoneNumber || '',

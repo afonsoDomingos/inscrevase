@@ -130,7 +130,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
         if (event.title) setTitle(event.title);
         if (event.description) setDescription(event.description);
         if (event.category) setCategory(event.category);
-        if (event.fields) setFields(event.fields.map(f => ({ ...f, options: f.options || [] })));
+        if (event.fields) setFields(event.fields.map(f => ({ ...f, label: t(f.label), options: f.options || [] })));
         if (event.capacity) setCapacity(event.capacity.toString());
         if (event.extraCapacity) setExtraCapacity(event.extraCapacity.toString());
         if (event.eventType) setEventType(event.eventType);

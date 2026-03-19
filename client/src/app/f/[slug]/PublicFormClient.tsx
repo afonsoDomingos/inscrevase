@@ -1141,7 +1141,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                     <div key={field.label} style={{ marginBottom: '1.5rem' }}>
                                                         {field.type !== 'checkbox' && (
                                                             <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.6rem', color: textColor, textAlign: 'left' }}>
-                                                                {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
+                                                                {t(field.label)} {field.required && <span style={{ color: primaryColor }}>*</span>}
                                                             </label>
                                                         )}
                                                         {field.type === 'select' ? (
@@ -1167,7 +1167,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                             <motion.textarea
                                                                 whileFocus={{ scale: 1.01 }}
                                                                 required={field.required}
-                                                                placeholder={field.label}
+                                                                placeholder={t(field.label)}
                                                                 rows={4}
                                                                 onChange={(e) => handleInputChange(field.label, e.target.value)}
                                                                 className="premium-input"
@@ -1225,7 +1225,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                             style={{ width: '22px', height: '22px', accentColor: primaryColor, cursor: 'pointer' }}
                                                                         />
                                                                         <span style={{ fontSize: '0.95rem', color: textColor, fontWeight: 600 }}>
-                                                                            {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
+                                                                            {t(field.label)} {field.required && <span style={{ color: primaryColor }}>*</span>}
                                                                         </span>
                                                                     </label>
                                                                 )}
@@ -1235,7 +1235,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                 whileFocus={{ scale: 1.01 }}
                                                                 type={field.type === 'phone' ? 'tel' : field.type}
                                                                 required={field.required}
-                                                                placeholder={field.label}
+                                                                placeholder={t(field.label)}
                                                                 onChange={(e) => handleInputChange(field.label, e.target.value)}
                                                                 className="premium-input"
                                                                 style={{ width: '100%', padding: '1.2rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem' }}

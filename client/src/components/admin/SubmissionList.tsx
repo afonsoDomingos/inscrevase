@@ -7,8 +7,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import TableScrollWrapper from '../common/TableScrollWrapper';
 import Tooltip from '../common/Tooltip';
+import { useTranslate } from '@/context/LanguageContext';
 
 export default function SubmissionList() {
+    const { t } = useTranslate();
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -399,7 +401,7 @@ export default function SubmissionList() {
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                                 <div style={{ flex: 1 }}>
                                                     <label style={{ display: 'block', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, color: '#999', marginBottom: '0.4rem', letterSpacing: '0.5px' }}>
-                                                        {key}
+                                                        {t(key)}
                                                     </label>
                                                     <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#000', wordBreak: 'break-word' }}>
                                                         {String(value)}
