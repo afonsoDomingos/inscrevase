@@ -1296,7 +1296,7 @@
         "typeText": "Text",
         "typeEmail": "Email",
         "typeNumber": "Number",
-        "typePhone": "Phone/WhatsApp",
+        "typePhone": "Phone / WhatsApp",
         "typeSelect": "Select (Dropdown)",
         "typeRadio": "Single Choice (Radio)",
         "typeCheckbox": "Multiple Choice (Checkbox)",
