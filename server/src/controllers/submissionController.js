@@ -28,6 +28,13 @@ const submitForm = async (req, res) => {
             return res.status(400).json({ message: 'Dados do formulário inválidos' });
         }
 
+        // Sanitise keys (prevent dots in Mongoose Map keys)
+        const sanitizedData = {};
+        for (const [key, value] of Object.entries(data)) {
+            const cleanKey = key.replace(/\./g, '_');
+            sanitizedData[cleanKey] = value;
+        }
+
         const form = await Form.findById(formId);
         if (!form || !form.active) {
             console.error('[Submission] Form not found or inactive:', formId);
@@ -46,7 +53,7 @@ const submitForm = async (req, res) => {
 
         const submissionData = {
             form: formId,
-            data,
+            data: sanitizedData,
             paymentProof
         };
 
@@ -99,9 +106,14 @@ const submitForm = async (req, res) => {
         }
 
         // Fallback to logged user name or default
-        if (!participantName) {
+        if (!participantName || typeof participantName !== 'string') {
             participantName = (req.user && req.user.name) ? req.user.name : 'Um novo participante';
         }
+
+        // Final safety check for split
+        const firstName = (typeof participantName === 'string' && participantName.trim()) 
+            ? participantName.split(' ')[0] 
+            : 'Participante';
         try {
             console.log('[Submission] Sending notification to creator:', form.creator);
             const recipients = [form.creator, ...(form.partners || [])];
@@ -228,7 +240,7 @@ const submitForm = async (req, res) => {
         if (req.user && submissionData.user && req.user.id !== form.creator.toString()) {
             console.log('[Submission] Creating welcome support ticket for user:', submissionData.user);
             try {
-                const welcomeText = form.welcomeMessage || `Olá ${participantName.split(' ')[0]}! Obrigado por se inscrever no evento "${form.title}". Se tiver alguma dúvida, pode mandar por aqui.`;
+                const welcomeText = form.welcomeMessage || `Olá ${firstName}! Obrigado por se inscrever no evento "${form.title}". Se tiver alguma dúvida, pode mandar por aqui.`;
 
                 await SupportTicket.create({
                     user: submissionData.user, // Use the linked user ID
@@ -247,7 +259,7 @@ const submitForm = async (req, res) => {
             // If guest became linked user, we can still try to create ticket
             console.log('[Submission] Creating welcome support ticket for LINKED guest user:', submissionData.user);
             try {
-                const welcomeText = form.welcomeMessage || `Olá ${participantName.split(' ')[0]}! Obrigado por se inscrever no evento "${form.title}". Se tiver alguma dúvida, pode mandar por aqui.`;
+                const welcomeText = form.welcomeMessage || `Olá ${firstName}! Obrigado por se inscrever no evento "${form.title}". Se tiver alguma dúvida, pode mandar por aqui.`;
 
                 await SupportTicket.create({
                     user: submissionData.user,

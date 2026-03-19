@@ -1112,7 +1112,10 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
         // Clean up fields (remove temporary id)
         const cleanedFields = fields.map(f => {
             const { id, ...rest } = f;
-            return rest;
+            return {
+                ...rest,
+                label: t(rest.label)
+            };
         });
 
         // Clean up arrays to avoid Mongoose validation errors

@@ -542,7 +542,10 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
         // Clean up fields (remove temporary id for existing fields or rename if needed)
         const cleanedFields = fields.map(f => {
             const { id, ...rest } = f;
-            return rest;
+            return {
+                ...rest,
+                label: t(rest.label)
+            };
         });
 
         setLoading(true);
