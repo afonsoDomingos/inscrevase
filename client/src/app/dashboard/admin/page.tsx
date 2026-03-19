@@ -75,21 +75,7 @@ export default function AdminDashboard() {
         t('common.months.oct'), t('common.months.nov'), t('common.months.dec')
     ];
 
-    const peakHourToday = trafficStats?.trafficByHour?.length 
-        ? [...trafficStats.trafficByHour].sort((a,b) => b.count - a.count)[0] 
-        : null;
-        
-    const peakDayPatternData = trafficStats?.peakDays?.length 
-        ? [...trafficStats.peakDays].sort((a,b) => b.count - a.count)[0] 
-        : null;
-        
-    const peakDayPatternName = peakDayPatternData 
-        ? [
-            t('common.days.sun'), t('common.days.mon'), t('common.days.tue'),
-            t('common.days.wed'), t('common.days.thu'), t('common.days.fri'),
-            t('common.days.sat')
-          ][peakDayPatternData.day - 1] 
-        : null;
+
 
     const adminSteps: Step[] = [
         {
@@ -134,6 +120,22 @@ export default function AdminDashboard() {
     const [user, setUser] = useState<UserData | null>(null);
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [trafficStats, setTrafficStats] = useState<TrafficStats | null>(null);
+
+    const peakHourToday = trafficStats?.trafficByHour?.length 
+        ? [...trafficStats.trafficByHour].sort((a,b) => b.count - a.count)[0] 
+        : null;
+        
+    const peakDayPatternData = trafficStats?.peakDays?.length 
+        ? [...trafficStats.peakDays].sort((a,b) => b.count - a.count)[0] 
+        : null;
+        
+    const peakDayPatternName = peakDayPatternData 
+        ? [
+            t('common.days.sun'), t('common.days.mon'), t('common.days.tue'),
+            t('common.days.wed'), t('common.days.thu'), t('common.days.fri'),
+            t('common.days.sat')
+          ][peakDayPatternData.day - 1] 
+        : null;
     const [topMentors, setTopMentors] = useState<TopMentor[]>([]);
     const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [loading, setLoading] = useState(true);
