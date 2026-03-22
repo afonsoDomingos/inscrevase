@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Megaphone, CheckCircle, XCircle, Clock, ExternalLink,
@@ -91,11 +91,7 @@ export default function AdRequestList() {
     const { formatPrice } = useCurrency();
     const { t, locale } = useTranslate();
 
-    useEffect(() => {
-        loadRequests();
-    }, []);
-
-    const loadRequests = async () => {
+    const loadRequests = useCallback(async () => {
         setLoading(true);
         try {
             const data = await adService.getAllAdRequestsAdmin();
@@ -107,7 +103,11 @@ export default function AdRequestList() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [t]);
+
+    useEffect(() => {
+        loadRequests();
+    }, [loadRequests]);
 
     const handleUpdateStatus = async (id: string, status: 'approved' | 'rejected' | 'suspended') => {
         const loadingToast = toast.loading(t('common.loading') || 'Atualizando...');

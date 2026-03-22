@@ -18,8 +18,6 @@ interface StripeCheckoutProps {
 }
 
 export default function StripeCheckout({
-    formId,
-    formData,
     eventTitle = 'Inscrição em Evento',
     price,
     currency,
