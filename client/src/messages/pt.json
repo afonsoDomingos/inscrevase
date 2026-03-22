@@ -1199,6 +1199,12 @@
                 "banned": "SUSPENSO"
             },
             "actions": {
+                "view": "Ver Link",
+                "contact": "Contactar Mentor",
+                "reactivate": "Reativar",
+                "ban": "Banir / Suspender",
+                "delete": "Excluir Permanentemente"
+            },
             "messages": {
                 "deleteConfirm": "Tem certeza que deseja excluir este SmartLink permanentemente?",
                 "auditError": "Erro na auditoria",
