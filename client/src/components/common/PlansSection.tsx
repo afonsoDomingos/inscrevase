@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle, Zap, ShieldCheck, Crown, Loader2, Info, Clock, Lock } from "lucide-react";
+import { CheckCircle, Zap, ShieldCheck, Crown, Info, Clock, Lock } from "lucide-react";
 import { useCurrency, Currency } from "@/context/CurrencyContext";
 import { useEffect, useState } from "react";
 import { authService, UserData } from "@/lib/authService";
@@ -14,7 +14,6 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
     const { t } = useTranslate();
     const { currency, setCurrency, formatPrice, getPlanPrice, getPlanConfig } = useCurrency();
     const [user, setUser] = useState<UserData | null>(null);
-    const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
     const [selectedManualPlan, setSelectedManualPlan] = useState<{ id: string, amount: number } | null>(null);
     const [pendingSub, setPendingSub] = useState<{ pending: boolean; plan: string | null } | null>(null);
@@ -39,40 +38,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
         checkPendingSub();
     }, []);
 
-    const handleSubscribe = async (plan: string) => {
-        if (!user) {
-            window.location.href = `/cadastro?plan=${plan.toLowerCase()}`;
-            return;
-        }
 
-        setLoadingPlan(plan);
-        try {
-            const token = authService.getToken();
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/subscription/create`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    plan: plan.toLowerCase(),
-                    currency: currency
-                })
-            });
-
-            const data = await response.json();
-            if (data.url) {
-                window.location.href = data.url;
-            } else {
-                toast.error(data.message || 'Erro ao iniciar assinatura');
-            }
-        } catch (error) {
-            console.error('Subscription error:', error);
-            toast.error('Erro ao conectar com o servidor de pagamentos');
-        } finally {
-            setLoadingPlan(null);
-        }
-    };
 
     return (
         <div style={{ width: '100%', maxWidth: '1400px', margin: '0 auto', paddingBottom: '2rem' }}>

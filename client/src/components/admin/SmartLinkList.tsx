@@ -31,7 +31,7 @@ export default function SmartLinkList({ onEmailMentor }: SmartLinkListProps) {
         } finally {
             setLoading(false);
         }
-    }, [searchTerm, statusFilter]);
+    }, [searchTerm, statusFilter, t]);
 
     useEffect(() => {
         loadLinks();

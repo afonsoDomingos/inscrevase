@@ -44,7 +44,7 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
                 endpoint = `${process.env.NEXT_PUBLIC_API_URL}/paypal/checkout/ad`;
             }
 
-            let body: any = {};
+            let body: Record<string, unknown> = {};
             if (type === 'subscription') body = { plan: planId, currency };
             else if (type === 'ad_checkout') body = { adData, currency };
             else body = { formId, submissionData, currency };

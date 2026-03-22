@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { Mail, Calendar, UserCheck, UserMinus, ShieldCheck, Download, Search, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -22,7 +22,7 @@ export default function NewsletterList() {
     const [searchTerm, setSearchTerm] = useState('');
     const { t } = useTranslate();
 
-    const fetchSubscribers = async () => {
+    const fetchSubscribers = useCallback(async () => {
         try {
             const token = Cookies.get('token');
             const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -36,11 +36,11 @@ export default function NewsletterList() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [t]);
 
     useEffect(() => {
         fetchSubscribers();
-    }, []);
+    }, [fetchSubscribers]);
 
     const filteredSubscribers = subscribers.filter(s =>
         s.email.toLowerCase().includes(searchTerm.toLowerCase())
