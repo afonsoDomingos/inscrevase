@@ -15,7 +15,7 @@ export interface AdRequestModel {
     durationWeeks: number;
     priceTotal: number;
     currency?: string;
-    paymentMethod: 'stripe' | 'manual';
+    paymentMethod: 'stripe' | 'manual' | 'paypal';
     paymentProofUrl?: string;
     paymentStatus?: 'pending' | 'paid' | 'failed';
     status: 'pending' | 'approved' | 'rejected' | 'suspended';

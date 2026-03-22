@@ -9,6 +9,7 @@ import { useCurrency } from '@/context/CurrencyContext';
 import { useTranslate } from '@/context/LanguageContext';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
+import PaypalButton from '../common/PaypalButton';
 
 export default function AdManagement() {
     const [ads, setAds] = useState<AdRequestModel[]>([]);
@@ -782,11 +783,41 @@ export default function AdManagement() {
                                     >
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                             <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Método de Pagamento</label>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem' }}>
+                                                {/* PayPal (New & Recommended) */}
+                                                <div style={{ 
+                                                    background: '#FFC439', 
+                                                    borderRadius: '20px', 
+                                                    height: '110px', 
+                                                    display: 'flex', 
+                                                    flexDirection: 'column',
+                                                    overflow: 'hidden',
+                                                    border: form.paymentMethod === 'paypal' ? '2px solid #003087' : '2px solid transparent',
+                                                    position: 'relative'
+                                                }}>
+                                                    <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 1 }}>
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="#003087"><path d="M20.067 8.478c.492.88.556 2.014.303 3.274-.744 3.713-3.005 6.045-7.054 6.045h-1.6c-.466 0-.846.347-.936.802l-.653 3.274c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l2.454-9.743c.09-.455.47-.802.936-.802h3.2c1.783 0 3.264-.09 4.316-.395.53-.151.782-.26 1.05-.53.284-.287.48-.686.586-1.124.162-.676.02-1.28-.432-1.74-.41-.424-1.07-.63-1.964-.63h-5.066c-.466 0-.846.347-.936.802l-1.306 6.548c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l1.636-6.548c.09-.455.49-.802.956-.802h6.14c1.9 0 3.4.45 4.31 1.34s1.21 2.09.82 3.65c-.09.36-.21.69-.37 1zm-1.12-5.46c-.52-.51-1.34-.78-2.45-.78h-6.14c-.97 0-1.83.67-2.02 1.62l-2.03 10.15c-.06.31.18.61.5.61h3.32c.3 0 .58-.22.63-.52l.65-3.27c.09-.46.49-.81.96-.81h1.59c3.9 0 6.07-2.12 6.81-5.83.43-2.14.07-3.7-.62-4.47z" /></svg>
+                                                        <span style={{ fontWeight: 800, fontSize: '0.8rem', color: '#003087', marginTop: '5px' }}>PayPal</span>
+                                                    </div>
+                                                    <div style={{ position: 'relative', zIndex: 2, height: '100%' }}>
+                                                        <PaypalButton 
+                                                            type="ad_checkout" 
+                                                            adData={form}
+                                                            currency="USD"
+                                                            onSuccess={() => {
+                                                                toast.success("Anúncio criado com sucesso!");
+                                                                setShowCreateForm(false);
+                                                                setStep(1);
+                                                                loadRequests();
+                                                            }} 
+                                                        />
+                                                    </div>
+                                                </div>
+
                                                 <button
-                                                    onClick={() => toast.info("Checkout Global via Stripe em manutenção regulatória. Por favor, utilize o Método Manual acima ou PayPal.")}
+                                                    onClick={() => toast.info("Checkout Global via Stripe em manutenção regulatória. Por favor, utilize o PayPal ou Método Manual.")}
                                                     style={{
-                                                        padding: '1.5rem',
+                                                        padding: '1.2rem',
                                                         borderRadius: '20px',
                                                         border: '2px dashed #eee',
                                                         background: '#f8fafc',
@@ -795,21 +826,23 @@ export default function AdManagement() {
                                                         display: 'flex',
                                                         flexDirection: 'column',
                                                         alignItems: 'center',
+                                                        justifyContent: 'center',
                                                         gap: '0.5rem',
                                                         transition: 'all 0.2s',
                                                         position: 'relative'
                                                     }}
                                                 >
                                                     <div style={{ position: 'absolute', top: '10px', right: '10px', opacity: 0.5 }}>
-                                                        <Lock size={14} />
+                                                        <Lock size={12} />
                                                     </div>
-                                                    <CreditCard size={32} opacity={0.5} />
-                                                    <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>Cartão / Stripe</span>
+                                                    <CreditCard size={24} opacity={0.5} />
+                                                    <span style={{ fontWeight: 800, fontSize: '0.8rem' }}>Stripe (Lock)</span>
                                                 </button>
+
                                                 <button
                                                     onClick={() => setForm({ ...form, paymentMethod: 'manual' })}
                                                     style={{
-                                                        padding: '1.5rem',
+                                                        padding: '1.2rem',
                                                         borderRadius: '20px',
                                                         border: form.paymentMethod === 'manual' ? '2px solid #FFD700' : '2px solid #eee',
                                                         background: form.paymentMethod === 'manual' ? 'rgba(255, 215, 0, 0.05)' : '#fff',
@@ -818,12 +851,13 @@ export default function AdManagement() {
                                                         display: 'flex',
                                                         flexDirection: 'column',
                                                         alignItems: 'center',
+                                                        justifyContent: 'center',
                                                         gap: '0.5rem',
                                                         transition: 'all 0.2s'
                                                     }}
                                                 >
-                                                    <Megaphone size={32} />
-                                                    <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>M-Pesa / E-Mola</span>
+                                                    <Megaphone size={24} />
+                                                    <span style={{ fontWeight: 800, fontSize: '0.8rem' }}>Manual (NIB)</span>
                                                 </button>
                                             </div>
                                         </div>

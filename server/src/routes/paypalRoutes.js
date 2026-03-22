@@ -6,6 +6,7 @@ const { authMiddleware } = require('../middleware/authMiddleware');
 // Order creation
 router.post('/subscription/create', authMiddleware, paypalController.createSubscriptionOrder);
 router.post('/checkout/create', paypalController.createEventOrder);
+router.post('/checkout/ad', authMiddleware, paypalController.createAdOrder);
 
 // Order capture
 router.post('/orders/capture', paypalController.captureOrder);

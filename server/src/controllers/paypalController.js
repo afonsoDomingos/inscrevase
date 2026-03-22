@@ -3,6 +3,7 @@ const exchangeRateService = require('../services/exchangeRateService');
 const User = require('../models/User');
 const Form = require('../models/Form');
 const Transaction = require('../models/Transaction');
+const AdRequest = require('../models/AdRequest');
 const Submission = require('../models/Submission');
 const { getDynamicPlanConfig } = require('../utils/planConfigs');
 const { PLANS } = require('../config/stripe');
@@ -120,6 +121,61 @@ exports.createEventOrder = async (req, res) => {
         res.status(200).json(order);
     } catch (error) {
         console.error('❌ PayPal Create Event Order Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * CREATE ORDER FOR AD CHECKOUT
+ */
+exports.createAdOrder = async (req, res) => {
+    try {
+        const { adData, currency } = req.body;
+        const userId = req.user.id;
+
+        if (!adData || !adData.priceTotal) {
+            return res.status(400).json({ message: 'Dados do anúncio ou preço total ausentes' });
+        }
+
+        const totalAmountMZN = adData.priceTotal;
+
+        let finalAmount;
+        let finalCurrency = currency || 'USD';
+
+        // Conversion logic (similar to events)
+        if (currency === 'MZN' || !currency) {
+            const conversion = await exchangeRateService.convert(totalAmountMZN, 'MZN', 'USD');
+            finalAmount = conversion.amount;
+            finalCurrency = 'USD';
+            console.log(`💱 PayPal Ad: Converted ${totalAmountMZN} MZN to ${finalAmount} USD`);
+        } else {
+            const conversion = await exchangeRateService.convert(totalAmountMZN, 'MZN', finalCurrency);
+            finalAmount = conversion.amount;
+        }
+
+        const orderData = {
+            intent: 'CAPTURE',
+            purchase_units: [{
+                amount: {
+                    currency_code: finalCurrency,
+                    value: finalAmount.toFixed(2)
+                },
+                description: `Pagamento de Anúncio: ${adData.title}`,
+                custom_id: JSON.stringify({ 
+                    userId, 
+                    type: 'ad_checkout', 
+                    adData: {
+                        ...adData,
+                        userId // Ensure userId is passed
+                    }
+                })
+            }]
+        };
+
+        const order = await paypalService.createOrder(orderData);
+        res.status(200).json(order);
+    } catch (error) {
+        console.error('❌ PayPal Create Ad Order Error:', error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -298,6 +354,44 @@ exports.captureOrder = async (req, res) => {
             }
 
             return res.status(200).json({ success: true, type: 'event_registration', submissionId: submission._id });
+        }
+
+        if (customData.type === 'ad_checkout') {
+            const { adData } = customData;
+
+            // Create or Update Ad Request
+            const newAd = new AdRequest({
+                ...adData,
+                paymentMethod: 'paypal',
+                paypalOrderId: orderID,
+                paypalCaptureId: capture.id,
+                paymentStatus: 'paid',
+                status: 'pending' // Still needs admin approval
+            });
+
+            await newAd.save();
+
+            // Create transaction record
+            const amount = parseFloat(capture.amount.value);
+            const tx = new Transaction({
+                type: 'ad_payment',
+                adId: newAd._id,
+                user: customData.userId,
+                amount: amount,
+                currency: capture.amount.currency_code,
+                baseAmount: amount * rate,
+                exchangeRate: rate,
+                platformFee: amount,
+                basePlatformFee: amount * rate,
+                status: 'completed',
+                paymentMethod: 'paypal',
+                paypalOrderId: orderID,
+                paypalCaptureId: capture.id
+            });
+            await tx.save();
+
+            console.log('✅ Ad Payment Processed successfully via PayPal:', newAd._id);
+            return res.status(200).json({ success: true, type: 'ad_checkout' });
         }
 
         res.status(200).json({ success: true, result });

@@ -7,21 +7,23 @@ import Cookies from 'js-cookie';
 export interface PaypalSuccessDetails {
     success: boolean;
     submissionId?: string;
-    type?: 'subscription' | 'event_registration';
+    type?: 'subscription' | 'event_registration' | 'ad_checkout';
     plan?: string;
+    adId?: string;
 }
 
 interface PaypalButtonProps {
-    type: 'subscription' | 'event_registration';
+    type: 'subscription' | 'event_registration' | 'ad_checkout';
     planId?: string;
     formId?: string;
+    adData?: Record<string, unknown>;
     submissionData?: Record<string, unknown>;
     currency: string;
     amount?: number;
     onSuccess: (data: PaypalSuccessDetails) => void;
 }
 
-export default function PaypalButton({ type, planId, formId, submissionData, currency, onSuccess }: PaypalButtonProps) {
+export default function PaypalButton({ type, planId, formId, submissionData, adData, currency, onSuccess }: PaypalButtonProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const initialOptions: any = {
         clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test",
@@ -34,13 +36,18 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
         const loadingToast = toast.loading("Preparando ambiente seguro PayPal...", { duration: 25000 });
         try {
             const token = Cookies.get('token');
-            const endpoint = type === 'subscription'
+            let endpoint = type === 'subscription'
                 ? `${process.env.NEXT_PUBLIC_API_URL}/paypal/subscription/create`
                 : `${process.env.NEXT_PUBLIC_API_URL}/paypal/checkout/create`;
+            
+            if (type === 'ad_checkout') {
+                endpoint = `${process.env.NEXT_PUBLIC_API_URL}/paypal/checkout/ad`;
+            }
 
-            const body = type === 'subscription'
-                ? { plan: planId, currency }
-                : { formId, submissionData };
+            let body: any = {};
+            if (type === 'subscription') body = { plan: planId, currency };
+            else if (type === 'ad_checkout') body = { adData, currency };
+            else body = { formId, submissionData, currency };
 
             const response = await fetch(endpoint, {
                 method: "POST",
