@@ -14,7 +14,6 @@ export default function SubmissionList() {
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const { t } = useTranslate();
 
     const [selectedSubmission, setSelectedSubmission] = useState<SubmissionModel | null>(null);
     const [selectedSubmissions, setSelectedSubmissions] = useState<Set<string>>(new Set());
