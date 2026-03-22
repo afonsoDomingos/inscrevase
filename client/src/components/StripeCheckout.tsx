@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CreditCard, Loader2, Lock, AlertCircle } from 'lucide-react';
+import { CreditCard, Lock, AlertCircle } from 'lucide-react';
 import { useTranslate } from '@/context/LanguageContext';
 
 interface StripeCheckoutProps {
@@ -28,55 +28,11 @@ export default function StripeCheckout({
     asButton = true
 }: StripeCheckoutProps) {
     const [isInternalOpen, setIsInternalOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
     const { t } = useTranslate();
 
     const showModal = isOpen || isInternalOpen;
 
-    const handlePayment = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/checkout/create`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ formId, submissionData: formData })
-            });
 
-            const result = await response.json();
-
-            // Meta Pixel Tracking
-            if (typeof window !== 'undefined' && (window as unknown as { fbq: (t: string, e: string, p: Record<string, unknown>) => void }).fbq) {
-                (window as unknown as { fbq: (t: string, e: string, p: Record<string, unknown>) => void }).fbq('track', 'InitiateCheckout', {
-                    content_name: eventTitle as string,
-                    content_ids: [formId],
-                    content_type: 'product',
-                    value: price,
-                    currency: currency
-                });
-            }
-
-            if (!response.ok) {
-                if (result.message?.includes('not ready')) {
-                    alert('Este mentor ainda não configurou completamente os pagamentos via Stripe. Por favor, utilize o método "Manual" para enviar seu comprovativo.');
-                } else {
-                    alert(result.message || 'Erro ao iniciar checkout');
-                }
-                setLoading(false);
-                return;
-            }
-
-            if (result.url) {
-                window.location.href = result.url;
-            } else {
-                alert('Erro: URL de pagamento não recebida.');
-                setLoading(false);
-            }
-        } catch (err: unknown) {
-            console.error('Payment Error:', err);
-            alert('Falha na conexão com o sistema de pagamentos.');
-            setLoading(false);
-        }
-    };
 
     const modalClose = () => {
         setIsInternalOpen(false);
@@ -135,7 +91,7 @@ export default function StripeCheckout({
                             <div style={{ fontWeight: 800, color: '#856404', fontSize: '0.9rem', marginBottom: '4px' }}>Checkout Global em Ativação</div>
                             <p style={{ fontSize: '0.8rem', color: '#856404', margin: 0, lineHeight: 1.4 }}>
                                 O pagamento direto com cartão (Stripe) está em manutenção regulatória. 
-                                <strong> Por favor, utilize o botão "PayPal" na página anterior</strong> – ele também aceita o seu cartão de débito/crédito de forma instantânea e segura!
+                                <strong> Por favor, utilize o botão &quot;PayPal&quot; na página anterior</strong> – ele também aceita o seu cartão de débito/crédito de forma instantânea e segura!
                             </p>
                         </div>
                     </div>
