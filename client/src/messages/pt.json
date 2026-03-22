@@ -118,6 +118,9 @@
         "create": "Criar",
         "search": "Pesquisar",
         "loading": "Carregando...",
+        "email": "E-mail",
+        "online": "ON",
+        "offline": "OFF",
         "submit": "Enviar",
         "close": "Fechar",
         "minimize": "Minimizar",
@@ -138,6 +141,13 @@
         "hello": "Olá",
         "toBeDefined": "A definir",
         "atTime": "às",
+        "day": "dia",
+        "days": "dias",
+        "system": "Sistema",
+        "upgrade": "Upgrade",
+        "event": "Evento",
+        "sendEmail": "Enviar Email",
+        "manualPayment": "Manual (Transferência)",
         "growth": "Crescimento",
         "recommended": "RECOMENDADO",
         "free": "Gratuito",
@@ -230,7 +240,7 @@
         "dataIsPower": "Dados são Poder",
         "you": "Você",
         "pts": "pts",
-        "days": {
+        "weekDays": {
             "sun": "Dom",
             "mon": "Seg",
             "tue": "Ter",
@@ -455,6 +465,10 @@
         "exploreEvents": "Explorar Eventos",
         "myCertificates": "Meus Certificados",
         "blogArticles": "Artigos do Blog",
+        "ads": "Anúncios",
+        "smartlinks": "SmartLinks",
+        "marketing": "Marketing",
+        "payouts": "Acompanhamento Financeiro",
         "servicesManagement": {
             "title": "Meus Serviços",
             "subtitle": "Gerencie os serviços e produtos que você oferece",
@@ -669,6 +683,59 @@
                     "title": "Sua Identidade Digital",
                     "desc": "Personalize seu perfil, adicione sua foto e mantenha seus dados atualizados para seus certificados."
                 }
+            },
+            "adsManagement": {
+                "title": "Gestão de Anúncios",
+                "subtitle": "Controle total da publicidade e faturamento da plataforma.",
+                "syncing": "Sincronizando Publicidade Global...",
+                "status": {
+                    "pending": "Pendente",
+                    "approved": "Publicado",
+                    "suspended": "Suspenso",
+                    "rejected": "Reprovado"
+                },
+                "placeholders": {
+                    "merchant": "Vendedor/Mentor",
+                    "owner": "Proprietário do anúncio"
+                },
+                "stats": {
+                    "total": "Total",
+                    "pending": "Pendentes",
+                    "active": "Ativos"
+                },
+                "filters": {
+                    "all": "Ver Todos",
+                    "pending": "Solicitações",
+                    "approved": "Em Exibição",
+                    "rejected": "Reprovados",
+                    "suspended": "Suspensos"
+                },
+                "noAds": "Nenhum anúncio encontrado",
+                "noAdsDesc": "Não existem registros correspondentes ao filtro \"{filter}\" no momento.",
+                "investment": "Investimento",
+                "duration": "Duração",
+                "weeks": "Semanas",
+                "metrics": {
+                    "views": "Views",
+                    "clicks": "Clicks",
+                    "ctr": "CTR"
+                },
+                "payment": "Pagamento",
+                "paymentStatus": {
+                    "paid": "Pago",
+                    "pending": "Pendente"
+                },
+                "actions": {
+                    "proof": "Comprovativo",
+                    "target": "Link Destino",
+                    "refuse": "Recusar",
+                    "approve": "Aprovar & Publicar",
+                    "reactivate": "Reativar",
+                    "suspend": "Suspender",
+                    "pause": "Pausar Exibição",
+                    "resume": "Retomar Exibição",
+                    "delete": "Excluir anúncio permanentemente"
+                }
             }
         },
         "finance": {
@@ -824,7 +891,11 @@
                 "status": "Status",
                 "online": "Online",
                 "accesses": "Acessos",
-                "actions": "Ações"
+                "actions": "Ações",
+                "selectAll": "Selecionar todos",
+                "deselectAll": "Desmarcar todos",
+                "select": "Selecionar",
+                "deselect": "Desmarcar"
             },
             "status": {
                 "active": "Ativo",
@@ -835,6 +906,53 @@
             "pagination": "Mostrando {start}-{end} de {total} usuários",
             "audience": {
                 "participants": "Participantes"
+            },
+            "messages": {
+                "statusError": "Erro ao atualizar status",
+                "eventsPermissionError": "Erro ao atualizar permissão de eventos",
+                "deleteConfirm": "Tem certeza que deseja excluir este usuário? Esta ação é irreversível.",
+                "deleteError": "Erro ao excluir usuário",
+                "verificationError": "Erro ao atualizar verificação"
+            },
+            "actions": {
+                "approveVerification": "Aprovar Verificação",
+                "rejectVerification": "Rejeitar Solicitação",
+                "removeVerification": "Remover Verificação",
+                "verifyManually": "Verificar Manualmente",
+                "sendNotification": "Enviar Notificação",
+                "sendEmail": "Enviar Email",
+                "blockEvents": "Bloquear Criação de Eventos",
+                "enableEvents": "Habilitar Criação de Eventos",
+                "blockUser": "Bloquear Usuário",
+                "unblockUser": "Desbloquear Usuário",
+                "edit": "Editar",
+                "deleteUser": "Excluir Usuário Permanentemente"
+            },
+            "editModal": {
+                "title": "Editar Usuário",
+                "subtitle": "Gerencie as informações de {name}",
+                "changePhoto": "Mudar foto de perfil",
+                "adminSettings": "Configurações Administrativas",
+                "role": "Função",
+                "plan": "Plano",
+                "status": "Status",
+                "isPublic": "Exibir perfil publicamente na aba Mentor",
+                "canCreateEvents": "Habilitar criação de novos eventos e formulários",
+                "badgesTitle": "Selos e Distinções",
+                "fullName": "Nome Completo",
+                "email": "Endereço de E-mail",
+                "businessName": "Nome do Negócio/Marca",
+                "whatsapp": "WhatsApp Corporativo",
+                "bio": "Bio Curta",
+                "securityTitle": "Segurança (Redefinir Senha)",
+                "newPassword": "Nova Senha",
+                "passwordHint": "Deixe em branco para manter a senha atual.",
+                "socialLinks": "Redes Sociais",
+                "saveChanges": "Salvar Alterações",
+                "messages": {
+                    "uploadError": "Erro no upload da foto",
+                    "updateError": "Erro ao atualizar usuário"
+                }
             }
         },
         "impactRankingEmpty": "O ranking de impacto começará a crescer em breve! 🚀",
@@ -871,105 +989,400 @@
             "todayPeakMessage": "Hoje o momento de pico foi às {hour}h com {count} usuários.",
             "patternPeakMessage": "Geralmente, o maior volume ocorre aos {day}.",
             "peakNow": "Pico de Hoje"
-        }
-    },
-    "academy": {
-        "title": "Academia",
-        "subtitle": "Aprenda com especialistas ou compartilhe seu conhecimento",
-        "learn": "Aprender",
-        "manage": "Gerir Aulas",
-        "areaTitle": "Área de Aprendizado",
-        "areaDesc": "Domine a plataforma com cursos exclusivos. Configure eventos, gerencie mentorias e potencialize resultados.",
-        "yourProgress": "Seu Progresso",
-        "lessonsCompleted": "{completed} de {total} aulas concluídas",
-        "welcomeMsg": "👋 <b>Bem-vindo!</b> Comece pela primeira aula para entender como usar a plataforma.",
-        "generateCert": "Gerar Certificado de Excelência",
-        "orderUpdated": "Ordem atualizada!",
-        "moveError": "Erro ao mover aula",
-        "certSuccess": "Certificado gerado com sucesso! Você será redirecionado.",
-        "certError": "Erro ao gerar certificado.",
-        "stats": {
-            "total": "Total de Aulas",
-            "published": "Publicadas",
-            "drafts": "Rascunhos",
-            "views": "Visualizações"
         },
-        "searchPlaceholder": "Buscar aulas...",
-        "newLesson": "Nova Aula",
-        "editLesson": "Editar Aula",
-        "deleteConfirm": "Tem certeza que deseja deletar esta aula?",
-        "table": {
-            "lesson": "Aula",
-            "category": "Categoria",
-            "duration": "Duração",
-            "views": "Viz.",
-            "audience": "Público",
-            "status": "Status",
-            "access": "Acesso",
-            "actions": "Ações"
+        "adminFinance": {
+            "title": "Gestão Financeira",
+            "totalRevenue": "Volume Transacionado",
+            "subscriptionRevenue": "Receita de Assinaturas",
+            "eventFeeRevenue": "Taxas de Eventos",
+            "pendingFees": "Taxas Pendentes",
+            "growthChart": "Crescimento de Receita",
+            "growthChartSubtitle": "Receita Total ({currency}) por mês",
+            "paymentMethods": "Métodos de Pagamento",
+            "paymentMethodsSubtitle": "Divisão entre Automático e Manual",
+            "topMentors": "Top Mentors (Receita Gerada)",
+            "topMentorsFees": "Taxas geradas",
+            "searchPlaceholder": "Buscar por mentor ou evento...",
+            "allStatus": "Todos os Status",
+            "status": {
+                "pending": "Pendentes",
+                "rejected": "Rejeitados",
+                "completed": "Conciliados"
+            },
+            "allMethods": "Todos Métodos",
+            "table": {
+                "mentorBusiness": "Mentor / Business",
+                "eventMethod": "Evento / Método",
+                "totalAmount": "Valor Total",
+                "platformFee": "Taxa Plataforma",
+                "directSubscription": "Assinatura Direta",
+                "subscription": "Assinatura: {plan}",
+                "status": "Status",
+                "actions": "Ações"
+            },
+            "statusLabels": {
+                "completed": "CONCILIADO",
+                "rejected": "REJEITADO",
+                "pending": "AGUARDANDO MENTOR"
+            },
+            "actions": {
+                "viewProof": "Ver Comprovativo",
+                "approve": "Aprovar",
+                "reject": "Rejeitar",
+                "delete": "Eliminar Registro"
+            },
+            "messages": {
+                "loadError": "Erro ao carregar dados financeiros",
+                "confirmPayment": "Tem certeza que deseja confirmar este pagamento?",
+                "paymentSuccess": "Pagamento confirmado e plano ativado!",
+                "rejectConfirm": "Tem certeza que deseja REJEITAR este pagamento?",
+                "rejectSuccess": "Pagamento rejeitado.",
+                "deleteConfirm": "ATENÇÃO: Isso excluirá permanentemente o registro financeiro. Continuar?",
+                "deleteSuccess": "Transação eliminada.",
+                "refreshRateSuccess": "Taxa atualizada! Mercado: {marketRate} MT | Ajustada: {adjustedRate} MT",
+                "refreshRateError": "Erro ao atualizar taxa de câmbio",
+                "syncing": "Sincronizando...",
+                "syncExchange": "Sincronizar Câmbio",
+                "syncExchangeTooltip": "Atualizar taxa de câmbio via API agora",
+                "noTransactions": "Nenhuma transação encontrada.",
+                "loading": "Carregando finanças...",
+                "approveError": "Erro ao aprovar pagamento",
+                "rejectError": "Erro ao rejeitar pagamento",
+                "deleteError": "Erro ao eliminar transação",
+                "pagination": "Mostrando {start}-{end} de {total} transações"
+            },
+            "proofModal": {
+                "title": "Comprovativo de Pagamento",
+                "pdfDetected": "Ficheiro PDF detectado.",
+                "openPdf": "ABRIR PDF",
+                "downloadOriginal": "DOWNLOAD ORIGINAL"
+            },
+            "stats": {
+                "totalProcessed": "Total processado (Stripe + Manual)",
+                "mentorUpgrades": "Upgrades de planos Mentores",
+                "collectedFees": "Taxas coletadas de inscrições",
+                "manualCharges": "Cobranças manuais a mentores"
+            }
         },
-        "categories": {
-            "all": "Todas Categorias",
-            "basico": "Básico",
-            "intermediario": "Intermediário",
-            "avancado": "Avançado"
+        "adminForms": {
+            "title": "Gestão de Formulários",
+            "searchPlaceholder": "Buscar por título ou mentor...",
+            "table": {
+                "title": "Título do Evento",
+                "creator": "Criador (Mentor)",
+                "status": "Status",
+                "date": "Data",
+                "visits": "Visitas",
+                "actions": "Ações"
+            },
+            "status": {
+                "active": "Ativo",
+                "inactive": "Inativo"
+            },
+            "sponsored": "PATROCINADO",
+            "noCompany": "Sem Empresa",
+            "actions": {
+                "viewPublic": "Visualizar Público",
+                "emailMentor": "Enviar Email ao Mentor",
+                "editEvent": "Editar Evento",
+                "promoteEvent": "Promover Evento",
+                "removePromote": "Remover Destaque",
+                "activate": "Ativar",
+                "deactivate": "Desativar",
+                "delete": "Excluir",
+                "deleteConfirm": "Tem certeza que deseja excluir este formulário? Todos os dados vinculados serão perdidos.",
+                "gotIt": "Entendido"
+            },
+            "messages": {
+                "limitReached": "Você pode promover no máximo 4 eventos simultaneamente. Remova o destaque de outro evento para continuar.",
+                "limitTitle": "Limite Atingido",
+                "loadError": "Carregando formulários...",
+                "noForms": "Nenhum formulário encontrado.",
+                "statusError": "Erro ao atualizar status do formulário",
+                "promoteError": "Erro ao promover evento",
+                "deleteError": "Erro ao excluir formulário"
+            },
+            "pagination": {
+                "showing": "Mostrando {start}-{end} de {total} formulários",
+                "prev": "Anterior",
+                "next": "Próximo"
+            }
         },
-        "audience": {
-            "mentors": "Mentor",
-            "participants": "Participante",
-            "companies": "Empresa",
-            "specialists": "Especialista",
-            "both": "Ambos",
-            "all": "Todos"
+        "adminMarketing": {
+            "title": "Gestão de Marketing & Vendas",
+            "searchPlaceholder": "Pesquisar por nome, email ou tel...",
+            "statusFilter": "Todos os Status",
+            "status": {
+                "pending": "Pendente",
+                "contacted": "Contactado",
+                "in_progress": "Em Andamento",
+                "completed": "Concluído",
+                "cancelled": "Cancelado"
+            },
+            "table": {
+                "mentor": "Mentor / Empresa",
+                "contact": "Contacto (Zap)",
+                "service": "Serviço",
+                "date": "Data",
+                "status": "Status",
+                "actions": "Ações"
+            },
+            "buttonManage": "Gerir Pedido",
+            "modal": {
+                "title": "Gerir Pedido: {name}",
+                "details": "Detalhes do Pedido",
+                "currentStatus": "Status Atual",
+                "quickActions": "Ações Rápidas",
+                "internalNotes": "Notas Internas (O mentor verá isto)",
+                "save": "Salvar Alterações"
+            },
+            "messages": {
+                "success": "Pedido atualizado com sucesso!",
+                "error": "Erro ao atualizar pedido"
+            }
         },
-        "status": {
+        "adminSubmissions": {
+            "title": "Gestão de Inscrições",
+            "results": "{count} resultados",
+            "result": "{count} resultado",
+            "searchPlaceholder": "Buscar por evento ou dados...",
+            "table": {
+                "registrant": "Inscrito / Dados",
+                "event": "Evento",
+                "dateTime": "Data / Hora",
+                "payment": "Pagamento",
+                "status": "Status",
+                "details": "Detalhes",
+                "actions": "Ações"
+            },
+            "viewProof": "Ver Prova",
+            "noProof": "Sem Prova",
+            "hub": "HUB",
+            "actions": {
+                "approve": "Aprovar",
+                "reject": "Rejeitar"
+            },
+            "messages": {
+                "copySuccess": "Dados copiados!",
+                "loading": "Carregando inscrições..."
+            },
+            "modal": {
+                "title": "Dados de Inscrição",
+                "submittedOn": "Realizada em: {date}",
+                "copy": "COPIAR"
+            }
+        },
+        "adminSmartLinks": {
+            "title": "Gestão de SmartLinks",
+            "subtitle": "Auditoria e controle de conformidade de links bio e redirecionamentos.",
+            "allStatus": "Todos Status",
+            "status": {
+                "active": "Ativo",
+                "suspended": "Suspenso",
+                "paused": "Pausado"
+            },
+            "searchPlaceholder": "Buscar slug ou título...",
+            "table": {
+                "smartlink": "SmartLink",
+                "owner": "Dono / Mentor",
+                "type": "Tipo",
+                "status": "Status",
+                "clicks": "Cliques",
+                "actions": "Ações de Auditoria"
+            },
+            "types": {
+                "bio": "Página Bio",
+                "redirect": "Redirecionamento"
+            },
+            "statusLabels": {
+                "active": "Ativo",
+                "banned": "SUSPENSO"
+            },
+            "actions": {
+            "messages": {
+                "deleteConfirm": "Tem certeza que deseja excluir este SmartLink permanentemente?",
+                "auditError": "Erro na auditoria",
+                "loadError": "Erro ao carregar SmartLinks",
+                "noLinks": "Nenhum SmartLink encontrado para auditoria."
+            }
+        },
+        "adminNewsletter": {
+            "title": "Assinantes da Newsletter",
+            "subtitle": "Gerencie as pessoas que se inscreveram para receber atualizações do blog.",
+            "searchPlaceholder": "Buscar e-mail...",
+            "export": "Exportar CSV",
+            "table": {
+                "email": "E-mail",
+                "date": "Data Inscrição",
+                "status": "Status",
+                "actions": "Ações"
+            },
+            "status": {
+                "active": "ATIVO",
+                "unsubscribed": "CANCELADO"
+            },
+            "stats": {
+                "total": "Total: {count} assinantes",
+                "growth": "Crescimento orgânico via Blog"
+            },
+            "actions": {
+                "sendIndividual": "Enviar E-mail Individual"
+            },
+            "messages": {
+                "funcSoon": "Funcionalidade de envio manual em breve",
+                "loadError": "Erro ao carregar assinantes"
+            }
+        },
+        "academy": {
+            "title": "Academia",
+            "subtitle": "Aprenda com especialistas ou compartilhe seu conhecimento",
+            "learn": "Aprender",
+            "manage": "Gerir Aulas",
+            "areaTitle": "Área de Aprendizado",
+            "areaDesc": "Domine a plataforma com cursos exclusivos. Configure eventos, gerencie mentorias e potencialize resultados.",
+            "yourProgress": "Seu Progresso",
+            "lessonsCompleted": "{completed} de {total} aulas concluídas",
+            "welcomeMsg": "👋 <b>Bem-vindo!</b> Comece pela primeira aula para entender como usar a plataforma.",
+            "generateCert": "Gerar Certificado de Excelência",
+            "orderUpdated": "Ordem atualizada!",
+            "moveError": "Erro ao mover aula",
+            "certSuccess": "Certificado gerado com sucesso! Você será redirecionado.",
+            "certError": "Erro ao gerar certificado.",
+            "stats": {
+                "total": "Total de Aulas",
+                "published": "Publicadas",
+                "drafts": "Rascunhos",
+                "views": "Visualizações"
+            },
+            "searchPlaceholder": "Buscar aulas...",
+            "newLesson": "Nova Aula",
+            "editLesson": "Editar Aula",
+            "deleteConfirm": "Tem certeza que deseja deletar esta aula?",
+            "table": {
+                "lesson": "Aula",
+                "category": "Categoria",
+                "duration": "Duração",
+                "views": "Viz.",
+                "audience": "Público",
+                "status": "Status",
+                "access": "Acesso",
+                "actions": "Ações"
+            },
+            "categories": {
+                "all": "Todas Categorias",
+                "basico": "Básico",
+                "intermediario": "Intermediário",
+                "avancado": "Avançado"
+            },
+            "audience": {
+                "mentors": "Mentores (Academia)",
+                "participants": "Participantes",
+                "companies": "Empresas",
+                "specialists": "Especialistas",
+                "both": "Ambos (Mentores e Participantes)",
+                "all": "Todos os Públicos",
+                "mentorsDesc": "🎓 Visível na \"Academia\" para mentores aprenderem a usar a plataforma.",
+                "participantsDesc": "👥 Visível para os participantes no dashboard deles.",
+                "companiesDesc": "🏢 Visível apenas para perfis de empresa.",
+                "specialistsDesc": "⚡ Visível apenas para especialistas.",
+                "allDesc": "🌍 Visível para todos os tipos de usuários.",
+                "bothDesc": "👥🎓 Visível para mentores e participantes."
+            },
+            "status": {
+                "published": "Publicada",
+                "draft": "Rascunho"
+            },
+            "tipsSectionTitle": "Dicas para Mentores de Elite",
+            "tip1Title": "Conteúdo Curto",
+            "tip1Text": "Vídeos de 5-10 min têm 80% mais taxa de conclusão.",
+            "tip2Title": "Engajamento",
+            "tip2Text": "Peça feedback nos primeiros minutos das lives.",
+            "tip3Title": "Visual Premium",
+            "tip3Text": "Use capas atraentes e títulos claros para suas aulas.",
+            "lessonWord": "Aula",
+            "views": "visualizações",
+            "noLessonsFound": "Nenhuma aula encontrada",
+            "noLessonsHint": "Tente ajustar seus filtros ou termos de busca.",
+            "favorites": "Favoritas",
+            "favoritesMobile": "Fav.",
+            "newBadge": "NOVO",
+            "lockedForUsers": "BLOQUEADA PARA USUÁRIOS",
+            "locked": "BLOQUEADA",
+            "completed": "Concluída",
+            "favoriteLabel": "Favorita",
+            "manageStat1": "Aulas",
+            "manageStat2": "Ativas",
+            "manageStat3": "Drafts",
+            "manageStat4": "Views",
+            "firstStepsTitle": "Primeiros Passos",
+            "firstStepsText": "Clique em + Nova Aula • Upload seu vídeo ou cole um link • Defina o Público • Publique para liberar o acesso.",
+            "searchMyLessons": "Buscar minhas aulas...",
+            "tableLesson": "Aula",
+            "tableCategory": "Categoria",
+            "tableAudience": "Público",
+            "tableStatus": "Status",
+            "tableActions": "Ações",
             "published": "Publicada",
             "draft": "Rascunho",
-            "locked": "Bloqueada",
-            "free": "Livre"
-        },
-        "tipsSectionTitle": "Dicas para Mentores de Elite",
-        "tip1Title": "Conteúdo Curto",
-        "tip1Text": "Vídeos de 5-10 min têm 80% mais taxa de conclusão.",
-        "tip2Title": "Engajamento",
-        "tip2Text": "Peça feedback nos primeiros minutos das lives.",
-        "tip3Title": "Visual Premium",
-        "tip3Text": "Use capas atraentes e títulos claros para suas aulas.",
-        "lessonWord": "Aula",
-        "views": "visualizações",
-        "noLessonsFound": "Nenhuma aula encontrada",
-        "noLessonsHint": "Tente ajustar seus filtros ou termos de busca.",
-        "favorites": "Favoritas",
-        "favoritesMobile": "Fav.",
-        "newBadge": "NOVO",
-        "lockedForUsers": "BLOQUEADA PARA USUÁRIOS",
-        "locked": "BLOQUEADA",
-        "completed": "Concluída",
-        "favoriteLabel": "Favorita",
-        "manageStat1": "Aulas",
-        "manageStat2": "Ativas",
-        "manageStat3": "Drafts",
-        "manageStat4": "Views",
-        "firstStepsTitle": "Primeiros Passos",
-        "firstStepsText": "Clique em + Nova Aula • Upload seu vídeo ou cole um link • Defina o Público • Publique para liberar o acesso.",
-        "searchMyLessons": "Buscar minhas aulas...",
-        "tableLesson": "Aula",
-        "tableCategory": "Categoria",
-        "tableAudience": "Público",
-        "tableStatus": "Status",
-        "tableActions": "Ações",
-        "published": "Publicada",
-        "draft": "Rascunho",
-        "audienceBoth": "Ambos",
-        "audienceMentor": "Mentor",
-        "audienceCompany": "Empresa",
-        "audienceSpecialist": "Especialista",
-        "audienceAll": "Todos",
-        "audienceParticipant": "Participante",
-        "errorMoving": "Erro ao mover aula",
-        "errorSaving": "Erro ao salvar aula",
-        "certGenSuccess": "Certificado gerado com sucesso! Você será redirecionado.",
-        "certGenError": "Erro ao gerar certificado."
+            "audienceBoth": "Ambos",
+            "audienceMentor": "Mentor",
+            "audienceCompany": "Empresa",
+            "audienceSpecialist": "Especialista",
+            "audienceAll": "Todos",
+            "audienceParticipant": "Participante",
+            "errorMoving": "Erro ao mover aula",
+            "errorSaving": "Erro ao salvar aula",
+            "certGenSuccess": "Certificado gerado com sucesso! Você será redirecionado.",
+            "certGenError": "Erro ao gerar certificado.",
+            "actions": {
+                "publish": "Publicar",
+                "unpublish": "Despublicar",
+                "lock": "Bloquear",
+                "unlock": "Desbloquear"
+            },
+            "modal": {
+                "videoLabel": "Vídeo da Aula",
+                "upload": "Fazer Upload",
+                "url": "URL do Vídeo",
+                "videoPlaceholder": "Cole o link aqui...",
+                "videoSupport": "💡 Suporta: YouTube, Vimeo, ou link direto.",
+                "videoSupportUpdate": "Cole um novo link acima para atualizar.",
+                "videoPreview": "Prévia do Vídeo:",
+                "uploadStart": "Clique para fazer upload do novo vídeo",
+                "uploading": "Fazendo upload...",
+                "uploadLimits": "MP4, AVI, MOV (máx. 500MB)",
+                "removeVideo": "Remover e Escolher Novo Vídeo",
+                "thumbnailLabel": "Capa da Aula (Thumbnail)",
+                "thumbnailUpload": "Upload da Capa",
+                "thumbnailPlaceholder": "Or cole a URL da imagem aqui...",
+                "titleLabel": "Título *",
+                "titlePlaceholder": "Ex: Introdução à Plataforma",
+                "descriptionLabel": "Descrição",
+                "descriptionPlaceholder": "Descreva o conteúdo da aula...",
+                "categoryLabel": "Categoria",
+                "audienceLabel": "Público Alvo",
+                "orderLabel": "Ordem de exibição",
+                "isPublished": "Publicar aula",
+                "isLocked": "Bloquear aula (Premium/Restrita)",
+                "save": "Salvar Aula",
+                "update": "Atualizar",
+                "create": "Criar",
+                "lesson": "Aula",
+                "cancel": "Cancelar"
+            },
+            "messages": {
+                "saveSuccess": "Aula salva com sucesso!",
+                "saveError": "Erro ao salvar aula.",
+                "deleteSuccess": "Aula deletada com sucesso!",
+                "deleteError": "Erro ao deletar aula.",
+                "togglePublishSuccess": "Status de publicação atualizado!",
+                "togglePublishError": "Erro ao atualizar status de publicação.",
+                "toggleLockSuccess": "Status de acesso atualizado!",
+                "toggleLockError": "Erro ao atualizar status de acesso.",
+                "uploadError": "Erro no upload."
+            },
+            "noLessons": "Nenhuma aula encontrada"
+        }
     },
     "plans": {
         "discountLabel": "DE DESCONTO",
@@ -2130,6 +2543,16 @@
             "pro": "Plano Pro (30 dias)",
             "enterprise": "Plano Enterprise (15 dias)",
             "exclusive": "Funcionalidades Exclusivas"
+        },
+        "table": {
+            "member": "Membro",
+            "currentPlan": "Plano Atual",
+            "activeInvites": "Convites Ativos",
+            "points": "Pontuação",
+            "actions": "Ações",
+            "viewReferrals": "Ver Indicações (Audit)",
+            "assignPro": "Atribuir Pro",
+            "noActivity": "Nenhuma atividade de referenciação encontrada."
         },
         "motivation": {
             "education": "O conhecimento é a única riqueza que cresce quando é partilhada.",

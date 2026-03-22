@@ -367,7 +367,7 @@ export default function AdminDashboard() {
         { label: t('dashboard.onlineNow'), value: onlineUsers.length, icon: <Wifi size={24} />, color: '#38a169', tab: 'users' },
         { label: t('dashboard.visitsToday'), value: trafficStats?.visitsToday || 0, icon: <Eye size={24} />, color: '#ed8936', tab: 'overview' },
         { label: t('dashboard.totalVisitors') || 'Total Visitantes', value: trafficStats?.totalVisits || 0, icon: <Globe size={24} />, color: '#3182ce', tab: 'overview' },
-        { label: t('dashboard.finance.totalRevenue'), value: showValues ? formatPrice(stats?.revenue || 0, 'MZN', currency) : '••••', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
+        { label: t('dashboard.adminFinance.totalRevenue'), value: showValues ? formatPrice(stats?.revenue || 0, 'MZN', currency) : '••••', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
         { label: t('dashboard.submissions'), value: showValues ? stats?.submissions || 0 : '••', icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
     ];
 
@@ -394,24 +394,24 @@ export default function AdminDashboard() {
             items: [
                 { id: 'forms', label: t('dashboard.forms'), icon: <FileText size={18} /> },
                 { id: 'submissions', label: t('dashboard.submissions') || 'Inscrições', icon: <Database size={18} /> },
-                { id: 'smartlinks', label: 'SmartLinks', icon: <LinkIcon size={18} /> },
-                { id: 'ads', label: t('dashboard.menuItems.ads') || 'Anúncios', icon: <Megaphone size={18} /> },
+                { id: 'smartlinks', label: t('dashboard.smartlinks') || 'SmartLinks', icon: <LinkIcon size={18} /> },
+                { id: 'ads', label: t('dashboard.ads') || 'Anúncios', icon: <Megaphone size={18} /> },
                 { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={18} /> },
             ]
         },
         {
             title: t('dashboard.marketingAndOps') || 'Marketing & Operações',
             items: [
-                { id: 'marketing', label: 'Marketing', icon: <Zap size={18} /> },
+                { id: 'marketing', label: t('dashboard.marketing') || 'Marketing', icon: <Zap size={18} /> },
                 { id: 'referrals', label: t('referral.title') || 'Referenciações', icon: <Trophy size={18} /> },
                 { id: 'newsletter', label: t('dashboard.newsletter'), icon: <Mail size={18} /> },
             ]
         },
         {
-            title: t('dashboard.finance.title') || 'Financeiro',
+            title: t('dashboard.adminFinance.title') || 'Financeiro',
             items: [
-                { id: 'finance', label: t('dashboard.finance.title') || 'Financeiro', icon: <Wallet size={18} /> },
-                { id: 'payouts', label: 'PayPal', icon: <DollarSign size={18} /> },
+                { id: 'finance', label: t('dashboard.adminFinance.title') || 'Financeiro', icon: <Wallet size={18} /> },
+                { id: 'payouts', label: t('dashboard.payouts') || 'Pagamentos', icon: <DollarSign size={18} /> },
             ]
         },
         {
@@ -785,7 +785,7 @@ export default function AdminDashboard() {
                             }}
                             className="hover:translate-y-[-2px] hover:shadow-lg"
                         >
-                            <Mail size={16} /> Enviar Email
+                            <Mail size={16} /> {t('common.sendEmail')}
                         </button>
                         <Link
                             href="/"
@@ -1888,11 +1888,11 @@ export default function AdminDashboard() {
                                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                         <thead>
                                             <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
-                                                <th style={{ padding: '1rem', color: '#666' }}>Membro</th>
-                                                <th style={{ padding: '1rem', color: '#666' }}>Plano Atual</th>
-                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>Convites Ativos</th>
-                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>Pontuação</th>
-                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>Ações</th>
+                                                <th style={{ padding: '1rem', color: '#666' }}>{t('referral.table.member')}</th>
+                                                <th style={{ padding: '1rem', color: '#666' }}>{t('referral.table.currentPlan')}</th>
+                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>{t('referral.table.activeInvites')}</th>
+                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>{t('referral.table.points')}</th>
+                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>{t('referral.table.actions')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -1922,24 +1922,24 @@ export default function AdminDashboard() {
                                                             <button
                                                                 onClick={() => handleAuditUser(r._id)}
                                                                 style={{ padding: '6px', borderRadius: '8px', background: '#f0f0f0', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                                title="Ver Indicações (Audit)"
+                                                                title={t('referral.table.viewReferrals')}
                                                             >
                                                                 <Eye size={16} />
                                                             </button>
                                                             <button
                                                                 onClick={async () => {
-                                                                    if (confirm(`Atribuir Plano Pro (30 dias) a ${r.name}?`)) {
+                                                                    if (confirm(`${t('referral.assignReward')} Pro (30 ${t('common.days')}) a ${r.name}?`)) {
                                                                         try {
                                                                             await referralService.assignReward(r._id, 'pro', 30);
-                                                                            toast.success('Recompensa atribuída!');
+                                                                            toast.success(t('common.success'));
                                                                             const updRanking = await referralService.getRanking();
                                                                             setReferralRanking(updRanking);
-                                                                        } catch { toast.error('Erro ao atribuir prémio'); }
+                                                                        } catch { toast.error(t('common.error')); }
                                                                     }
                                                                 }}
                                                                 style={{ padding: '6px 12px', borderRadius: '8px', background: '#111', color: '#FFD700', border: 'none', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}
                                                             >
-                                                                Atribuir Pro
+                                                                {t('referral.table.assignPro')}
                                                             </button>
                                                         </div>
                                                     </td>
@@ -1948,7 +1948,7 @@ export default function AdminDashboard() {
                                             {referralRanking.length === 0 && (
                                                 <tr>
                                                     <td colSpan={5} style={{ padding: '3rem', textAlign: 'center', color: '#666' }}>
-                                                        Nenhuma atividade de referenciação encontrada.
+                                                        {t('referral.table.noActivity')}
                                                     </td>
                                                 </tr>
                                             )}

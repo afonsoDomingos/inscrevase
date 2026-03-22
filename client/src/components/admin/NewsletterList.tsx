@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import Cookies from 'js-cookie';
 import TableScrollWrapper from '../common/TableScrollWrapper';
 import Tooltip from '../common/Tooltip';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface Subscriber {
     _id: string;
@@ -19,6 +20,7 @@ export default function NewsletterList() {
     const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const { t } = useTranslate();
 
     const fetchSubscribers = async () => {
         try {
@@ -30,7 +32,7 @@ export default function NewsletterList() {
             setSubscribers(response.data);
         } catch (error) {
             console.error('Error fetching subscribers:', error);
-            toast.error('Erro ao carregar assinantes');
+            toast.error(t('dashboard.adminNewsletter.messages.loadError'));
         } finally {
             setLoading(false);
         }
@@ -49,7 +51,7 @@ export default function NewsletterList() {
         const rows = filteredSubscribers.map(s => [
             s.email,
             new Date(s.subscribedAt).toLocaleDateString('pt-BR'),
-            s.status === 'active' ? 'Ativo' : 'Cancelado'
+            s.status === 'active' ? t('dashboard.adminNewsletter.status.active') : t('dashboard.adminNewsletter.status.unsubscribed')
         ]);
 
         const csvContent = [
@@ -80,8 +82,8 @@ export default function NewsletterList() {
         <div style={{ padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '20px' }}>
                 <div>
-                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '5px', color: '#000' }}>Assinantes da Newsletter</h2>
-                    <p style={{ color: '#333', fontWeight: 500 }}>Gerencie as pessoas que se inscreveram para receber atualizações do blog.</p>
+                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '5px', color: '#000' }}>{t('dashboard.adminNewsletter.title')}</h2>
+                    <p style={{ color: '#333', fontWeight: 500 }}>{t('dashboard.adminNewsletter.subtitle')}</p>
                 </div>
 
                 <div style={{ display: 'flex', gap: '15px' }}>
@@ -89,7 +91,7 @@ export default function NewsletterList() {
                         <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
                         <input
                             type="text"
-                            placeholder="Buscar e-mail..."
+                            placeholder={t('dashboard.adminNewsletter.searchPlaceholder')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             style={{ padding: '12px 12px 12px 40px', borderRadius: '12px', border: '1px solid #ddd', width: '250px', outline: 'none' }}
@@ -99,7 +101,7 @@ export default function NewsletterList() {
                         onClick={exportToCSV}
                         style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', background: '#000', color: '#FFD700', borderRadius: '12px', fontWeight: 700, border: 'none', cursor: 'pointer' }}
                     >
-                        <Download size={18} /> Exportar CSV
+                        <Download size={18} /> {t('dashboard.adminNewsletter.export')}
                     </button>
                 </div>
             </div>
@@ -109,10 +111,10 @@ export default function NewsletterList() {
                     <table style={{ minWidth: '800px', width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead>
                             <tr style={{ background: '#f8f9fa', borderBottom: '1px solid #eee' }}>
-                                <th style={{ padding: '20px', fontWeight: 700, color: '#1a1a1a' }}>E-mail</th>
-                                <th style={{ padding: '20px', fontWeight: 700, color: '#1a1a1a' }}>Data Inscrição</th>
-                                <th style={{ padding: '20px', fontWeight: 700, color: '#1a1a1a' }}>Status</th>
-                                <th style={{ padding: '20px', fontWeight: 700, color: '#1a1a1a' }}>Ações</th>
+                                <th style={{ padding: '20px', fontWeight: 700, color: '#1a1a1a' }}>{t('dashboard.adminNewsletter.table.email')}</th>
+                                <th style={{ padding: '20px', fontWeight: 700, color: '#1a1a1a' }}>{t('dashboard.adminNewsletter.table.date')}</th>
+                                <th style={{ padding: '20px', fontWeight: 700, color: '#1a1a1a' }}>{t('dashboard.adminNewsletter.table.status')}</th>
+                                <th style={{ padding: '20px', fontWeight: 700, color: '#1a1a1a' }}>{t('dashboard.adminNewsletter.table.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -145,13 +147,13 @@ export default function NewsletterList() {
                                             gap: '5px'
                                         }}>
                                             {subscriber.status === 'active' ? <UserCheck size={12} /> : <UserMinus size={12} />}
-                                            {subscriber.status === 'active' ? 'ATIVO' : 'CANCELADO'}
+                                            {subscriber.status === 'active' ? t('dashboard.adminNewsletter.status.active') : t('dashboard.adminNewsletter.status.unsubscribed')}
                                         </span>
                                     </td>
                                     <td style={{ padding: '15px 20px' }}>
-                                        <Tooltip content="Enviar E-mail Individual">
+                                        <Tooltip content={t('dashboard.adminNewsletter.actions.sendIndividual')}>
                                             <button
-                                                onClick={() => toast.info('Funcionalidade de envio manual em breve')}
+                                                onClick={() => toast.info(t('dashboard.adminNewsletter.messages.funcSoon'))}
                                                 style={{ background: 'none', border: 'none', color: '#000', cursor: 'pointer', padding: '5px', borderRadius: '5px' }}
                                             >
                                                 <ShieldCheck size={18} />
@@ -162,7 +164,7 @@ export default function NewsletterList() {
                             )) : (
                                 <tr>
                                     <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
-                                        Nenhum assinante encontrado.
+                                        {t('common.noData')}
                                     </td>
                                 </tr>
                             )}
@@ -172,10 +174,10 @@ export default function NewsletterList() {
             </TableScrollWrapper>
 
             <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 10px' }}>
-                <p style={{ fontSize: '0.85rem', color: '#1a1a1a', fontWeight: 600 }}>Total: <strong>{subscribers.length}</strong> assinantes</p>
+                <p style={{ fontSize: '0.85rem', color: '#1a1a1a', fontWeight: 600 }}>{t('dashboard.adminNewsletter.stats.total', { count: subscribers.length })}</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#0694a2' }}></div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#000' }}>Crescimento orgânico via Blog</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#000' }}>{t('dashboard.adminNewsletter.stats.growth')}</span>
                 </div>
             </div>
         </div>

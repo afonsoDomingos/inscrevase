@@ -8,12 +8,14 @@ import { motion } from 'framer-motion';
 import EditEventModal from '@/components/mentor/EditEventModal';
 import TableScrollWrapper from '../common/TableScrollWrapper';
 import Tooltip from '../common/Tooltip';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface FormListProps {
     onEmailMentor?: (mentorId: string, mentorName: string, formDetails: FormModel) => void;
 }
 
 export default function FormList({ onEmailMentor }: FormListProps) {
+    const { t } = useTranslate();
     const [forms, setForms] = useState<FormModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -45,7 +47,7 @@ export default function FormList({ onEmailMentor }: FormListProps) {
             loadForms();
         } catch (error: unknown) {
             console.error(error);
-            alert('Erro ao atualizar status do formulário');
+            alert(t('dashboard.adminForms.messages.statusError'));
         }
     };
 
@@ -55,8 +57,8 @@ export default function FormList({ onEmailMentor }: FormListProps) {
             const sponsoredCount = forms.filter(f => f.isSponsored).length;
             if (sponsoredCount >= 4) {
                 setAlertMessage({
-                    title: 'Limite Atingido',
-                    message: 'Você pode promover no máximo 4 eventos simultaneamente. Remova o destaque de outro evento para continuar.',
+                    title: t('dashboard.adminForms.messages.limitTitle'),
+                    message: t('dashboard.adminForms.messages.limitReached'),
                     type: 'error'
                 });
                 return;
@@ -68,24 +70,24 @@ export default function FormList({ onEmailMentor }: FormListProps) {
             loadForms();
         } catch (error) {
             console.error(error);
-            alert('Erro ao promover evento');
+            alert(t('dashboard.adminForms.messages.promoteError'));
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Tem certeza que deseja excluir este formulário? Todos os dados vinculados serão perdidos.')) return;
+        if (!confirm(t('dashboard.adminForms.actions.deleteConfirm'))) return;
         try {
             await formService.deleteForm(id);
             loadForms();
         } catch (error: unknown) {
             console.error(error);
-            alert('Erro ao excluir formulário');
+            alert(t('dashboard.adminForms.messages.deleteError'));
         }
     };
 
     const filteredForms = forms.filter(f =>
-        f.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        f.creator?.name.toLowerCase().includes(searchTerm.toLowerCase())
+        (f.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (f.creator?.name || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     // Pagination Logic
@@ -95,17 +97,17 @@ export default function FormList({ onEmailMentor }: FormListProps) {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentForms = filteredForms.slice(indexOfFirstItem, indexOfLastItem);
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '2rem' }}>Carregando formulários...</div>;
+    if (loading) return <div style={{ textAlign: 'center', padding: '2rem' }}>{t('dashboard.adminForms.messages.loadError')}</div>;
 
     return (
         <div className="luxury-card" style={{ background: '#fff' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Gestão de Formulários</h3>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>{t('dashboard.adminForms.title')}</h3>
                 <div style={{ position: 'relative', width: '250px' }}>
                     <Search size={16} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: '#888' }} />
                     <input
                         type="text"
-                        placeholder="Buscar por título ou mentor..."
+                        placeholder={t('dashboard.adminForms.searchPlaceholder')}
                         value={searchTerm}
                         onChange={(e) => {
                             setSearchTerm(e.target.value);
@@ -120,12 +122,12 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                 <table style={{ minWidth: '900px', width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Título do Evento</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Criador (Mentor)</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Status</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Data</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'center' }}>Visitas</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'right' }}>Ações</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.adminForms.table.title')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.adminForms.table.creator')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.adminForms.table.status')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.adminForms.table.date')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'center' }}>{t('dashboard.adminForms.table.visits')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'right' }}>{t('dashboard.adminForms.table.actions')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -141,14 +143,14 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <div style={{ fontWeight: 600 }}>{form.title}</div>
                                         {form.isSponsored && (
-                                            <span style={{ background: '#FFD700', color: '#000', fontSize: '0.6rem', fontWeight: 900, padding: '2px 6px', borderRadius: '4px' }}>PATROCINADO</span>
+                                            <span style={{ background: '#FFD700', color: '#000', fontSize: '0.6rem', fontWeight: 900, padding: '2px 6px', borderRadius: '4px' }}>{t('dashboard.adminForms.sponsored')}</span>
                                         )}
                                     </div>
                                     <div style={{ fontSize: '0.8rem', color: '#888' }}>/{form.slug}</div>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ fontSize: '0.9rem' }}>{form.creator?.name || '---'}</div>
-                                    <div style={{ fontSize: '0.75rem', color: '#999' }}>{form.creator?.businessName || 'Sem Empresa'}</div>
+                                    <div style={{ fontSize: '0.75rem', color: '#999' }}>{form.creator?.businessName || t('dashboard.adminForms.noCompany')}</div>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <span style={{
@@ -160,7 +162,7 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                                         color: form.active ? '#38a169' : '#e53e3e',
                                         textTransform: 'uppercase'
                                     }}>
-                                        {form.active ? 'Ativo' : 'Inativo'}
+                                        {form.active ? t('dashboard.adminForms.status.active') : t('dashboard.adminForms.status.inactive')}
                                     </span>
                                 </td>
                                 <td style={{ padding: '1rem', color: '#888', fontSize: '0.85rem' }}>
@@ -173,7 +175,7 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                                 </td>
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                                        <Tooltip content="Visualizar Público">
+                                        <Tooltip content={t('dashboard.adminForms.actions.viewPublic')}>
                                             <a
                                                 href={`/f/${form.slug}`}
                                                 target="_blank"
@@ -183,7 +185,7 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                                             </a>
                                         </Tooltip>
                                         {onEmailMentor && form.creator && (
-                                            <Tooltip content="Enviar Email ao Mentor">
+                                            <Tooltip content={t('dashboard.adminForms.actions.emailMentor')}>
                                                 <button
                                                     onClick={() => onEmailMentor(form.creator._id || '', form.creator.name, form)}
                                                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
@@ -192,7 +194,7 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                                                 </button>
                                             </Tooltip>
                                         )}
-                                        <Tooltip content="Editar Evento">
+                                        <Tooltip content={t('dashboard.adminForms.actions.editEvent')}>
                                             <button
                                                 onClick={() => {
                                                     setSelectedForm(form);
@@ -203,7 +205,7 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                                                 <Pencil size={18} />
                                             </button>
                                         </Tooltip>
-                                        <Tooltip content={form.isSponsored ? 'Remover Destaque' : 'Promover Evento'}>
+                                        <Tooltip content={form.isSponsored ? t('dashboard.adminForms.actions.removePromote') : t('dashboard.adminForms.actions.promoteEvent')}>
                                             <button
                                                 onClick={() => handleToggleSponsor(form)}
                                                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.isSponsored ? '#FFA500' : '#888' }}
@@ -211,7 +213,7 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                                                 <Zap size={18} fill={form.isSponsored ? '#FFA500' : 'none'} />
                                             </button>
                                         </Tooltip>
-                                        <Tooltip content={form.active ? 'Desativar' : 'Ativar'}>
+                                        <Tooltip content={form.active ? t('dashboard.adminForms.actions.deactivate') : t('dashboard.adminForms.actions.activate')}>
                                             <button
                                                 onClick={() => handleToggleStatus(form)}
                                                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: form.active ? '#888' : '#38a169' }}
@@ -219,7 +221,7 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                                                 {form.active ? <EyeOff size={18} /> : <Eye size={18} />}
                                             </button>
                                         </Tooltip>
-                                        <Tooltip content="Excluir">
+                                        <Tooltip content={t('dashboard.adminForms.actions.delete')}>
                                             <button
                                                 onClick={() => handleDelete(form._id)}
                                                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e' }}
@@ -236,7 +238,7 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                 {filteredForms.length === 0 && (
                     <div style={{ textAlign: 'center', padding: '3rem' }}>
                         <FileText size={40} style={{ color: '#eee', marginBottom: '1rem' }} />
-                        <p style={{ color: '#999' }}>Nenhum formulário encontrado.</p>
+                        <p style={{ color: '#999' }}>{t('dashboard.adminForms.messages.noForms')}</p>
                     </div>
                 )}
             </TableScrollWrapper>
@@ -245,7 +247,10 @@ export default function FormList({ onEmailMentor }: FormListProps) {
             {filteredForms.length > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #eee', fontSize: '0.9rem', color: '#666' }}>
                     <div>
-                        Mostrando {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredForms.length)} de {filteredForms.length} formulários
+                        {t('dashboard.adminForms.pagination.showing')
+                            .replace('{start}', String(indexOfFirstItem + 1))
+                            .replace('{end}', String(Math.min(indexOfLastItem, filteredForms.length)))
+                            .replace('{total}', String(filteredForms.length))}
                     </div>
                     <div style={{ display: 'flex', gap: '8px' }}>
                         <button
@@ -260,7 +265,7 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                                 cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
                             }}
                         >
-                            Anterior
+                            {t('dashboard.adminForms.pagination.prev')}
                         </button>
                         {Array.from({ length: Math.ceil(filteredForms.length / itemsPerPage) }, (_, i) => (
                             <button
@@ -295,7 +300,7 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                                 cursor: indexOfLastItem >= filteredForms.length ? 'not-allowed' : 'pointer'
                             }}
                         >
-                            Próximo
+                            {t('dashboard.adminForms.pagination.next')}
                         </button>
                     </div>
                 </div>
@@ -361,7 +366,7 @@ export default function FormList({ onEmailMentor }: FormListProps) {
                                 fontSize: '1rem'
                             }}
                         >
-                            Entendido
+                            {t('dashboard.adminForms.actions.gotIt')}
                         </button>
                     </motion.div>
                 </div>

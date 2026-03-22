@@ -14,6 +14,7 @@ export default function SubmissionList() {
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const { t } = useTranslate();
 
     const [selectedSubmission, setSelectedSubmission] = useState<SubmissionModel | null>(null);
     const [selectedSubmissions, setSelectedSubmissions] = useState<Set<string>>(new Set());
@@ -49,13 +50,13 @@ export default function SubmissionList() {
             loadSubmissions();
         } catch (error: unknown) {
             console.error(error);
-            alert('Erro ao atualizar status');
+            alert(t('dashboard.usersList.messages.statusError'));
         }
     };
 
     const filteredSubmissions = submissions.filter(s =>
         (s.form?.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        JSON.stringify(s.data).toLowerCase().includes(searchTerm.toLowerCase())
+        (JSON.stringify(s.data || {})).toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     // Pagination Logic
@@ -94,22 +95,22 @@ export default function SubmissionList() {
 
     const isAllSelected = currentSubmissions.length > 0 && currentSubmissions.every(s => selectedSubmissions.has(s._id));
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '2rem' }}>Carregando inscrições...</div>;
+    if (loading) return <div style={{ textAlign: 'center', padding: '2rem' }}>{t('dashboard.adminSubmissions.messages.loading')}</div>;
 
     return (
         <div className="luxury-card" style={{ background: '#fff' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    Gestão de Inscrições
+                    {t('dashboard.adminSubmissions.title')}
                     <span style={{ fontSize: '0.8rem', background: '#f0f0f0', padding: '0.2rem 0.6rem', borderRadius: '20px', color: '#666' }}>
-                        {filteredSubmissions.length} {filteredSubmissions.length === 1 ? 'resultado' : 'resultados'}
+                        {filteredSubmissions.length} {filteredSubmissions.length === 1 ? t('dashboard.adminSubmissions.result', { count: filteredSubmissions.length }) : t('dashboard.adminSubmissions.results', { count: filteredSubmissions.length })}
                     </span>
                 </h3>
                 <div style={{ position: 'relative', width: '250px' }}>
                     <Search size={16} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: '#888' }} />
                     <input
                         type="text"
-                        placeholder="Buscar por evento ou dados..."
+                        placeholder={t('dashboard.adminSubmissions.searchPlaceholder')}
                         value={searchTerm}
                         onChange={(e) => {
                             setSearchTerm(e.target.value);
@@ -142,13 +143,13 @@ export default function SubmissionList() {
                                     </button>
                                 </Tooltip>
                             </th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Inscrito / Dados</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Evento</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Data / Hora</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Pagamento</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Status</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'center' }}>Detalhes</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'right' }}>Ações</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.adminSubmissions.table.registrant')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.adminSubmissions.table.event')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.adminSubmissions.table.dateTime')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.adminSubmissions.table.payment')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.adminSubmissions.table.status')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'center' }}>{t('dashboard.adminSubmissions.table.details')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'right' }}>{t('dashboard.adminSubmissions.table.actions')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -212,10 +213,10 @@ export default function SubmissionList() {
                                 <td style={{ padding: '1rem' }}>
                                     {sub.paymentProof ? (
                                         <a href={sub.paymentProof} target="_blank" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--primary)', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}>
-                                            <ImageIcon size={14} /> Ver Prova
+                                            <ImageIcon size={14} /> {t('dashboard.adminSubmissions.viewProof')}
                                         </a>
                                     ) : (
-                                        <span style={{ fontSize: '0.8rem', color: '#999' }}>Sem Prova</span>
+                                        <span style={{ fontSize: '0.8rem', color: '#999' }}>{t('dashboard.adminSubmissions.noProof')}</span>
                                     )}
                                 </td>
                                 <td style={{ padding: '1rem' }}>
@@ -262,14 +263,14 @@ export default function SubmissionList() {
                                                 textDecoration: 'none'
                                             }}
                                         >
-                                            <ExternalLink size={14} /> HUB
+                                            <ExternalLink size={14} /> {t('dashboard.adminSubmissions.hub')}
                                         </a>
                                     </div>
                                 </td>
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                                         {sub.status !== 'approved' && (
-                                            <Tooltip content="Aprovar">
+                                            <Tooltip content={t('dashboard.adminSubmissions.actions.approve')}>
                                                 <button
                                                     onClick={() => handleUpdateStatus(sub._id, 'approved')}
                                                     style={{ background: '#38a169', color: '#fff', border: 'none', padding: '0.4rem', borderRadius: '4px', cursor: 'pointer' }}
@@ -279,7 +280,7 @@ export default function SubmissionList() {
                                             </Tooltip>
                                         )}
                                         {sub.status !== 'rejected' && (
-                                            <Tooltip content="Rejeitar">
+                                            <Tooltip content={t('dashboard.adminSubmissions.actions.reject')}>
                                                 <button
                                                     onClick={() => handleUpdateStatus(sub._id, 'rejected')}
                                                     style={{ background: '#e53e3e', color: '#fff', border: 'none', padding: '0.4rem', borderRadius: '4px', cursor: 'pointer' }}
@@ -315,7 +316,7 @@ export default function SubmissionList() {
                                 cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
                             }}
                         >
-                            Anterior
+                            {t('common.previous')}
                         </button>
                         {Array.from({ length: Math.ceil(filteredSubmissions.length / itemsPerPage) }, (_, i) => (
                             <button
@@ -350,7 +351,7 @@ export default function SubmissionList() {
                                 cursor: indexOfLastItem >= filteredSubmissions.length ? 'not-allowed' : 'pointer'
                             }}
                         >
-                            Próximo
+                            {t('common.next')}
                         </button>
                     </div>
                 </div>
@@ -374,9 +375,9 @@ export default function SubmissionList() {
                         >
                             <div style={{ padding: '1.5rem 2rem', background: '#000', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div>
-                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Dados de Inscrição</h3>
+                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>{t('dashboard.adminSubmissions.modal.title')}</h3>
                                     <p style={{ fontSize: '0.8rem', color: '#FFD700', fontWeight: 600 }}>{selectedSubmission.form?.title}</p>
-                                    <p style={{ fontSize: '0.7rem', opacity: 0.6 }}>Realizada em: {formatDate(selectedSubmission.submittedAt)}</p>
+                                    <p style={{ fontSize: '0.7rem', opacity: 0.6 }}>{t('dashboard.adminSubmissions.modal.submittedOn', { date: formatDate(selectedSubmission.submittedAt) })}</p>
                                 </div>
                                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                     <button
@@ -384,11 +385,11 @@ export default function SubmissionList() {
                                             const text = Object.entries(selectedSubmission.data || {})
                                                 .map(([k, v]) => `${k}: ${v}`).join('\n');
                                             navigator.clipboard.writeText(text);
-                                            toast.success('Dados copiados!');
+                                            toast.success(t('dashboard.adminSubmissions.messages.copySuccess'));
                                         }}
                                         style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#FFD700', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.75rem', fontWeight: 700 }}
                                     >
-                                        <Copy size={14} /> COPIAR
+                                        <Copy size={14} /> {t('dashboard.adminSubmissions.modal.copy')}
                                     </button>
                                     <button onClick={() => setSelectedSubmission(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={20} /></button>
                                 </div>
@@ -431,13 +432,13 @@ export default function SubmissionList() {
                                     onClick={() => { handleUpdateStatus(selectedSubmission._id, 'approved'); setSelectedSubmission(null); }}
                                     style={{ flex: 1, padding: '0.8rem', borderRadius: '10px', border: 'none', background: '#38a169', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
                                 >
-                                    Aprovar
+                                    {t('dashboard.adminSubmissions.actions.approve')}
                                 </button>
                                 <button
                                     onClick={() => { handleUpdateStatus(selectedSubmission._id, 'rejected'); setSelectedSubmission(null); }}
                                     style={{ flex: 1, padding: '0.8rem', borderRadius: '10px', border: 'none', background: '#e53e3e', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
                                 >
-                                    Rejeitar
+                                    {t('dashboard.adminSubmissions.actions.reject')}
                                 </button>
                             </div>
                         </motion.div>
