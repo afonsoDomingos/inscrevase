@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown, Activity, Clock, XCircle, Edit2, Share2, MessageCircle } from 'lucide-react';
+import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown, Activity, Clock, XCircle, Edit2, Share2, MessageCircle, Lock } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
@@ -784,22 +784,26 @@ export default function AdManagement() {
                                             <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Método de Pagamento</label>
                                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                                 <button
-                                                    onClick={() => setForm({ ...form, paymentMethod: 'stripe' })}
+                                                    onClick={() => toast.info("Checkout Global via Stripe em manutenção regulatória. Por favor, utilize o Método Manual acima ou PayPal.")}
                                                     style={{
                                                         padding: '1.5rem',
                                                         borderRadius: '20px',
-                                                        border: form.paymentMethod === 'stripe' ? '2px solid #FFD700' : '2px solid #eee',
-                                                        background: form.paymentMethod === 'stripe' ? 'rgba(255, 215, 0, 0.05)' : '#fff',
-                                                        color: form.paymentMethod === 'stripe' ? '#B8860B' : '#999',
-                                                        cursor: 'pointer',
+                                                        border: '2px dashed #eee',
+                                                        background: '#f8fafc',
+                                                        color: '#94a3b8',
+                                                        cursor: 'help',
                                                         display: 'flex',
                                                         flexDirection: 'column',
                                                         alignItems: 'center',
                                                         gap: '0.5rem',
-                                                        transition: 'all 0.2s'
+                                                        transition: 'all 0.2s',
+                                                        position: 'relative'
                                                     }}
                                                 >
-                                                    <CreditCard size={32} />
+                                                    <div style={{ position: 'absolute', top: '10px', right: '10px', opacity: 0.5 }}>
+                                                        <Lock size={14} />
+                                                    </div>
+                                                    <CreditCard size={32} opacity={0.5} />
                                                     <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>Cartão / Stripe</span>
                                                 </button>
                                                 <button

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Megaphone, Calendar, CreditCard, Upload, CheckCircle2, AlertCircle, Package, Briefcase, Zap, Info, ChevronRight, MapPin, ArrowRight } from 'lucide-react';
+import { Megaphone, Calendar, CreditCard, Upload, CheckCircle2, AlertCircle, Package, Briefcase, Zap, Info, ChevronRight, MapPin, ArrowRight, Lock } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -461,21 +461,26 @@ export default function AnunciarPage() {
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
                                                 <button
-                                                    onClick={() => setForm({ ...form, paymentMethod: 'stripe' })}
+                                                    onClick={() => setError("Checkout Global via Stripe em manutenção regulatória. Por favor, utilize o Método Manual / PayPal (brevemente).")}
                                                     style={{
                                                         padding: '1.5rem',
-                                                        borderRadius: '16px',
-                                                        border: form.paymentMethod === 'stripe' ? '2px solid #FFD700' : '1px solid #eee',
+                                                        borderRadius: '24px',
+                                                        border: '2px dashed #eee',
                                                         display: 'flex',
                                                         flexDirection: 'column',
                                                         alignItems: 'center',
-                                                        gap: '10px',
-                                                        background: form.paymentMethod === 'stripe' ? '#FFD70005' : 'transparent',
-                                                        cursor: 'pointer'
+                                                        gap: '12px',
+                                                        background: '#fcfcfc',
+                                                        cursor: 'help',
+                                                        opacity: 0.6,
+                                                        position: 'relative'
                                                     }}
                                                 >
-                                                    <CreditCard size={24} />
-                                                    <span style={{ fontWeight: 800 }}>Stripe / Cartão</span>
+                                                    <div style={{ position: 'absolute', top: '10px', right: '10px', opacity: 0.5 }}>
+                                                        <Lock size={14} />
+                                                    </div>
+                                                    <CreditCard size={28} opacity={0.5} />
+                                                    <span style={{ fontWeight: 800, fontSize: '0.9rem', color: '#999' }}>Stripe / Cartão</span>
                                                 </button>
                                                 <button
                                                     onClick={() => setForm({ ...form, paymentMethod: 'manual' })}
