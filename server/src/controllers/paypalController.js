@@ -29,18 +29,33 @@ exports.createSubscriptionOrder = async (req, res) => {
         const dynamicPlans = await getDynamicPlanConfig();
         const planConfig = dynamicPlans[plan] || dynamicPlans.pro || PLANS.pro;
 
-        // Plan prices are in cents in PLANS config (e.g. 299 for $2.99)
-        const rawPriceDecimal = planConfig.prices ? (planConfig.prices[currency] / 100) : (planConfig.price || 0);
+        let finalAmount;
+        let finalCurrency = currency;
 
-        // PayPal uses USD for most international transactions if MZN is not supported by Sandbox directly
-        const finalCurrency = currency === 'MZN' ? 'USD' : currency;
+        if (currency === 'MZN') {
+            // Se o plano tiver preço fixo em USD (ex: 299 -> 2.99), usamos esse para evitar flutuação cambial no checkout
+            if (planConfig.prices && planConfig.prices.USD) {
+                finalAmount = planConfig.prices.USD / 100;
+                finalCurrency = 'USD';
+                console.log(`💱 PayPal Sub: Using fixed USD price for MZN selection: ${finalAmount} USD`);
+            } else {
+                // Caso contrário, convertemos o preço MZN para USD
+                const mznPrice = planConfig.prices ? (planConfig.prices.MZN / 100) : (planConfig.price || 0);
+                const conversion = await exchangeRateService.convert(mznPrice, 'MZN', 'USD');
+                finalAmount = conversion.amount;
+                finalCurrency = 'USD';
+                console.log(`💱 PayPal Sub: Converted ${mznPrice} MZN to ${finalAmount} USD`);
+            }
+        } else {
+            finalAmount = planConfig.prices ? (planConfig.prices[currency] / 100) : (planConfig.price || 0);
+        }
 
         const orderData = {
             intent: 'CAPTURE',
             purchase_units: [{
                 amount: {
                     currency_code: finalCurrency,
-                    value: rawPriceDecimal.toFixed(2)
+                    value: finalAmount.toFixed(2)
                 },
                 description: `Upgrade para plano ${plan.toUpperCase()}`,
                 custom_id: JSON.stringify({ userId, plan, type: 'subscription' })
@@ -66,16 +81,30 @@ exports.createEventOrder = async (req, res) => {
         if (!form) return res.status(404).json({ message: 'Form not found' });
 
         const mentor = form.creator;
-        const totalAmount = form.paymentConfig.price;
+        const totalAmountMZN = form.paymentConfig.price;
 
-        const finalCurrency = currency === 'MZN' ? 'USD' : (currency || 'USD');
+        let finalAmount;
+        let finalCurrency = currency || 'USD';
+
+        if (currency === 'MZN' || !currency) {
+            // Se for MZN, precisamos converter para USD para o PayPal processar
+            const conversion = await exchangeRateService.convert(totalAmountMZN, 'MZN', 'USD');
+            finalAmount = conversion.amount;
+            finalCurrency = 'USD';
+            console.log(`💱 PayPal Event: Converted ${totalAmountMZN} MZN to ${finalAmount} USD`);
+        } else {
+            // Se for outra moeda (EUR/USD), usamos o valor direto (assumindo que o mentor definiu em USD/EUR ou que o sistema já converteu antes)
+            // NOTA: No formulário atual, o preço é geralmente MZN.
+            const conversion = await exchangeRateService.convert(totalAmountMZN, 'MZN', finalCurrency);
+            finalAmount = conversion.amount;
+        }
 
         const orderData = {
             intent: 'CAPTURE',
             purchase_units: [{
                 amount: {
                     currency_code: finalCurrency,
-                    value: totalAmount.toFixed(2)
+                    value: finalAmount.toFixed(2)
                 },
                 description: `Inscrição: ${form.title}`,
                 custom_id: JSON.stringify({
