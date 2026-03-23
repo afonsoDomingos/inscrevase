@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown, Activity, Clock, XCircle, Edit2, Share2, MessageCircle, Lock } from 'lucide-react';
+import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown, Activity, Clock, XCircle, Edit2, Share2, MessageCircle, Lock, Copy } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
@@ -796,7 +796,7 @@ export default function AdManagement() {
                                                     position: 'relative'
                                                 }}>
                                                     <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 1 }}>
-                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="#003087"><path d="M20.067 8.478c.492.88.556 2.014.303 3.274-.744 3.713-3.005 6.045-7.054 6.045h-1.6c-.466 0-.846.347-.936.802l-.653 3.274c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l2.454-9.743c.09-.455.47-.802.936-.802h3.2c1.783 0 3.264-.09 4.316-.395.53-.151.782-.26 1.05-.53.284-.287.48-.686.586-1.124.162-.676.02-1.28-.432-1.74-.41-.424-1.07-.63-1.964-.63h-5.066c-.466 0-.846.347-.936.802l-1.306 6.548c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l1.636-6.548c.09-.455.49-.802.956-.802h6.14c1.9 0 3.4.45 4.31 1.34s1.21 2.09.82 3.65c-.09.36-.21.69-.37 1zm-1.12-5.46c-.52-.51-1.34-.78-2.45-.78h-6.14c-.97 0-1.83.67-2.02 1.62l-2.03 10.15c-.06.31.18.61.5.61h3.32c.3 0 .58-.22.63-.52l.65-3.27c.09-.46.49-.81.96-.81h1.59c3.9 0 6.07-2.12 6.81-5.83.43-2.14.07-3.7-.62-4.47z" /></svg>
+                                                        <Image src="/payments/paypal.png" alt="PayPal" width={32} height={32} style={{ objectFit: 'contain' }} />
                                                         <span style={{ fontWeight: 800, fontSize: '0.8rem', color: '#003087', marginTop: '5px' }}>PayPal</span>
                                                     </div>
                                                     <div style={{ position: 'relative', zIndex: 2, height: '100%' }}>
@@ -866,10 +866,22 @@ export default function AdManagement() {
                                             <div style={{ background: '#f9f9f9', padding: '1.5rem', borderRadius: '16px', border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                                 <p style={{ fontSize: '0.75rem', fontWeight: 900, color: '#666', textTransform: 'uppercase', letterSpacing: '1px' }}>Contas para Depósito</p>
                                                 <div style={{ fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, color: '#444' }}>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>M-Pesa:</span> <span>847877405(Afonso Domingos)</span></div>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>E-Mola:</span> <span>879642412 (Afonso Domingos)</span></div>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>NIB:</span> <span>000100000074301049557</span></div>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>PayPal:</span> <span>karinganastudio23@gmail.com</span></div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <span>M-Pesa: 847877405 (Afonso Domingos)</span>
+                                                        <button onClick={() => { navigator.clipboard.writeText('847877405'); toast.success('Número copiado!'); }} style={{ padding: '4px', background: '#fff', border: '1px solid #eee', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                    </div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <span>E-Mola: 879642412 (Afonso Domingos)</span>
+                                                        <button onClick={() => { navigator.clipboard.writeText('879642412'); toast.success('Número copiado!'); }} style={{ padding: '4px', background: '#fff', border: '1px solid #eee', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                    </div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <span>NIB: 000100000074301049557</span>
+                                                        <button onClick={() => { navigator.clipboard.writeText('000100000074301049557'); toast.success('NIB copiado!'); }} style={{ padding: '4px', background: '#fff', border: '1px solid #eee', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                    </div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <span>PayPal: karinganastudio23@gmail.com</span>
+                                                        <button onClick={() => { navigator.clipboard.writeText('karinganastudio23@gmail.com'); toast.success('PayPal copiado!'); }} style={{ padding: '4px', background: '#fff', border: '1px solid #eee', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                    </div>
                                                 </div>
                                                 <div style={{
                                                     position: 'relative',

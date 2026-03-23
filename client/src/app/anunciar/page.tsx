@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Megaphone, Calendar, CreditCard, Upload, CheckCircle2, AlertCircle, Package, Briefcase, Zap, Info, ChevronRight, MapPin, ArrowRight, Lock } from 'lucide-react';
+import { Megaphone, Calendar, CreditCard, Upload, CheckCircle2, AlertCircle, Package, Briefcase, Zap, Info, ChevronRight, MapPin, ArrowRight, Copy, Lock } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -499,7 +499,7 @@ export default function AnunciarPage() {
                                                         cursor: 'pointer'
                                                     }}
                                                 >
-                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#003087"><path d="M20.067 8.478c.492.88.556 2.014.303 3.274-.744 3.713-3.005 6.045-7.054 6.045h-1.6c-.466 0-.846.347-.936.802l-.653 3.274c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l2.454-9.743c.09-.455.47-.802.936-.802h3.2c1.783 0 3.264-.09 4.316-.395.53-.151.782-.26 1.05-.53.284-.287.48-.686.586-1.124.162-.676.02-1.28-.432-1.74-.41-.424-1.07-.63-1.964-.63h-5.066c-.466 0-.846.347-.936.802l-1.306 6.548c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l1.636-6.548c.09-.455.49-.802.956-.802h6.14c1.9 0 3.4.45 4.31 1.34s1.21 2.09.82 3.65c-.09.36-.21.69-.37 1zm-1.12-5.46c-.52-.51-1.34-.78-2.45-.78h-6.14c-.97 0-1.83.67-2.02 1.62l-2.03 10.15c-.06.31.18.61.5.61h3.32c.3 0 .58-.22.63-.52l.65-3.27c.09-.46.49-.81.96-.81h1.59c3.9 0 6.07-2.12 6.81-5.83.43-2.14.07-3.7-.62-4.47z" /></svg>
+                                                    <Image src="/payments/paypal.png" alt="PayPal" width={32} height={32} style={{ objectFit: 'contain' }} />
                                                     <span style={{ fontWeight: 800, fontSize: '0.8rem' }}>PayPal</span>
                                                 </button>
                                                 <button
@@ -548,11 +548,23 @@ export default function AnunciarPage() {
                                                     style={{ background: '#f9f9f9', padding: '1.5rem', borderRadius: '16px', border: '1px solid #eee' }}
                                                 >
                                                     <p style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem' }}>Siga estas instruções:</p>
-                                                    <ul style={{ fontSize: '0.8rem', color: '#666', lineHeight: 2, marginBottom: '1.5rem', paddingLeft: '1rem' }}>
-                                                        <li><b>M-Pesa:</b> 847877405(Afonso Domingos)</li>
-                                                        <li><b>E-Mola:</b> 879642412 (Afonso Domingos)</li>
-                                                        <li><b>NIB:</b> 000100000074301049557</li>
-                                                        <li><b>PayPal:</b> karinganastudio23@gmail.com</li>
+                                                    <ul style={{ fontSize: '0.8rem', color: '#666', listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '1.5rem' }}>
+                                                        <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <span><b>M-Pesa:</b> 847877405 (Afonso Domingos)</span>
+                                                            <button onClick={() => { navigator.clipboard.writeText('847877405'); toast.success('Número copiado!'); }} style={{ padding: '4px', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                        </li>
+                                                        <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <span><b>E-Mola:</b> 879642412 (Afonso Domingos)</span>
+                                                            <button onClick={() => { navigator.clipboard.writeText('879642412'); toast.success('Número copiado!'); }} style={{ padding: '4px', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                        </li>
+                                                        <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <span><b>NIB:</b> 000100000074301049557</span>
+                                                            <button onClick={() => { navigator.clipboard.writeText('000100000074301049557'); toast.success('NIB copiado!'); }} style={{ padding: '4px', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                        </li>
+                                                        <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <span><b>PayPal:</b> karinganastudio23@gmail.com</span>
+                                                            <button onClick={() => { navigator.clipboard.writeText('karinganastudio23@gmail.com'); toast.success('PayPal copiado!'); }} style={{ padding: '4px', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                        </li>
                                                     </ul>
 
                                                     <div style={{ position: 'relative', border: '2px dashed #ddd', borderRadius: '12px', padding: '1rem', textAlign: 'center' }}>
