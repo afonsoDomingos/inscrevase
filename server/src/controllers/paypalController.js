@@ -82,7 +82,18 @@ exports.createEventOrder = async (req, res) => {
         if (!form) return res.status(404).json({ message: 'Form not found' });
 
         const mentor = form.creator;
-        const totalAmountMZN = form.paymentConfig.price;
+        const selectedTierId = submissionData?.selectedTierId;
+        
+        // 🎫 Determine the price based on Tier or base price
+        let totalAmountMZN = form.paymentConfig.price || 0;
+        
+        if (form.paymentConfig.useTieredPricing && selectedTierId && form.paymentConfig.pricingTiers?.length > 0) {
+            const tier = form.paymentConfig.pricingTiers.find(t => t.id === selectedTierId);
+            if (tier) {
+                totalAmountMZN = tier.price;
+                console.log(`🎫 Using Tiered Pricing: ${tier.category} - ${tier.price} MZN`);
+            }
+        }
 
         let finalAmount;
         let finalCurrency = currency || 'USD';
@@ -118,6 +129,12 @@ exports.createEventOrder = async (req, res) => {
                     value: finalAmount.toFixed(2)
                 },
                 description: `Inscrição: ${form.title}`,
+                // 🚀 Send money to mentor if they have paypalEmail configured
+                ...(mentor.paypalEmail ? {
+                    payee: {
+                        email_address: mentor.paypalEmail.trim()
+                    }
+                } : {}),
                 custom_id: JSON.stringify({
                     submissionId: newSubmission._id,
                     mentorId: mentor._id,
@@ -126,11 +143,17 @@ exports.createEventOrder = async (req, res) => {
             }]
         };
 
+        console.log(`🚀 PayPal Creating Order: ${finalAmount.toFixed(2)} ${finalCurrency} for ${form.title}`);
+        console.log(`📦 Order Body:`, JSON.stringify(orderData, null, 2));
+
         const order = await paypalService.createOrder(orderData);
         res.status(200).json(order);
     } catch (error) {
-        console.error('❌ PayPal Create Event Order Error:', error);
-        res.status(500).json({ message: error.message });
+        console.error('❌ PayPal Create Event Order Error:', error.response?.data || error.message);
+        res.status(500).json({ 
+            message: error.message,
+            details: error.response?.data || "Erro interno na API do PayPal"
+        });
     }
 };
 
