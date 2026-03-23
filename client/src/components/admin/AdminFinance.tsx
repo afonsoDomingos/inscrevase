@@ -15,8 +15,7 @@ import {
     Download,
     Trash2,
     XCircle,
-    RefreshCcw,
-    CreditCard
+    RefreshCcw
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
@@ -159,9 +158,10 @@ export default function AdminFinance() {
             } else {
                 toast.error(data.message || "Erro ao capturar");
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const err = error as Error;
             toast.dismiss();
-            toast.error(`Erro: ${error.message}`);
+            toast.error(`Erro: ${err.message || "Falha desconhecida"}`);
         } finally {
             setProcessingCapture(null);
         }
