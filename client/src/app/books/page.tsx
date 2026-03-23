@@ -92,7 +92,7 @@ export default function BooksPage() {
                         <Library size={16} /> RECOMENDAÇÕES DA INSCRIVA-SE
                     </div>
                     
-                    <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 900, marginBottom: '1.5rem', lineHeight: 1.1 }}>
+                    <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 900, marginBottom: '1.5rem', lineHeight: 1.1, color: '#fff' }}>
                         Conhecimento que <span style={{ color: '#D4AF37' }}>Transforma</span>
                     </h1>
                     <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.7)', marginBottom: '3rem', lineHeight: 1.6 }}>
