@@ -183,6 +183,7 @@ app.use(require('./config/passport').initialize());
 
 // Routes
 app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
+app.use('/api/books', require('./routes/bookRoutes'));
 app.use('/api/forms', require('./routes/formRoutes'));
 app.use('/api/submissions', require('./routes/submissionRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
@@ -207,7 +208,6 @@ app.use('/api/feedback', require('./routes/feedbackRoutes'));
 app.use('/api/smartlinks', require('./routes/smartLinkRoutes'));
 app.use('/api/marketing', require('./routes/marketingRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
-app.use('/api/books', require('./routes/bookRoutes'));
 
 // --- GLOBAL SMARTLINK REDIRECT ---
 // This allows clean links like inscreva-se.com/l/meu-evento
