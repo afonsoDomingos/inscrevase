@@ -17,9 +17,10 @@ import SmartLinkList from '@/components/admin/SmartLinkList';
 import SystemSettings from '@/components/admin/SystemSettings';
 import MarketingRequestList from '@/components/admin/MarketingRequestList';
 import PaypalPayouts from '@/components/admin/PaypalPayouts';
+import BooksManager from '@/components/admin/BooksManager';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Plus } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Plus, Book } from 'lucide-react';
 
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
@@ -48,7 +49,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
 import Tooltip from '@/components/common/Tooltip';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts' | 'books';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -397,6 +398,7 @@ export default function AdminDashboard() {
                 { id: 'smartlinks', label: t('dashboard.smartlinks') || 'SmartLinks', icon: <LinkIcon size={18} /> },
                 { id: 'ads', label: t('dashboard.ads') || 'Anúncios', icon: <Megaphone size={18} /> },
                 { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={18} /> },
+                { id: 'books', label: t('nav.books') || 'Livros', icon: <Book size={18} /> },
             ]
         },
         {
@@ -1815,6 +1817,14 @@ export default function AdminDashboard() {
                         activeTab === 'finance' && user?.role === 'SuperAdmin' && (
                             <motion.div key="finance" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
                                 <AdminFinance />
+                            </motion.div>
+                        )
+                    }
+
+                    {
+                        activeTab === 'books' && (
+                            <motion.div key="books" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+                                <BooksManager />
                             </motion.div>
                         )
                     }

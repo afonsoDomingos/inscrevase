@@ -247,6 +247,7 @@
         "calendar": "Calendar",
         "blog": "Blog",
         "updates": "Updates",
+        "books": "Books",
         "feedback": "Feedback"
     },
     "calendar": {

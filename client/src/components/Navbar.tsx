@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle, Home, Users, Info, LifeBuoy, Newspaper, Sparkles, MessageSquare, Calendar as CalendarIcon } from 'lucide-react';
+import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle, Home, Users, Info, LifeBuoy, Newspaper, Sparkles, MessageSquare, Calendar as CalendarIcon, Library } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { authService, UserData } from '@/lib/authService';
@@ -84,6 +84,9 @@ export default function Navbar() {
           </Link>
           <Link href="/updates" className="nav-item">
             {t('nav.updates')}
+          </Link>
+          <Link href="/books" className="nav-item">
+            {t('nav.books')}
           </Link>
           <Link href="/suporte" className="nav-item">
             {t('dashboard.support')}
@@ -171,6 +174,12 @@ export default function Navbar() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
               <Sparkles size={20} color="#000" />
               <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>{t('nav.updates')}</span>
+            </div>
+          </Link>
+          <Link href="/books" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
+              <Library size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>{t('nav.books')}</span>
             </div>
           </Link>
           <Link href="/feedback" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>

@@ -207,6 +207,7 @@ app.use('/api/feedback', require('./routes/feedbackRoutes'));
 app.use('/api/smartlinks', require('./routes/smartLinkRoutes'));
 app.use('/api/marketing', require('./routes/marketingRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
+app.use('/api/books', require('./routes/bookRoutes'));
 
 // --- GLOBAL SMARTLINK REDIRECT ---
 // This allows clean links like inscreva-se.com/l/meu-evento
