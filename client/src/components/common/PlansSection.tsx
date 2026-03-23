@@ -217,7 +217,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <button
-                            onClick={() => toast.info("Checkout Global via Stripe em manutenção regulatória. Por favor, utilize o PayPal abaixo – é instantâneo e seguro!")}
+                            onClick={() => toast.info("Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!")}
                             style={{ 
                                 width: '100%', height: '45px', 
                                 background: 'rgba(255,255,255,0.05)', 
@@ -316,7 +316,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <button
-                            onClick={() => toast.info("Checkout Global via Stripe em manutenção regulatória. Por favor, utilize o PayPal abaixo – é instantâneo e seguro!")}
+                            onClick={() => toast.info("Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!")}
                             style={{ 
                                 width: '100%', height: '45px', 
                                 background: 'rgba(255,255,255,0.05)', 
