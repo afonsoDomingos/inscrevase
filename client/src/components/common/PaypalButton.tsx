@@ -81,8 +81,9 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
 
     const onApprove = async (data: { orderID: string }) => {
         try {
+            const logType = type === 'ad_checkout' ? 'ad_purchase' : type as 'subscription' | 'event_registration';
             logService.logPaymentAttempt({
-                type: type === 'ad_checkout' ? 'ad_purchase' : (type as any),
+                type: logType,
                 method: 'paypal',
                 status: 'capture_started',
                 metadata: { orderID: data.orderID }
@@ -102,8 +103,9 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
 
             if (!response.ok) {
                 const errorData = await response.text();
+                const logType = type === 'ad_checkout' ? 'ad_purchase' : type as 'subscription' | 'event_registration';
                 logService.logPaymentAttempt({
-                    type: type === 'ad_checkout' ? 'ad_purchase' : (type as any),
+                    type: logType,
                     method: 'paypal',
                     status: 'capture_failed',
                     metadata: { orderID: data.orderID, error: errorData, status: response.status }
@@ -114,25 +116,28 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
             const details = (await response.json()) as PaypalSuccessDetails;
             if (details.success) {
                 toast.success("Pagamento confirmado via PayPal!");
+                const logType = type === 'ad_checkout' ? 'ad_purchase' : type as 'subscription' | 'event_registration';
                 logService.logPaymentAttempt({
-                    type: type === 'ad_checkout' ? 'ad_purchase' : (type as any),
+                    type: logType,
                     method: 'paypal',
                     status: 'completed',
                     metadata: { orderID: data.orderID }
                 });
                 onSuccess(details);
             } else {
+                const logType = type === 'ad_checkout' ? 'ad_purchase' : type as 'subscription' | 'event_registration';
                 logService.logPaymentAttempt({
-                    type: type === 'ad_checkout' ? 'ad_purchase' : (type as any),
+                    type: logType,
                     method: 'paypal',
                     status: 'capture_failed',
                     metadata: { orderID: data.orderID, error: "Backend returned success: false" }
                 });
                 throw new Error("Capture failed. Backend explicitly returned success: false");
             }
-        } catch (err: any) {
+        } catch (err) {
+            const error = err as Error;
             console.error('\n❌ Frontend PayPal Capture Error:', err);
-            toast.error(`Erro ao confirmar pagamento: ${err.message || 'Falha no PayPal'}`);
+            toast.error(`Erro ao confirmar pagamento: ${error.message || 'Falha no PayPal'}`);
         }
     };
 
