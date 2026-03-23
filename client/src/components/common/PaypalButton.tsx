@@ -16,7 +16,7 @@ interface PaypalButtonProps {
     type: 'subscription' | 'event_registration' | 'ad_checkout';
     planId?: string;
     formId?: string;
-    adData?: Record<string, unknown>;
+    adData?: any;
     submissionData?: Record<string, unknown>;
     currency: string;
     amount?: number;

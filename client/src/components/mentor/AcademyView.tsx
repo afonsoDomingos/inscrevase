@@ -832,10 +832,10 @@ export default function AcademyView() {
                         marginBottom: '1.5rem'
                     }}>
                         {[
-                            { icon: Video, label: t('academy.manageStat1'), value: manageStats.total, color: '#D4AF37' },
-                            { icon: CheckCircle, label: t('academy.manageStat2'), value: manageStats.published, color: '#10b981' },
-                            { icon: Clock, label: t('academy.manageStat3'), value: manageStats.unpublished, color: '#f59e0b' },
-                            { icon: TrendingUp, label: t('academy.manageStat4'), value: manageStats.totalViews, color: '#3b82f6' }
+                            { icon: Video, label: t('academy.stats.total'), value: manageStats.total, color: "#D4AF37" },
+                            { icon: CheckCircle, label: t('academy.stats.published'), value: manageStats.published, color: "#10b981" },
+                            { icon: Clock, label: t('academy.stats.drafts'), value: manageStats.unpublished, color: "#3b82f6" },
+                            { icon: Eye, label: t('academy.stats.views'), value: manageStats.totalViews, color: "#8b5cf6" }
                         ].map((stat, idx) => (
                             <div key={idx} className="luxury-card" style={{
                                 background: 'var(--paper)',
@@ -930,11 +930,14 @@ export default function AcademyView() {
                         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: isMobile ? '800px' : 'auto' }}>
                             <thead>
                                 <tr style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid var(--border)' }}>
-                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>{t('academy.tableLesson')}</th>
-                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>{t('academy.tableCategory')}</th>
-                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>{t('academy.tableAudience')}</th>
-                                    <th style={{ padding: '1rem', textAlign: 'left', color: '#666' }}>{t('academy.tableStatus')}</th>
-                                    <th style={{ padding: '1rem', textAlign: 'right', color: '#666' }}>{t('academy.tableActions')}</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{t('academy.table.lesson')}</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{t('academy.table.category')}</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{t('academy.table.duration')}</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{t('academy.table.views')}</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{t('academy.table.audience')}</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{t('academy.table.status')}</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{t('academy.table.access')}</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{t('academy.table.actions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -978,17 +981,24 @@ export default function AcademyView() {
                                                                 lesson.targetAudience === 'specialists' ? '#86198f' :
                                                                     lesson.targetAudience === 'all' ? '#166534' : '#4b5563'
                                                 }}>
-                                                    {lesson.targetAudience === 'both' ? `👥🎓 ${t('academy.audienceBoth')}` :
-                                                        lesson.targetAudience === 'mentors' ? `🎓 ${t('academy.audienceMentor')}` :
-                                                            lesson.targetAudience === 'companies' ? `🏢 ${t('academy.audienceCompany')}` :
-                                                                lesson.targetAudience === 'specialists' ? `⚡ ${t('academy.audienceSpecialist')}` :
-                                                                    lesson.targetAudience === 'all' ? `🌍 ${t('academy.audienceAll')}` : `👥 ${t('academy.audienceParticipant')}`}
+                                                    {lesson.targetAudience === 'both' ? `👥🎓 ${t('academy.audience.both')}` :
+                                                        lesson.targetAudience === 'mentors' ? `🎓 ${t('academy.audience.mentors')}` :
+                                                            lesson.targetAudience === 'companies' ? `🏢 ${t('academy.audience.companies')}` :
+                                                                lesson.targetAudience === 'specialists' ? `⚡ ${t('academy.audience.specialists')}` :
+                                                                    lesson.targetAudience === 'all' ? `🌏 ${t('academy.audience.all')}` :
+                                                                        `👥 ${t('academy.audience.participants')}`}
                                                 </span>
                                             </td>
                                             <td style={{ padding: '1rem' }}>
-                                                <span style={{ fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px', background: lesson.isPublished ? '#dcfce7' : '#fef3c7', color: lesson.isPublished ? '#166534' : '#92400e' }}>
-                                                    {lesson.isPublished ? t('academy.published') : t('academy.draft')}
-                                                </span>
+                                                {lesson.isPublished ? (
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        {t('academy.status.published')}
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                        {t('academy.status.draft')}
+                                                    </span>
+                                                )}
                                             </td>
                                             <td style={{ padding: '1rem', textAlign: 'right' }}>
                                                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', alignItems: 'center' }}>

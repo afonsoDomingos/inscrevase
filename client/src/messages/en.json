@@ -1205,17 +1205,78 @@
                 "active": "ACTIVE",
                 "unsubscribed": "UNSUBSCRIBED"
             },
-            "stats": {
-                "total": "Total: {count} subscribers",
-                "growth": "Organic growth via Blog"
-            },
-            "actions": {
-                "sendIndividual": "Send Individual Email"
-            },
             "messages": {
                 "funcSoon": "Manual sending feature coming soon",
                 "loadError": "Error loading subscribers"
             }
+        },
+        "adsManagement": {
+            "title": "Ads Management",
+            "subtitle": "Track and manage ad requests on the platform.",
+            "syncing": "SYNCING ADS...",
+            "errorLoading": "Error loading ads",
+            "updateError": "Error updating ad status",
+            "noAds": "No ads found",
+            "noAdsDesc": "We didn't find any ads with the filter '{filter}'.",
+            "investment": "INVESTMENT",
+            "weeks": "Weeks",
+            "duration": "DURATION",
+            "payment": "PAYMENT",
+            "noProof": "No Proof",
+            "stats": {
+                "total": "Total",
+                "pending": "Pending",
+                "active": "Active"
+            },
+            "filters": {
+                "all": "All",
+                "pending": "Pending",
+                "approved": "Approved",
+                "rejected": "Rejected",
+                "suspended": "Suspended"
+            },
+            "status": {
+                "approved": "APPROVED",
+                "pending": "PENDING",
+                "suspended": "SUSPENDED",
+                "rejected": "REJECTED"
+            },
+            "metrics": {
+                "views": "VIEWS",
+                "clicks": "CLICKS",
+                "ctr": "CTR (CLICKS/VIEWS)"
+            },
+            "placeholders": {
+                "merchant": "Merchant / Mentor",
+                "owner": "Ad Owner"
+            },
+            "paymentStatus": {
+                "paid": "PAID",
+                "pending": "PENDING"
+            },
+            "actions": {
+                "proof": "View Proof",
+                "target": "Target Link",
+                "refuse": "Reject",
+                "approve": "Approve",
+                "reactivate": "Reactivate",
+                "suspend": "Suspend",
+                "pause": "Pause",
+                "resume": "Resume",
+                "delete": "Delete"
+            }
+        }
+    },
+    "team": {
+        "title": "Our Leadership",
+        "subtitle": "Minds Behind the",
+        "subtitleHighlight": "Impact",
+        "description": "A dedicated team transforming event management in Africa.",
+        "viewBio": "View Full Biography",
+        "afonso": {
+            "role": "Founder - Inscreva-se & RPA Mozambique",
+            "summary": "Mozambican IT professional and innovation self-taught with over 6 years of experience.",
+            "bio": "..."
         }
     },
     "academy": {
@@ -1275,7 +1336,9 @@
         },
         "status": {
             "published": "Published",
-            "draft": "Draft"
+            "draft": "Draft",
+            "locked": "Locked",
+            "free": "Free"
         },
         "tipsSectionTitle": "Tips for Elite Mentors",
         "tip1Title": "Short Content",
@@ -2545,19 +2608,5 @@
         "paused": "Paused",
         "pause": "Pause",
         "activate": "Activate"
-    },
-    "referral": {
-        "networkSubtitle": "Your network of influence and community impact",
-        "myPoints": "My Points",
-        "convertedInvites": "Converted Invites",
-        "myPosition": "My Position",
-        "impactLeaders": "Impact Leaders",
-        "rankingEmpty": "The impact ranking will start growing soon! 🚀",
-        "youImpactMaster": "You (Impact Master)",
-        "mentorsInvited": "mentors invited",
-        "foundingPartner": "Founding Partner",
-        "ctaTitle": "Your influence generates real rewards",
-        "ctaDesc": "By inviting new elite mentors to Inscreva-se, you accumulate points that can be exchanged for Pro Plan months, ad highlights, and exclusive benefits.",
-        "inviteBtn": "Invite & Expand My Network"
     }
 }
