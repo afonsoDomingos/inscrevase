@@ -5,7 +5,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-    Book, 
     Plus, 
     Trash2, 
     Edit, 
@@ -14,7 +13,6 @@ import {
     X, 
     Loader2, 
     Search,
-    Image as ImageIcon,
     BarChart
 } from 'lucide-react';
 import { bookService, BookModel } from '@/lib/bookService';
