@@ -125,7 +125,7 @@ export default function BooksPage() {
                             onClick={() => {
                                 if (!userToken) {
                                     toast.info('Para publicar o seu livro, precisa de ter uma conta na nossa plataforma. Vamos criar uma?');
-                                    router.push('/criar-conta');
+                                    router.push('/entrar');
                                     return;
                                 }
                                 setIsSubmitModalOpen(true);
