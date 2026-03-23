@@ -87,7 +87,7 @@ export default function AdminFinance() {
         } finally {
             setLoading(false);
         }
-    }, [statusFilter, paymentMethodFilter]);
+    }, [statusFilter, paymentMethodFilter, t]);
 
     useEffect(() => {
         loadData();
