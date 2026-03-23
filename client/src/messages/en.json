@@ -121,6 +121,7 @@
         "backToHome": "Back to home",
         "next": "Next",
         "prev": "Previous",
+        "refresh": "Refresh",
         "previous": "Previous",
         "complete": "Complete",
         "yes": "Yes",
@@ -1265,18 +1266,6 @@
                 "resume": "Resume",
                 "delete": "Delete"
             }
-        }
-    },
-    "team": {
-        "title": "Our Leadership",
-        "subtitle": "Minds Behind the",
-        "subtitleHighlight": "Impact",
-        "description": "A dedicated team transforming event management in Africa.",
-        "viewBio": "View Full Biography",
-        "afonso": {
-            "role": "Founder - Inscreva-se & RPA Mozambique",
-            "summary": "Mozambican IT professional and innovation self-taught with over 6 years of experience.",
-            "bio": "..."
         }
     },
     "academy": {

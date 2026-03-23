@@ -182,10 +182,13 @@ exports.createAdOrder = async (req, res) => {
         }
 
         const amount = adData.priceTotal;
-        const sourceCurrency = adData.currency || 'MZN';
+        const rawSourceCurrency = adData.currency || 'MZN';
+        const sourceCurrency = rawSourceCurrency === 'MT' ? 'MZN' : rawSourceCurrency;
 
         let finalAmount;
-        let finalCurrency = currency || 'USD';
+        let requestedCurrency = currency || 'USD';
+        if (requestedCurrency === 'MT') requestedCurrency = 'MZN';
+        let finalCurrency = requestedCurrency;
 
         // Fix: Use the actual currency specified in the ad data instead of assuming MZN
         if (sourceCurrency === finalCurrency) {
@@ -195,6 +198,15 @@ exports.createAdOrder = async (req, res) => {
             const conversion = await exchangeRateService.convert(amount, sourceCurrency, finalCurrency);
             finalAmount = conversion.amount;
             console.log(`💱 PayPal Ad: Converted ${amount} ${sourceCurrency} to ${finalAmount} ${finalCurrency}`);
+        }
+
+        // 🛡️ Safety check to prevent PayPal 400 (NaN)
+        if (isNaN(finalAmount) || finalAmount <= 0) {
+            console.error('❌ Error: Calculated Ad amount is NaN or zero:', { amount, finalAmount, finalCurrency });
+            return res.status(400).json({ 
+                message: 'Erro no cálculo do valor do anúncio. Por favor, tente novamente.',
+                debug: { amount, finalAmount, finalCurrency }
+            });
         }
 
         // 🚀 Fix: Create the AdRequest in the database FIRST to avoid 127-char limit in custom_id
