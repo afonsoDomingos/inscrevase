@@ -153,6 +153,16 @@ exports.createAdOrder = async (req, res) => {
             console.log(`💱 PayPal Ad: Converted ${amount} ${sourceCurrency} to ${finalAmount} ${finalCurrency}`);
         }
 
+        // 🚀 Fix: Create the AdRequest in the database FIRST to avoid 127-char limit in custom_id
+        const newAd = new AdRequest({
+            ...adData,
+            userId,
+            paymentMethod: 'paypal',
+            paymentStatus: 'pending',
+            status: 'pending'
+        });
+        await newAd.save();
+
         const orderData = {
             intent: 'CAPTURE',
             purchase_units: [{
@@ -164,10 +174,7 @@ exports.createAdOrder = async (req, res) => {
                 custom_id: JSON.stringify({ 
                     userId, 
                     type: 'ad_checkout', 
-                    adData: {
-                        ...adData,
-                        userId // Ensure userId is passed
-                    }
+                    adId: newAd._id // Pass only the ID to keep custom_id short (< 127 chars)
                 })
             }]
         };
@@ -357,25 +364,25 @@ exports.captureOrder = async (req, res) => {
         }
 
         if (customData.type === 'ad_checkout') {
-            const { adData } = customData;
+            const { adId } = customData;
 
-            // Create or Update Ad Request
-            const newAd = new AdRequest({
-                ...adData,
-                paymentMethod: 'paypal',
-                paypalOrderId: orderID,
-                paypalCaptureId: capture.id,
-                paymentStatus: 'paid',
-                status: 'pending' // Still needs admin approval
-            });
+            // Find and Update existing Ad Request
+            const ad = await AdRequest.findById(adId);
+            if (!ad) {
+                console.error('❌ Ad Request not found in database:', adId);
+                throw new Error("Ad Request not found for ID: " + adId);
+            }
 
-            await newAd.save();
+            ad.paymentStatus = 'paid';
+            ad.paypalOrderId = orderID;
+            ad.paypalCaptureId = capture.id;
+            await ad.save();
 
             // Create transaction record
             const amount = parseFloat(capture.amount.value);
             const tx = new Transaction({
                 type: 'ad_payment',
-                adId: newAd._id,
+                adId: ad._id,
                 user: customData.userId,
                 amount: amount,
                 currency: capture.amount.currency_code,
@@ -390,7 +397,7 @@ exports.captureOrder = async (req, res) => {
             });
             await tx.save();
 
-            console.log('✅ Ad Payment Processed successfully via PayPal:', newAd._id);
+            console.log('✅ Ad Payment Processed successfully via PayPal:', ad._id);
             return res.status(200).json({ success: true, type: 'ad_checkout' });
         }
 

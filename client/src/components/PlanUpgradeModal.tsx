@@ -289,7 +289,8 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                                         <button
                                                             onClick={(e) => {
                                                                 e.preventDefault();
-                                                                navigator.clipboard.writeText(method.details);
+                                                                const numberToCopy = method.details.split('(')[0].trim();
+                                                                navigator.clipboard.writeText(numberToCopy);
                                                                 toast.success(t('plans.manualUpgrade.copySuccess'));
                                                             }}
                                                             style={{ background: '#f3f4f6', border: 'none', borderRadius: '6px', padding: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6b7280', transition: 'all 0.2s' }}
