@@ -182,7 +182,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                         onSelect={() => handleUpgradeStripe('pro')}
                                         onManual={() => setManualPlan({ id: 'pro', amount: proPrice })}
                                         onPaypalSuccess={() => { onClose(); router.push('/dashboard/mentor?subscription=success&plan=pro'); }}
-                                        onStripeLocked={() => toast.info("Checkout Global via Stripe em manutenção regulatória. Por favor, utilize o botão PayPal abaixo – é instantâneo e aceita o seu cartão!")}
+                                        onStripeLocked={() => toast.info("Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!")}
                                         loading={loading === 'pro'} currency={currency} t={t}
                                     />
                                     <PlanCard
@@ -193,7 +193,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                         onSelect={() => handleUpgradeStripe('enterprise')}
                                         onManual={() => setManualPlan({ id: 'enterprise', amount: enterprisePrice })}
                                         onPaypalSuccess={() => { onClose(); router.push('/dashboard/mentor?subscription=success&plan=enterprise'); }}
-                                        onStripeLocked={() => toast.info("Checkout Global via Stripe em manutenção regulatória. Por favor, utilize o botão PayPal abaixo – é instantâneo e aceita o seu cartão!")}
+                                        onStripeLocked={() => toast.info("Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!")}
                                         loading={loading === 'enterprise'} currency={currency} t={t}
                                     />
                                 </div>
