@@ -142,7 +142,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
         if (initialForm) {
             setLoading(false);
             // Default select first tier if exists
-            if (initialForm.paymentConfig?.useTieredPricing && initialForm.paymentConfig.pricingTiers?.length > 0) {
+            if (initialForm.paymentConfig?.useTieredPricing && initialForm.paymentConfig.pricingTiers && initialForm.paymentConfig.pricingTiers.length > 0) {
                 setSelectedTierId(initialForm.paymentConfig.pricingTiers[0].id);
             }
             if (initialForm) {
@@ -164,7 +164,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
             try {
                 const data = await formService.getFormBySlug(slug);
                 setForm(data);
-                if (data?.paymentConfig?.useTieredPricing && data.paymentConfig.pricingTiers?.length > 0) {
+                if (data?.paymentConfig?.useTieredPricing && data.paymentConfig.pricingTiers && data.paymentConfig.pricingTiers.length > 0) {
                     setSelectedTierId(data.paymentConfig.pricingTiers[0].id);
                 }
                 if (data) {
