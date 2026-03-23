@@ -137,20 +137,20 @@ exports.createAdOrder = async (req, res) => {
             return res.status(400).json({ message: 'Dados do anúncio ou preço total ausentes' });
         }
 
-        const totalAmountMZN = adData.priceTotal;
+        const amount = adData.priceTotal;
+        const sourceCurrency = adData.currency || 'MZN';
 
         let finalAmount;
         let finalCurrency = currency || 'USD';
 
-        // Conversion logic (similar to events)
-        if (currency === 'MZN' || !currency) {
-            const conversion = await exchangeRateService.convert(totalAmountMZN, 'MZN', 'USD');
-            finalAmount = conversion.amount;
-            finalCurrency = 'USD';
-            console.log(`💱 PayPal Ad: Converted ${totalAmountMZN} MZN to ${finalAmount} USD`);
+        // Fix: Use the actual currency specified in the ad data instead of assuming MZN
+        if (sourceCurrency === finalCurrency) {
+            finalAmount = amount;
+            console.log(`✅ PayPal Ad: Using direct amount ${finalAmount} ${finalCurrency} (No conversion needed)`);
         } else {
-            const conversion = await exchangeRateService.convert(totalAmountMZN, 'MZN', finalCurrency);
+            const conversion = await exchangeRateService.convert(amount, sourceCurrency, finalCurrency);
             finalAmount = conversion.amount;
+            console.log(`💱 PayPal Ad: Converted ${amount} ${sourceCurrency} to ${finalAmount} ${finalCurrency}`);
         }
 
         const orderData = {

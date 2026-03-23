@@ -486,7 +486,7 @@ export default function AnunciarPage() {
                                                     <span style={{ fontWeight: 800, fontSize: '0.8rem', color: '#999' }}>Stripe</span>
                                                 </button>
                                                 <button
-                                                    onClick={() => setForm({ ...form, paymentMethod: 'paypal' as any })}
+                                                    onClick={() => setForm({ ...form, paymentMethod: 'paypal' })}
                                                     style={{
                                                         padding: '1.5rem',
                                                         borderRadius: '16px',
