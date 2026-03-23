@@ -808,7 +808,7 @@ export default function AdManagement() {
                                                                 toast.success("Anúncio criado com sucesso!");
                                                                 setShowCreateForm(false);
                                                                 setStep(1);
-                                                                loadRequests();
+                                                                loadAds();
                                                             }} 
                                                         />
                                                     </div>
