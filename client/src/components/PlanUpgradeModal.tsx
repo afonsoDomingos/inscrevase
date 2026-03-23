@@ -9,6 +9,7 @@ import { useCurrency } from '@/context/CurrencyContext';
 import { useTranslate } from '@/context/LanguageContext';
 import { formService } from '@/lib/formService';
 import { toast } from 'sonner';
+import { logService } from '@/lib/logService';
 import PaypalButton, { PaypalSuccessDetails } from './common/PaypalButton';
 import Image from 'next/image';
 
@@ -182,7 +183,18 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                         onSelect={() => handleUpgradeStripe('pro')}
                                         onManual={() => setManualPlan({ id: 'pro', amount: proPrice })}
                                         onPaypalSuccess={() => { onClose(); router.push('/dashboard/mentor?subscription=success&plan=pro'); }}
-                                        onStripeLocked={() => toast.info("Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!")}
+                                        onStripeLocked={() => {
+                                            const msg = "Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!";
+                                            toast.info(msg);
+                                            logService.logPaymentAttempt({
+                                                type: 'subscription',
+                                                method: 'stripe',
+                                                status: 'blocked_maintenance',
+                                                amount: proPrice,
+                                                currency: currency,
+                                                metadata: { plan: 'pro' }
+                                            });
+                                        }}
                                         loading={loading === 'pro'} currency={currency} t={t}
                                     />
                                     <PlanCard
@@ -192,8 +204,22 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                         features={[t('dashboard.plans.f4'), t('dashboard.plans.f5'), t('dashboard.plans.f6')]}
                                         onSelect={() => handleUpgradeStripe('enterprise')}
                                         onManual={() => setManualPlan({ id: 'enterprise', amount: enterprisePrice })}
-                                        onPaypalSuccess={() => { onClose(); router.push('/dashboard/mentor?subscription=success&plan=enterprise'); }}
-                                        onStripeLocked={() => toast.info("Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!")}
+                                        onPaypalSuccess={() => {
+                                            onClose();
+                                            router.push('/dashboard/mentor?subscription=success&plan=enterprise');
+                                        }}
+                                        onStripeLocked={() => {
+                                            const msg = "Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!";
+                                            toast.info(msg);
+                                            logService.logPaymentAttempt({
+                                                type: 'subscription',
+                                                method: 'stripe',
+                                                status: 'blocked_maintenance',
+                                                amount: enterprisePrice,
+                                                currency: currency,
+                                                metadata: { plan: 'enterprise' }
+                                            });
+                                        }}
                                         loading={loading === 'enterprise'} currency={currency} t={t}
                                     />
                                 </div>

@@ -14,6 +14,7 @@ import { FormModel } from '@/lib/formService';
 import Cookies from 'js-cookie';
 import PaypalButton from '@/components/common/PaypalButton';
 import { toast } from 'sonner';
+import { logService } from '@/lib/logService';
 
 const PRICING_PER_WEEK = 5; // USD
 
@@ -464,7 +465,18 @@ export default function AnunciarPage() {
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                                                 <button
-                                                    onClick={() => setError("Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!")}
+                                                    onClick={() => {
+                                                        const msg = "Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!";
+                                                        setError(msg);
+                                                        logService.logPaymentAttempt({
+                                                            type: 'ad_purchase',
+                                                            method: 'stripe',
+                                                            status: 'blocked_maintenance',
+                                                            amount: form.priceTotal,
+                                                            currency: 'USD',
+                                                            metadata: { title: form.title }
+                                                        });
+                                                    }}
                                                     style={{
                                                         padding: '1.5rem',
                                                         borderRadius: '24px',
@@ -486,7 +498,17 @@ export default function AnunciarPage() {
                                                     <span style={{ fontWeight: 800, fontSize: '0.8rem', color: '#999' }}>Stripe</span>
                                                 </button>
                                                 <button
-                                                    onClick={() => setForm({ ...form, paymentMethod: 'paypal' })}
+                                                    onClick={() => {
+                                                        setForm({ ...form, paymentMethod: 'paypal' });
+                                                        logService.logPaymentAttempt({
+                                                            type: 'ad_purchase',
+                                                            method: 'paypal',
+                                                            status: 'initiated',
+                                                            amount: form.priceTotal,
+                                                            currency: 'USD',
+                                                            metadata: { title: form.title }
+                                                        });
+                                                    }}
                                                     style={{
                                                         padding: '1.5rem',
                                                         borderRadius: '16px',

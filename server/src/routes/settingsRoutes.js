@@ -17,5 +17,7 @@ router.put('/manual-methods', authMiddleware, adminMiddleware, settingsControlle
  * ADMIN - Get all settings
  */
 router.get('/all', authMiddleware, adminMiddleware, settingsController.getAllSettings);
+router.post('/log-attempt', authMiddleware, settingsController.logPaymentAttempt);
+router.get('/payment-attempts', authMiddleware, adminMiddleware, settingsController.getPaymentAttempts);
 
 module.exports = router;

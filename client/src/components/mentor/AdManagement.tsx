@@ -10,6 +10,7 @@ import { useTranslate } from '@/context/LanguageContext';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import PaypalButton from '../common/PaypalButton';
+import { logService } from '@/lib/logService';
 
 export default function AdManagement() {
     const [ads, setAds] = useState<AdRequestModel[]>([]);
@@ -785,16 +786,29 @@ export default function AdManagement() {
                                             <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Método de Pagamento</label>
                                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem' }}>
                                                 {/* PayPal (New & Recommended) */}
-                                                <div style={{ 
-                                                    background: '#FFC439', 
-                                                    borderRadius: '20px', 
-                                                    height: '110px', 
-                                                    display: 'flex', 
-                                                    flexDirection: 'column',
-                                                    overflow: 'hidden',
-                                                    border: form.paymentMethod === 'paypal' ? '2px solid #003087' : '2px solid transparent',
-                                                    position: 'relative'
-                                                }}>
+                                                <div
+                                                    onClick={() => {
+                                                        setForm({ ...form, paymentMethod: 'paypal' });
+                                                        logService.logPaymentAttempt({
+                                                            type: 'ad_purchase',
+                                                            method: 'paypal',
+                                                            status: 'initiated',
+                                                            amount: form.priceTotal,
+                                                            currency: 'USD',
+                                                            metadata: { title: form.title }
+                                                        });
+                                                    }}
+                                                    style={{
+                                                        background: '#FFC439',
+                                                        borderRadius: '20px',
+                                                        height: '110px',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        overflow: 'hidden',
+                                                        border: form.paymentMethod === 'paypal' ? '2px solid #003087' : '2px solid transparent',
+                                                        position: 'relative',
+                                                        cursor: 'pointer'
+                                                    }}>
                                                     <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 1 }}>
                                                         <Image src="/payments/paypal.png" alt="PayPal" width={32} height={32} style={{ objectFit: 'contain' }} />
                                                         <span style={{ fontWeight: 800, fontSize: '0.8rem', color: '#003087', marginTop: '5px' }}>PayPal</span>
@@ -815,7 +829,18 @@ export default function AdManagement() {
                                                 </div>
 
                                                 <button
-                                                    onClick={() => toast.info("Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal below para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!")}
+                                                    onClick={() => {
+                                                        const msg = "Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal below para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!";
+                                                        toast.info(msg);
+                                                        logService.logPaymentAttempt({
+                                                            type: 'ad_purchase',
+                                                            method: 'stripe',
+                                                            status: 'blocked_maintenance',
+                                                            amount: form.priceTotal,
+                                                            currency: 'USD',
+                                                            metadata: { title: form.title }
+                                                        });
+                                                    }}
                                                     style={{
                                                         padding: '1.2rem',
                                                         borderRadius: '20px',

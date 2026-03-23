@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { financeService, TransactionModel, FinancialSummary } from '@/lib/financeService';
+import { logService, PaymentAttemptLog } from '@/lib/logService';
 import {
     Clock,
     CheckCircle,
@@ -48,6 +49,9 @@ export default function AdminFinance() {
     const [paymentMethodFilter, setPaymentMethodFilter] = useState('all');
     const [selectedProof, setSelectedProof] = useState<string | null>(null);
     const [isRefreshingRate, setIsRefreshingRate] = useState(false);
+    const [activeTab, setActiveTab] = useState<'transactions' | 'attempts'>('transactions');
+    const [attempts, setAttempts] = useState<PaymentAttemptLog[]>([]);
+    const [loadingAttempts, setLoadingAttempts] = useState(false);
 
 
     const monthKeys = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
@@ -92,6 +96,25 @@ export default function AdminFinance() {
     useEffect(() => {
         loadData();
     }, [loadData]);
+
+    useEffect(() => {
+        if (activeTab === 'attempts') {
+            loadAttempts();
+        }
+    }, [activeTab]);
+
+    const loadAttempts = async () => {
+        try {
+            setLoadingAttempts(true);
+            const data = await logService.getPaymentAttempts();
+            setAttempts(data);
+        } catch (error) {
+            console.error(error);
+            toast.error("Erro ao carregar tentativas de pagamento");
+        } finally {
+            setLoadingAttempts(false);
+        }
+    };
 
     const handleConfirmPayment = async (id: string) => {
         if (!confirm(t('dashboard.adminFinance.messages.confirmPayment'))) return;
@@ -195,6 +218,46 @@ export default function AdminFinance() {
 
     return (
         <div style={{ display: 'grid', gap: '2rem' }}>
+            {/* Tab Selector */}
+            <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid #eee', paddingBottom: '1rem' }}>
+                <button
+                    onClick={() => setActiveTab('transactions')}
+                    style={{
+                        padding: '0.8rem 1.5rem',
+                        borderRadius: '12px',
+                        border: 'none',
+                        background: activeTab === 'transactions' ? '#000' : 'transparent',
+                        color: activeTab === 'transactions' ? '#FFD700' : '#666',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        transition: 'all 0.3s'
+                    }}
+                >
+                    {t('dashboard.adminFinance.title')}
+                </button>
+                <button
+                    onClick={() => setActiveTab('attempts')}
+                    style={{
+                        padding: '0.8rem 1.5rem',
+                        borderRadius: '12px',
+                        border: 'none',
+                        background: activeTab === 'attempts' ? '#000' : 'transparent',
+                        color: activeTab === 'attempts' ? '#FFD700' : '#666',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        transition: 'all 0.3s',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }}
+                >
+                    <Clock size={16} /> Tentativas de Pagamento
+                </button>
+            </div>
+
+            {activeTab === 'transactions' ? (
+                <>
+
             {/* Header Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
                 <StatsCard
@@ -648,6 +711,70 @@ export default function AdminFinance() {
                     </div>
                 )}
             </AnimatePresence>
+                </>
+            ) : (
+                <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                        <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Logs de Tentativas (Últimas 200)</h3>
+                        <button onClick={loadAttempts} style={{ background: '#eee', border: 'none', padding: '8px 15px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 700 }}><RefreshCcw size={14} /> Atualizar</button>
+                    </div>
+
+                    <TableScrollWrapper>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                                <tr style={{ textAlign: 'left', borderBottom: '2px solid #eee' }}>
+                                    <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Data</th>
+                                    <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Usuário</th>
+                                    <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Tipo</th>
+                                    <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Método</th>
+                                    <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Status</th>
+                                    <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Valor/Info</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {loadingAttempts ? (
+                                    <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>Carragando...</td></tr>
+                                ) : attempts.map(attempt => (
+                                    <tr key={attempt._id} style={{ borderBottom: '1px solid #f8f8f8', fontSize: '0.85rem' }}>
+                                        <td style={{ padding: '1rem' }}>{new Date(attempt.createdAt!).toLocaleString()}</td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <div style={{ fontWeight: 700 }}>{attempt.userId?.name || 'Anon'}</div>
+                                            <div style={{ fontSize: '0.7rem', color: '#888' }}>{attempt.userId?.email}</div>
+                                        </td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <span style={{ padding: '2px 8px', borderRadius: '4px', background: '#eee', fontSize: '0.7rem', fontWeight: 750 }}>
+                                                {attempt.type}
+                                            </span>
+                                        </td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <span style={{ fontWeight: 800, color: attempt.method === 'stripe' ? '#6366f1' : (attempt.method === 'paypal' ? '#003087' : '#f59e0b') }}>
+                                                {attempt.method.toUpperCase()}
+                                            </span>
+                                        </td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <div style={{ 
+                                                display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700,
+                                                background: attempt.status === 'initiated' ? '#e0f2fe' : (attempt.status === 'blocked_maintenance' ? '#fef3c7' : '#fee2e2'),
+                                                color: attempt.status === 'initiated' ? '#0369a1' : (attempt.status === 'blocked_maintenance' ? '#b45309' : '#b91c1c')
+                                            }}>
+                                                {attempt.status === 'initiated' ? 'Iniciado' : (attempt.status === 'blocked_maintenance' ? 'Bloqueado (Stripe)' : attempt.status)}
+                                            </div>
+                                        </td>
+                                        <td style={{ padding: '1rem' }}>
+                                            {attempt.amount ? `${attempt.amount} ${attempt.currency}` : '-'}
+                                            {attempt.metadata && Object.keys(attempt.metadata).length > 0 && (
+                                                <div style={{ fontSize: '0.7rem', color: '#666', marginTop: '4px' }}>
+                                                    {Object.entries(attempt.metadata).map(([k, v]: any) => `${k}: ${v}`).join(', ')}
+                                                </div>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </TableScrollWrapper>
+                </div>
+            )}
         </div>
     );
 }
