@@ -15,7 +15,7 @@ exports.getManualPaymentMethods = async (req, res) => {
                 countryLabel: 'Moçambique',
                 label: 'M-Pesa',
                 icon: '🇲🇿',
-                details: '850000000 (Nome do Titular)',
+                details: '847877405 (Afonso Domingos)',
                 active: true
             },
             {
@@ -24,7 +24,7 @@ exports.getManualPaymentMethods = async (req, res) => {
                 countryLabel: 'Moçambique',
                 label: 'e-Mola',
                 icon: '🇲🇿',
-                details: '870000000 (Nome do Titular)',
+                details: '879642412 (Afonso Domingos)',
                 active: true
             },
             {
@@ -33,7 +33,7 @@ exports.getManualPaymentMethods = async (req, res) => {
                 countryLabel: 'Moçambique',
                 label: 'NIB',
                 icon: '🏦',
-                details: '0000 0000 0000 0000 0000 0',
+                details: '000100000074301049557',
                 active: true
             },
             {
@@ -42,7 +42,7 @@ exports.getManualPaymentMethods = async (req, res) => {
                 countryLabel: 'Internacional',
                 label: 'PayPal (Manual)',
                 icon: '🌎',
-                details: 'pagamentos@inscreva-se.com',
+                details: 'karinganastudio23@gmail.com',
                 active: true
             }
         ];

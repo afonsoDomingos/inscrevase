@@ -866,9 +866,10 @@ export default function AdManagement() {
                                             <div style={{ background: '#f9f9f9', padding: '1.5rem', borderRadius: '16px', border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                                 <p style={{ fontSize: '0.75rem', fontWeight: 900, color: '#666', textTransform: 'uppercase', letterSpacing: '1px' }}>Contas para Depósito</p>
                                                 <div style={{ fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, color: '#444' }}>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>M-Pesa:</span> <span>84 123 4567</span></div>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>E-Mola:</span> <span>86 123 4567</span></div>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>NIB:</span> <span>123456789 (BCI)</span></div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>M-Pesa:</span> <span>847877405(Afonso Domingos)</span></div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>E-Mola:</span> <span>879642412 (Afonso Domingos)</span></div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>NIB:</span> <span>000100000074301049557</span></div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>PayPal:</span> <span>karinganastudio23@gmail.com</span></div>
                                                 </div>
                                                 <div style={{
                                                     position: 'relative',
