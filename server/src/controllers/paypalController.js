@@ -95,20 +95,32 @@ exports.createEventOrder = async (req, res) => {
             }
         }
 
-        let finalAmount;
-        let finalCurrency = currency || 'USD';
+        let finalAmount = 0;
+        let inputCurrency = currency || 'MZN';
+        
+        // 🔄 Normalize currency (e.g., MT -> MZN)
+        if (inputCurrency === 'MT') inputCurrency = 'MZN';
+        let finalCurrency = inputCurrency;
 
-        if (currency === 'MZN' || !currency) {
+        if (inputCurrency === 'MZN') {
             // Se for MZN, precisamos converter para USD para o PayPal processar
             const conversion = await exchangeRateService.convert(totalAmountMZN, 'MZN', 'USD');
             finalAmount = conversion.amount;
             finalCurrency = 'USD';
             console.log(`💱 PayPal Event: Converted ${totalAmountMZN} MZN to ${finalAmount} USD`);
         } else {
-            // Se for outra moeda (EUR/USD), usamos o valor direto (assumindo que o mentor definiu em USD/EUR ou que o sistema já converteu antes)
-            // NOTA: No formulário atual, o preço é geralmente MZN.
+            // Se for outra moeda (EUR/USD), convertemos de MZN para essa moeda
             const conversion = await exchangeRateService.convert(totalAmountMZN, 'MZN', finalCurrency);
             finalAmount = conversion.amount;
+        }
+
+        // 🛡️ Safety check to prevent PayPal 400 (NaN)
+        if (isNaN(finalAmount) || finalAmount <= 0) {
+            console.error('❌ Error: Calculated amount is NaN or zero:', { totalAmountMZN, finalAmount, finalCurrency });
+            return res.status(400).json({ 
+                message: 'Erro no cálculo do valor de pagamento. Por favor, contacte o suporte.',
+                debug: { totalAmountMZN, finalAmount, finalCurrency }
+            });
         }
 
         // 🚀 Fix: Create the Submission in the database FIRST to avoid 127-char limit in custom_id
