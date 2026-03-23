@@ -156,8 +156,14 @@ export default function AdminFinance() {
             if (response.ok && data.success) {
                 toast.success("Pagamento capturado com sucesso!");
                 loadAttempts();
+            } else {
+                toast.error(data.message || "Erro ao capturar");
+            }
+        } catch (error: any) {
             toast.dismiss();
             toast.error(`Erro: ${error.message}`);
+        } finally {
+            setProcessingCapture(null);
         }
     };
 
