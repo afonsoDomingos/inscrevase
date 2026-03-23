@@ -3,6 +3,7 @@
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { toast } from "sonner";
 import Cookies from 'js-cookie';
+import { logService } from '@/lib/logService';
 
 export interface PaypalSuccessDetails {
     success: boolean;
@@ -80,6 +81,13 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
 
     const onApprove = async (data: { orderID: string }) => {
         try {
+            logService.logPaymentAttempt({
+                type: type === 'ad_checkout' ? 'ad_purchase' : (type as any),
+                method: 'paypal',
+                status: 'capture_started',
+                metadata: { orderID: data.orderID }
+            });
+
             const token = Cookies.get('token');
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/paypal/orders/capture`, {
                 method: "POST",
@@ -94,17 +102,34 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
 
             if (!response.ok) {
                 const errorData = await response.text();
+                logService.logPaymentAttempt({
+                    type: type === 'ad_checkout' ? 'ad_purchase' : (type as any),
+                    method: 'paypal',
+                    status: 'capture_failed',
+                    metadata: { orderID: data.orderID, error: errorData, status: response.status }
+                });
                 throw new Error(`Server Error: ${response.status} - ${errorData}`);
             }
 
             const details = (await response.json()) as PaypalSuccessDetails;
             if (details.success) {
                 toast.success("Pagamento confirmado via PayPal!");
+                logService.logPaymentAttempt({
+                    type: type === 'ad_checkout' ? 'ad_purchase' : (type as any),
+                    method: 'paypal',
+                    status: 'completed',
+                    metadata: { orderID: data.orderID }
+                });
                 onSuccess(details);
             } else {
+                logService.logPaymentAttempt({
+                    type: type === 'ad_checkout' ? 'ad_purchase' : (type as any),
+                    method: 'paypal',
+                    status: 'capture_failed',
+                    metadata: { orderID: data.orderID, error: "Backend returned success: false" }
+                });
                 throw new Error("Capture failed. Backend explicitly returned success: false");
             }
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             console.error('\n❌ Frontend PayPal Capture Error:', err);
             toast.error(`Erro ao confirmar pagamento: ${err.message || 'Falha no PayPal'}`);

@@ -12,7 +12,7 @@ export interface PaymentAttemptLog {
     };
     type: 'subscription' | 'event_registration' | 'ad_purchase';
     method: 'stripe' | 'paypal' | 'manual';
-    status: 'initiated' | 'cancelled' | 'failed' | 'blocked_maintenance';
+    status: 'initiated' | 'cancelled' | 'failed' | 'blocked_maintenance' | 'capture_started' | 'capture_failed' | 'completed';
     amount?: number;
     currency?: string;
     metadata?: Record<string, string | number | boolean | undefined>;
