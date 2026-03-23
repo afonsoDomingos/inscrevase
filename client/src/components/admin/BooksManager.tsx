@@ -276,10 +276,16 @@ export default function BooksManager() {
                                         <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px' }}>Categoria</label>
                                         <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #ddd' }}>
                                             <option>Empreendedorismo</option>
+                                            <option>Investimentos</option>
                                             <option>Finanças</option>
                                             <option>Desenvolvimento Pessoal</option>
                                             <option>Marketing</option>
+                                            <option>Vendas</option>
                                             <option>Liderança</option>
+                                            <option>Tecnologia & IA</option>
+                                            <option>Biografias</option>
+                                            <option>Produtividade</option>
+                                            <option>Comunicação</option>
                                         </select>
                                     </div>
                                     <div>
