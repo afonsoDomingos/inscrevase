@@ -2,7 +2,13 @@ const Book = require('../models/Book');
 
 exports.getAllBooks = async (req, res) => {
     try {
-        const books = await Book.find({ isActive: true, status: 'approved' }).sort({ createdAt: -1 });
+        const books = await Book.find({ 
+            isActive: true, 
+            $or: [
+                { status: 'approved' },
+                { status: { $exists: false } }
+            ] 
+        }).sort({ createdAt: -1 });
         res.status(200).json(books);
     } catch (error) {
         res.status(500).json({ message: error.message });
