@@ -605,6 +605,8 @@
             "facebookPlaceholder": "URL do Facebook",
             "updateSuccess": "Perfil atualizado com sucesso!",
             "updateError": "Erro ao atualizar perfil.",
+            "paypalEmail": "E-mail do PayPal (para receber pagamentos)",
+            "paypalEmailHelp": "Este e-mail será usado para direcionar os pagamentos dos seus inscritos via PayPal.",
             "guidedTour": "Tour Guiado",
             "currentPlan": "Plano Atual",
             "earnings": "Ganhos",
@@ -1062,7 +1064,25 @@
                 "mentorUpgrades": "Upgrades de planos Mentores",
                 "collectedFees": "Taxas coletadas de inscrições",
                 "manualCharges": "Cobranças manuais a mentores"
+            },
+            "attemptsTab": "Tentativas de Pagamento",
+            "transactionsTab": "Transações em Conta",
+            "attempts": {
+                "title": "Registro de Tentativas de Pagamento",
+                "subtitle": "Logs de interações do usuário com o checkout (PayPal/Stripe)",
+                "table": {
+                    "userMentor": "Utilizador / Mentor",
+                    "eventDetails": "Detalhes do Evento",
+                    "orderId": "PayPal Order ID",
+                    "status": "Status",
+                    "lastUpdate": "Última Atualização",
+                    "actions": "Ações",
+                    "captureNow": "Capturar Agora",
+                    "capturing": "Capturando...",
+                    "noAttempts": "Nenhuma tentativa de pagamento registrada."
+                }
             }
+
         },
         "adminForms": {
             "title": "Gestão de Formulários",
@@ -1857,6 +1877,10 @@
         "accountHolderLabel": "Titular da Conta",
         "stripeHeader": "Pagamento com Cartão (Stripe) - Em Breve",
         "stripeHelp": "Esta funcionalidade está a ser preparada para garantir total segurança nos seus pagamentos globais.",
+        "paypalHeader": "Pagamento Automático (PayPal / Visa / MasterCard)",
+        "paypalHelp": "Ative pagamentos automáticos para que seus inscritos possam pagar com Cartão de Crédito ou Saldo PayPal. O dinheiro cai na sua conta PayPal.",
+        "paypalNotConfigured": "Você ainda não configurou seu E-mail do PayPal nas Definições de Perfil.",
+        "configureNow": "Configurar Agora",
         "stripeLink": "Abrir Painel do Stripe",
         "stripePriceId": "Stripe Price ID",
         "paymentInstructionsHeader": "Instruções de Pagamento",

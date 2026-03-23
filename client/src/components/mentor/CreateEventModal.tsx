@@ -149,6 +149,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 instructions: event.paymentConfig.instructions || '',
                 requireProof: event.paymentConfig.requireProof || false,
                 stripeEnabled: event.paymentConfig.stripeEnabled || false,
+                paypalEnabled: (event.paymentConfig as any).paypalEnabled || false,
                 stripePriceId: event.paymentConfig.stripePriceId || '',
                 stripeProductId: event.paymentConfig.stripeProductId || '',
                 manualMethods: event.paymentConfig.manualMethods || [],
@@ -254,6 +255,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
         instructions: '',
         requireProof: false,
         stripeEnabled: false,
+        paypalEnabled: false, // NEW: PayPal toggle
         stripePriceId: '',
         stripeProductId: '',
         manualMethods: [] as { label: string; value: string; icon?: string }[],
@@ -3291,6 +3293,65 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                         </motion.div>
                                                     )}
 
+                                                    {/* PayPal Automatic Payment Option */}
+                                                    <div style={{
+                                                        background: currentUser?.paypalEmail ? '#f0fdf4' : '#fff1f2',
+                                                        padding: '1.5rem',
+                                                        borderRadius: '15px',
+                                                        border: `1px solid ${currentUser?.paypalEmail ? '#bbf7d0' : '#fecaca'}`,
+                                                        position: 'relative'
+                                                    }}>
+                                                        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 700, color: currentUser?.paypalEmail ? '#166534' : '#991b1b', cursor: currentUser?.paypalEmail ? 'pointer' : 'default', marginBottom: '0.5rem' }}>
+                                                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={paymentConfig.paypalEnabled}
+                                                                    disabled={!currentUser?.paypalEmail}
+                                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, paypalEnabled: e.target.checked })}
+                                                                    style={{ width: '20px', height: '20px', cursor: currentUser?.paypalEmail ? 'pointer' : 'not-allowed' }}
+                                                                />
+                                                                {currentUser?.paypalEmail && (
+                                                                    <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#fff', borderRadius: '50%', padding: '2px' }}>
+                                                                        <ShieldCheck2 size={12} color="#166534" />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            {t('events.paypalHeader')}
+                                                        </label>
+
+                                                        <p style={{ fontSize: '0.85rem', color: currentUser?.paypalEmail ? '#15803d' : '#be123c', margin: '0 0 1rem 30px', lineHeight: 1.5 }}>
+                                                            {t('events.paypalHelp')}
+                                                        </p>
+
+                                                        {!currentUser?.paypalEmail && (
+                                                            <div style={{ marginLeft: '30px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                                                <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{t('events.paypalNotConfigured')}</span>
+                                                                <a
+                                                                    href="/dashboard/mentor?tab=settings"
+                                                                    target="_blank"
+                                                                    style={{
+                                                                        fontSize: '0.8rem',
+                                                                        fontWeight: 800,
+                                                                        color: '#991b1b',
+                                                                        textDecoration: 'underline',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        gap: '4px'
+                                                                    }}
+                                                                >
+                                                                    {t('events.configureNow')} <ExternalLink size={12} />
+                                                                </a>
+                                                            </div>
+                                                        )}
+
+                                                        {currentUser?.paypalEmail && paymentConfig.paypalEnabled && (
+                                                            <div style={{ marginLeft: '30px', marginTop: '10px', padding: '10px', background: '#fff', borderRadius: '8px', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                                <Mail size={14} color="#166534" />
+                                                                <span style={{ fontSize: '0.85rem', color: '#166534', fontWeight: 600 }}>{currentUser.paypalEmail}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
                                                     <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '15px', border: '1px solid #e2e8f0', opacity: 0.7, cursor: 'not-allowed', position: 'relative' }}>
                                                         <div style={{
                                                             position: 'absolute',
@@ -3326,7 +3387,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                         <div style={{ display: 'grid', gap: '1rem' }}>
                                                             <div style={{ padding: '1rem', background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                                                                 <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem' }}>
-                                                                    Esta funcionalidade está a ser preparada para garantir total segurança nos seus pagamentos globais.
+                                                                    {t('events.stripeHelp')}
                                                                 </p>
                                                             </div>
                                                         </div>

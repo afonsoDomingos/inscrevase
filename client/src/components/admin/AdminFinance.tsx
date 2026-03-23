@@ -56,6 +56,7 @@ export default function AdminFinance() {
     const [loadingAttempts, setLoadingAttempts] = useState(false);
 
 
+    const [processingCapture, setProcessingCapture] = useState<string | null>(null);
     const monthKeys = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
     const monthNames = monthKeys.map(key => t(`common.months.${key}`));
 
@@ -137,6 +138,7 @@ export default function AdminFinance() {
     const handleManualCapture = async (orderId: string) => {
         if (!orderId) return;
         try {
+            setProcessingCapture(orderId);
             toast.loading("Tentando capturar pagamento no PayPal...");
             const token = Cookies.get('token');
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/paypal/orders/capture`, {
@@ -148,16 +150,12 @@ export default function AdminFinance() {
                 body: JSON.stringify({ orderID: orderId }),
             });
 
-            toast.dismiss();
             const data = await response.json();
-            if (data.success) {
+            toast.dismiss();
+
+            if (response.ok && data.success) {
                 toast.success("Pagamento capturado com sucesso!");
-                loadData();
                 loadAttempts();
-            } else {
-                toast.error(`Falha: ${data.message || 'Erro desconhecido'}`);
-            }
-        } catch (error: any) {
             toast.dismiss();
             toast.error(`Erro: ${error.message}`);
         }
@@ -265,7 +263,7 @@ export default function AdminFinance() {
                         transition: 'all 0.3s'
                     }}
                 >
-                    {t('dashboard.adminFinance.title')}
+                    {t('dashboard.adminFinance.transactionsTab')}
                 </button>
                 <button
                     onClick={() => setActiveTab('attempts')}
@@ -283,7 +281,7 @@ export default function AdminFinance() {
                         gap: '8px'
                     }}
                 >
-                    <Clock size={16} /> Tentativas de Pagamento
+                    <Clock size={16} /> {t('dashboard.adminFinance.attemptsTab')}
                 </button>
             </div>
 
@@ -745,82 +743,122 @@ export default function AdminFinance() {
             </AnimatePresence>
                 </>
             ) : (
-                <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                        <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Logs de Tentativas (Últimas 200)</h3>
-                        <button onClick={loadAttempts} style={{ background: '#eee', border: 'none', padding: '8px 15px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 700 }}><RefreshCcw size={14} /> Atualizar</button>
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="luxury-card" style={{ background: '#fff', padding: '2rem' }}>
+                    <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>{t('dashboard.adminFinance.attempts.title')}</h2>
+                            <p style={{ color: '#888', fontSize: '0.9rem' }}>{t('dashboard.adminFinance.attempts.subtitle')}</p>
+                        </div>
+                        <button 
+                            onClick={loadAttempts} 
+                            disabled={loadingAttempts}
+                            style={{ 
+                                background: '#eee', border: 'none', padding: '10px 20px', borderRadius: '12px', 
+                                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 
+                            }}
+                        >
+                            <RefreshCcw size={16} className={loadingAttempts ? 'animate-spin' : ''} /> 
+                            {t('common.refresh')}
+                        </button>
                     </div>
 
                     <TableScrollWrapper>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <table style={{ minWidth: '1000px', width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
-                                <tr style={{ textAlign: 'left', borderBottom: '2px solid #eee' }}>
-                                    <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Data</th>
-                                    <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Usuário</th>
-                                    <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Tipo</th>
-                                    <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Método</th>
-                                    <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Status</th>
-                                    <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Valor/Info</th>
-                                    <th style={{ padding: '1rem', fontSize: '0.8rem', textAlign: 'right' }}>Ações</th>
+                                <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
+                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>{t('dashboard.adminFinance.attempts.table.userMentor')}</th>
+                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>{t('dashboard.adminFinance.attempts.table.eventDetails')}</th>
+                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>{t('dashboard.adminFinance.attempts.table.orderId')}</th>
+                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>{t('dashboard.adminFinance.attempts.table.status')}</th>
+                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>{t('dashboard.adminFinance.attempts.table.lastUpdate')}</th>
+                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', textAlign: 'right' }}>{t('dashboard.adminFinance.attempts.table.actions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {loadingAttempts ? (
-                                    <tr><td colSpan={7} style={{ textAlign: 'center', padding: '2rem' }}>Carragando...</td></tr>
-                                ) : attempts.map(attempt => (
-                                    <tr key={attempt._id} style={{ borderBottom: '1px solid #f8f8f8', fontSize: '0.85rem' }}>
-                                        <td style={{ padding: '1rem' }}>{new Date(attempt.createdAt!).toLocaleString()}</td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <div style={{ fontWeight: 700 }}>{attempt.userId?.name || 'Anon'}</div>
-                                            <div style={{ fontSize: '0.7rem', color: '#888' }}>{attempt.userId?.email}</div>
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <span style={{ padding: '2px 8px', borderRadius: '4px', background: '#eee', fontSize: '0.7rem', fontWeight: 750 }}>
-                                                {attempt.type}
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <span style={{ fontWeight: 800, color: attempt.method === 'stripe' ? '#6366f1' : (attempt.method === 'paypal' ? '#003087' : '#f59e0b') }}>
-                                                {attempt.method.toUpperCase()}
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <div style={{ 
-                                                display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700,
-                                                background: attempt.status === 'completed' ? '#38a16915' : (attempt.status === 'initiated' ? '#e0f2fe' : (attempt.status === 'blocked_maintenance' ? '#fef3c7' : '#fee2e2')),
-                                                color: attempt.status === 'completed' ? '#38a169' : (attempt.status === 'initiated' ? '#0369a1' : (attempt.status === 'blocked_maintenance' ? '#b45309' : '#b91c1c'))
-                                            }}>
-                                                {attempt.status === 'completed' ? 'Sucesso' : (attempt.status === 'initiated' ? 'Iniciado' : (attempt.status === 'blocked_maintenance' ? 'Bloqueado (Stripe)' : attempt.status))}
-                                            </div>
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>
-                                            {attempt.amount ? `${attempt.amount} ${attempt.currency}` : '-'}
-                                            {attempt.metadata && Object.keys(attempt.metadata).length > 0 && (
-                                                <div style={{ fontSize: '0.7rem', color: '#666', marginTop: '4px' }}>
-                                                    {Object.entries(attempt.metadata).map(([k, v]) => `${k}: ${v}`).join(', ')}
-                                                </div>
-                                            )}
-                                        </td>
-                                        <td style={{ padding: '1rem', textAlign: 'right' }}>
-                                            {(attempt.method === 'paypal' && attempt.status !== 'completed' && attempt.metadata?.orderID) && (
-                                                <button
-                                                    onClick={() => handleManualCapture(attempt.metadata!.orderID as string)}
-                                                    style={{
-                                                        background: '#003087', color: '#fff', border: 'none', padding: '6px 12px',
-                                                        borderRadius: '6px', fontSize: '0.7rem', fontWeight: 800, cursor: 'pointer',
-                                                        display: 'flex', alignItems: 'center', gap: '4px'
-                                                    }}
-                                                >
-                                                    <CreditCard size={12} /> Capturar
-                                                </button>
-                                            )}
+                                    <tr>
+                                        <td colSpan={6} style={{ textAlign: 'center', padding: '4rem' }}>
+                                            <RefreshCcw size={32} className="animate-spin" style={{ margin: '0 auto', color: '#ccc' }} />
                                         </td>
                                     </tr>
-                                ))}
+                                ) : (
+                                    <>
+                                        {attempts.map((attempt) => {
+                                            const paypalOrderId = attempt.metadata?.orderID as string || attempt.metadata?.orderId as string;
+                                            const formTitle = attempt.metadata?.formTitle as string || attempt.type;
+                                            return (
+                                                <tr key={attempt._id} style={{ borderBottom: '1px solid #f9f9f9' }}>
+                                                    <td style={{ padding: '1.2rem' }}>
+                                                        <div style={{ fontWeight: 700 }}>{attempt.userId?.name || 'Anon'}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{attempt.userId?.email || '-'}</div>
+                                                    </td>
+                                                    <td style={{ padding: '1.2rem' }}>
+                                                        <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{formTitle}</div>
+                                                        <div style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 700 }}>{attempt.amount} {attempt.currency}</div>
+                                                    </td>
+                                                    <td style={{ padding: '1.2rem', fontFamily: 'monospace', fontSize: '0.8rem', color: '#666' }}>
+                                                        {paypalOrderId || '-'}
+                                                    </td>
+                                                    <td style={{ padding: '1.2rem' }}>
+                                                        <span style={{
+                                                            padding: '4px 10px',
+                                                            borderRadius: '20px',
+                                                            fontSize: '0.7rem',
+                                                            fontWeight: 800,
+                                                            background: attempt.status === 'completed' ? '#38a16915' : attempt.status === 'capture_failed' ? '#e53e3e15' : '#f59e0b15',
+                                                            color: attempt.status === 'completed' ? '#38a169' : attempt.status === 'capture_failed' ? '#e53e3e' : '#b45309',
+                                                            textTransform: 'uppercase'
+                                                        }}>
+                                                            {attempt.status}
+                                                        </span>
+                                                    </td>
+                                                    <td style={{ padding: '1.2rem', fontSize: '0.8rem', color: '#888' }}>
+                                                        {attempt.createdAt ? new Date(attempt.createdAt).toLocaleString() : '-'}
+                                                    </td>
+                                                    <td style={{ padding: '1.2rem', textAlign: 'right' }}>
+                                                        {(attempt.status === 'capture_started' || attempt.status === 'capture_failed' || (attempt.status === 'initiated' && paypalOrderId)) ? (
+                                                            <button
+                                                                onClick={() => handleManualCapture(paypalOrderId)}
+                                                                disabled={processingCapture === paypalOrderId}
+                                                                style={{
+                                                                    padding: '0.5rem 1rem',
+                                                                    background: '#003087',
+                                                                    color: '#fff',
+                                                                    border: 'none',
+                                                                    borderRadius: '8px',
+                                                                    fontSize: '0.75rem',
+                                                                    fontWeight: 800,
+                                                                    cursor: processingCapture === paypalOrderId ? 'not-allowed' : 'pointer',
+                                                                    display: 'inline-flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '6px'
+                                                                }}
+                                                            >
+                                                                {processingCapture === paypalOrderId ? (
+                                                                    <><RefreshCcw size={14} className="animate-spin" /> {t('dashboard.adminFinance.attempts.table.capturing')}</>
+                                                                ) : (
+                                                                    <><RefreshCcw size={14} /> {t('dashboard.adminFinance.attempts.table.captureNow')}</>
+                                                                )}
+                                                            </button>
+                                                        ) : null}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                        {attempts.length === 0 && (
+                                            <tr>
+                                                <td colSpan={6} style={{ textAlign: 'center', padding: '4rem', color: '#999' }}>
+                                                    <FileText size={48} style={{ opacity: 0.1, marginBottom: '1rem' }} />
+                                                    <p>{t('dashboard.adminFinance.attempts.table.noAttempts')}</p>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </>
+                                )}
                             </tbody>
                         </table>
                     </TableScrollWrapper>
-                </div>
+                </motion.div>
             )}
         </div>
     );

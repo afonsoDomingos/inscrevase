@@ -9,6 +9,7 @@ import { X, Plus, Trash2, Image as ImageIcon, MessageCircle, Save, Loader2, Info
 import { toast } from 'sonner';
 import { formService, FormModel } from '@/lib/formService';
 import { aiService } from '@/lib/aiService';
+import { authService } from '@/lib/authService';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import CustomFieldsEditor from './CustomFieldsEditor';
@@ -17,6 +18,7 @@ import MaterialsEditor from './MaterialsEditor';
 import CertificateEditor, { CertificateConfig } from './CertificateEditor';
 import { lessonService, Lesson } from '@/lib/lessonService';
 import PartnersEditor from './PartnersEditor';
+import PricingTiersEditor from './PricingTiersEditor'; // Import Pricing Editor
 
 interface EditEventModalProps {
     isOpen: boolean;
@@ -234,10 +236,15 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
         instructions: '',
         requireProof: false,
         stripeEnabled: false,
+        paypalEnabled: false, // NEW: PayPal toggle
         stripePriceId: '',
         stripeProductId: '',
-        manualMethods: [] as { label: string; value: string; icon?: string }[]
+        manualMethods: [] as { label: string; value: string; icon?: string }[],
+        pricingTiers: [] as { id: string; category: string; price: number; description?: string }[], // NEW: Pricing tiers
+        useTieredPricing: false // NEW: Toggle between single price and tiered pricing
     });
+
+    const [currentUser, setCurrentUser] = useState<any>(null);
 
     // Hub Customization State
     const [welcomeMessage, setWelcomeMessage] = useState('');
@@ -273,6 +280,13 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
 
     // Partners State
     const [partners, setPartners] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (isOpen) {
+            const user = authService.getCurrentUser();
+            setCurrentUser(user);
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         const fetchLessons = async () => {
@@ -365,9 +379,12 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                     instructions: form.paymentConfig?.instructions || '',
                     requireProof: form.paymentConfig?.requireProof || false,
                     stripeEnabled: form.paymentConfig?.stripeEnabled || false,
+                    paypalEnabled: (form.paymentConfig as any).paypalEnabled || false,
                     stripePriceId: form.paymentConfig?.stripePriceId || '',
                     stripeProductId: form.paymentConfig?.stripeProductId || '',
-                    manualMethods: form.paymentConfig?.manualMethods || []
+                    manualMethods: form.paymentConfig?.manualMethods || [],
+                    pricingTiers: (form.paymentConfig as any).pricingTiers || [], // NEW: Pricing tiers
+                    useTieredPricing: (form.paymentConfig as any).useTieredPricing || false // NEW: Toggle
                 });
             }
             if (form.theme) {
@@ -1831,22 +1848,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
 
                                             {paymentConfig.enabled && (
                                                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ display: 'grid', gap: '1.5rem', overflow: 'hidden' }}>
-                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                                        <div>
-                                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.ticketPrice')}</label>
-                                                            <input
-                                                                type="number"
-                                                                min="0"
-                                                                step="0.01"
-                                                                value={paymentConfig.price}
-                                                                onChange={(e) => {
-                                                                    const val = parseFloat(e.target.value);
-                                                                    setPaymentConfig({ ...paymentConfig, price: isNaN(val) ? 0 : val });
-                                                                }}
-                                                                placeholder={t('events.pricePlaceholder')}
-                                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
-                                                            />
-                                                        </div>
+                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
                                                         <div>
                                                             <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.currency')}</label>
                                                             <select
@@ -1854,17 +1856,191 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                                                 onChange={(e) => setPaymentConfig({ ...paymentConfig, currency: e.target.value })}
                                                                 style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', background: '#fff' }}
                                                             >
+                                                                <option value="MT">{t('events.metical')}</option>
                                                                 <option value="USD">{t('events.dollar')}</option>
                                                                 <option value="EUR">{t('events.euro')}</option>
-                                                                <option value="MT">{t('events.metical')}</option>
                                                                 <option value="AOA">{t('events.kwanza')}</option>
                                                                 <option value="CVE">{t('events.escudo')}</option>
-                                                                <option value="XOF">{t('events.cfa')}</option>
+                                                                <option value="BRL">Real (BRL)</option>
                                                             </select>
                                                         </div>
                                                     </div>
 
-                                                    <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '15px', border: '1px solid #e2e8f0', opacity: 0.7, cursor: 'not-allowed', position: 'relative' }}>
+                                                    {/* Tiered Pricing Toggle */}
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between',
+                                                        padding: '1rem',
+                                                        background: '#f0f9ff',
+                                                        border: '1px solid #bae6fd',
+                                                        borderRadius: '12px'
+                                                    }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                            <Users2 size={24} color="#0284c7" />
+                                                            <div>
+                                                                <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0369a1' }}>Preços Diferenciados</div>
+                                                                <div style={{ fontSize: '0.75rem', color: '#0c4a6e' }}>
+                                                                    Cobrar preços diferentes por público? (Ex: Estudantes, VIP)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '28px' }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={paymentConfig.useTieredPricing}
+                                                                onChange={(e) => setPaymentConfig({ ...paymentConfig, useTieredPricing: e.target.checked })}
+                                                                style={{ opacity: 0, width: 0, height: 0 }}
+                                                            />
+                                                            <span className="slider round" style={{
+                                                                position: 'absolute',
+                                                                cursor: 'pointer',
+                                                                top: 0,
+                                                                left: 0,
+                                                                right: 0,
+                                                                bottom: 0,
+                                                                backgroundColor: paymentConfig.useTieredPricing ? '#0ea5e9' : '#ccc',
+                                                                transition: '.4s',
+                                                                borderRadius: '34px'
+                                                            }}>
+                                                                <span style={{
+                                                                    position: 'absolute',
+                                                                    content: "",
+                                                                    height: '20px',
+                                                                    width: '20px',
+                                                                    left: paymentConfig.useTieredPricing ? '26px' : '4px',
+                                                                    bottom: '4px',
+                                                                    backgroundColor: 'white',
+                                                                    transition: '.4s',
+                                                                    borderRadius: '50%'
+                                                                }} />
+                                                            </span>
+                                                        </label>
+                                                    </div>
+
+                                                    {/* Price Input OR Tier Editor */}
+                                                    {!paymentConfig.useTieredPricing ? (
+                                                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                                                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.ticketPrice')}</label>
+                                                            <div style={{ position: 'relative' }}>
+                                                                <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', fontWeight: 700, color: '#666' }}>
+                                                                    {paymentConfig.currency === 'MT' ? 'MT' :
+                                                                        paymentConfig.currency === 'USD' ? '$' :
+                                                                            paymentConfig.currency === 'EUR' ? '€' :
+                                                                                paymentConfig.currency}
+                                                                </span>
+                                                                <input
+                                                                    type="number"
+                                                                    value={paymentConfig.price}
+                                                                    onChange={(e) => {
+                                                                        const val = parseFloat(e.target.value);
+                                                                        setPaymentConfig({ ...paymentConfig, price: isNaN(val) ? 0 : val });
+                                                                    }}
+                                                                    placeholder="0.00"
+                                                                    min="0"
+                                                                    step="0.01"
+                                                                    style={{ width: '100%', padding: '1rem 1rem 1rem 3.5rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', fontSize: '1.1rem', fontWeight: 600 }}
+                                                                />
+                                                            </div>
+                                                        </motion.div>
+                                                    ) : (
+                                                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                                                            <PricingTiersEditor
+                                                                tiers={paymentConfig.pricingTiers}
+                                                                currency={paymentConfig.currency}
+                                                                onUpdate={(newTiers) => setPaymentConfig({ ...paymentConfig, pricingTiers: newTiers })}
+                                                            />
+                                                        </motion.div>
+                                                    )}
+
+                                                    <div style={{ height: '1px', background: 'rgba(0,0,0,0.05)', margin: '1rem 0' }} />
+
+                                                    {/* PayPal Payment Option - Automatic */}
+                                                    <div style={{
+                                                        background: currentUser?.paypalEmail ? 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' : '#f8fafc',
+                                                        padding: '1.25rem',
+                                                        borderRadius: '16px',
+                                                        border: currentUser?.paypalEmail ? '1px solid #bae6fd' : '1px solid #e2e8f0',
+                                                        transition: 'all 0.3s ease'
+                                                    }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                                <div style={{ background: '#0070ba', padding: '8px', borderRadius: '10px' }}>
+                                                                    <ShieldCheck size={20} color="#fff" />
+                                                                </div>
+                                                                <div>
+                                                                    <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#003087' }}>{t('events.paypalHeader')}</div>
+                                                                    <div style={{ fontSize: '0.75rem', color: '#0070ba' }}>{t('events.paypalHelp')}</div>
+                                                                </div>
+                                                            </div>
+                                                            <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '28px' }}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={paymentConfig.paypalEnabled}
+                                                                    disabled={!currentUser?.paypalEmail}
+                                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, paypalEnabled: e.target.checked })}
+                                                                    style={{ opacity: 0, width: 0, height: 0 }}
+                                                                />
+                                                                <span className="slider round" style={{
+                                                                    position: 'absolute',
+                                                                    cursor: currentUser?.paypalEmail ? 'pointer' : 'not-allowed',
+                                                                    top: 0, left: 0, right: 0, bottom: 0,
+                                                                    backgroundColor: paymentConfig.paypalEnabled ? '#0070ba' : '#ccc',
+                                                                    transition: '.4s',
+                                                                    borderRadius: '34px',
+                                                                    opacity: currentUser?.paypalEmail ? 1 : 0.5
+                                                                }}>
+                                                                    <span style={{
+                                                                        position: 'absolute',
+                                                                        content: "",
+                                                                        height: '20px',
+                                                                        width: '20px',
+                                                                        left: paymentConfig.paypalEnabled ? '26px' : '4px',
+                                                                        bottom: '4px',
+                                                                        backgroundColor: 'white',
+                                                                        transition: '.4s',
+                                                                        borderRadius: '50%'
+                                                                    }} />
+                                                                </span>
+                                                            </label>
+                                                        </div>
+
+                                                        {currentUser?.paypalEmail ? (
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', background: 'rgba(255,255,255,0.6)', borderRadius: '10px', marginTop: '0.75rem' }}>
+                                                                <Mail size={16} color="#0070ba" />
+                                                                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#003087' }}>{currentUser.paypalEmail}</span>
+                                                            </div>
+                                                        ) : (
+                                                            <div style={{ background: '#fff9f0', padding: '1rem', borderRadius: '12px', border: '1px solid #ffe8cc', marginTop: '0.75rem' }}>
+                                                                <p style={{ fontSize: '0.75rem', color: '#854d0e', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                                    <Shield size={14} /> {t('events.paypalNotConfigured')}
+                                                                </p>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        onClose();
+                                                                        // Assuming setting page handling is elsewhere or via router
+                                                                        window.location.hash = '#settings';
+                                                                        window.location.reload();
+                                                                    }}
+                                                                    style={{ background: '#fff', border: '1px solid #f97316', color: '#f97316', padding: '6px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+                                                                >
+                                                                    {t('events.configureNow')} <ExternalLink size={12} />
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Stripe Payment Option - Coming Soon */}
+                                                    <div style={{
+                                                        background: '#f8fafc',
+                                                        padding: '1.25rem',
+                                                        borderRadius: '16px',
+                                                        border: '1px solid #e2e8f0',
+                                                        opacity: 0.8,
+                                                        filter: 'grayscale(0.5)',
+                                                        position: 'relative'
+                                                    }}>
                                                         <div style={{
                                                             position: 'absolute',
                                                             top: '12px',
@@ -1873,34 +2049,20 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                                             color: '#475569',
                                                             padding: '4px 10px',
                                                             borderRadius: '20px',
-                                                            fontSize: '0.65rem',
+                                                            fontSize: '0.6rem',
                                                             fontWeight: 800,
-                                                            textTransform: 'uppercase',
-                                                            letterSpacing: '0.5px'
+                                                            textTransform: 'uppercase'
                                                         }}>
                                                             Em Breve
                                                         </div>
 
-                                                        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 700, color: '#64748b', cursor: 'not-allowed', marginBottom: '1rem' }}>
-                                                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={false}
-                                                                    disabled={true}
-                                                                    style={{ width: '20px', height: '20px', cursor: 'not-allowed' }}
-                                                                />
-                                                                <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#fff', borderRadius: '50%', padding: '2px' }}>
-                                                                    <Shield size={12} color="#64748b" />
-                                                                </div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#64748b' }}>
+                                                            <div style={{ background: '#64748b20', padding: '8px', borderRadius: '10px' }}>
+                                                                <ShieldCheck size={20} />
                                                             </div>
-                                                            Habilitar Pagamento com Cartão (Stripe)
-                                                        </label>
-
-                                                        <div style={{ display: 'grid', gap: '1rem' }}>
-                                                            <div style={{ padding: '1rem', background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                                                                <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem' }}>
-                                                                    Esta funcionalidade está a ser preparada para garantir total segurança nos seus pagamentos globais.
-                                                                </p>
+                                                            <div>
+                                                                <div style={{ fontWeight: 800, fontSize: '0.95rem' }}>{t('events.stripeHeader')}</div>
+                                                                <div style={{ fontSize: '0.75rem' }}>{t('events.stripeHelp')}</div>
                                                             </div>
                                                         </div>
                                                     </div>
