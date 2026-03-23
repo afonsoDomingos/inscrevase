@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -15,13 +15,18 @@ import {
     Star,
     Search,
     Loader2,
-    ExternalLink
+    ExternalLink,
+    Upload,
+    Link as LinkIcon,
+    FileText,
+    Image as ImageIcon
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { bookService, BookModel } from '@/lib/bookService';
 import { toast } from 'sonner';
 import Cookies from 'js-cookie';
+import axios from 'axios';
 
 export default function BooksPage() {
     const router = useRouter();
@@ -33,6 +38,7 @@ export default function BooksPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [userToken, setUserToken] = useState<string | null>(null);
 
+    // Form States
     const [submissionForm, setSubmissionForm] = useState({
         title: '',
         author: '',
@@ -40,8 +46,14 @@ export default function BooksPage() {
         coverImage: '',
         affiliateLink: '',
         category: 'Empreendedorismo',
-        price: ''
+        pdfUrl: ''
     });
+
+    // Upload Helper States
+    const [coverType, setCoverType] = useState<'link' | 'upload'>('link');
+    const [pdfType, setPdfType] = useState<'link' | 'upload'>('link');
+    const [uploadingCover, setUploadingCover] = useState(false);
+    const [uploadingPdf, setUploadingPdf] = useState(false);
 
     useEffect(() => {
         const token = Cookies.get('token');
@@ -58,6 +70,34 @@ export default function BooksPage() {
             toast.error('Erro ao carregar livros');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleFileUpload = async (file: File, type: 'cover' | 'pdf') => {
+        const isCover = type === 'cover';
+        const setterStatus = isCover ? setUploadingCover : setUploadingPdf;
+        
+        try {
+            setterStatus(true);
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // Using existing upload endpoint pattern
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/upload`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            
+            const url = response.data.url;
+            if (isCover) {
+                setSubmissionForm(prev => ({ ...prev, coverImage: url }));
+            } else {
+                setSubmissionForm(prev => ({ ...prev, pdfUrl: url }));
+            }
+            toast.success(`${isCover ? 'Capa' : 'PDF'} carregado com sucesso!`);
+        } catch (err) {
+            toast.error('Erro no upload. Tente usar um link direto.');
+        } finally {
+            setterStatus(false);
         }
     };
 
@@ -85,7 +125,7 @@ export default function BooksPage() {
 
             {/* Hero Section */}
             <section style={{ 
-                padding: '120px 20px 80px', 
+                padding: '120px 20px 60px', 
                 textAlign: 'center',
                 background: 'radial-gradient(circle at top, rgba(212, 175, 55, 0.08) 0%, transparent 70%)'
             }}>
@@ -100,105 +140,94 @@ export default function BooksPage() {
                         alignItems: 'center', 
                         gap: '8px', 
                         background: 'rgba(212, 175, 55, 0.1)', 
-                        padding: '8px 16px', 
+                        padding: '6px 12px', 
                         borderRadius: '20px',
                         color: '#D4AF37',
-                        fontSize: '0.85rem',
+                        fontSize: '0.75rem',
                         fontWeight: 700,
-                        marginBottom: '1.5rem',
+                        marginBottom: '1rem',
                         border: '1px solid rgba(212, 175, 55, 0.2)'
                     }}>
-                        <Library size={16} /> RECOMENDAÇÕES DA INSCRIVA-SE
+                        <Library size={14} /> RECOMENDAÇÕES DA INSCRIVA-SE
                     </div>
                     
-                    <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 900, marginBottom: '1.5rem', lineHeight: 1.1, color: '#fff' }}>
+                    <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 900, marginBottom: '1rem', lineHeight: 1.1, color: '#fff' }}>
                         Conhecimento que <span style={{ color: '#D4AF37' }}>Transforma</span>
                     </h1>
-                    <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.7)', marginBottom: '3rem', lineHeight: 1.6 }}>
-                        Uma curadoria exclusiva de livros essenciais para mentores, especialistas e empreendedores que desejam escalar os seus resultados e o seu impacto.
+                    <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.7)', marginBottom: '2.5rem', lineHeight: 1.6, maxWidth: '600px', margin: '0 auto 2.5rem' }}>
+                        Curadoria essencial para mentores e especialistas que desejam escalar impacto e resultados.
                     </p>
 
-                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '3rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2.5rem' }}>
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => {
                                 if (!userToken) {
-                                    toast.info('Para publicar o seu livro, precisa de ter uma conta na nossa plataforma. Vamos criar uma?');
+                                    toast.info('Para publicar o seu livro, precisa de ter uma conta. Vamos entrar?');
                                     router.push('/entrar');
                                     return;
                                 }
                                 setIsSubmitModalOpen(true);
                             }}
                             style={{
-                                padding: '12px 24px',
+                                padding: '10px 20px',
                                 background: 'var(--gold-gradient)',
                                 color: '#000',
-                                borderRadius: '12px',
+                                borderRadius: '10px',
                                 border: 'none',
                                 fontWeight: 800,
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '10px',
+                                gap: '8px',
                                 cursor: 'pointer',
-                                boxShadow: '0 10px 20px rgba(212, 175, 55, 0.2)'
+                                fontSize: '0.9rem'
                             }}
                         >
-                            <Send size={18} /> Publicar o meu Livro
+                            <Send size={16} /> Publicar o meu Livro
                         </motion.button>
                     </div>
 
                     {/* Search & Filter Bar */}
-                    <div style={{ 
-                        display: 'flex', 
-                        flexWrap: 'wrap',
-                        justifyContent: 'center',
-                        gap: '15px',
-                        maxWidth: '700px',
-                        margin: '0 auto'
-                    }}>
-                        <div style={{ position: 'relative', flex: '1', minWidth: '280px' }}>
-                            <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.4)' }} />
-                            <input 
-                                type="text"
-                                placeholder="Pesquisar por título ou autor..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                style={{
-                                    width: '100%',
-                                    padding: '15px 15px 15px 45px',
-                                    borderRadius: '16px',
-                                    background: 'rgba(255,255,255,0.05)',
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    color: '#fff',
-                                    fontSize: '0.95rem',
-                                    outline: 'none',
-                                    transition: '0.3s'
-                                }}
-                            />
-                        </div>
+                    <div style={{ position: 'relative', maxWidth: '500px', margin: '0 auto' }}>
+                        <Search size={16} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.4)' }} />
+                        <input 
+                            type="text"
+                            placeholder="Pesquisar..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '12px 12px 12px 42px',
+                                borderRadius: '12px',
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                color: '#fff',
+                                fontSize: '0.9rem',
+                                outline: 'none'
+                            }}
+                        />
                     </div>
                 </motion.div>
             </section>
 
             {/* Categories */}
-            <section style={{ padding: '0 20px 60px', overflowX: 'auto' }}>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', minWidth: 'max-content' }}>
+            <section style={{ padding: '0 20px 40px', overflowX: 'auto' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', minWidth: 'max-content' }}>
                     {categories.map(cat => (
                         <button
                             key={cat}
                             onClick={() => setSelectedCategory(cat)}
                             style={{
-                                padding: '10px 20px',
-                                borderRadius: '12px',
+                                padding: '8px 16px',
+                                borderRadius: '10px',
                                 border: '1px solid',
                                 borderColor: selectedCategory === cat ? '#D4AF37' : 'rgba(255,255,255,0.1)',
                                 background: selectedCategory === cat ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
                                 color: selectedCategory === cat ? '#D4AF37' : 'rgba(255,255,255,0.6)',
                                 cursor: 'pointer',
-                                transition: '0.3s',
-                                fontWeight: 700,
-                                fontSize: '0.9rem'
+                                fontSize: '0.8rem',
+                                fontWeight: 700
                             }}
                         >
                             {cat}
@@ -211,42 +240,40 @@ export default function BooksPage() {
             <section style={{ padding: '0 20px 100px', maxWidth: '1200px', margin: '0 auto' }}>
                 {loading ? (
                     <div style={{ textAlign: 'center', padding: '100px 0' }}>
-                        <Loader2 size={40} className="animate-spin" color="#D4AF37" />
+                        <Loader2 size={30} className="animate-spin" color="#D4AF37" />
                     </div>
                 ) : filteredBooks.length > 0 ? (
                     <div style={{ 
                         display: 'grid', 
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
-                        gap: '30px' 
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', 
+                        gap: '24px' 
                     }}>
                         {filteredBooks.map((book, idx) => (
                             <motion.div
                                 key={book._id}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: idx * 0.1 }}
+                                transition={{ delay: idx * 0.05 }}
                                 style={{
-                                    background: 'rgba(255,255,255,0.03)',
-                                    borderRadius: '24px',
-                                    border: '1px solid rgba(255,255,255,0.08)',
-                                    padding: '24px',
+                                    background: 'rgba(255,255,255,0.02)',
+                                    borderRadius: '20px',
+                                    border: '1px solid rgba(255,255,255,0.06)',
+                                    padding: '20px',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    gap: '20px',
-                                    transition: '0.3s',
+                                    gap: '16px',
                                     cursor: 'pointer'
                                 }}
-                                whileHover={{ y: -10, borderColor: 'rgba(212, 175, 55, 0.3)', background: 'rgba(255,255,255,0.05)' }}
+                                whileHover={{ y: -8, borderColor: 'rgba(212, 175, 55, 0.2)', background: 'rgba(255,255,255,0.04)' }}
                                 onClick={() => handleBookClick(book)}
                             >
-                                {/* Cover Image */}
                                 <div style={{ 
                                     position: 'relative', 
                                     width: '100%', 
                                     aspectRatio: '2/3', 
-                                    borderRadius: '16px', 
+                                    borderRadius: '12px', 
                                     overflow: 'hidden',
-                                    boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
+                                    boxShadow: '0 10px 30px rgba(0,0,0,0.4)'
                                 }}>
                                     <img 
                                         src={book.coverImage || 'https://via.placeholder.com/300x450?text=Livro'} 
@@ -255,112 +282,97 @@ export default function BooksPage() {
                                     />
                                     <div style={{ 
                                         position: 'absolute', 
-                                        top: '12px', 
-                                        left: '12px', 
-                                        background: 'rgba(0,0,0,0.6)', 
-                                        backdropFilter: 'blur(10px)',
-                                        padding: '4px 10px',
-                                        borderRadius: '8px',
-                                        fontSize: '0.7rem',
+                                        top: '10px', 
+                                        left: '10px', 
+                                        background: 'rgba(0,0,0,0.7)', 
+                                        padding: '4px 8px',
+                                        borderRadius: '6px',
+                                        fontSize: '0.65rem',
                                         fontWeight: 800,
-                                        color: '#D4AF37',
-                                        textTransform: 'uppercase'
+                                        color: '#D4AF37'
                                     }}>
                                         {book.category}
                                     </div>
                                 </div>
 
-                                {/* Content */}
                                 <div style={{ flex: 1 }}>
-                                    <div style={{ display: 'flex', gap: '4px', marginBottom: '8px' }}>
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star key={i} size={14} color={i < book.rating ? '#D4AF37' : 'rgba(255,255,255,0.2)'} fill={i < book.rating ? '#D4AF37' : 'transparent'} />
-                                        ))}
-                                    </div>
-                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>{book.title}</h3>
-                                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', marginBottom: '12px' }}>por {book.author}</div>
-                                    <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff', marginBottom: '2px' }}>{book.title}</h3>
+                                    <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>por {book.author}</div>
+                                    <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                                         {book.description}
                                     </p>
                                 </div>
 
-                                {/* Button */}
                                 <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleBookClick(book);
-                                    }}
                                     style={{
                                         width: '100%',
-                                        padding: '14px',
-                                        borderRadius: '14px',
+                                        padding: '12px',
+                                        borderRadius: '10px',
                                         background: '#D4AF37',
                                         color: '#000',
                                         border: 'none',
                                         fontWeight: 900,
-                                        cursor: 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        gap: '10px',
-                                        fontSize: '0.9rem'
+                                        gap: '8px',
+                                        fontSize: '0.8rem'
                                     }}
                                 >
-                                    <ShoppingCart size={18} /> VER NA AMAZON <ExternalLink size={14} />
+                                    VER AGORA <ExternalLink size={14} />
                                 </button>
                             </motion.div>
                         ))}
                     </div>
                 ) : (
-                    <div style={{ textAlign: 'center', padding: '100px 0' }}>
-                        <div style={{ opacity: 0.3, marginBottom: '20px' }}>
-                            <Library size={60} />
-                        </div>
+                    <div style={{ textAlign: 'center', padding: '60px 0' }}>
+                        <Library size={40} style={{ opacity: 0.2, marginBottom: '15px' }} />
                         <h3>Nenhum livro encontrado</h3>
-                        <p style={{ color: 'rgba(255,255,255,0.5)' }}>Tente ajustar a sua pesquisa ou categoria.</p>
                     </div>
                 )}
             </section>
 
             <Footer />
 
-            {/* Submission Modal */}
+            {/* Submission Modal - COMPACT VERSION */}
             <AnimatePresence>
                 {isSubmitModalOpen && (
                     <div style={{
                         position: 'fixed',
                         inset: 0,
-                        background: 'rgba(0,0,0,0.8)',
-                        backdropFilter: 'blur(8px)',
+                        background: 'rgba(0,0,0,0.9)',
+                        backdropFilter: 'blur(10px)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         zIndex: 1000,
-                        padding: '20px'
+                        padding: '15px'
                     }}>
                         <motion.div
-                            initial={{ opacity: 0, y: 50 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 50 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
                             style={{
-                                background: '#111',
-                                border: '1px solid rgba(212, 175, 55, 0.3)',
-                                borderRadius: '24px',
-                                padding: '40px',
+                                background: '#0D0D0D',
+                                border: '1px solid rgba(212, 175, 55, 0.4)',
+                                borderRadius: '20px',
+                                padding: '25px',
                                 width: '100%',
-                                maxWidth: '600px',
+                                maxWidth: '750px',
+                                maxHeight: '90vh',
+                                overflowY: 'auto',
                                 position: 'relative',
-                                color: '#fff'
+                                color: '#fff',
+                                boxShadow: '0 0 50px rgba(0,0,0,0.8)'
                             }}
                         >
-                            <button onClick={() => setIsSubmitModalOpen(false)} style={{ position: 'absolute', right: '20px', top: '20px', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}><X size={24} /></button>
+                            <button onClick={() => setIsSubmitModalOpen(false)} style={{ position: 'absolute', right: '15px', top: '15px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}><X size={20} /></button>
                             
-                            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                                <div style={{ background: 'rgba(212, 175, 55, 0.1)', width: '60px', height: '60px', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 15px', color: '#D4AF37' }}>
-                                    <BookOpen size={30} />
+                            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#D4AF37', marginBottom: '5px' }}>
+                                    <BookOpen size={20} /> <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>MARKETPLACE DE LIVROS</span>
                                 </div>
-                                <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '10px' }}>Submeter a Minha Obra</h2>
-                                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem' }}>A sua submissão será avaliada pela nossa equipa antes de ser publicada.</p>
+                                <h2 style={{ fontSize: '1.4rem', fontWeight: 900 }}>Submeter a Minha Obra</h2>
                             </div>
 
                             <form onSubmit={async (e) => {
@@ -368,28 +380,28 @@ export default function BooksPage() {
                                 try {
                                     setIsSubmitting(true);
                                     await bookService.submitBook(submissionForm);
-                                    toast.success('Livro submetido para avaliação com sucesso! Brevemente entrará na nossa vitrine.');
+                                    toast.success('Obra enviada com sucesso! Aguarde a aprovação.');
                                     setIsSubmitModalOpen(false);
-                                    setSubmissionForm({ title: '', author: '', description: '', coverImage: '', affiliateLink: '', category: 'Empreendedorismo', price: '' });
                                 } catch (_) {
-                                    toast.error('Erro ao submeter livro. Tente novamente.');
+                                    toast.error('Erro ao enviar. Verifique os campos.');
                                 } finally {
                                     setIsSubmitting(false);
                                 }
-                            }} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                            }} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                                
                                 <div style={{ gridColumn: 'span 2' }}>
-                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', color: '#D4AF37' }}>Título da Obra</label>
-                                    <input required type="text" value={submissionForm.title} onChange={e => setSubmissionForm({...submissionForm, title: e.target.value})} placeholder="Título completo" style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', outline: 'none' }} />
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 800, color: '#D4AF37', marginBottom: '5px' }}>TÍTULO DA OBRA</label>
+                                    <input required type="text" value={submissionForm.title} onChange={e => setSubmissionForm({...submissionForm, title: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.85rem' }} />
                                 </div>
 
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', color: '#D4AF37' }}>Autor</label>
-                                    <input required type="text" value={submissionForm.author} onChange={e => setSubmissionForm({...submissionForm, author: e.target.value})} placeholder="Nome completo" style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} />
+                                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D4AF37', marginBottom: '5px', display: 'block' }}>AUTOR</label>
+                                    <input required type="text" value={submissionForm.author} onChange={e => setSubmissionForm({...submissionForm, author: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.85rem' }} />
                                 </div>
 
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', color: '#D4AF37' }}>Categoria</label>
-                                    <select value={submissionForm.category} onChange={e => setSubmissionForm({...submissionForm, category: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}>
+                                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D4AF37', marginBottom: '5px', display: 'block' }}>CATEGORIA</label>
+                                    <select value={submissionForm.category} onChange={e => setSubmissionForm({...submissionForm, category: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.85rem' }}>
                                         <option value="Empreendedorismo">Empreendedorismo</option>
                                         <option value="Investimentos">Investimentos</option>
                                         <option value="Finanças">Finanças</option>
@@ -401,39 +413,80 @@ export default function BooksPage() {
                                 </div>
 
                                 <div style={{ gridColumn: 'span 2' }}>
-                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', color: '#D4AF37' }}>Link de Compra ou Site (URL)</label>
-                                    <input required type="url" value={submissionForm.affiliateLink} onChange={e => setSubmissionForm({...submissionForm, affiliateLink: e.target.value})} placeholder="Ex: amzn.to/meu-livro" style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} />
+                                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D4AF37', marginBottom: '5px', display: 'block' }}>LINK DE COMPRA (OPCIONAL)</label>
+                                    <input type="url" value={submissionForm.affiliateLink} onChange={e => setSubmissionForm({...submissionForm, affiliateLink: e.target.value})} placeholder="https://..." style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.85rem' }} />
+                                </div>
+
+                                {/* Cape Section */}
+                                <div style={{ gridColumn: 'span 2', padding: '15px', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '12px', border: '1px solid rgba(212, 175, 55, 0.1)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                        <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D4AF37' }}>CAPA DO LIVRO</label>
+                                        <div style={{ display: 'flex', gap: '5px' }}>
+                                            <button type="button" onClick={() => setCoverType('link')} style={{ padding: '4px 8px', fontSize: '0.7rem', borderRadius: '6px', border: 'none', background: coverType === 'link' ? '#D4AF37' : 'transparent', color: coverType === 'link' ? '#000' : '#fff', cursor: 'pointer' }}><LinkIcon size={12} /> Link</button>
+                                            <button type="button" onClick={() => setCoverType('upload')} style={{ padding: '4px 8px', fontSize: '0.7rem', borderRadius: '6px', border: 'none', background: coverType === 'upload' ? '#D4AF37' : 'transparent', color: coverType === 'upload' ? '#000' : '#fff', cursor: 'pointer' }}><Upload size={12} /> Upload</button>
+                                        </div>
+                                    </div>
+                                    {coverType === 'link' ? (
+                                        <input type="url" value={submissionForm.coverImage} onChange={e => setSubmissionForm({...submissionForm, coverImage: e.target.value})} placeholder="URL da imagem..." style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.8rem' }} />
+                                    ) : (
+                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                            <label style={{ flex: 1, height: '40px', border: '1px dashed rgba(212, 175, 55, 0.5)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.75rem' }}>
+                                                {uploadingCover ? <Loader2 size={16} className="animate-spin" /> : <><ImageIcon size={14} style={{ marginRight: '5px' }} /> Escolher Imagem</>}
+                                                <input type="file" hidden accept="image/*" onChange={e => e.target.files && handleFileUpload(e.target.files[0], 'cover')} />
+                                            </label>
+                                            {submissionForm.coverImage && <div style={{ background: '#333', padding: '4px 8px', borderRadius: '6px', fontSize: '0.65rem', color: '#0f0' }}>✓ Pronto</div>}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* PDF Section */}
+                                <div style={{ gridColumn: 'span 2', padding: '15px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                        <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D4AF37' }}>CONTEÚDO DA OBRA (PDF)</label>
+                                        <div style={{ display: 'flex', gap: '5px' }}>
+                                            <button type="button" onClick={() => setPdfType('link')} style={{ padding: '4px 8px', fontSize: '0.7rem', borderRadius: '6px', border: 'none', background: pdfType === 'link' ? '#D4AF37' : 'transparent', color: pdfType === 'link' ? '#000' : '#fff', cursor: 'pointer' }}><LinkIcon size={12} /> Link</button>
+                                            <button type="button" onClick={() => setPdfType('upload')} style={{ padding: '4px 8px', fontSize: '0.7rem', borderRadius: '6px', border: 'none', background: pdfType === 'upload' ? '#D4AF37' : 'transparent', color: pdfType === 'upload' ? '#000' : '#fff', cursor: 'pointer' }}><Upload size={12} /> Upload</button>
+                                        </div>
+                                    </div>
+                                    {pdfType === 'link' ? (
+                                        <input type="url" value={submissionForm.pdfUrl} onChange={e => setSubmissionForm({...submissionForm, pdfUrl: e.target.value})} placeholder="URL do ficheiro PDF..." style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.8rem' }} />
+                                    ) : (
+                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                            <label style={{ flex: 1, height: '40px', border: '1px dashed rgba(255,255,255,0.3)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.75rem' }}>
+                                                {uploadingPdf ? <Loader2 size={16} className="animate-spin" /> : <><FileText size={14} style={{ marginRight: '5px' }} /> Carregar PDF</>}
+                                                <input type="file" hidden accept="application/pdf" onChange={e => e.target.files && handleFileUpload(e.target.files[0], 'pdf')} />
+                                            </label>
+                                            {submissionForm.pdfUrl && <div style={{ background: '#333', padding: '4px 8px', borderRadius: '6px', fontSize: '0.65rem', color: '#0f0' }}>✓ Selecionado</div>}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div style={{ gridColumn: 'span 2' }}>
-                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', color: '#D4AF37' }}>Link da Capa (URL)</label>
-                                    <input required type="url" value={submissionForm.coverImage} onChange={e => setSubmissionForm({...submissionForm, coverImage: e.target.value})} placeholder="URL da imagem da capa" style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} />
-                                </div>
-
-                                <div style={{ gridColumn: 'span 2' }}>
-                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', color: '#D4AF37' }}>Breve Resumo</label>
-                                    <textarea required value={submissionForm.description} onChange={e => setSubmissionForm({...submissionForm, description: e.target.value})} placeholder="O que os leitores podem esperar?" style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', height: '100px', resize: 'none' }} />
+                                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D4AF37', marginBottom: '5px', display: 'block' }}>RESUMO DA OBRA</label>
+                                    <textarea required value={submissionForm.description} onChange={e => setSubmissionForm({...submissionForm, description: e.target.value})} placeholder="O que vamos aprender?" style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', height: '60px', resize: 'none', fontSize: '0.8rem' }} />
                                 </div>
 
                                 <button
                                     type="submit"
-                                    disabled={isSubmitting}
+                                    disabled={isSubmitting || uploadingCover || uploadingPdf}
                                     style={{
                                         gridColumn: 'span 2',
-                                        padding: '15px',
+                                        padding: '12px',
                                         background: 'var(--gold-gradient)',
                                         color: '#000',
-                                        borderRadius: '12px',
+                                        borderRadius: '10px',
                                         border: 'none',
                                         fontWeight: 900,
                                         cursor: 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        gap: '10px'
+                                        gap: '8px',
+                                        fontSize: '0.9rem',
+                                        opacity: isSubmitting ? 0.7 : 1
                                     }}
                                 >
-                                    {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <><CheckCircle size={20} /> Submeter para Aprovação</>}
+                                    {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <><CheckCircle size={18} /> SUBMETER AGORA</>}
                                 </button>
                             </form>
                         </motion.div>
