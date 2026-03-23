@@ -2128,7 +2128,8 @@
         "termsAgreement": "By clicking finish, you agree to our privacy terms.",
         "poweredBy": "Powered by Inscreva-se",
         "acceptOrConfirm": "I accept and confirm",
-        "allRightsReserved": "All rights reserved."
+        "allRightsReserved": "All rights reserved.",
+        "paypalSecureHint": "Secure transaction processed by PayPal."
     },
     "aura": {
         "welcome": "Hello, I am Aura. Your digital luxury concierge. How can I elevate your event today?",

@@ -100,6 +100,16 @@ exports.createEventOrder = async (req, res) => {
             finalAmount = conversion.amount;
         }
 
+        // 🚀 Fix: Create the Submission in the database FIRST to avoid 127-char limit in custom_id
+        const newSubmission = new Submission({
+            form: formId,
+            data: submissionData,
+            paymentMethod: 'paypal',
+            status: 'pending',
+            paymentStatus: 'pending'
+        });
+        await newSubmission.save();
+
         const orderData = {
             intent: 'CAPTURE',
             purchase_units: [{
@@ -109,8 +119,7 @@ exports.createEventOrder = async (req, res) => {
                 },
                 description: `Inscrição: ${form.title}`,
                 custom_id: JSON.stringify({
-                    formId,
-                    submissionData,
+                    submissionId: newSubmission._id,
                     mentorId: mentor._id,
                     type: 'event_registration'
                 })
@@ -298,18 +307,20 @@ exports.captureOrder = async (req, res) => {
         }
 
         if (customData.type === 'event_registration') {
-            const { formId, submissionData, mentorId } = customData;
+            const { submissionId, mentorId } = customData;
 
-            // Create submission
-            const submission = new Submission({
-                form: formId,
-                data: submissionData,
-                paymentMethod: 'paypal',
-                paypalOrderId: orderID,
-                paypalCaptureId: capture.id,
-                status: 'approved',
-                paymentStatus: 'paid'
-            });
+            // Update existing submission created during order step
+            const submission = await Submission.findById(submissionId);
+            if (!submission) {
+                console.error('❌ Submission not found in database:', submissionId);
+                throw new Error("Inscrição não encontrada para o ID: " + submissionId);
+            }
+
+            // Update status
+            submission.status = 'approved';
+            submission.paymentStatus = 'paid';
+            submission.paypalOrderId = orderID;
+            submission.paypalCaptureId = capture.id;
             await submission.save();
 
             // Create transaction for mentor dashboard
@@ -340,9 +351,10 @@ exports.captureOrder = async (req, res) => {
 
             // 📧 Send confirmation email (Event Registration)
             try {
-                const form = await Form.findById(formId);
-                const userEmail = submissionData.Email || submissionData.email || submissionData['E-mail'];
-                const userName = submissionData.Nome || submissionData.Name || submissionData.name || 'Participante';
+                const form = await Form.findById(submission.form);
+                const submissionData = submission.data;
+                const userEmail = submissionData instanceof Map ? (submissionData.get('Email') || submissionData.get('email') || submissionData.get('E-mail')) : (submissionData.Email || submissionData.email || submissionData['E-mail']);
+                const userName = submissionData instanceof Map ? (submissionData.get('Nome') || submissionData.get('Name') || submissionData.get('name') || 'Participante') : (submissionData.Nome || submissionData.Name || submissionData.name || 'Participante');
 
                 if (userEmail && form) {
                     const hubUrl = `${process.env.CLIENT_URL}/hub/${form.slug}`;

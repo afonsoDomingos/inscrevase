@@ -2201,7 +2201,8 @@
         "uploadProof": "Enviando Prova",
         "paymentDetails": "Detalhes para Pagamento",
         "attachComprovative": "Anexar Comprovativo",
-        "clickOrDrag": "Clique ou arraste o arquivo aqui"
+        "clickOrDrag": "Clique ou arraste o arquivo aqui",
+        "paypalSecureHint": "Transação segura processada pelo PayPal."
     },
     "aura": {
         "welcome": "Olá, eu sou a Aura. Sua concierge digital de luxo. Como posso elevar o seu evento hoje?",
