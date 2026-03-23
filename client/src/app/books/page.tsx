@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -11,15 +11,15 @@ import {
     BookOpen,
     Send,
     CheckCircle,
-    ShoppingCart,
-    Star,
-    Search,
     Loader2,
     ExternalLink,
     Upload,
     Link as LinkIcon,
     FileText,
-    Image as ImageIcon
+    Image as ImageIcon,
+    CreditCard,
+    DollarSign,
+    Search
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -46,7 +46,9 @@ export default function BooksPage() {
         coverImage: '',
         affiliateLink: '',
         category: 'Empreendedorismo',
-        pdfUrl: ''
+        pdfUrl: '',
+        price: '',
+        sellerPaypalEmail: ''
     });
 
     // Upload Helper States
@@ -66,7 +68,7 @@ export default function BooksPage() {
             setLoading(true);
             const data = await bookService.getAllBooks();
             setBooks(data);
-        } catch (_) {
+        } catch {
             toast.error('Erro ao carregar livros');
         } finally {
             setLoading(false);
@@ -82,7 +84,6 @@ export default function BooksPage() {
             const formData = new FormData();
             formData.append('file', file);
             
-            // Using existing upload endpoint pattern
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/upload`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
@@ -94,7 +95,7 @@ export default function BooksPage() {
                 setSubmissionForm(prev => ({ ...prev, pdfUrl: url }));
             }
             toast.success(`${isCover ? 'Capa' : 'PDF'} carregado com sucesso!`);
-        } catch (err) {
+        } catch {
             toast.error('Erro no upload. Tente usar um link direto.');
         } finally {
             setterStatus(false);
@@ -110,11 +111,30 @@ export default function BooksPage() {
         return matchesSearch && matchesCategory;
     });
 
-    const handleBookClick = async (book: BookModel) => {
+    const handleAction = async (book: BookModel) => {
         try {
             await bookService.recordClick(book._id);
+        } catch {
+            // Silently fail if recordClick fails
+        }
+        
+        // Se for um link de afiliado, abre o link
+        if (book.affiliateLink && !book.isUserSubmission) {
             window.open(book.affiliateLink, '_blank');
-        } catch (_) {
+            return;
+        }
+
+        // Se for uma submissão de utilizador com preço, redireciona para o checkout ou paypal
+        if (book.isUserSubmission && book.price && book.sellerPaypalEmail) {
+            const paypalUrl = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=${encodeURIComponent(book.sellerPaypalEmail)}&item_name=${encodeURIComponent(book.title)}&amount=${book.price}&currency_code=USD`;
+            window.open(paypalUrl, '_blank');
+            return;
+        }
+
+        // Se tiver apenas o PDF disponível para download gratuito ou link externo
+        if (book.pdfUrl) {
+            window.open(book.pdfUrl, '_blank');
+        } else if (book.affiliateLink) {
             window.open(book.affiliateLink, '_blank');
         }
     };
@@ -155,7 +175,7 @@ export default function BooksPage() {
                         Conhecimento que <span style={{ color: '#D4AF37' }}>Transforma</span>
                     </h1>
                     <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.7)', marginBottom: '2.5rem', lineHeight: 1.6, maxWidth: '600px', margin: '0 auto 2.5rem' }}>
-                        Curadoria essencial para mentores e especialistas que desejam escalar impacto e resultados.
+                        Uma curadoria exclusiva de livros essenciais para mentores e especialistas.
                     </p>
 
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2.5rem' }}>
@@ -188,7 +208,6 @@ export default function BooksPage() {
                         </motion.button>
                     </div>
 
-                    {/* Search & Filter Bar */}
                     <div style={{ position: 'relative', maxWidth: '500px', margin: '0 auto' }}>
                         <Search size={16} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.4)' }} />
                         <input 
@@ -262,10 +281,11 @@ export default function BooksPage() {
                                     display: 'flex',
                                     flexDirection: 'column',
                                     gap: '16px',
-                                    cursor: 'pointer'
+                                    cursor: 'pointer',
+                                    position: 'relative'
                                 }}
                                 whileHover={{ y: -8, borderColor: 'rgba(212, 175, 55, 0.2)', background: 'rgba(255,255,255,0.04)' }}
-                                onClick={() => handleBookClick(book)}
+                                onClick={() => handleAction(book)}
                             >
                                 <div style={{ 
                                     position: 'relative', 
@@ -293,6 +313,22 @@ export default function BooksPage() {
                                     }}>
                                         {book.category}
                                     </div>
+                                    {book.price && (
+                                        <div style={{ 
+                                            position: 'absolute', 
+                                            bottom: '10px', 
+                                            right: '10px', 
+                                            background: '#D4AF37', 
+                                            padding: '4px 10px',
+                                            borderRadius: '8px',
+                                            fontSize: '0.85rem',
+                                            fontWeight: 900,
+                                            color: '#000',
+                                            boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
+                                        }}>
+                                            ${book.price}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div style={{ flex: 1 }}>
@@ -304,12 +340,16 @@ export default function BooksPage() {
                                 </div>
 
                                 <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleAction(book);
+                                    }}
                                     style={{
                                         width: '100%',
                                         padding: '12px',
                                         borderRadius: '10px',
-                                        background: '#D4AF37',
-                                        color: '#000',
+                                        background: book.isUserSubmission && book.price ? '#1A73E8' : '#D4AF37',
+                                        color: '#fff',
                                         border: 'none',
                                         fontWeight: 900,
                                         display: 'flex',
@@ -319,7 +359,11 @@ export default function BooksPage() {
                                         fontSize: '0.8rem'
                                     }}
                                 >
-                                    VER AGORA <ExternalLink size={14} />
+                                    {book.isUserSubmission && book.price ? (
+                                        <><CreditCard size={16} /> COMPRAR (PAYPAL)</>
+                                    ) : (
+                                        <><ExternalLink size={14} /> VER AGORA</>
+                                    )}
                                 </button>
                             </motion.div>
                         ))}
@@ -334,7 +378,7 @@ export default function BooksPage() {
 
             <Footer />
 
-            {/* Submission Modal - COMPACT VERSION */}
+            {/* Submission Modal - COMPACT WITH CHECKOUT */}
             <AnimatePresence>
                 {isSubmitModalOpen && (
                     <div style={{
@@ -362,8 +406,7 @@ export default function BooksPage() {
                                 maxHeight: '90vh',
                                 overflowY: 'auto',
                                 position: 'relative',
-                                color: '#fff',
-                                boxShadow: '0 0 50px rgba(0,0,0,0.8)'
+                                color: '#fff'
                             }}
                         >
                             <button onClick={() => setIsSubmitModalOpen(false)} style={{ position: 'absolute', right: '15px', top: '15px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}><X size={20} /></button>
@@ -382,7 +425,7 @@ export default function BooksPage() {
                                     await bookService.submitBook(submissionForm);
                                     toast.success('Obra enviada com sucesso! Aguarde a aprovação.');
                                     setIsSubmitModalOpen(false);
-                                } catch (_) {
+                                } catch {
                                     toast.error('Erro ao enviar. Verifique os campos.');
                                 } finally {
                                     setIsSubmitting(false);
@@ -390,7 +433,7 @@ export default function BooksPage() {
                             }} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                                 
                                 <div style={{ gridColumn: 'span 2' }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 800, color: '#D4AF37', marginBottom: '5px' }}>TÍTULO DA OBRA</label>
+                                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D4AF37', marginBottom: '5px', display: 'block' }}>TÍTULO DA OBRA</label>
                                     <input required type="text" value={submissionForm.title} onChange={e => setSubmissionForm({...submissionForm, title: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.85rem' }} />
                                 </div>
 
@@ -412,9 +455,19 @@ export default function BooksPage() {
                                     </select>
                                 </div>
 
-                                <div style={{ gridColumn: 'span 2' }}>
-                                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D4AF37', marginBottom: '5px', display: 'block' }}>LINK DE COMPRA (OPCIONAL)</label>
-                                    <input type="url" value={submissionForm.affiliateLink} onChange={e => setSubmissionForm({...submissionForm, affiliateLink: e.target.value})} placeholder="https://..." style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.85rem' }} />
+                                {/* Preço e PayPal */}
+                                <div style={{ padding: '12px', background: 'rgba(26, 115, 232, 0.05)', borderRadius: '12px', border: '1px solid rgba(26, 115, 232, 0.1)' }}>
+                                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#1A73E8', marginBottom: '5px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        <DollarSign size={14} /> PREÇO (USD)
+                                    </label>
+                                    <input type="number" step="0.01" value={submissionForm.price} onChange={e => setSubmissionForm({...submissionForm, price: e.target.value})} placeholder="0.00" style={{ width: '100%', padding: '8px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.85rem' }} />
+                                </div>
+
+                                <div style={{ padding: '12px', background: 'rgba(26, 115, 232, 0.05)', borderRadius: '12px', border: '1px solid rgba(26, 115, 232, 0.1)' }}>
+                                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#1A73E8', marginBottom: '5px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        <CreditCard size={14} /> E-MAIL PAYPAL
+                                    </label>
+                                    <input type="email" value={submissionForm.sellerPaypalEmail} onChange={e => setSubmissionForm({...submissionForm, sellerPaypalEmail: e.target.value})} placeholder="seu.vendedor@gmail.com" style={{ width: '100%', padding: '8px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.85rem' }} />
                                 </div>
 
                                 {/* Cape Section */}
@@ -452,7 +505,7 @@ export default function BooksPage() {
                                         <input type="url" value={submissionForm.pdfUrl} onChange={e => setSubmissionForm({...submissionForm, pdfUrl: e.target.value})} placeholder="URL do ficheiro PDF..." style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.8rem' }} />
                                     ) : (
                                         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                            <label style={{ flex: 1, height: '40px', border: '1px dashed rgba(255,255,255,0.3)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.75rem' }}>
+                                            <label style={{ flex: 1, height: '40px', border: '1px dashed rgba(255, 255, 255, 0.3)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.75rem' }}>
                                                 {uploadingPdf ? <Loader2 size={16} className="animate-spin" /> : <><FileText size={14} style={{ marginRight: '5px' }} /> Carregar PDF</>}
                                                 <input type="file" hidden accept="application/pdf" onChange={e => e.target.files && handleFileUpload(e.target.files[0], 'pdf')} />
                                             </label>
@@ -483,7 +536,7 @@ export default function BooksPage() {
                                         justifyContent: 'center',
                                         gap: '8px',
                                         fontSize: '0.9rem',
-                                        opacity: isSubmitting ? 0.7 : 1
+                                        opacity: (isSubmitting || uploadingCover || uploadingPdf) ? 0.7 : 1
                                     }}
                                 >
                                     {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <><CheckCircle size={18} /> SUBMETER AGORA</>}

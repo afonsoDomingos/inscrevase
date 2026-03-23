@@ -13,6 +13,7 @@ const BookSchema = new mongoose.Schema({
     clicks: { type: Number, default: 0 },
     pdfUrl: { type: String }, // URL do PDF (Upload ou Link)
     submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    sellerPaypalEmail: { type: String }, // E-mail para receber pagamentos
     isUserSubmission: { type: Boolean, default: false },
     status: { 
         type: String, 

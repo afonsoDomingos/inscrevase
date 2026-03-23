@@ -16,6 +16,8 @@ export interface BookModel {
     clicks: number;
     status: 'pending' | 'approved' | 'rejected';
     isUserSubmission: boolean;
+    pdfUrl?: string;
+    sellerPaypalEmail?: string;
 }
 
 export const bookService = {
