@@ -1,11 +1,14 @@
-/* eslint-disable @next/next/no-img-element */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Book,
+    Library,
+    X,
+    BookOpen,
+    Send,
+    CheckCircle,
     ShoppingCart,
     Star,
     ArrowRight,
@@ -13,34 +16,52 @@ import {
     Filter,
     Loader2,
     ExternalLink,
-    TrendingUp,
-    Library
+    TrendingUp
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { bookService, BookModel } from '@/lib/bookService';
 import { toast } from 'sonner';
+import Cookies from 'js-cookie';
 
 export default function BooksPage() {
+    const router = useRouter();
     const [books, setBooks] = useState<BookModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('Todos');
+    const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [userToken, setUserToken] = useState<string | null>(null);
+
+    const [submissionForm, setSubmissionForm] = useState({
+        title: '',
+        author: '',
+        description: '',
+        coverImage: '',
+        affiliateLink: '',
+        category: 'Empreendedorismo',
+        price: ''
+    });
 
     useEffect(() => {
-        const fetchBooks = async () => {
-            try {
-                const data = await bookService.getAllBooks();
-                setBooks(data);
-            } catch (error) {
-                console.error(error);
-                toast.error('Erro ao carregar livros');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchBooks();
+        const token = Cookies.get('token');
+        setUserToken(token || null);
+        loadBooks();
     }, []);
+
+    const loadBooks = async () => {
+        try {
+            setLoading(true);
+            const data = await bookService.getAllBooks();
+            setBooks(data);
+        } catch (error) {
+            console.error(error);
+            toast.error('Erro ao carregar livros');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const categories = ['Todos', ...Array.from(new Set(books.map(b => b.category)))];
 
@@ -98,6 +119,36 @@ export default function BooksPage() {
                     <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.7)', marginBottom: '3rem', lineHeight: 1.6 }}>
                         Uma curadoria exclusiva de livros essenciais para mentores, especialistas e empreendedores que desejam escalar os seus resultados e o seu impacto.
                     </p>
+
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '3rem' }}>
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => {
+                                if (!userToken) {
+                                    toast.info('Para publicar o seu livro, precisa de ter uma conta na nossa plataforma. Vamos criar uma?');
+                                    router.push('/criar-conta');
+                                    return;
+                                }
+                                setIsSubmitModalOpen(true);
+                            }}
+                            style={{
+                                padding: '12px 24px',
+                                background: 'var(--gold-gradient)',
+                                color: '#000',
+                                borderRadius: '12px',
+                                border: 'none',
+                                fontWeight: 800,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                cursor: 'pointer',
+                                boxShadow: '0 10px 20px rgba(212, 175, 55, 0.2)'
+                            }}
+                        >
+                            <Send size={18} /> Publicar o meu Livro
+                        </motion.button>
+                    </div>
 
                     {/* Search & Filter Bar */}
                     <div style={{ 
@@ -265,7 +316,7 @@ export default function BooksPage() {
                 ) : (
                     <div style={{ textAlign: 'center', padding: '100px 0' }}>
                         <div style={{ opacity: 0.3, marginBottom: '20px' }}>
-                            <Book size={60} />
+                            <Library size={60} />
                         </div>
                         <h3>Nenhum livro encontrado</h3>
                         <p style={{ color: 'rgba(255,255,255,0.5)' }}>Tente ajustar a sua pesquisa ou categoria.</p>
@@ -274,6 +325,123 @@ export default function BooksPage() {
             </section>
 
             <Footer />
+
+            {/* Submission Modal */}
+            <AnimatePresence>
+                {isSubmitModalOpen && (
+                    <div style={{
+                        position: 'fixed',
+                        inset: 0,
+                        background: 'rgba(0,0,0,0.8)',
+                        backdropFilter: 'blur(8px)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 1000,
+                        padding: '20px'
+                    }}>
+                        <motion.div
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 50 }}
+                            style={{
+                                background: '#111',
+                                border: '1px solid rgba(212, 175, 55, 0.3)',
+                                borderRadius: '24px',
+                                padding: '40px',
+                                width: '100%',
+                                maxWidth: '600px',
+                                position: 'relative',
+                                color: '#fff'
+                            }}
+                        >
+                            <button onClick={() => setIsSubmitModalOpen(false)} style={{ position: 'absolute', right: '20px', top: '20px', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}><X size={24} /></button>
+                            
+                            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                                <div style={{ background: 'rgba(212, 175, 55, 0.1)', width: '60px', height: '60px', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 15px', color: '#D4AF37' }}>
+                                    <BookOpen size={30} />
+                                </div>
+                                <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '10px' }}>Submeter a Minha Obra</h2>
+                                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem' }}>A sua submissão será avaliada pela nossa equipa antes de ser publicada.</p>
+                            </div>
+
+                            <form onSubmit={async (e) => {
+                                e.preventDefault();
+                                try {
+                                    setIsSubmitting(true);
+                                    await bookService.submitBook(submissionForm);
+                                    toast.success('Livro submetido para avaliação com sucesso! Brevemente entrará na nossa vitrine.');
+                                    setIsSubmitModalOpen(false);
+                                    setSubmissionForm({ title: '', author: '', description: '', coverImage: '', affiliateLink: '', category: 'Empreendedorismo', price: '' });
+                                } catch (error) {
+                                    toast.error('Erro ao submeter livro. Tente novamente.');
+                                } finally {
+                                    setIsSubmitting(false);
+                                }
+                            }} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                <div style={{ gridColumn: 'span 2' }}>
+                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', color: '#D4AF37' }}>Título da Obra</label>
+                                    <input required type="text" value={submissionForm.title} onChange={e => setSubmissionForm({...submissionForm, title: e.target.value})} placeholder="Título completo" style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', outline: 'none' }} />
+                                </div>
+
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', color: '#D4AF37' }}>Autor</label>
+                                    <input required type="text" value={submissionForm.author} onChange={e => setSubmissionForm({...submissionForm, author: e.target.value})} placeholder="Nome completo" style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} />
+                                </div>
+
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', color: '#D4AF37' }}>Categoria</label>
+                                    <select value={submissionForm.category} onChange={e => setSubmissionForm({...submissionForm, category: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}>
+                                        <option value="Empreendedorismo">Empreendedorismo</option>
+                                        <option value="Investimentos">Investimentos</option>
+                                        <option value="Finanças">Finanças</option>
+                                        <option value="Desenvolvimento Pessoal">Desenvolvimento Pessoal</option>
+                                        <option value="Marketing">Marketing</option>
+                                        <option value="Tecnologia & IA">Tecnologia & IA</option>
+                                        <option value="Espiritualidade">Espiritualidade</option>
+                                    </select>
+                                </div>
+
+                                <div style={{ gridColumn: 'span 2' }}>
+                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', color: '#D4AF37' }}>Link de Compra ou Site (URL)</label>
+                                    <input required type="url" value={submissionForm.affiliateLink} onChange={e => setSubmissionForm({...submissionForm, affiliateLink: e.target.value})} placeholder="Ex: amzn.to/meu-livro" style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} />
+                                </div>
+
+                                <div style={{ gridColumn: 'span 2' }}>
+                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', color: '#D4AF37' }}>Link da Capa (URL)</label>
+                                    <input required type="url" value={submissionForm.coverImage} onChange={e => setSubmissionForm({...submissionForm, coverImage: e.target.value})} placeholder="URL da imagem da capa" style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} />
+                                </div>
+
+                                <div style={{ gridColumn: 'span 2' }}>
+                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', color: '#D4AF37' }}>Breve Resumo</label>
+                                    <textarea required value={submissionForm.description} onChange={e => setSubmissionForm({...submissionForm, description: e.target.value})} placeholder="O que os leitores podem esperar?" style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', height: '100px', resize: 'none' }} />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    style={{
+                                        gridColumn: 'span 2',
+                                        padding: '15px',
+                                        background: 'var(--gold-gradient)',
+                                        color: '#000',
+                                        borderRadius: '12px',
+                                        border: 'none',
+                                        fontWeight: 900,
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '10px'
+                                    }}
+                                >
+                                    {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <><CheckCircle size={20} /> Submeter para Aprovação</>}
+                                </button>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

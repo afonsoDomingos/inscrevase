@@ -33,6 +33,7 @@ export default function BooksManager() {
         affiliateLink: '',
         category: 'Empreendedorismo',
         rating: 5,
+        status: 'approved',
         isActive: true
     });
 
@@ -72,6 +73,7 @@ export default function BooksManager() {
                 affiliateLink: '',
                 category: 'Empreendedorismo',
                 rating: 5,
+                status: 'approved',
                 isActive: true
             });
             loadBooks();
@@ -88,6 +90,16 @@ export default function BooksManager() {
             loadBooks();
         } catch (error: any) {
             toast.error(error.message || 'Erro ao remover');
+        }
+    };
+
+    const handleUpdateStatus = async (id: string, status: 'approved' | 'rejected') => {
+        try {
+            await bookService.updateBookStatus(id, status);
+            toast.success(`Livro ${status === 'approved' ? 'aprovado' : 'rejeitado'} com sucesso`);
+            loadBooks();
+        } catch (error: any) {
+            toast.error(error.message || 'Erro ao atualizar estado');
         }
     };
 
@@ -178,6 +190,7 @@ export default function BooksManager() {
                                 <th style={{ padding: '15px', textAlign: 'left', fontSize: '0.75rem', fontWeight: 800, color: '#888' }}>CAPA</th>
                                 <th style={{ padding: '15px', textAlign: 'left', fontSize: '0.75rem', fontWeight: 800, color: '#888' }}>TÍTULO / AUTOR</th>
                                 <th style={{ padding: '15px', textAlign: 'left', fontSize: '0.75rem', fontWeight: 800, color: '#888' }}>CATEGORIA</th>
+                                <th style={{ padding: '15px', textAlign: 'left', fontSize: '0.75rem', fontWeight: 800, color: '#888' }}>ESTADO</th>
                                 <th style={{ padding: '15px', textAlign: 'left', fontSize: '0.75rem', fontWeight: 800, color: '#888' }}>CLIQUES</th>
                                 <th style={{ padding: '15px', textAlign: 'right', fontSize: '0.75rem', fontWeight: 800, color: '#888' }}>AÇÕES</th>
                             </tr>
@@ -196,14 +209,32 @@ export default function BooksManager() {
                                         <span style={{ fontSize: '0.7rem', fontWeight: 800, padding: '4px 8px', background: '#f0f0f0', borderRadius: '6px' }}>{book.category}</span>
                                     </td>
                                     <td style={{ padding: '15px' }}>
+                                        <span style={{ 
+                                            padding: '4px 8px', 
+                                            borderRadius: '6px', 
+                                            fontSize: '0.7rem',
+                                            fontWeight: 800,
+                                            background: book.status === 'approved' ? 'rgba(34, 197, 94, 0.1)' : book.status === 'pending' ? 'rgba(234, 179, 8, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                                            color: book.status === 'approved' ? '#22c55e' : book.status === 'pending' ? '#eab308' : '#ef4444'
+                                        }}>
+                                            {book.status === 'approved' ? 'Aprovado' : book.status === 'pending' ? 'Pendente' : 'Rejeitado'}
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: '15px' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                             <BarChart size={14} color="#D4AF37" /> {book.clicks || 0}
                                         </div>
                                     </td>
                                     <td style={{ padding: '15px', textAlign: 'right' }}>
                                         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                                            {book.status === 'pending' && (
+                                                <>
+                                                    <button onClick={() => handleUpdateStatus(book._id!, 'approved')} style={{ background: '#22c55e', color: '#fff', border: 'none', padding: '4px 8px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}>Aprovar</button>
+                                                    <button onClick={() => handleUpdateStatus(book._id!, 'rejected')} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '4px 8px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}>Rejeitar</button>
+                                                </>
+                                            )}
                                             <button onClick={() => openEdit(book)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6366f1' }}><Edit size={18} /></button>
-                                            <button onClick={() => handleDelete(book._id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }}><Trash2 size={18} /></button>
+                                            <button onClick={() => handleDelete(book._id!)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }}><Trash2 size={18} /></button>
                                             <a href={book.affiliateLink} target="_blank" rel="noreferrer" style={{ color: '#888' }}><ExternalLink size={18} /></a>
                                         </div>
                                     </td>
@@ -287,6 +318,14 @@ export default function BooksManager() {
                                             <option>Biografias</option>
                                             <option>Produtividade</option>
                                             <option>Comunicação</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px' }}>Estado</label>
+                                        <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value as any})} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #ddd' }}>
+                                            <option value="pending">Pendente</option>
+                                            <option value="approved">Aprovado</option>
+                                            <option value="rejected">Rejeitado</option>
                                         </select>
                                     </div>
                                     <div>

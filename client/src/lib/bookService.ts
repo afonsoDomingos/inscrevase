@@ -14,6 +14,8 @@ export interface BookModel {
     rating: number;
     isActive: boolean;
     clicks: number;
+    status: 'pending' | 'approved' | 'rejected';
+    isUserSubmission: boolean;
 }
 
 export const bookService = {
@@ -71,5 +73,42 @@ export const bookService = {
 
     async recordClick(id: string): Promise<void> {
         await fetch(`${API_URL}/books/click/${id}`, { method: 'POST' });
+    },
+
+    async submitBook(bookData: Partial<BookModel>): Promise<BookModel> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/books/submit`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(bookData)
+        });
+        if (!response.ok) throw new Error('Erro ao submeter livro');
+        return response.json();
+    },
+
+    async getMySubmissions(): Promise<BookModel[]> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/books/my`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Erro ao carregar as suas submissões');
+        return response.json();
+    },
+
+    async updateBookStatus(id: string, status: string): Promise<BookModel> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/books/admin/status/${id}`, {
+            method: 'PATCH',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ status })
+        });
+        if (!response.ok) throw new Error('Erro ao atualizar estado do livro');
+        return response.json();
     }
 };

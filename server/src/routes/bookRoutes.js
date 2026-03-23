@@ -10,7 +10,12 @@ router.post('/click/:id', bookController.recordClick); // Public record interest
 // Admin only
 router.get('/admin', authMiddleware, adminMiddleware, bookController.adminGetAllBooks);
 router.post('/', authMiddleware, adminMiddleware, bookController.createBook);
+router.patch('/admin/status/:id', authMiddleware, adminMiddleware, bookController.updateStatus);
 router.put('/:id', authMiddleware, adminMiddleware, bookController.updateBook);
 router.delete('/:id', authMiddleware, adminMiddleware, bookController.deleteBook);
+
+// User Submission Routes
+router.get('/my', authMiddleware, bookController.getMyBooks);
+router.post('/submit', authMiddleware, bookController.submitBook);
 
 module.exports = router;

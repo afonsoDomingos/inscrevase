@@ -10,7 +10,14 @@ const BookSchema = new mongoose.Schema({
     price: { type: String }, // Preço aproximado (opcional)
     rating: { type: Number, default: 5 },
     isActive: { type: Boolean, default: true },
-    clicks: { type: Number, default: 0 }, // Para medires o interesse
+    clicks: { type: Number, default: 0 },
+    submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    isUserSubmission: { type: Boolean, default: false },
+    status: { 
+        type: String, 
+        enum: ['pending', 'approved', 'rejected'], 
+        default: 'approved' 
+    },
     createdAt: { type: Date, default: Date.now }
 });
 
