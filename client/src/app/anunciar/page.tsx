@@ -464,7 +464,7 @@ export default function AnunciarPage() {
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                                                 <button
-                                                    onClick={() => setError("Checkout Global via Stripe em manutenção regulatória. Por favor, utilize o Método Manual / PayPal.")}
+                                                    onClick={() => setError("Checkout Global via Stripe em manutenção regulatória. Por favor, utilize o botão PayPal abaixo – é instantâneo e aceita o seu cartão!")}
                                                     style={{
                                                         padding: '1.5rem',
                                                         borderRadius: '24px',

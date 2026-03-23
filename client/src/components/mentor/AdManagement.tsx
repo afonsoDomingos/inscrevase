@@ -815,7 +815,7 @@ export default function AdManagement() {
                                                 </div>
 
                                                 <button
-                                                    onClick={() => toast.info("Checkout Global via Stripe em manutenção regulatória. Por favor, utilize o PayPal ou Método Manual.")}
+                                                    onClick={() => toast.info("Checkout Global via Stripe em manutenção regulatória. Por favor, utilize o botão PayPal – é instantâneo e aceita o seu cartão!")}
                                                     style={{
                                                         padding: '1.2rem',
                                                         borderRadius: '20px',
