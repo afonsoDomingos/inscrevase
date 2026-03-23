@@ -15,8 +15,10 @@ import {
     Download,
     Trash2,
     XCircle,
-    RefreshCcw
+    RefreshCcw,
+    CreditCard
 } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -128,6 +130,36 @@ export default function AdminFinance() {
             }
         } catch {
             toast.error(t('dashboard.adminFinance.messages.approveError'));
+        }
+    };
+
+
+    const handleManualCapture = async (orderId: string) => {
+        if (!orderId) return;
+        try {
+            toast.loading("Tentando capturar pagamento no PayPal...");
+            const token = Cookies.get('token');
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/paypal/orders/capture`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ orderID: orderId }),
+            });
+
+            toast.dismiss();
+            const data = await response.json();
+            if (data.success) {
+                toast.success("Pagamento capturado com sucesso!");
+                loadData();
+                loadAttempts();
+            } else {
+                toast.error(`Falha: ${data.message || 'Erro desconhecido'}`);
+            }
+        } catch (error: any) {
+            toast.dismiss();
+            toast.error(`Erro: ${error.message}`);
         }
     };
 
@@ -729,11 +761,12 @@ export default function AdminFinance() {
                                     <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Método</th>
                                     <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Status</th>
                                     <th style={{ padding: '1rem', fontSize: '0.8rem' }}>Valor/Info</th>
+                                    <th style={{ padding: '1rem', fontSize: '0.8rem', textAlign: 'right' }}>Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {loadingAttempts ? (
-                                    <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>Carragando...</td></tr>
+                                    <tr><td colSpan={7} style={{ textAlign: 'center', padding: '2rem' }}>Carragando...</td></tr>
                                 ) : attempts.map(attempt => (
                                     <tr key={attempt._id} style={{ borderBottom: '1px solid #f8f8f8', fontSize: '0.85rem' }}>
                                         <td style={{ padding: '1rem' }}>{new Date(attempt.createdAt!).toLocaleString()}</td>
@@ -754,10 +787,10 @@ export default function AdminFinance() {
                                         <td style={{ padding: '1rem' }}>
                                             <div style={{ 
                                                 display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700,
-                                                background: attempt.status === 'initiated' ? '#e0f2fe' : (attempt.status === 'blocked_maintenance' ? '#fef3c7' : '#fee2e2'),
-                                                color: attempt.status === 'initiated' ? '#0369a1' : (attempt.status === 'blocked_maintenance' ? '#b45309' : '#b91c1c')
+                                                background: attempt.status === 'completed' ? '#38a16915' : (attempt.status === 'initiated' ? '#e0f2fe' : (attempt.status === 'blocked_maintenance' ? '#fef3c7' : '#fee2e2')),
+                                                color: attempt.status === 'completed' ? '#38a169' : (attempt.status === 'initiated' ? '#0369a1' : (attempt.status === 'blocked_maintenance' ? '#b45309' : '#b91c1c'))
                                             }}>
-                                                {attempt.status === 'initiated' ? 'Iniciado' : (attempt.status === 'blocked_maintenance' ? 'Bloqueado (Stripe)' : attempt.status)}
+                                                {attempt.status === 'completed' ? 'Sucesso' : (attempt.status === 'initiated' ? 'Iniciado' : (attempt.status === 'blocked_maintenance' ? 'Bloqueado (Stripe)' : attempt.status))}
                                             </div>
                                         </td>
                                         <td style={{ padding: '1rem' }}>
@@ -766,6 +799,20 @@ export default function AdminFinance() {
                                                 <div style={{ fontSize: '0.7rem', color: '#666', marginTop: '4px' }}>
                                                     {Object.entries(attempt.metadata).map(([k, v]) => `${k}: ${v}`).join(', ')}
                                                 </div>
+                                            )}
+                                        </td>
+                                        <td style={{ padding: '1rem', textAlign: 'right' }}>
+                                            {(attempt.method === 'paypal' && attempt.status !== 'completed' && attempt.metadata?.orderID) && (
+                                                <button
+                                                    onClick={() => handleManualCapture(attempt.metadata!.orderID as string)}
+                                                    style={{
+                                                        background: '#003087', color: '#fff', border: 'none', padding: '6px 12px',
+                                                        borderRadius: '6px', fontSize: '0.7rem', fontWeight: 800, cursor: 'pointer',
+                                                        display: 'flex', alignItems: 'center', gap: '4px'
+                                                    }}
+                                                >
+                                                    <CreditCard size={12} /> Capturar
+                                                </button>
                                             )}
                                         </td>
                                     </tr>
