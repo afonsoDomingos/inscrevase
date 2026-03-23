@@ -764,7 +764,7 @@ export default function AdminFinance() {
                                             {attempt.amount ? `${attempt.amount} ${attempt.currency}` : '-'}
                                             {attempt.metadata && Object.keys(attempt.metadata).length > 0 && (
                                                 <div style={{ fontSize: '0.7rem', color: '#666', marginTop: '4px' }}>
-                                                    {Object.entries(attempt.metadata).map(([k, v]: any) => `${k}: ${v}`).join(', ')}
+                                                    {Object.entries(attempt.metadata).map(([k, v]) => `${k}: ${v}`).join(', ')}
                                                 </div>
                                             )}
                                         </td>

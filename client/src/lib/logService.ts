@@ -4,13 +4,18 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export interface PaymentAttemptLog {
     _id?: string;
-    userId?: any;
+    userId?: {
+        _id: string;
+        name: string;
+        email: string;
+        businessName?: string;
+    };
     type: 'subscription' | 'event_registration' | 'ad_purchase';
     method: 'stripe' | 'paypal' | 'manual';
     status: 'initiated' | 'cancelled' | 'failed' | 'blocked_maintenance';
     amount?: number;
     currency?: string;
-    metadata?: any;
+    metadata?: Record<string, string | number | boolean | undefined>;
     createdAt?: string;
 }
 
