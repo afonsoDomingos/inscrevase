@@ -277,6 +277,7 @@ export default function BooksManager() {
                                         <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #ddd' }}>
                                             <option>Empreendedorismo</option>
                                             <option>Investimentos</option>
+                                            <option>Espiritualidade</option>
                                             <option>Finanças</option>
                                             <option>Desenvolvimento Pessoal</option>
                                             <option>Marketing</option>
