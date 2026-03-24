@@ -92,20 +92,31 @@ router.get('/test-message', async (req, res) => {
         </div>`;
 
     try {
-        if (!whatsappService.isConnected) {
+        if (!whatsappService.isConnected || !whatsappService.sock) {
             return res.send(toastPage('⚠️','#f59e0b','WhatsApp Desligado','Ligue o WhatsApp antes de enviar mensagens de teste.'));
         }
         const fullId = whatsappService.sock?.user?.id;
         if (!fullId) {
             return res.send(toastPage('⏳','#6366f1','A Conectar...','O número ainda está a ser identificado. Aguarde uns segundos e tente novamente.'));
         }
-        const number = fullId.split(':')[0].split('@')[0];
-        console.log(`[TEST] Número extraído do Baileys: "${fullId}" → a enviar para: "${number}"`);
-        await whatsappService.sendMessage(number, '🚀 *TESTE INSCREVA.SE*: Automação 100% operacional! 🎯');
-        res.send(toastPage('✅','#10b981','Mensagem Enviada!',`Entregue para o número +${number} com sucesso.`));
+
+        // Para auto-mensagem no Baileys, usar o número limpo com @s.whatsapp.net
+        // O fullId tem formato "258847877405:5@s.whatsapp.net"
+        const number = fullId.split(':')[0]; // "258847877405"
+        const jid = `${number}@s.whatsapp.net`;
+        console.log(`[TEST] Enviando auto-teste para JID: ${jid}`);
+
+        // Enviar directamente via sock para garantir formato correcto
+        await whatsappService.sock.sendMessage(jid, { 
+            text: '🚀 *TESTE INSCREVA.SE*\n\nAutomação 100% operacional! ✅\n\nEste é o número ligado ao motor de notificações.' 
+        });
+
+        res.send(toastPage('✅','#10b981','Mensagem Enviada!',
+            `Enviada para +${number}. Verifique o chat "Mensagens Guardadas" (ícone de estrela) no seu WhatsApp.`
+        ));
     } catch (e) {
         console.error('ERRO TEST:', e);
-        res.send(toastPage('❌','#ef4444','Erro no Envio',`${e.message}`));
+        res.send(toastPage('❌','#ef4444','Erro no Envio', e.message));
     }
 });
 
