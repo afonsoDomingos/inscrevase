@@ -13,7 +13,6 @@ import {
     X, 
     Loader2, 
     Search,
-    BarChart,
     FileText,
     DollarSign,
     CreditCard,
