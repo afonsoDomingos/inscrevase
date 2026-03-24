@@ -74,6 +74,7 @@ exports.submitBook = async (req, res) => {
         await book.save();
         res.status(201).json(book);
     } catch (error) {
+        console.error('[BOOK SUBMIT ERROR]', error);
         res.status(400).json({ message: error.message });
     }
 };

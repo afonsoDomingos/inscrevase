@@ -425,8 +425,8 @@ export default function BooksPage() {
                                     await bookService.submitBook(submissionForm);
                                     toast.success('Obra enviada com sucesso! Aguarde a aprovação.');
                                     setIsSubmitModalOpen(false);
-                                } catch {
-                                    toast.error('Erro ao enviar. Verifique os campos.');
+                                } catch (error: any) {
+                                    toast.error(error.message || 'Erro ao enviar. Verifique os campos.');
                                 } finally {
                                     setIsSubmitting(false);
                                 }

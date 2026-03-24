@@ -87,8 +87,12 @@ export const bookService = {
             },
             body: JSON.stringify(bookData)
         });
-        if (!response.ok) throw new Error('Erro ao submeter livro');
-        return response.json();
+        
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || 'Erro ao submeter livro');
+        }
+        return data;
     },
 
     async getMySubmissions(): Promise<BookModel[]> {
