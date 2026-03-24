@@ -99,7 +99,9 @@ import ThemeToggle from '@/components/common/ThemeToggle';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard' | 'referral' | 'library';
+import MySalesPanel from '@/components/books/MySalesPanel';
+
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard' | 'referral' | 'library' | 'mysales';
 
 import { Suspense } from 'react';
 
@@ -658,6 +660,7 @@ function MentorDashboardContent() {
                             title: t('dashboard.sidebarGroups.account') || "CONTA / SISTEMA",
                             items: [
                                 { id: 'library', label: 'Meus Livros', icon: <BookOpen size={20} /> },
+                                { id: 'mysales', label: 'Minhas Vendas', icon: <TrendingUp size={20} /> },
                                 { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
                                 { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
                             ]
@@ -2310,6 +2313,15 @@ function MentorDashboardContent() {
                                     </button>
                                 </div>
                             )}
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'mysales' && (
+                        <motion.div key="mysales" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <TrendingUp color="#22c55e" /> Minhas Vendas de Livros
+                            </h2>
+                            <MySalesPanel />
                         </motion.div>
                     )}
                 </AnimatePresence>

@@ -133,5 +133,14 @@ export const bookService = {
         });
         if (!response.ok) throw new Error('Erro ao carregar a sua biblioteca');
         return response.json();
+    },
+
+    async getMySales(): Promise<{ totalSales: number; totalRevenue: string; salesByBook: Array<{ book: BookModel; sales: number; revenue: number; buyers: Array<{ name: string; email: string; date: string }> }> }> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/books/my-sales`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Erro ao carregar as suas vendas');
+        return response.json();
     }
 };

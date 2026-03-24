@@ -38,7 +38,62 @@ exports.getUserPurchasedBooks = async (req, res) => {
     }
 };
 
+exports.getMySales = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        // Find all books submitted by this user
+        const myBooks = await Book.find({ submittedBy: userId });
+        const myBookIds = myBooks.map(b => b._id);
+
+        // Find all purchases of those books
+        const purchases = await Purchase.find({ book: { $in: myBookIds } })
+            .populate('book', 'title coverImage price author')
+            .populate('user', 'name email')
+            .sort({ purchaseDate: -1 });
+
+        // Build stats per book
+        const salesByBook = {};
+        let totalRevenue = 0;
+        let totalSales = 0;
+
+        purchases.forEach(p => {
+            if (!p.book) return;
+            const bookId = p.book._id.toString();
+            const price = parseFloat(p.book.price || '0');
+
+            if (!salesByBook[bookId]) {
+                salesByBook[bookId] = {
+                    book: p.book,
+                    sales: 0,
+                    revenue: 0,
+                    buyers: []
+                };
+            }
+            salesByBook[bookId].sales += 1;
+            salesByBook[bookId].revenue += price;
+            salesByBook[bookId].buyers.push({
+                name: p.user?.name || 'Anónimo',
+                email: p.user?.email || '',
+                date: p.purchaseDate
+            });
+
+            totalRevenue += price;
+            totalSales += 1;
+        });
+
+        res.json({
+            totalSales,
+            totalRevenue: totalRevenue.toFixed(2),
+            salesByBook: Object.values(salesByBook)
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // --- Standard Book Controllers ---
+
 
 exports.getAllBooks = async (req, res) => {
     try {

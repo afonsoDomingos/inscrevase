@@ -39,7 +39,8 @@ import {
     Megaphone,
     Link as LinkIcon,
     BookOpen,
-    Download
+    Download,
+    TrendingUp
 } from 'lucide-react';
 import { bookService, BookModel } from '@/lib/bookService';
 import ProfileModal from '@/components/mentor/ProfileModal';
@@ -55,6 +56,7 @@ import { useCurrency } from '@/context/CurrencyContext';
 import AdManagement from '@/components/mentor/AdManagement';
 import { SmartLinksManager } from '@/components/mentor/SmartLinksManager';
 import { stripeService } from '@/lib/stripeService';
+import MySalesPanel from '@/components/books/MySalesPanel';
 import { useSearchParams } from 'next/navigation';
 
 import PlansSection from '@/components/common/PlansSection';
@@ -62,7 +64,7 @@ import ParticipantLessons from '@/components/participant/ParticipantLessons';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import { adService } from '@/lib/adService';
 
-type Tab = 'tickets' | 'explore' | 'lessons' | 'certificates' | 'blog' | 'plans' | 'profile' | 'ads' | 'smartlinks' | 'library';
+type Tab = 'tickets' | 'explore' | 'lessons' | 'certificates' | 'blog' | 'plans' | 'profile' | 'ads' | 'smartlinks' | 'library' | 'mysales';
 
 function ParticipantDashboardContent() {
     const { t } = useTranslate();
@@ -471,6 +473,7 @@ function ParticipantDashboardContent() {
                         { id: 'ads', label: 'Meus Anúncios', icon: <Megaphone size={20} /> },
                         { id: 'smartlinks', label: 'Smartlinks', icon: <LinkIcon size={20} /> },
                         { id: 'library', label: 'Meus Livros', icon: <BookOpen size={20} /> },
+                        { id: 'mysales', label: 'Minhas Vendas', icon: <Download size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
                         { id: 'profile', label: t('dashboard.myAccount'), icon: <User size={20} /> },
                     ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
@@ -1304,6 +1307,20 @@ function ParticipantDashboardContent() {
                                     </button>
                                 </div>
                             )}
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'mysales' && (
+                        <motion.div
+                            key="mysales"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <TrendingUp color="#22c55e" /> Minhas Vendas de Livros
+                            </h2>
+                            <MySalesPanel />
                         </motion.div>
                     )}
 
