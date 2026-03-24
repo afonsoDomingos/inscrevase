@@ -3,6 +3,8 @@ const router = express.Router();
 const whatsappService = require('../services/whatsappService');
 
 // Rota para obter o QR Code do WhatsApp
+router.get('/test', (req, res) => res.send('Router WhatsApp Ativo! ✅'));
+
 router.get('/qr', async (req, res) => {
     console.log('🔍 [WhatsApp Router] QR request received');
     try {
