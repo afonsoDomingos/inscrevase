@@ -11,9 +11,9 @@ router.get('/qr', async (req, res) => {
         const qrImage = await whatsappService.getQRImage();
         if (!qrImage) {
             if (whatsappService.isConnected) {
-                return res.send('<div style="font-family:sans-serif;text-align:center;padding:50px">✅ WhatsApp Conectado com Sucesso!</div>');
+                return res.send('<div style="font-family:sans-serif;text-align:center;padding:50px"><meta http-equiv="refresh" content="5">✅ WhatsApp Conectado com Sucesso!</div>');
             }
-            return res.send('<div style="font-family:sans-serif;text-align:center;padding:50px">⏳ Gerando QR Code... Recarregue em 5 segundos.</div>');
+            return res.send('<div style="font-family:sans-serif;text-align:center;padding:50px"><meta http-equiv="refresh" content="5">⏳ Gerando QR Code... Recarregue em 5 segundos.</div>');
         }
         res.send(`<div style="display:flex;flex-direction:column;align-items:center;padding:20px;font-family:sans-serif">
             <h1 style="font-size:1.2rem;margin-bottom:10px">Conectar WhatsApp</h1>
