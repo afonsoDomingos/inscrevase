@@ -1853,7 +1853,7 @@ export default function AdminDashboard() {
                                 marginBottom: '2rem'
                             }}>
                                 <iframe 
-                                    src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/admin/whatsapp/qr`}
+                                    src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/admin/whatsapp/qr`}
                                     style={{
                                         width: '350px',
                                         height: '450px',
