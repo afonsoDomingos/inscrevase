@@ -213,12 +213,18 @@ app.use('/api/push', require('./routes/pushRoutes'));
 
 // WhatsApp Admin Monitor (Ver QR Code para ligar o telemóvel)
 app.get('/api/admin/whatsapp/qr', async (req, res) => {
+    console.log('🔍 [WhatsApp QR] Request received at /api/admin/whatsapp/qr');
     // No futuro, podemos proteger com authMiddleware, mas para agora permite ver o QR
     const qrImage = await whatsappService.getQRImage();
     if (!qrImage) {
-        if (whatsappService.isConnected) return res.send('Connected ✅');
+        if (whatsappService.isConnected) {
+            console.log('✅ [WhatsApp QR] Status: Connected');
+            return res.send('Connected ✅');
+        }
+        console.log('⏳ [WhatsApp QR] Status: Generating QR...');
         return res.send('Gerando QR... Recarregue em 5 segundos.');
     }
+    console.log('🖼️ [WhatsApp QR] Status: Rendering QR image');
     res.send(`<div style="display:flex;flex-direction:column;align-items:center;padding:50px;font-family:sans-serif">
         <h1>Conectar WhatsApp Inscreva-se 💬</h1>
         <p>Lê este QR Code no teu telemóvel para ativar a automação gratuita.</p>
