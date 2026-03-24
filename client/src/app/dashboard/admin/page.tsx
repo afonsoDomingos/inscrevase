@@ -1845,24 +1845,19 @@ export default function AdminDashboard() {
                                 Ligue o número oficial da plataforma para enviar notificações automáticas de vendas, inscrições e upgrades para os seus utilizadores.
                             </p>
 
-                            <div style={{
-                                border: '2px solid #f0f0f0',
-                                borderRadius: '24px',
-                                padding: '1rem',
-                                background: '#fafafa',
-                                marginBottom: '2rem'
-                            }}>
-                                <iframe 
+                            <iframe 
                                     src={`${(process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? (window.location.origin.includes('localhost') ? 'http://localhost:5000' : window.location.origin) : 'http://localhost:5000')).replace(/\/api$/, '')}/api/admin/whatsapp/qr`}
                                     style={{
-                                        width: '350px',
-                                        height: '450px',
+                                        width: '100%',
+                                        height: '420px',
                                         border: 'none',
-                                        overflow: 'hidden'
+                                        overflow: 'hidden',
+                                        borderRadius: '16px',
+                                        marginBottom: '2rem',
+                                        background: '#fff'
                                     }}
                                     title="WhatsApp QR Monitor"
                                 />
-                            </div>
 
                             <div style={{ textAlign: 'left', background: '#f8f9fa', padding: '1.5rem', borderRadius: '16px', width: '100%' }}>
                                 <h3 style={{ fontWeight: 700, marginBottom: '0.8rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
