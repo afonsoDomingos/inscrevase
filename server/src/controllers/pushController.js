@@ -36,6 +36,8 @@ exports.subscribe = async (req, res) => {
 };
 
 exports.sendNotification = async (userId, title, body, icon, url) => {
+    if (!process.env.VAPID_PUBLIC_KEY) return; // Não envia se não houver chaves
+
     try {
         const subRecord = await PushSubscription.findOne({ user: userId });
         if (!subRecord) return;
