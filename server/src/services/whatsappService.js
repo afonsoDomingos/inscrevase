@@ -1,13 +1,13 @@
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
+const makeWASocket = require('@whiskeysockets/baileys').default;
+const { useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const QRCode = require('qrcode');
 const pino = require('pino');
 
-// Directório de sessão automático (funciona em Windows, Mac e Linux/Render)
-const AUTH_PATH = path.join(os.tmpdir(), 'inscrevase_wa_session_v3');
-console.log('📦 [WA] Local de Sessão Definido:', AUTH_PATH);
+// Directório de sessão automático com versão nova para evitar conflitos
+const AUTH_PATH = path.join(os.tmpdir(), 'inscrevase_wa_v4');
 
 class WhatsAppService {
     constructor() {
@@ -15,80 +15,67 @@ class WhatsAppService {
         this.qrCodeData = null;
         this.isConnected = false;
         this.isInitializing = false;
-        console.log('🏗️ [WA] WhatsAppService Construído.');
     }
 
     async init() {
-        if (this.isInitializing) {
-            console.log('⏳ [WA] Motor já está a inicializar. Ignorando pedido duplicado.');
-            return;
-        }
+        if (this.isInitializing) return;
         this.isInitializing = true;
 
-        console.log('🚀 [WA] A INICIAR MOTOR (PASSO 1)...');
+        console.log('--- 🚀 WHATSAPP ENGINE STARTUP ---');
 
         try {
-            console.log('📂 [WA] Passo 2: Verificando Pasta de Sessão...');
+            // Garantir que a pasta existe e está limpa se houver erros
             if (!fs.existsSync(AUTH_PATH)) {
                 fs.mkdirSync(AUTH_PATH, { recursive: true });
-                console.log('📁 [WA] Pasta Criada!');
             }
 
-            console.log('🔑 [WA] Passo 3: Carregando useMultiFileAuthState...');
+            console.log('📂 [WA] Pasta de sessão ok:', AUTH_PATH);
+
+            const { version, isLatest } = await fetchLatestBaileysVersion();
+            console.log(`📡 [WA] Usando versão do WhatsApp v${version.join('.')} (Latest: ${isLatest})`);
+
             const { state, saveCreds } = await useMultiFileAuthState(AUTH_PATH);
-            console.log('✅ [WA] Estado de Autenticação Carregado!');
 
-            console.log('📡 [WA] Passo 4: Chamando makeWASocket...');
             this.sock = makeWASocket({
+                version,
                 auth: state,
-                printQRInTerminal: false,
-                logger: pino({ level: 'debug' }), // Logs de baixa-nível para vermos tudo no terminal
-                browser: ['Inscreva-Se Automations', 'Chrome', '1.2.0'],
-                connectTimeoutMs: 60000,
-                defaultQueryTimeoutMs: 60000
+                printQRInTerminal: true, // Vamos forçar no terminal do Render também!
+                logger: pino({ level: 'info' }), // Baixar de 'silent' para 'info' para vermos erros
+                browser: ['Inscreva-Se Automations', 'Safari', '1.0.0']
             });
 
-            console.log('🚀 [WA] Passo 5: Socket Criado com Sucesso!');
+            console.log('📡 [WA] Socket criado e à escuta...');
 
-            // Eventos de Credenciais
-            this.sock.ev.on('creds.update', async () => {
-                console.log('💾 [WA] Credenciais Actualizadas (saveCreds)...');
-                await saveCreds();
-            });
+            this.sock.ev.on('creds.update', saveCreds);
 
-            // Eventos de Ligação
-            this.sock.ev.on('connection.update', async (update) => {
+            this.sock.ev.on('connection.update', (update) => {
                 const { connection, lastDisconnect, qr } = update;
 
                 if (qr) {
-                    console.log('🖼️ [WA] QR CODE RECEBIDO!');
+                    console.log('🖼️ [WA] QR CODE GERADO E DISPONÍVEL! (Logar para capturar)');
                     this.qrCodeData = qr;
-                    this.isConnected = false;
                 }
 
                 if (connection === 'close') {
-                    const status = lastDisconnect?.error?.output?.statusCode;
-                    const message = lastDisconnect?.error?.message;
-                    console.log(`❌ [WA] LIGAÇÃO FECHADA (Status: ${status}) - Motivo: ${message}`);
-                    
+                    const statusCode = lastDisconnect?.error?.output?.statusCode;
+                    console.log('❌ [WA] Ligação parada. Código:', statusCode);
                     this.isConnected = false;
                     this.isInitializing = false;
                     
-                    const shouldReconnect = status !== DisconnectReason.loggedOut;
-                    if (shouldReconnect) {
-                        console.log('🔄 [WA] Reiniciando em 5 segundos...');
-                        setTimeout(() => this.init(), 5000);
+                    if (statusCode !== DisconnectReason.loggedOut) {
+                        console.log('🔄 [WA] Tentando reconectar em 10s...');
+                        setTimeout(() => this.init(), 10000);
                     }
                 } else if (connection === 'open') {
-                    console.log('✅ [WA] LIGAÇÃO TOTALMENTE ESTABELECIDA!');
+                    console.log('✅ [WA] LIGADO E PRONTO PARA ENVIAR MENSAGENS!');
                     this.isConnected = true;
                     this.qrCodeData = null;
+                    this.isInitializing = false;
                 }
             });
 
         } catch (error) {
-            console.error('💥 [WA] ERRO CRÍTICO NO INIT:', error.message);
-            console.error('Stack:', error.stack);
+            console.error('💥 [WA] ERRO FATAL NO INÍCIO:', error);
             this.isInitializing = false;
         }
     }
@@ -98,18 +85,24 @@ class WhatsAppService {
         try {
             return await QRCode.toDataURL(this.qrCodeData);
         } catch (err) {
-            console.error('Erro ao converter QR para base64:', err);
             return null;
         }
     }
 
     async forceRestart() {
-        console.log('🔄 [WA] REINÍCIO MANUAL SOLICITADO (Limpando Estados)...');
-        this.isInitializing = false;
+        console.log('🛠️ [WA] REINÍCIO FORÇADO...');
         this.isConnected = false;
+        this.isInitializing = false;
         this.qrCodeData = null;
-        this.sock = null; 
-        console.log('🧹 [WA] Estados limpos. A chamar init()...');
+        try {
+            // Tentar apagar a pasta da sessão para começar do zero (pode resolver 90% dos problemas)
+            if (fs.existsSync(AUTH_PATH)) {
+                fs.rmSync(AUTH_PATH, { recursive: true, force: true });
+                console.log('🧹 [WA] Pasta de sessão antiga eliminada.');
+            }
+        } catch (e) {
+            console.warn('Não foi possível limpar a pasta de sessão:', e.message);
+        }
         return await this.init();
     }
 }
