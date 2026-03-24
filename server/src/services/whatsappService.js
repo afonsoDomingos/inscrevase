@@ -94,7 +94,14 @@ class WhatsAppService {
             throw new Error('WhatsApp não está conectado. Leia o QR Code primeiro.');
         }
         // Limpar o número: só dígitos, sem o 'to' completo do Baileys
-        const clean = to.replace(/[^0-9]/g, '');
+        let clean = to.replace(/[^0-9]/g, '');
+        
+        // Se tem 9 dígitos e começa por 8 (ex: 84, 82...), assume que é Moçambique e adiciona o 258
+        if (clean.length === 9 && clean.startsWith('8')) {
+            console.log(`[WA] Auto-corrigindo número sem indicativo: ${clean} -> 258${clean}`);
+            clean = `258${clean}`;
+        }
+
         if (!clean || clean.length < 9) {
             throw new Error(`Número inválido: "${to}" → "${clean}"`);
         }

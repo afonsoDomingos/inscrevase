@@ -100,6 +100,9 @@ router.get('/test-message', async (req, res) => {
 
         if (req.query.phone) {
             targetNumber = req.query.phone.replace(/[^0-9]/g, '');
+            if (targetNumber.length === 9 && targetNumber.startsWith('8')) {
+                targetNumber = `258${targetNumber}`;
+            }
             if (!targetNumber) {
                 return res.send(toastPage('⚠️','#f59e0b','Número Inválido','Forneça um número válido com código de país (ex: 25884...).'));
             }
