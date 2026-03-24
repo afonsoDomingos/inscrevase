@@ -5,7 +5,7 @@ const BookSchema = new mongoose.Schema({
     author: { type: String, required: true },
     description: { type: String },
     coverImage: { type: String }, // Cloudinary URL
-    affiliateLink: { type: String, required: true },
+    affiliateLink: { type: String }, // Opcional se for PDF do usuário
     category: { type: String, default: 'Desenvolvimento Pessoal' },
     price: { type: String }, // Preço aproximado (opcional)
     rating: { type: Number, default: 5 },
