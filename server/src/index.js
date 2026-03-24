@@ -6,8 +6,8 @@ const mongoose = require('mongoose');
 const http = require('http'); // Import http
 const { Server } = require('socket.io'); // Import Socket.IO
 const whatsappService = require('./services/whatsappService');
-require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
-require('dotenv').config(); // Fallback to current dir
+// Iniciar Motor do WhatsApp IMEDIATAMENTE (sem esperar por DB)
+whatsappService.init().catch(err => console.error('⚠️ WhatsApp Init Error:', err));
 
 const app = express();
 const server = http.createServer(app);
@@ -261,9 +261,6 @@ mongoose.connect(process.env.MONGODB_URI || process.env.MONGO_URI)
         exchangeRateService.getCurrentRates()
             .then(() => console.log('✅ Exchange rates initialized'))
             .catch(err => console.error('⚠️  Failed to initialize exchange rates:', err.message));
-
-        // --- WHATSAPP ENGINE INITIALIZATION ---
-        whatsappService.init().catch(err => console.error('⚠️  WhatsApp Engine Init Error:', err));
     })
     .catch(err => console.log('MongoDB Connection Error:', err));
 

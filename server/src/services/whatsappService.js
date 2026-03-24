@@ -1,11 +1,12 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const QRCode = require('qrcode');
 const pino = require('pino');
 
-// Porta-fólio de sessão (Usar /tmp para garantir escrita em cloud servers como o Render)
-const AUTH_PATH = path.join('/tmp', 'auth_info_baileys');
+// Directório de sessão automático (funciona em Windows, Mac e Linux/Render)
+const AUTH_PATH = path.join(os.tmpdir(), 'inscrevase_wa_session');
 
 class WhatsAppService {
     constructor() {
