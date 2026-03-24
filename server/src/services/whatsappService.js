@@ -89,6 +89,22 @@ class WhatsAppService {
         }
     }
 
+    async sendMessage(to, text) {
+        if (!this.isConnected || !this.sock) {
+            console.error('[WA] Tentativa de envio sem ligação activa.');
+            return false;
+        }
+        try {
+            const jid = `${to.replace(/\D/g, '')}@s.whatsapp.net`;
+            await this.sock.sendMessage(jid, { text });
+            console.log(`✅ [WA] Mensagem enviada para ${jid}`);
+            return true;
+        } catch (e) {
+            console.error('[WA] Erro ao enviar mensagem:', e.message);
+            return false;
+        }
+    }
+
     async forceRestart() {
         console.log('🛠️ [WA] REINÍCIO FORÇADO...');
         this.isConnected = false;

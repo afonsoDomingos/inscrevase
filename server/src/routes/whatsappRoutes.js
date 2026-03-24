@@ -1,6 +1,18 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
+const path = require('path');
 const whatsappService = require('../services/whatsappService');
+
+// Lê o logo do disco e converte para base64 para garantir que aparece sempre
+let logoBase64 = '';
+try {
+    const logoPath = path.join(__dirname, '../../../client/public/logo.png');
+    const logoBuffer = fs.readFileSync(logoPath);
+    logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+} catch (e) {
+    console.warn('[Monitor] Logo não encontrado:', e.message);
+}
 
 const premiumStyles = `
     <style>
@@ -49,8 +61,7 @@ router.get('/test-message', async (req, res) => {
 router.get('/qr', async (req, res) => {
     try {
         const qrImage = await whatsappService.getQRImage();
-        // O Render serve a pasta client/public como root ou /assets
-        const logoUrl = "https://inscreva-se.com/logo.png"; 
+        const logoUrl = logoBase64;
 
         if (whatsappService.isConnected) {
             return res.send(`
