@@ -41,16 +41,27 @@ class WhatsAppService {
                 console.log('❌ [WhatsApp Engine] Ligação Fechada:', lastDisconnect.error?.message || 'Erro desconhecido');
                 console.log('🔄 [WhatsApp Engine] A tentar reconectar:', shouldReconnect);
                 this.isConnected = false;
+                this.isInitializing = false; // Resetar o estado de inicialização para permitir nova tentativa
                 if (shouldReconnect) this.init();
             } else if (connection === 'open') {
                 console.log('✅ [WhatsApp Engine] CONECTADO COM SUCESSO!');
                 this.isConnected = true;
+                this.isInitializing = false; // Finalizou a inicialização com sucesso
                 this.qrCodeData = null;
             }
         });
 
         // Guardar credenciais sempre que houver update
         this.sock.ev.on('creds.update', saveCreds);
+    }
+
+    async forceRestart() {
+        console.log('🔄 [WhatsApp Engine] COMANDO DE REINÍCIO MANUAL RECEBIDO.');
+        this.isInitializing = false;
+        this.isConnected = false;
+        this.qrCodeData = null;
+        this.sock = null; 
+        return await this.init();
     }
 
     // Função universal de envio
