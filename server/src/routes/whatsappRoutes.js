@@ -95,25 +95,34 @@ router.get('/test-message', async (req, res) => {
         if (!whatsappService.isConnected || !whatsappService.sock) {
             return res.send(toastPage('⚠️','#f59e0b','WhatsApp Desligado','Ligue o WhatsApp antes de enviar mensagens de teste.'));
         }
-        const fullId = whatsappService.sock?.user?.id;
-        if (!fullId) {
-            return res.send(toastPage('⏳','#6366f1','A Conectar...','O número ainda está a ser identificado. Aguarde uns segundos e tente novamente.'));
+        let targetNumber = '';
+        let isSelf = false;
+
+        if (req.query.phone) {
+            targetNumber = req.query.phone.replace(/[^0-9]/g, '');
+            if (!targetNumber) {
+                return res.send(toastPage('⚠️','#f59e0b','Número Inválido','Forneça um número válido com código de país (ex: 25884...).'));
+            }
+        } else {
+            const fullId = whatsappService.sock?.user?.id;
+            if (!fullId) {
+                return res.send(toastPage('⏳','#6366f1','A Conectar...','O número ainda está a ser identificado. Aguarde uns segundos e tente novamente.'));
+            }
+            // Para auto-mensagem
+            targetNumber = fullId.split(':')[0]; // "258847877405"
+            isSelf = true;
         }
 
-        // Para auto-mensagem no Baileys, usar o número limpo com @s.whatsapp.net
-        // O fullId tem formato "258847877405:5@s.whatsapp.net"
-        const number = fullId.split(':')[0]; // "258847877405"
-        const jid = `${number}@s.whatsapp.net`;
-        console.log(`[TEST] Enviando auto-teste para JID: ${jid}`);
+        console.log(`[TEST] Enviando teste para: ${targetNumber}`);
 
-        // Enviar directamente via sock para garantir formato correcto
-        await whatsappService.sock.sendMessage(jid, { 
-            text: '🚀 *TESTE INSCREVA.SE*\n\nAutomação 100% operacional! ✅\n\nEste é o número ligado ao motor de notificações.' 
-        });
+        // Usar serviço comum
+        await whatsappService.sendMessage(targetNumber, '🚀 *TESTE INSCREVA.SE*\n\nAutomação 100% operacional! ✅\n\nEste número comunica com a plataforma.');
 
-        res.send(toastPage('✅','#10b981','Mensagem Enviada!',
-            `Enviada para +${number}. Verifique o chat "Mensagens Guardadas" (ícone de estrela) no seu WhatsApp.`
-        ));
+        const detailMsg = isSelf 
+            ? `Enviada para <b>+${targetNumber}</b>. <br>Verifique o chat "Mensagens Guardadas".`
+            : `Enviada para o número <br><b>+${targetNumber}</b> com sucesso.`;
+
+        res.send(toastPage('✅','#10b981','Mensagem Enviada!', detailMsg));
     } catch (e) {
         console.error('ERRO TEST:', e);
         res.send(toastPage('❌','#ef4444','Erro no Envio', e.message));
@@ -129,9 +138,15 @@ router.get('/qr', async (req, res) => {
             return res.send(`${styles}${logo}
                 <div class="badge"><div class="dot dot-online"></div>Online</div>
                 <div class="title">WhatsApp Ligado ✅</div>
-                <div class="sub">Sistema activo e a monitorizar.</div>
-                <a href="/api/admin/whatsapp/test-message" class="btn">🚀 Enviar Mensagem Teste</a>
-                <a href="/api/admin/whatsapp/restart" class="link">Trocar de número</a>`);
+                <div class="sub" style="margin-bottom: 4px;">Teste as notificações abaixo:</div>
+                <form action="/api/admin/whatsapp/test-message" method="GET" style="display:flex; flex-direction:column; gap:8px; width:100%; max-width:240px;">
+                    <button type="submit" class="btn" style="width:100%;">🚀 Testar no meu nº</button>
+                    <div style="display:flex; gap:6px; align-items:stretch; margin-top:2px;">
+                        <input type="text" name="phone" placeholder="+258..." style="flex:1; min-width:0; padding:8px 12px; border-radius:10px; border:1px solid #ddd; font-family:'Inter', sans-serif; font-size:0.8rem; outline:none;" />
+                        <button type="submit" class="btn" style="width:auto; padding:0 12px; font-size:0.75rem;">Testar Ex.</button>
+                    </div>
+                </form>
+                <a href="/api/admin/whatsapp/restart" class="link" style="margin-top:6px;">Desconectar / Trocar de Conta</a>`);
         }
 
         if (qrImage) {
