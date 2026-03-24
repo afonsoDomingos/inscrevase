@@ -1,12 +1,21 @@
 const webpush = require('web-push');
 const PushSubscription = require('../models/PushSubscription');
 
-// Configuração Web Push
-webpush.setVapidDetails(
-    'mailto:contato@inscreva-se.com', // E-mail de contacto
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY
-);
+// Configurar chaves VAPID (Sempre usar try/catch para evitar crash do servidor se faltarem as chaves no Render)
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    try {
+        webpush.setVapidDetails(
+            'mailto:suporte@inscreva-se.com',
+            process.env.VAPID_PUBLIC_KEY,
+            process.env.VAPID_PRIVATE_KEY
+        );
+        console.log('✅ Web Push: VAPID keys configured correctly.');
+    } catch (err) {
+        console.error('⚠️ Web Push Configuration Error:', err.message);
+    }
+} else {
+    console.warn('⚠️ Web Push: VAPID keys missing in .env. Notifications disabled.');
+}
 
 exports.subscribe = async (req, res) => {
     try {
