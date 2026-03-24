@@ -12,7 +12,23 @@ try {
 } catch (e) {
     console.warn('[Monitor] Logo não encontrado:', e.message);
 }
+const WhatsAppLog = require('../models/WhatsAppLog');
 
+router.get('/logs', async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 50;
+        const logs = await WhatsAppLog.find()
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * limit)
+            .limit(limit);
+        const total = await WhatsAppLog.countDocuments();
+        
+        res.json({ logs, total, pages: Math.ceil(total / limit), currentPage: page });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
 const styles = `
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');

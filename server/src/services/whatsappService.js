@@ -115,9 +115,34 @@ class WhatsAppService {
         }
         const jid = `${clean}@s.whatsapp.net`;
         console.log(`[WA] A enviar mensagem para ${jid}...`);
-        await this.sock.sendMessage(jid, { text });
-        console.log(`✅ [WA] Mensagem enviada com sucesso para ${jid}`);
-        return true;
+        
+        const WhatsAppLog = require('../models/WhatsAppLog');
+        
+        try {
+            await this.sock.sendMessage(jid, { text });
+            console.log(`✅ [WA] Mensagem enviada com sucesso para ${jid}`);
+            
+            // Gravação no log do MongoDB (Assíncrona / Non-blocking)
+            WhatsAppLog.create({
+                to: clean,
+                message: text,
+                status: 'success'
+            }).catch(e => console.error('[WALog] Erro ao persistir:', e));
+
+            return true;
+        } catch (error) {
+            console.error(`❌ [WA] Falha ao enviar para ${jid}:`, error);
+            
+            // Gravação do Erro no MongoDB
+            WhatsAppLog.create({
+                to: clean,
+                message: text,
+                status: 'error',
+                errorReason: error.message
+            }).catch(e => console.error('[WALog] Erro ao persistir falha:', e));
+            
+            throw error;
+        }
     }
 
 
