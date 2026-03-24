@@ -48,6 +48,13 @@ exports.recordPurchase = async (req, res) => {
                     const msg = `Olá *${mentorName}*! 👋\n\n📚 *NOVA VENDA DE LIVRO!*\nParabéns! O teu e-book "${bookTitle}" acabou de ser vendido!\n\n💳 *Comprador:* ${customerName}\n📧 *Email:* ${customerEmail}\n\nAcede ao teu painel para consultar o histórico de vendas. 🚀`;
                     whatsappService.sendMessage(mentor.phone, msg);
                 }
+
+                // --- WHATSAPP NOTIFICATION TO CUSTOMER ---------
+                if (customerUser && customerUser.phone) {
+                    const custFirstName = customerName.split(' ')[0] || 'Participante';
+                    const custMsg = `Olá *${custFirstName}*! 🎉\n\n✅ *Compra Concluída!*\nO teu e-book "${bookTitle}" já está disponível na tua conta.\n\nAcede à plataforma para iniciar a leitura. Boa aprendizagem! 📚`;
+                    whatsappService.sendMessage(customerUser.phone, custMsg);
+                }
             }
         } catch (pushErr) {
             console.error('Erro ao processar notificação push da venda:', pushErr);

@@ -268,6 +268,32 @@ const submitForm = async (req, res) => {
         })();
         // ─────────────────────────────────────────────────────────────────────
 
+        // ── WHATSAPP NOTIFICATION TO PARTICIPANT ─────────────────────────────
+        (async () => {
+            try {
+                let pPhone = data.telefone || data.telef || data.phone || data.Phone || data['telefone (whatsapp)'];
+                if (!pPhone) {
+                    const phoneKey = Object.keys(data).find(k => k.toLowerCase().includes('telef') || k.toLowerCase().includes('phone') || k.toLowerCase().includes('contacto') || k.toLowerCase().includes('whatsapp'));
+                    if (phoneKey) pPhone = String(data[phoneKey]);
+                }
+                if (!pPhone && req.user && req.user.phone) {
+                    pPhone = req.user.phone;
+                }
+
+                if (pPhone) {
+                    const statusMsg = form.paymentRequired 
+                        ? 'O teu pagamento foi recebido e a tua inscrição está Confirmada!' 
+                        : 'A tua inscrição foi registada e está a aguardar validação do mentor.';
+                        
+                    const partMsg = `Olá *${firstName}*! 🎉\n\n✅ *Inscrição Recebida!*\n\n📅 *Evento:* "${form.title}"\n${statusMsg}\n\nPodes consultar o teu painel a qualquer momento para ver os detalhes.`;
+                    whatsappService.sendMessage(pPhone, partMsg);
+                }
+            } catch (pwaErr) {
+                console.error('[Submission] Error sending WA to participant:', pwaErr);
+            }
+        })();
+        // ─────────────────────────────────────────────────────────────────────
+
         // AUTOMATIC WELCOME MESSAGE (Non-blocking)
         // Only if we have a user to reply to
         if (req.user && submissionData.user && req.user.id !== form.creator.toString()) {
