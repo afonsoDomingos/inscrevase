@@ -36,7 +36,9 @@ function SuccessContent() {
     const loadBook = async (id: string) => {
         try {
             setLoading(true);
-            // Reutilizamos o getAllBooks e filtramos para encontrar o livro específico
+            // Registar que este usuário comprou o livro (para a biblioteca dele)
+            await bookService.purchaseBook(id);
+            
             const allBooks = await bookService.getAllBooks();
             const found = allBooks.find(b => b._id === id);
             if (found) setBook(found);

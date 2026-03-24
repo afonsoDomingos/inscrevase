@@ -14,8 +14,10 @@ router.patch('/admin/status/:id', authMiddleware, adminMiddleware, bookControlle
 router.put('/:id', authMiddleware, adminMiddleware, bookController.updateBook);
 router.delete('/:id', authMiddleware, adminMiddleware, bookController.deleteBook);
 
-// User Submission Routes
+// User Submission & Library Routes
 router.get('/my', authMiddleware, bookController.getMyBooks);
 router.post('/submit', authMiddleware, bookController.submitBook);
+router.post('/purchase/:id', authMiddleware, bookController.recordPurchase);
+router.get('/library', authMiddleware, bookController.getUserPurchasedBooks);
 
 module.exports = router;

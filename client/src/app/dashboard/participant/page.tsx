@@ -37,8 +37,11 @@ import {
     Video,
     AlertTriangle,
     Megaphone,
-    Link as LinkIcon
+    Link as LinkIcon,
+    BookOpen,
+    Download
 } from 'lucide-react';
+import { bookService, BookModel } from '@/lib/bookService';
 import ProfileModal from '@/components/mentor/ProfileModal';
 import SupportModal from '@/components/mentor/SupportModal';
 import NotificationCenter from '@/components/mentor/NotificationCenter';
@@ -59,7 +62,7 @@ import ParticipantLessons from '@/components/participant/ParticipantLessons';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import { adService } from '@/lib/adService';
 
-type Tab = 'tickets' | 'explore' | 'lessons' | 'certificates' | 'blog' | 'plans' | 'profile' | 'ads' | 'smartlinks';
+type Tab = 'tickets' | 'explore' | 'lessons' | 'certificates' | 'blog' | 'plans' | 'profile' | 'ads' | 'smartlinks' | 'library';
 
 function ParticipantDashboardContent() {
     const { t } = useTranslate();
@@ -99,6 +102,8 @@ function ParticipantDashboardContent() {
     const [tickets, setTickets] = useState<SubmissionModel[]>([]);
     const [ticketsLoading, setTicketsLoading] = useState(true);
     const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
+    const [libraryBooks, setLibraryBooks] = useState<BookModel[]>([]);
+    const [libraryLoading, setLibraryLoading] = useState(false);
 
     const availableMentors = useMemo(() => {
         const mentorsMap = new Map();
@@ -291,6 +296,24 @@ function ParticipantDashboardContent() {
         }
     }, [selectedCategory, searchQuery]);
 
+    const fetchLibrary = useCallback(async () => {
+        setLibraryLoading(true);
+        try {
+            const data = await bookService.getMyLibrary();
+            setLibraryBooks(data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLibraryLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (activeTab === 'library') {
+            fetchLibrary();
+        }
+    }, [activeTab, fetchLibrary]);
+
     // Handle ad payment success verification
     useEffect(() => {
         const verifyAdPayment = async () => {
@@ -447,6 +470,7 @@ function ParticipantDashboardContent() {
                         { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
                         { id: 'ads', label: 'Meus Anúncios', icon: <Megaphone size={20} /> },
                         { id: 'smartlinks', label: 'Smartlinks', icon: <LinkIcon size={20} /> },
+                        { id: 'library', label: 'Meus Livros', icon: <BookOpen size={20} /> },
                         { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
                         { id: 'profile', label: t('dashboard.myAccount'), icon: <User size={20} /> },
                     ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
@@ -1195,6 +1219,91 @@ function ParticipantDashboardContent() {
                             exit={{ opacity: 0, y: -10 }}
                         >
                             <SmartLinksManager />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'library' && (
+                        <motion.div
+                            key="library"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <BookOpen color="#D4AF37" /> Minha Biblioteca Digital
+                            </h2>
+
+                            {libraryLoading ? (
+                                <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
+                                    <Loader2 className="animate-spin" size={40} color="#FFD700" />
+                                </div>
+                            ) : libraryBooks.length > 0 ? (
+                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                                    {libraryBooks.map(book => (
+                                        <div key={book._id} className="luxury-card" style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                                            <div style={{ height: '240px', position: 'relative' }}>
+                                                <Image 
+                                                    src={book.coverImage || '/placeholder.png'} 
+                                                    alt={book.title} 
+                                                    fill 
+                                                    style={{ objectFit: 'cover' }} 
+                                                />
+                                            </div>
+                                            <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--foreground)' }}>{book.title}</h3>
+                                                <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1.5rem' }}>por {book.author}</p>
+                                                
+                                                <div style={{ marginTop: 'auto' }}>
+                                                    {book.pdfUrl ? (
+                                                        <button 
+                                                            onClick={() => window.open(book.pdfUrl, '_blank')}
+                                                            style={{
+                                                                width: '100%',
+                                                                padding: '10px',
+                                                                background: 'var(--gold-gradient)',
+                                                                color: '#000',
+                                                                border: 'none',
+                                                                borderRadius: '8px',
+                                                                fontWeight: 800,
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                gap: '8px',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            <Download size={18} /> ABRIR PDF
+                                                        </button>
+                                                    ) : (
+                                                        <div style={{ fontSize: '0.85rem', color: '#666', fontStyle: 'italic', textAlign: 'center' }}>
+                                                            PDF não disponível
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div style={{ 
+                                    padding: '5rem 2rem', 
+                                    background: 'var(--paper)', 
+                                    borderRadius: '24px', 
+                                    textAlign: 'center',
+                                    border: '1px dashed var(--border)' 
+                                }}>
+                                    <BookOpen size={60} color="#D4AF37" style={{ opacity: 0.3, marginBottom: '1.5rem' }} />
+                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--foreground)' }}>A sua estante está vazia</h3>
+                                    <p style={{ color: '#666', marginBottom: '2rem' }}>Adquira livros incríveis para começar a sua coleção.</p>
+                                    <button 
+                                        onClick={() => router.push('/books')}
+                                        className="btn-primary"
+                                        style={{ padding: '12px 30px', borderRadius: '50px' }}
+                                    >
+                                        Explorar Mercado de Livros
+                                    </button>
+                                </div>
+                            )}
                         </motion.div>
                     )}
 

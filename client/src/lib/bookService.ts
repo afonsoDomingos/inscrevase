@@ -116,5 +116,22 @@ export const bookService = {
         });
         if (!response.ok) throw new Error('Erro ao atualizar estado do livro');
         return response.json();
+    },
+
+    async purchaseBook(id: string): Promise<void> {
+        const token = Cookies.get('token');
+        await fetch(`${API_URL}/books/purchase/${id}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+    },
+
+    async getMyLibrary(): Promise<BookModel[]> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/books/library`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Erro ao carregar a sua biblioteca');
+        return response.json();
     }
 };

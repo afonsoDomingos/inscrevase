@@ -1,4 +1,44 @@
 const Book = require('../models/Book');
+const Purchase = require('../models/Purchase');
+const fs = require('fs');
+const path = require('path');
+
+// --- Marketplace & Library ---
+
+exports.recordPurchase = async (req, res) => {
+    try {
+        const bookId = req.params.id;
+        const userId = req.user.id;
+        
+        // Check if already purchased to avoid duplicates
+        const existing = await Purchase.findOne({ user: userId, book: bookId });
+        if (existing) return res.status(200).json(existing);
+
+        const purchase = new Purchase({
+            user: userId,
+            book: bookId,
+            paymentStatus: 'completed'
+        });
+        await purchase.save();
+        res.status(201).json(purchase);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+exports.getUserPurchasedBooks = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const purchases = await Purchase.find({ user: userId }).populate('book');
+        // Return actually the books, not the purchase objects
+        const books = purchases.map(p => p.book).filter(b => b !== null);
+        res.json(books);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// --- Standard Book Controllers ---
 
 exports.getAllBooks = async (req, res) => {
     try {
