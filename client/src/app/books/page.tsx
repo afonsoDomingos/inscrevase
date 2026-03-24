@@ -19,7 +19,8 @@ import {
     Image as ImageIcon,
     CreditCard,
     DollarSign,
-    Search
+    Search,
+    ShoppingCart
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
