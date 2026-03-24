@@ -17,24 +17,26 @@ try {
 const premiumStyles = `
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background: #fff; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; color: #111; padding: 20px; box-sizing: border-box; }
-        .card { background: #fff; border-radius: 40px; padding: 48px 40px; text-align: center; max-width: 440px; width: 100%; box-shadow: 0 40px 80px rgba(0,0,0,0.04); border: 1px solid #eee; position: relative; }
-        .logo-img { width: 180px; max-width: 80%; height: auto; margin: 0 auto 36px; display: block; filter: saturate(1.1); }
-        .status-badge { position: absolute; top: 32px; right: 32px; display: flex; align-items: center; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; padding: 10px 16px; border-radius: 100px; background: #fff; border: 1.5px solid #eee; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 10px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #fafafa; display: flex; align-items: flex-start; justify-content: center; min-height: 100vh; padding: 20px; }
+        .card { background: #fff; border-radius: 24px; padding: 20px 20px 24px; text-align: center; max-width: 380px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,0.07); border: 1px solid #eee; position: relative; }
+        .logo-img { width: 100px; max-width: 50%; height: auto; margin: 0 auto 14px; display: block; }
+        .status-badge { position: absolute; top: 16px; right: 16px; display: flex; align-items: center; font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 5px 10px; border-radius: 100px; background: #fff; border: 1.5px solid #eee; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; flex-shrink: 0; }
         .dot-online { background: #10b981; animation: pulse 2s infinite; }
         .dot-offline { background: #ef4444; }
         .dot-waiting { background: #ffcc00; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-        .spinner { width: 44px; height: 44px; border: 3px solid #f6f6f6; border-top: 3px solid #ffcc00; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 24px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .title { font-size: 1.7rem; font-weight: 800; margin-bottom: 12px; color: #000; line-height: 1.1; }
-        .subtitle { font-size: 0.95rem; color: #6b7280; margin-bottom: 36px; line-height: 1.6; }
-        .qr-wrapper { background: #fff; border: 1px solid #eee; border-radius: 32px; padding: 28px; box-shadow: inset 0 2px 12px rgba(0,0,0,0.03); margin-bottom: 32px; }
-        .qr-img { width: 100%; height: auto; display: block; border-radius: 16px; }
-        .btn-primary { display: flex; align-items: center; justify-content: center; padding: 20px 32px; background: #ffcc00; color: #000; text-decoration: none; border-radius: 20px; font-weight: 800; font-size: 1rem; transition: all 0.2s; border: none; cursor: pointer; width: 100%; box-sizing: border-box; box-shadow: 0 15px 30px rgba(255, 204, 0, 0.2); }
-        .btn-primary:hover { background: #f5c200; transform: translateY(-3px); box-shadow: 0 20px 40px rgba(255, 204, 0, 0.3); }
-        .btn-link { color: #9ca3af; text-decoration: none; font-size: 0.85rem; margin-top: 32px; display: inline-block; font-weight: 600; }
+        @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+        .spinner { width: 32px; height: 32px; border: 3px solid #f0f0f0; border-top: 3px solid #ffcc00; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .title { font-size: 1.15rem; font-weight: 800; margin-bottom: 5px; color: #000; letter-spacing: -0.02em; }
+        .subtitle { font-size: 0.78rem; color: #6b7280; margin-bottom: 14px; line-height: 1.5; }
+        .qr-wrapper { background: #fafafa; border: 1px solid #eee; border-radius: 16px; padding: 12px; margin-bottom: 14px; }
+        .qr-img { width: 100%; height: auto; display: block; border-radius: 8px; }
+        .btn-primary { display: block; padding: 13px; background: #ffcc00; color: #000; text-decoration: none; border-radius: 14px; font-weight: 800; font-size: 0.875rem; transition: all 0.2s; border: none; cursor: pointer; width: 100%; box-shadow: 0 6px 16px rgba(255,204,0,0.3); }
+        .btn-primary:hover { background: #f5c200; transform: translateY(-2px); }
+        .btn-link { color: #9ca3af; text-decoration: none; font-size: 0.75rem; margin-top: 12px; display: inline-block; font-weight: 600; }
+        .btn-link:hover { color: #111; }
     </style>
 `;
 
