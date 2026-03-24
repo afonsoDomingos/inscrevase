@@ -49,12 +49,28 @@ router.get('/qr', async (req, res) => {
                     <div class="qr-card">
                         <img src="${qrImage}" style="width: 100%; border-radius: 12px;" />
                     </div>
-                    <a href="/api/admin/whatsapp/qr" class="btn-primary">Actualizar QR Code</a>
+                    <button onclick="refreshQR(this)" id="refreshBtn" class="btn-primary">Actualizar QR Code</button>
                     <a href="/api/admin/whatsapp/restart" class="btn-link">Reiniciar Motor de Ligação</a>
                     <script>
+                        function refreshQR(btn) {
+                            let wait = 5;
+                            btn.disabled = true;
+                            btn.style.opacity = '0.7';
+                            btn.style.cursor = 'not-allowed';
+                            let interval = setInterval(() => {
+                                wait--;
+                                btn.innerText = 'Actualizando em ' + wait + 's...';
+                                if (timeLeft <= 0) {
+                                  // No need to clear here as reload will happen
+                                }
+                            }, 1000);
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 5000);
+                        }
                         console.log('🖼️ [WA Monitor] QR Code Carregado com Sucesso.');
-                        // Autorefresh a cada 20 segundos para manter o QR vivo
-                        setTimeout(() => window.location.reload(), 20000);
+                        // Autorefresh a cada 40 segundos por segurança
+                        setTimeout(() => window.location.reload(), 40000);
                     </script>
                 </div>
             `);
