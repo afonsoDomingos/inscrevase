@@ -38,9 +38,14 @@ exports.recordPurchase = async (req, res) => {
                     "/dashboard/mentor?tab=mysales"
                 );
 
-                // --- WHATSAPP NOTIFICATION ---
-                if (mentor && mentor.phone) {
-                    const msg = `🎉 *Nova Venda na Inscreva-se!*\n\nOlá ${mentor.name}, alguém acabou de comprar o teu livro "${bookDoc.title}" por $${bookDoc.price}.\n\nAcede à tua dashboard para ver os detalhes. 🚀`;
+                // --- WHATSAPP NOTIFICATION TO MENTOR ---------
+                const customerUser = await User.findById(userId);
+                const customerName = customerUser ? customerUser.name : 'Anónimo';
+                const bookTitle = bookDoc.title;
+                if (mentor.phone) {
+                    const mentorName = mentor.name ? mentor.name.split(' ')[0] : 'Mentor';
+                    const customerEmail = customerUser ? customerUser.email : 'Sem email';
+                    const msg = `Olá *${mentorName}*! 👋\n\n📚 *NOVA VENDA DE LIVRO!*\nParabéns! O teu e-book "${bookTitle}" acabou de ser vendido!\n\n💳 *Comprador:* ${customerName}\n📧 *Email:* ${customerEmail}\n\nAcede ao teu painel para consultar o histórico de vendas. 🚀`;
                     whatsappService.sendMessage(mentor.phone, msg);
                 }
             }

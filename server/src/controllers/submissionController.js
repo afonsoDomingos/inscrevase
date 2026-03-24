@@ -143,7 +143,21 @@ const submitForm = async (req, res) => {
                 // --- WHATSAPP NOTIFICATION TO MENTOR ---
                 const recipientUser = await User.findById(recipientId);
                 if (recipientUser && recipientUser.phone) {
-                    const msg = `📩 *Nova Inscrição!* \n\n${participantName} acabou de se inscrever em "${form.title}".\n\nAcede ao teu painel para validar.`;
+                    const recipientName = recipientUser.name ? recipientUser.name.split(' ')[0] : 'Mentor';
+                    
+                    // Procurar Email para incluir
+                    let pEmail = data.email || data.Email || 'Não fornecido';
+                    if (pEmail === 'Não fornecido') {
+                         const emKey = Object.keys(data).find(k => k.toLowerCase().includes('email'));
+                         if (emKey) pEmail = data[emKey];
+                    }
+
+                    // Verificar se foi um evento pago
+                    const priceInfo = form.paymentRequired 
+                        ? `\n💰 *Valor:* ${form.priceAmount} ${form.currency}` 
+                        : `\n🏷️ *Tipo:* Gratuito`;
+
+                    const msg = `Olá *${recipientName}*! 👋\n\n📩 *Nova Inscrição!*\nAlguém acabou de se inscrever em "${form.title}".\n\n👤 *Nome:* ${participantName}\n📧 *Email:* ${pEmail}${priceInfo}\n\nAcede ao teu painel na plataforma para validar.`;
                     whatsappService.sendMessage(recipientUser.phone, msg);
                 }
             }));

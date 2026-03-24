@@ -392,7 +392,8 @@ const completeOrder = async (session) => {
 
                         // --- WHATSAPP NOTIFICATION TO ADMINS ---
                         if (admin.phone) {
-                            const msg = `💎 *NOVO PAGAMENTO ADS!*\n\n${advertiser.name} pagou um anúncio: "${adRequest.title}".\nValor: ${adRequest.priceTotal} ${adRequest.currency}.`;
+                            const adminName = admin.name ? admin.name.split(' ')[0] : 'Admin';
+                            const msg = `Olá *${adminName}*! 👋\n\n💎 *NOVO PAGAMENTO DE ANÚNCIO!*\nAcaba de entrar na plataforma um pagamento aprovado para a campanha "${adRequest.title}".\n\n👤 *Empresa/Utilizador:* ${advertiser.name}\n💰 *Valor Pago:* ${adRequest.priceTotal} ${adRequest.currency}\n\nVerifique o painel para aprovar os criativos.`;
                             whatsappService.sendMessage(admin.phone, msg);
                         }
                     }
@@ -781,7 +782,11 @@ exports.handleWebhook = async (req, res) => {
 
                             // --- WHATSAPP NOTIFICATION TO ADMINS ---
                             if (admin.phone) {
-                                const msg = `🚀 *NOVO ASSINANTE PREMIUM!*\n\n${user ? user.name : 'Alguém'} fez upgrade para o plano ${plan.toUpperCase()}.`;
+                                const adminName = admin.name ? admin.name.split(' ')[0] : 'Admin';
+                                const userEmail = user ? user.email : 'Sem email';
+                                const userName = user ? user.name : 'Novo Utilizador';
+                                
+                                const msg = `Olá *${adminName}*! 🚀\n\n💳 *NOVA ASSINATURA PREMIUM!*\nAlguém acabou de fazer upgrade à sua conta!\n\n👤 *Nome:* ${userName}\n📧 *Email:* ${userEmail}\n⭐ *Plano Activado:* ${plan.toUpperCase()}`;
                                 whatsappService.sendMessage(admin.phone, msg);
                             }
                         }
