@@ -118,8 +118,13 @@ router.get('/test-message', async (req, res) => {
 
         console.log(`[TEST] Enviando teste para: ${targetNumber}`);
 
+        const defaultMessage = '🚀 *TESTE INSCREVA.SE*\n\nAutomação 100% operacional! ✅\n\nEste número comunica com a plataforma.';
+        const finalMessage = req.query.customMessage && req.query.customMessage.trim() !== '' 
+                             ? req.query.customMessage 
+                             : defaultMessage;
+
         // Usar serviço comum
-        await whatsappService.sendMessage(targetNumber, '🚀 *TESTE INSCREVA.SE*\n\nAutomação 100% operacional! ✅\n\nEste número comunica com a plataforma.');
+        await whatsappService.sendMessage(targetNumber, finalMessage);
 
         const detailMsg = isSelf 
             ? `Enviada para <b>+${targetNumber}</b>. <br>Verifique o chat "Mensagens Guardadas".`
@@ -143,6 +148,7 @@ router.get('/qr', async (req, res) => {
                 <div class="title">WhatsApp Ligado ✅</div>
                 <div class="sub" style="margin-bottom: 4px;">Teste as notificações abaixo:</div>
                 <form action="/api/admin/whatsapp/test-message" method="GET" style="display:flex; flex-direction:column; gap:8px; width:100%; max-width:240px;">
+                    <textarea name="customMessage" placeholder="Mensagem personalizada (ou deixa em branco)..." style="width:100%; border:1px solid #ddd; border-radius:10px; padding:8px 12px; font-family:'Inter', sans-serif; font-size:0.75rem; resize:none; outline:none; background:#f9fafb;" rows="2"></textarea>
                     <button type="submit" class="btn" style="width:100%;">🚀 Testar no meu nº</button>
                     <div style="display:flex; gap:6px; align-items:stretch; margin-top:2px;">
                         <input type="text" name="phone" placeholder="+258..." style="flex:1; min-width:0; padding:8px 12px; border-radius:10px; border:1px solid #ddd; font-family:'Inter', sans-serif; font-size:0.8rem; outline:none;" />
