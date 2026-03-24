@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const exchangeRateService = require('../services/exchangeRateService');
+const pushController = require('./pushController');
 const axios = require('axios');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
@@ -378,6 +379,15 @@ const completeOrder = async (session) => {
                             type: 'system',
                             actionUrl: '/dashboard/admin/ads'
                         });
+
+                        // --- REAL PUSH NOTIFICATION ---
+                        pushController.sendNotification(
+                            admin._id,
+                            '💎 Novo Pagamento Ads!',
+                            `${advertiser.name} pagou por um anúncio: "${adRequest.title}".`,
+                            adRequest.mediaUrl || '/logo.png',
+                            '/dashboard/admin/ads'
+                        );
                     }
                 }
             } catch (emailError) {
@@ -485,6 +495,23 @@ const completeOrder = async (session) => {
         });
         await transaction.save();
         console.log('Transaction logged for mentor:', transaction.mentor);
+
+        // --- REAL PUSH NOTIFICATION (Shopify Style to Mentor) ---
+        try {
+            const mentor = await User.findById(paymentIntent.metadata.mentorId);
+            const form = await Form.findById(formId);
+            if (mentor && form) {
+                pushController.sendNotification(
+                    mentor._id,
+                    "🎉 Vendeste um Bilhete!",
+                    `Um novo participante acaba de pagar por "${form.title}".`,
+                    form.coverImage || '/logo.png',
+                    "/dashboard/mentor"
+                );
+            }
+        } catch (pushErr) {
+            console.error('Erro ao enviar push de venda de bilhete:', pushErr);
+        }
 
         return submission;
     } catch (error) {
@@ -732,6 +759,22 @@ exports.handleWebhook = async (req, res) => {
                     });
                     await tx.save();
                     console.log('💰 [Stripe Webhook] Transaction created via Session');
+
+                    // --- REAL PUSH NOTIFICATION TO ADMINS ---
+                    try {
+                        const superAdmins = await User.find({ role: 'SuperAdmin' });
+                        for (const admin of superAdmins) {
+                            pushController.sendNotification(
+                                admin._id,
+                                "🚀 Novo Assinante Premium!",
+                                `${user ? user.name : 'Alguém'} fez upgrade para o plano ${plan.toUpperCase()}.`,
+                                '/logo.png',
+                                "/dashboard/admin"
+                            );
+                        }
+                    } catch (pushErr) {
+                        console.error('Erro ao enviar push de subscrição:', pushErr);
+                    }
                 }
             }
         } else {

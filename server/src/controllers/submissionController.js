@@ -1,5 +1,6 @@
 const Submission = require('../models/Submission');
 const Form = require('../models/Form');
+const pushController = require('./pushController');
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const Lesson = require('../models/Lesson');
@@ -119,6 +120,7 @@ const submitForm = async (req, res) => {
             const recipients = [form.creator, ...(form.partners || [])];
 
             await Promise.all(recipients.map(async (recipientId) => {
+                // In-app Notification
                 await NotificationService.notify({
                     recipient: recipientId,
                     sender: req.user ? req.user.id : recipientId,
@@ -127,6 +129,15 @@ const submitForm = async (req, res) => {
                     type: 'personal',
                     actionUrl: '/dashboard/mentor'
                 });
+
+                // --- REAL PUSH NOTIFICATION (Shopify Style) ---
+                pushController.sendNotification(
+                    recipientId,
+                    '📩 Nova Inscrição!',
+                    `${participantName} inscreveu-se em "${form.title}".`,
+                    form.coverImage,
+                    '/dashboard/mentor'
+                );
             }));
 
             // Notify Creator via Email
@@ -482,6 +493,15 @@ const updateStatus = async (req, res) => {
                         } catch (notifErr) {
                             console.error('[Submission] Error sending in-app approval notification:', notifErr);
                         }
+
+                        // --- REAL PUSH NOTIFICATION (Shopify Style) ---
+                        pushController.sendNotification(
+                            submission.user,
+                            "Inscrição Aprovada! 🎉",
+                            `Sua vaga em "${submission.form.title}" está confirmada.`,
+                            submission.form.coverImage || '/logo.png',
+                            `/hub/${submission._id}`
+                        );
                     }
                 }
             } catch (emailErr) {
@@ -542,6 +562,15 @@ const updateStatus = async (req, res) => {
                         type: 'alert',
                         actionUrl: '/dashboard/participant'
                     });
+
+                    // --- REAL PUSH NOTIFICATION ---
+                    pushController.sendNotification(
+                        submission.user,
+                        "Status da Inscrição ⚠️",
+                        `Lamentamos, mas a tua vaga em "${submission.form.title}" não foi aprovada.`,
+                        submission.form.coverImage || '/logo.png',
+                        '/dashboard/participant'
+                    );
                 }
             } catch (rejErr) {
                 console.error('[Submission] Error in rejection notification flow:', rejErr);
@@ -725,6 +754,15 @@ const requestCertificate = async (req, res) => {
                 type: 'personal',
                 actionUrl: `/dashboard/mentor`
             });
+
+            // --- REAL PUSH NOTIFICATION ---
+            pushController.sendNotification(
+                form.creator,
+                '🎓 Pedido de Certificado',
+                `${participantName} aguarda o certificado de "${form.title}".`,
+                form.coverImage,
+                '/dashboard/mentor'
+            );
         }
 
         res.json({ message: 'Certificado solicitado com sucesso', submission });

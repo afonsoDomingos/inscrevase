@@ -1,5 +1,6 @@
 const Book = require('../models/Book');
 const Purchase = require('../models/Purchase');
+const pushController = require('./pushController');
 const fs = require('fs');
 const path = require('path');
 
@@ -20,6 +21,23 @@ exports.recordPurchase = async (req, res) => {
             paymentStatus: 'completed'
         });
         await purchase.save();
+        
+        // --- Notificar Autor via PUSH (Shopify Style) ---
+        try {
+            const bookDoc = await Book.findById(bookId);
+            if (bookDoc && bookDoc.submittedBy) {
+                pushController.sendNotification(
+                    bookDoc.submittedBy,
+                    "🎉 Nova Venda na Inscreva-se!",
+                    `Alguém acabou de comprar "${bookDoc.title}" por $${bookDoc.price || '0'}.`,
+                    bookDoc.coverImage,
+                    "/dashboard/mentor?tab=mysales"
+                );
+            }
+        } catch (pushErr) {
+            console.error('Erro ao processar notificação push da venda:', pushErr);
+        }
+
         res.status(201).json(purchase);
     } catch (error) {
         res.status(400).json({ message: error.message });

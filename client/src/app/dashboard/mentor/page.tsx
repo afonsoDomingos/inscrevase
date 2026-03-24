@@ -98,8 +98,8 @@ import InternalBlogView from '@/components/common/InternalBlogView';
 import ThemeToggle from '@/components/common/ThemeToggle';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
-
 import MySalesPanel from '@/components/books/MySalesPanel';
+import { pushService } from '@/lib/pushService';
 
 type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard' | 'referral' | 'library' | 'mysales';
 
@@ -466,6 +466,16 @@ function MentorDashboardContent() {
             fetchLibrary();
         }
     }, [activeTab, fetchLibrary]);
+
+    // Subscrição Automática de Notificações Push
+    useEffect(() => {
+        // Regista o Service Worker customizado e subscreve o utilizador
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(() => {
+                pushService.subscribeUser();
+            });
+        }
+    }, []);
 
     const copyToClipboard = (slug: string) => {
         const url = `${window.location.origin}/f/${slug}`;

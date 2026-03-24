@@ -58,6 +58,7 @@ import { SmartLinksManager } from '@/components/mentor/SmartLinksManager';
 import { stripeService } from '@/lib/stripeService';
 import MySalesPanel from '@/components/books/MySalesPanel';
 import { useSearchParams } from 'next/navigation';
+import { pushService } from '@/lib/pushService';
 
 import PlansSection from '@/components/common/PlansSection';
 import ParticipantLessons from '@/components/participant/ParticipantLessons';
@@ -315,6 +316,15 @@ function ParticipantDashboardContent() {
             fetchLibrary();
         }
     }, [activeTab, fetchLibrary]);
+
+    // Subscrição Automática de Notificações Push
+    useEffect(() => {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(() => {
+                pushService.subscribeUser();
+            });
+        }
+    }, []);
 
     // Handle ad payment success verification
     useEffect(() => {
