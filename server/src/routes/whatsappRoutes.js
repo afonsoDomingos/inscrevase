@@ -169,12 +169,16 @@ router.get('/qr', async (req, res) => {
                 <script>setInterval(async()=>{const r=await fetch('/api/admin/whatsapp/status');const d=await r.json();if(d.connected)window.location.reload();},4000);</script>`);
         }
 
-        // A iniciar
+        // A iniciar ou Reconectar
+        const isReconn = whatsappService.isReconnecting;
+        const statusText = isReconn ? 'A Restabelecer...' : 'A Iniciar...';
+        const subText = isReconn ? 'A reconectar...' : 'A conectar ao servidor WhatsApp.';
+
         res.send(`${styles}${logo}
-            <div class="badge"><div class="dot dot-offline"></div>Offline</div>
+            <div class="badge"><div class="dot dot-${isReconn ? 'waiting' : 'offline'}"></div>${isReconn ? 'Reconectando' : 'Offline'}</div>
             <div class="spinner"></div>
-            <div class="title">A iniciar...</div>
-            <div class="sub">A conectar ao servidor WhatsApp.</div>
+            <div class="title">${statusText}</div>
+            <div class="sub">${subText}</div>
             <script>setTimeout(()=>window.location.reload(),5000);</script>`);
 
     } catch (err) {

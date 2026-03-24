@@ -15,6 +15,7 @@ class WhatsAppService {
         this.qrCodeData = null;
         this.isConnected = false;
         this.isInitializing = false;
+        this.isReconnecting = false;
     }
 
     async init() {
@@ -61,16 +62,23 @@ class WhatsAppService {
                     console.log('❌ [WA] Ligação parada. Código:', statusCode);
                     this.isConnected = false;
                     this.isInitializing = false;
+                    this.qrCodeData = null; // Clean false QR codes from ghost sessions!
                     
                     if (statusCode !== DisconnectReason.loggedOut) {
+                        this.isReconnecting = true;
                         console.log('🔄 [WA] Tentando reconectar em 10s...');
                         setTimeout(() => this.init(), 10000);
+                    } else {
+                        console.log('🚪 [WA] Logout explícito! Requer novo QR Code.');
+                        this.isReconnecting = false;
+                        this.forceRestart(); 
                     }
                 } else if (connection === 'open') {
                     console.log('✅ [WA] LIGADO E PRONTO PARA ENVIAR MENSAGENS!');
                     this.isConnected = true;
                     this.qrCodeData = null;
                     this.isInitializing = false;
+                    this.isReconnecting = false;
                 }
             });
 
