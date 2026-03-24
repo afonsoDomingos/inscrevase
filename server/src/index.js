@@ -17,7 +17,13 @@ const PORT = process.env.PORT || 5000;
 app.set('trust proxy', 1);
 
 // Security Middlewares
-app.use(helmet()); // Set security HTTP headers
+app.use(helmet({
+    contentSecurityPolicy: false, // Desativar CSP temporariamente para garantir que as imagens carregam no iframe
+    crossOriginEmbedderPolicy: false,
+    frameguard: {
+        action: 'sameorigin' // Permitir que o teu site use iframes do teu próprio API
+    }
+})); // Set security HTTP headers
 
 // CORS Configuration
 const allowedOrigins = [
