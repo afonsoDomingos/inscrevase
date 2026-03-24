@@ -1,6 +1,7 @@
 const Submission = require('../models/Submission');
 const Form = require('../models/Form');
 const pushController = require('./pushController');
+const whatsappService = require('../services/whatsappService');
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const Lesson = require('../models/Lesson');
@@ -135,9 +136,16 @@ const submitForm = async (req, res) => {
                     recipientId,
                     '📩 Nova Inscrição!',
                     `${participantName} inscreveu-se em "${form.title}".`,
-                    form.coverImage,
+                    form.coverImage || '/logo.png',
                     '/dashboard/mentor'
                 );
+
+                // --- WHATSAPP NOTIFICATION TO MENTOR ---
+                const recipientUser = await User.findById(recipientId);
+                if (recipientUser && recipientUser.phone) {
+                    const msg = `📩 *Nova Inscrição!* \n\n${participantName} acabou de se inscrever em "${form.title}".\n\nAcede ao teu painel para validar.`;
+                    whatsappService.sendMessage(recipientUser.phone, msg);
+                }
             }));
 
             // Notify Creator via Email

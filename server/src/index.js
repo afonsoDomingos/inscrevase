@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const http = require('http'); // Import http
 const { Server } = require('socket.io'); // Import Socket.IO
+const whatsappService = require('./services/whatsappService');
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 require('dotenv').config(); // Fallback to current dir
 
@@ -210,6 +211,21 @@ app.use('/api/marketing', require('./routes/marketingRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
 app.use('/api/push', require('./routes/pushRoutes'));
 
+// WhatsApp Admin Monitor (Ver QR Code para ligar o telemóvel)
+app.get('/api/admin/whatsapp/qr', async (req, res) => {
+    // No futuro, podemos proteger com authMiddleware, mas para agora permite ver o QR
+    const qrImage = await whatsappService.getQRImage();
+    if (!qrImage) {
+        if (whatsappService.isConnected) return res.send('Connected ✅');
+        return res.send('Gerando QR... Recarregue em 5 segundos.');
+    }
+    res.send(`<div style="display:flex;flex-direction:column;align-items:center;padding:50px;font-family:sans-serif">
+        <h1>Conectar WhatsApp Inscreva-se 💬</h1>
+        <p>Lê este QR Code no teu telemóvel para ativar a automação gratuita.</p>
+        <img src="${qrImage}" style="width:300px;height:300px;border:1px solid #ccc;padding:10px;border-radius:10px" />
+    </div>`);
+});
+
 // --- GLOBAL SMARTLINK REDIRECT ---
 // This allows clean links like inscreva-se.com/l/meu-evento
 app.get('/l/:slug', smartLinkController.handleRedirect);
@@ -242,6 +258,9 @@ mongoose.connect(process.env.MONGODB_URI || process.env.MONGO_URI)
         exchangeRateService.getCurrentRates()
             .then(() => console.log('✅ Exchange rates initialized'))
             .catch(err => console.error('⚠️  Failed to initialize exchange rates:', err.message));
+
+        // --- WHATSAPP ENGINE INITIALIZATION ---
+        whatsappService.init().catch(err => console.error('⚠️  WhatsApp Engine Init Error:', err));
     })
     .catch(err => console.log('MongoDB Connection Error:', err));
 

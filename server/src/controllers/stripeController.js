@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const exchangeRateService = require('../services/exchangeRateService');
 const pushController = require('./pushController');
+const whatsappService = require('../services/whatsappService');
 const axios = require('axios');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
@@ -388,6 +389,12 @@ const completeOrder = async (session) => {
                             adRequest.mediaUrl || '/logo.png',
                             '/dashboard/admin/ads'
                         );
+
+                        // --- WHATSAPP NOTIFICATION TO ADMINS ---
+                        if (admin.phone) {
+                            const msg = `💎 *NOVO PAGAMENTO ADS!*\n\n${advertiser.name} pagou um anúncio: "${adRequest.title}".\nValor: ${adRequest.priceTotal} ${adRequest.currency}.`;
+                            whatsappService.sendMessage(admin.phone, msg);
+                        }
                     }
                 }
             } catch (emailError) {
@@ -771,6 +778,12 @@ exports.handleWebhook = async (req, res) => {
                                 '/logo.png',
                                 "/dashboard/admin"
                             );
+
+                            // --- WHATSAPP NOTIFICATION TO ADMINS ---
+                            if (admin.phone) {
+                                const msg = `🚀 *NOVO ASSINANTE PREMIUM!*\n\n${user ? user.name : 'Alguém'} fez upgrade para o plano ${plan.toUpperCase()}.`;
+                                whatsappService.sendMessage(admin.phone, msg);
+                            }
                         }
                     } catch (pushErr) {
                         console.error('Erro ao enviar push de subscrição:', pushErr);

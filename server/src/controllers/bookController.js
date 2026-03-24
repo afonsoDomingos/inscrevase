@@ -1,6 +1,8 @@
 const Book = require('../models/Book');
+const User = require('../models/User');
 const Purchase = require('../models/Purchase');
 const pushController = require('./pushController');
+const whatsappService = require('../services/whatsappService');
 const fs = require('fs');
 const path = require('path');
 
@@ -26,6 +28,8 @@ exports.recordPurchase = async (req, res) => {
         try {
             const bookDoc = await Book.findById(bookId);
             if (bookDoc && bookDoc.submittedBy) {
+                const mentor = await User.findById(bookDoc.submittedBy);
+                
                 pushController.sendNotification(
                     bookDoc.submittedBy,
                     "🎉 Nova Venda na Inscreva-se!",
@@ -33,6 +37,12 @@ exports.recordPurchase = async (req, res) => {
                     bookDoc.coverImage,
                     "/dashboard/mentor?tab=mysales"
                 );
+
+                // --- WHATSAPP NOTIFICATION ---
+                if (mentor && mentor.phone) {
+                    const msg = `🎉 *Nova Venda na Inscreva-se!*\n\nOlá ${mentor.name}, alguém acabou de comprar o teu livro "${bookDoc.title}" por $${bookDoc.price}.\n\nAcede à tua dashboard para ver os detalhes. 🚀`;
+                    whatsappService.sendMessage(mentor.phone, msg);
+                }
             }
         } catch (pushErr) {
             console.error('Erro ao processar notificação push da venda:', pushErr);
