@@ -1871,7 +1871,7 @@ export default function AdminDashboard() {
                                 <ol style={{ paddingLeft: '1.2rem', color: '#555', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                     <li>Abra o WhatsApp no telemóvel da empresa.</li>
                                     <li>Vá a <strong>Definições</strong> ou <strong>Aparelhos Conectados</strong>.</li>
-                                    <li>Se aparecer "Connected", o sistema está ativo! Se aparecer um QR Code, lê-o agora.</li>
+                                    <li>Se aparecer &quot;Connected&quot;, o sistema está ativo! Se aparecer um QR Code, lê-o agora.</li>
                                     <li>Mantenha o telemóvel ligado à internet para envios em tempo real.</li>
                                 </ol>
                             </div>
