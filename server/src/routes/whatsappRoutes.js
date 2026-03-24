@@ -4,40 +4,65 @@ const fs = require('fs');
 const path = require('path');
 const whatsappService = require('../services/whatsappService');
 
-// Lê o logo do disco e converte para base64 para garantir que aparece sempre
+// Lê o logo do disco em base64
 let logoBase64 = '';
 try {
     const logoPath = path.join(__dirname, '../../../client/public/logo.png');
-    const logoBuffer = fs.readFileSync(logoPath);
-    logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+    logoBase64 = `data:image/png;base64,${fs.readFileSync(logoPath).toString('base64')}`;
 } catch (e) {
     console.warn('[Monitor] Logo não encontrado:', e.message);
 }
 
-const premiumStyles = `
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background: #fafafa; display: flex; align-items: flex-start; justify-content: center; min-height: 100vh; padding: 20px; }
-        .card { background: #fff; border-radius: 24px; padding: 20px 20px 24px; text-align: center; max-width: 380px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,0.07); border: 1px solid #eee; position: relative; }
-        .logo-img { width: 100px; max-width: 50%; height: auto; margin: 0 auto 14px; display: block; }
-        .status-badge { position: absolute; top: 16px; right: 16px; display: flex; align-items: center; font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 5px 10px; border-radius: 100px; background: #fff; border: 1.5px solid #eee; }
-        .dot { width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; flex-shrink: 0; }
-        .dot-online { background: #10b981; animation: pulse 2s infinite; }
-        .dot-offline { background: #ef4444; }
-        .dot-waiting { background: #ffcc00; animation: pulse 1s infinite; }
-        @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
-        .spinner { width: 32px; height: 32px; border: 3px solid #f0f0f0; border-top: 3px solid #ffcc00; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .title { font-size: 1.15rem; font-weight: 800; margin-bottom: 5px; color: #000; letter-spacing: -0.02em; }
-        .subtitle { font-size: 0.78rem; color: #6b7280; margin-bottom: 14px; line-height: 1.5; }
-        .qr-wrapper { background: #fafafa; border: 1px solid #eee; border-radius: 16px; padding: 12px; margin-bottom: 14px; }
-        .qr-img { width: 100%; height: auto; display: block; border-radius: 8px; }
-        .btn-primary { display: block; padding: 13px; background: #ffcc00; color: #000; text-decoration: none; border-radius: 14px; font-weight: 800; font-size: 0.875rem; transition: all 0.2s; border: none; cursor: pointer; width: 100%; box-shadow: 0 6px 16px rgba(255,204,0,0.3); }
-        .btn-primary:hover { background: #f5c200; transform: translateY(-2px); }
-        .btn-link { color: #9ca3af; text-decoration: none; font-size: 0.75rem; margin-top: 12px; display: inline-block; font-weight: 600; }
-        .btn-link:hover { color: #111; }
-    </style>
+const styles = `
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 12px;
+        gap: 8px;
+    }
+    .logo { width: 80px; height: auto; display: block; }
+    .badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.08em; padding: 4px 10px; border-radius: 99px;
+        border: 1.5px solid #eee; background: #fff; color: #374151;
+    }
+    .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .dot-online { background: #10b981; animation: pulse 2s infinite; }
+    .dot-offline { background: #ef4444; }
+    .dot-waiting { background: #ffcc00; animation: blink 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+    @keyframes blink { 0%,100%{opacity:.5} 50%{opacity:1} }
+    .title { font-size: 1rem; font-weight: 800; color: #111; text-align: center; }
+    .sub { font-size: 0.72rem; color: #6b7280; text-align: center; }
+    .qr-img { width: 160px; height: 160px; border-radius: 10px; border: 1px solid #eee; display: block; }
+    .spinner {
+        width: 28px; height: 28px;
+        border: 3px solid #f0f0f0; border-top-color: #ffcc00;
+        border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn {
+        display: block; width: 200px; padding: 11px 0;
+        background: #ffcc00; color: #000; font-weight: 800;
+        font-size: 0.8rem; border: none; border-radius: 12px;
+        cursor: pointer; text-decoration: none; text-align: center;
+        box-shadow: 0 4px 14px rgba(255,204,0,0.35);
+        transition: transform 0.15s;
+    }
+    .btn:hover { transform: translateY(-2px); background: #f5c200; }
+    .link { font-size: 0.68rem; color: #9ca3af; text-decoration: none; font-weight: 600; }
+    .link:hover { color: #111; }
+</style>
 `;
 
 router.get('/status', (req, res) => res.json({ connected: whatsappService.isConnected }));
@@ -45,66 +70,53 @@ router.get('/status', (req, res) => res.json({ connected: whatsappService.isConn
 router.get('/test-message', async (req, res) => {
     try {
         if (!whatsappService.isConnected) return res.send('<script>alert("Ligue o WhatsApp primeiro!"); window.location.href="/api/admin/whatsapp/qr";</script>');
-        
         const fullId = whatsappService.sock?.user?.id;
-        if (!fullId) return res.status(400).send('ID não encontrado. Aguarde conexão total.');
-
+        if (!fullId) return res.status(400).send('ID não encontrado. Aguarde.');
         const number = fullId.split(':')[0].split('@')[0];
-        const text = '🚀 *TESTE INSREVA.SE*: O teu motor de automação está 100% operacional! 🎯';
-        
-        await whatsappService.sendMessage(number, text);
+        await whatsappService.sendMessage(number, '🚀 *TESTE INSCREVA.SE*: Automação 100% operacional! 🎯');
         res.send(`<script>alert('✅ Mensagem enviada!'); window.location.href='/api/admin/whatsapp/qr';</script>`);
     } catch (e) {
         console.error('ERRO TEST:', e);
-        res.status(500).send('Erro no servidor: ' + e.message);
+        res.status(500).send('Erro: ' + e.message);
     }
 });
 
 router.get('/qr', async (req, res) => {
     try {
         const qrImage = await whatsappService.getQRImage();
-        const logoUrl = logoBase64;
+        const logo = logoBase64 ? `<img src="${logoBase64}" class="logo" />` : '';
 
         if (whatsappService.isConnected) {
-            return res.send(`
-                ${premiumStyles}
-                <div class="card">
-                    <div class="status-badge"><div class="dot dot-online"></div> Online</div>
-                    <img src="${logoUrl}" class="logo-img" onerror="this.src='https://raw.githubusercontent.com/afonsoDomingos/inscrevase/main/client/public/logo.png'" />
-                    <div class="title">Conexão Pronta!</div>
-                    <div class="subtitle">O sistema está ativo e a monitorizar vendas.</div>
-                    <a href="/api/admin/whatsapp/test-message" class="btn-primary">🚀 ENVIAR MENSAGEM DE TESTE</a>
-                    <a href="/api/admin/whatsapp/restart" class="btn-link">Trocar de Número</a>
-                </div>
-            `);
+            return res.send(`${styles}${logo}
+                <div class="badge"><div class="dot dot-online"></div>Online</div>
+                <div class="title">WhatsApp Ligado ✅</div>
+                <div class="sub">Sistema activo e a monitorizar.</div>
+                <a href="/api/admin/whatsapp/test-message" class="btn">🚀 Enviar Mensagem Teste</a>
+                <a href="/api/admin/whatsapp/restart" class="link">Trocar de número</a>`);
         }
 
         if (qrImage) {
-            return res.send(`
-                ${premiumStyles}
-                <div class="card">
-                    <div class="status-badge"><div class="dot dot-waiting"></div> Aguardando</div>
-                    <img src="${logoUrl}" class="logo-img" onerror="this.src='https://raw.githubusercontent.com/afonsoDomingos/inscrevase/main/client/public/logo.png'" />
-                    <div class="title">Activar Automação</div>
-                    <div class="subtitle">Leia o QR Code para ligar o sistema.</div>
-                    <div class="qr-wrapper"><img src="${qrImage}" class="qr-img" /></div>
-                    <button onclick="window.location.reload()" class="btn-primary">Actualizar QR Code</button>
-                    <a href="/api/admin/whatsapp/restart" class="btn-link">Reiniciar Motor</a>
-                </div>
-            `);
+            return res.send(`${styles}${logo}
+                <div class="badge"><div class="dot dot-waiting"></div>Aguardando</div>
+                <div class="title">Leia o QR Code</div>
+                <div class="sub">Abra o WhatsApp → Dispositivos → Ligar.</div>
+                <img src="${qrImage}" class="qr-img" />
+                <button onclick="window.location.reload()" class="btn">↻ Actualizar QR</button>
+                <a href="/api/admin/whatsapp/restart" class="link">Reiniciar motor</a>
+                <script>setInterval(async()=>{const r=await fetch('/api/admin/whatsapp/status');const d=await r.json();if(d.connected)window.location.reload();},4000);</script>`);
         }
 
-        res.send(`
-            ${premiumStyles}
-            <div class="card">
-                <div class="status-badge"><div class="dot dot-offline"></div> Offline</div>
-                <div class="spinner"></div>
-                <div class="title">Iniciando...</div>
-                <div class="subtitle">A negociar ligação segura...</div>
-            </div>
-            <script>setTimeout(() => window.location.reload(), 5000);</script>
-        `);
-    } catch (err) { res.status(500).send('Erro'); }
+        // A iniciar
+        res.send(`${styles}${logo}
+            <div class="badge"><div class="dot dot-offline"></div>Offline</div>
+            <div class="spinner"></div>
+            <div class="title">A iniciar...</div>
+            <div class="sub">A conectar ao servidor WhatsApp.</div>
+            <script>setTimeout(()=>window.location.reload(),5000);</script>`);
+
+    } catch (err) {
+        res.status(500).send('Erro interno');
+    }
 });
 
 router.get('/restart', async (req, res) => {
