@@ -362,7 +362,7 @@ export default function BooksPage() {
                                     {book.isUserSubmission && book.price ? (
                                         <><CreditCard size={16} /> COMPRAR (PAYPAL)</>
                                     ) : (
-                                        <><ExternalLink size={14} /> VER AGORA</>
+                                        <><ShoppingCart size={16} /> VER NA AMAZON <ExternalLink size={14} /></>
                                     )}
                                 </button>
                             </motion.div>
