@@ -6,92 +6,113 @@ const QRCode = require('qrcode');
 const pino = require('pino');
 
 // Directório de sessão automático (funciona em Windows, Mac e Linux/Render)
-const AUTH_PATH = path.join(os.tmpdir(), 'inscrevase_wa_session');
+const AUTH_PATH = path.join(os.tmpdir(), 'inscrevase_wa_session_v3');
+console.log('📦 [WA] Local de Sessão Definido:', AUTH_PATH);
 
 class WhatsAppService {
     constructor() {
         this.sock = null;
-        this.qrCodeData = null; // Guardar o QR para mostrar na Dashboard Admin
+        this.qrCodeData = null;
         this.isConnected = false;
+        this.isInitializing = false;
+        console.log('🏗️ [WA] WhatsAppService Construído.');
     }
 
     async init() {
-        console.log('--- WHATSAPP ENGINE: Inicializando... ---');
-        
-        const { state, saveCreds } = await useMultiFileAuthState(AUTH_PATH);
+        if (this.isInitializing) {
+            console.log('⏳ [WA] Motor já está a inicializar. Ignorando pedido duplicado.');
+            return;
+        }
+        this.isInitializing = true;
 
-        this.sock = makeWASocket({
-            auth: state,
-            printQRInTerminal: true, // Mostrar logo no log do terminal (fácil de ler agora)
-            logger: pino({ level: 'silent' }), // Silenciar logs técnicos chatos
-            browser: ["Inscreva-se Automations", "Chrome", "1.0.0"]
-        });
+        console.log('🚀 [WA] A INICIAR MOTOR (PASSO 1)...');
 
-        // Eventos de Ligação
-        this.sock.ev.on('connection.update', async (update) => {
-            const { connection, lastDisconnect, qr } = update;
-
-            if (qr) {
-                console.log('📡 [WhatsApp Engine] NOVO QR CODE GERADO COM SUCESSO!');
-                this.qrCodeData = qr; // QR Code bruto para gerar imagem base64
+        try {
+            console.log('📂 [WA] Passo 2: Verificando Pasta de Sessão...');
+            if (!fs.existsSync(AUTH_PATH)) {
+                fs.mkdirSync(AUTH_PATH, { recursive: true });
+                console.log('📁 [WA] Pasta Criada!');
             }
 
-            if (connection === 'close') {
-                const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
-                console.log('❌ [WhatsApp Engine] Ligação Fechada:', lastDisconnect.error?.message || 'Erro desconhecido');
-                console.log('🔄 [WhatsApp Engine] A tentar reconectar:', shouldReconnect);
-                this.isConnected = false;
-                this.isInitializing = false; // Resetar o estado de inicialização para permitir nova tentativa
-                if (shouldReconnect) this.init();
-            } else if (connection === 'open') {
-                console.log('✅ [WhatsApp Engine] CONECTADO COM SUCESSO!');
-                this.isConnected = true;
-                this.isInitializing = false; // Finalizou a inicialização com sucesso
-                this.qrCodeData = null;
-            }
-        });
+            console.log('🔑 [WA] Passo 3: Carregando useMultiFileAuthState...');
+            const { state, saveCreds } = await useMultiFileAuthState(AUTH_PATH);
+            console.log('✅ [WA] Estado de Autenticação Carregado!');
 
-        // Guardar credenciais sempre que houver update
-        this.sock.ev.on('creds.update', saveCreds);
+            console.log('📡 [WA] Passo 4: Chamando makeWASocket...');
+            this.sock = makeWASocket({
+                auth: state,
+                printQRInTerminal: false,
+                logger: pino({ level: 'debug' }), // Logs de baixa-nível para vermos tudo no terminal
+                browser: ['Inscreva-Se Automations', 'Chrome', '1.2.0'],
+                connectTimeoutMs: 60000,
+                defaultQueryTimeoutMs: 60000
+            });
+
+            console.log('🚀 [WA] Passo 5: Socket Criado com Sucesso!');
+
+            // Eventos de Credenciais
+            this.sock.ev.on('creds.update', async () => {
+                console.log('💾 [WA] Credenciais Actualizadas (saveCreds)...');
+                await saveCreds();
+            });
+
+            // Eventos de Ligação
+            this.sock.ev.on('connection.update', async (update) => {
+                const { connection, lastDisconnect, qr } = update;
+
+                if (qr) {
+                    console.log('🖼️ [WA] QR CODE RECEBIDO!');
+                    this.qrCodeData = qr;
+                    this.isConnected = false;
+                }
+
+                if (connection === 'close') {
+                    const status = lastDisconnect?.error?.output?.statusCode;
+                    const message = lastDisconnect?.error?.message;
+                    console.log(`❌ [WA] LIGAÇÃO FECHADA (Status: ${status}) - Motivo: ${message}`);
+                    
+                    this.isConnected = false;
+                    this.isInitializing = false;
+                    
+                    const shouldReconnect = status !== DisconnectReason.loggedOut;
+                    if (shouldReconnect) {
+                        console.log('🔄 [WA] Reiniciando em 5 segundos...');
+                        setTimeout(() => this.init(), 5000);
+                    }
+                } else if (connection === 'open') {
+                    console.log('✅ [WA] LIGAÇÃO TOTALMENTE ESTABELECIDA!');
+                    this.isConnected = true;
+                    this.qrCodeData = null;
+                }
+            });
+
+        } catch (error) {
+            console.error('💥 [WA] ERRO CRÍTICO NO INIT:', error.message);
+            console.error('Stack:', error.stack);
+            this.isInitializing = false;
+        }
+    }
+
+    async getQRImage() {
+        if (!this.qrCodeData) return null;
+        try {
+            return await QRCode.toDataURL(this.qrCodeData);
+        } catch (err) {
+            console.error('Erro ao converter QR para base64:', err);
+            return null;
+        }
     }
 
     async forceRestart() {
-        console.log('🔄 [WhatsApp Engine] COMANDO DE REINÍCIO MANUAL RECEBIDO.');
+        console.log('🔄 [WA] REINÍCIO MANUAL SOLICITADO (Limpando Estados)...');
         this.isInitializing = false;
         this.isConnected = false;
         this.qrCodeData = null;
         this.sock = null; 
+        console.log('🧹 [WA] Estados limpos. A chamar init()...');
         return await this.init();
-    }
-
-    // Função universal de envio
-    async sendMessage(to, message) {
-        if (!this.isConnected || !this.sock) {
-            console.warn('⚠️ WhatsApp not connected. Cannot send message.');
-            return null;
-        }
-
-        try {
-            // Garantir formato do número (ex: 2449... -> 2449...@s.whatsapp.net)
-            let formattedNumber = to.replace(/[\s\+\(\)]/g, '');
-            if (!formattedNumber.includes('@s.whatsapp.net')) {
-                formattedNumber = `${formattedNumber}@s.whatsapp.net`;
-            }
-
-            const sentMsg = await this.sock.sendMessage(formattedNumber, { text: message });
-            return sentMsg;
-        } catch (error) {
-            console.error('Erro ao enviar WhatsApp:', error);
-            return null;
-        }
-    }
-
-    // Obter o QR Code como imagem (para o teu Admin ver na Dashboard)
-    async getQRImage() {
-        if (!this.qrCodeData) return null;
-        return await QRCode.toDataURL(this.qrCodeData);
     }
 }
 
-// Exportar como Singleton (instância única)
-module.exports = new WhatsAppService();
+const whatsappService = new WhatsAppService();
+module.exports = whatsappService;
