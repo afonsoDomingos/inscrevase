@@ -16,6 +16,12 @@ const PORT = process.env.PORT || 5000;
 // Trust Proxy for Render/Proxy environments
 app.set('trust proxy', 1);
 
+// --- GLOBAL REQUEST LOGGER (DEBUG) ---
+app.use((req, res, next) => {
+    console.log(`📡 [REQ] ${req.method} ${req.url} - ${new Date().toLocaleTimeString()}`);
+    next();
+});
+
 // Security Middlewares
 app.use(helmet({
     contentSecurityPolicy: false, // Desativar CSP temporariamente para garantir que as imagens carregam no iframe
