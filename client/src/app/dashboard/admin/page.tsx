@@ -20,7 +20,7 @@ import PaypalPayouts from '@/components/admin/PaypalPayouts';
 import BooksManager from '@/components/admin/BooksManager';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Plus, Book } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Plus, Book, MessageCircle, Smartphone } from 'lucide-react';
 
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
@@ -49,7 +49,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
 import Tooltip from '@/components/common/Tooltip';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts' | 'books';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts' | 'books' | 'whatsapp';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -420,13 +420,14 @@ export default function AdminDashboard() {
             title: t('dashboard.system') || 'Sistema',
             items: [
                 { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={18} /> },
+                { id: 'whatsapp', label: 'WhatsApp Automação', icon: <MessageCircle size={18} /> },
                 { id: 'settings', label: t('dashboard.settings.title') || 'Definições', icon: <Settings size={18} /> },
             ]
         }
 
     ].map(group => ({
         ...group,
-        items: group.items.filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing' && item.id !== 'payouts') || user?.role === 'SuperAdmin')
+        items: group.items.filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing' && item.id !== 'payouts' && item.id !== 'whatsapp') || user?.role === 'SuperAdmin')
     }));
 
     return (
@@ -1805,14 +1806,83 @@ export default function AdminDashboard() {
                         )
                     }
 
-                    {
-                        activeTab === 'support' && (
-                            <motion.div key="support" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
-                                <SupportTicketList />
-                            </motion.div>
-                        )
-                    }
+                    {activeTab === 'support' && (
+                        <ErrorBoundary>
+                            <SupportTicketList />
+                        </ErrorBoundary>
+                    )}
 
+                    {activeTab === 'whatsapp' && user.role === 'SuperAdmin' && (
+                        <div style={{
+                            background: '#fff',
+                            borderRadius: '24px',
+                            padding: '3rem',
+                            textAlign: 'center',
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            maxWidth: '800px',
+                            margin: '0 auto'
+                        }}>
+                            <div style={{
+                                width: '80px',
+                                height: '80px',
+                                background: 'var(--gold-gradient)',
+                                borderRadius: '20px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: '1.5rem',
+                                color: '#000'
+                            }}>
+                                <MessageCircle size={40} />
+                            </div>
+                            <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', fontFamily: 'var(--font-playfair)' }}>
+                                Conectar WhatsApp de Automação 💬
+                            </h2>
+                            <p style={{ color: '#666', maxWidth: '500px', marginBottom: '2rem', lineHeight: '1.6' }}>
+                                Ligue o número oficial da plataforma para enviar notificações automáticas de vendas, inscrições e upgrades para os seus utilizadores.
+                            </p>
+
+                            <div style={{
+                                border: '2px solid #f0f0f0',
+                                borderRadius: '24px',
+                                padding: '1rem',
+                                background: '#fafafa',
+                                marginBottom: '2rem'
+                            }}>
+                                <iframe 
+                                    src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/admin/whatsapp/qr`}
+                                    style={{
+                                        width: '350px',
+                                        height: '450px',
+                                        border: 'none',
+                                        overflow: 'hidden'
+                                    }}
+                                    title="WhatsApp QR Monitor"
+                                />
+                            </div>
+
+                            <div style={{ textAlign: 'left', background: '#f8f9fa', padding: '1.5rem', borderRadius: '16px', width: '100%' }}>
+                                <h3 style={{ fontWeight: 700, marginBottom: '0.8rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Smartphone size={18} /> Instruções Rápidas:
+                                </h3>
+                                <ol style={{ paddingLeft: '1.2rem', color: '#555', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    <li>Abra o WhatsApp no telemóvel da empresa.</li>
+                                    <li>Vá a <strong>Definições</strong> ou <strong>Aparelhos Conectados</strong>.</li>
+                                    <li>Se aparecer "Connected", o sistema está ativo! Se aparecer um QR Code, lê-o agora.</li>
+                                    <li>Mantenha o telemóvel ligado à internet para envios em tempo real.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'settings' && user.role === 'SuperAdmin' && (
+                        <ErrorBoundary>
+                            <SystemSettings />
+                        </ErrorBoundary>
+                    )}
                     {
                         activeTab === 'finance' && user?.role === 'SuperAdmin' && (
                             <motion.div key="finance" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
