@@ -20,6 +20,8 @@ const premiumStyles = `
         .qr-card { background: #fff; border: 1px solid #eee; border-radius: 24px; padding: 24px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); margin-bottom: 24px; }
         .btn-primary { display: inline-block; padding: 16px 32px; background: #111; color: #fff; text-decoration: none; border-radius: 16px; font-weight: 600; font-size: 1rem; transition: all 0.2s; border: none; cursor: pointer; width: 100%; box-sizing: border-box; }
         .btn-primary:hover { background: #333; transform: translateY(-2px); }
+        .btn-success { background: #ffcc00; color: #000; font-weight: 700; }
+        .btn-success:hover { background: #f5c200; }
         .btn-link { color: #888; text-decoration: none; font-size: 0.85rem; margin-top: 24px; display: inline-block; font-weight: 500; }
         .btn-link:hover { color: #111; }
     </style>
@@ -27,6 +29,18 @@ const premiumStyles = `
 
 router.get('/status', (req, res) => {
     res.json({ connected: whatsappService.isConnected });
+});
+
+router.get('/test-message', async (req, res) => {
+    if (!whatsappService.isConnected) return res.send('WhatsApp não conectado.');
+    // Pegar o número conectado da própria sessão do Baileys
+    const number = whatsappService.sock?.user?.id.split(':')[0];
+    if (number) {
+        await whatsappService.sendMessage(number, '🚀 *SISTEMA OPERACIONAL!* \n\nOlá! Este é um teste da tua plataforma *Inscreva-se*. \n\nO teu WhatsApp está agora oficialmente ligado e pronto para automatizar as tuas vendas. Parabéns! 🎯');
+        res.send(`<script>alert('Mensagem de teste enviada para o teu próprio WhatsApp!'); window.location.href='/api/admin/whatsapp/qr';</script>`);
+    } else {
+        res.send('Erro ao identificar o número ligado.');
+    }
 });
 
 router.get('/qr', async (req, res) => {
@@ -38,17 +52,13 @@ router.get('/qr', async (req, res) => {
                 ${premiumStyles}
                 <div class="card">
                     <div class="status-badge"><div class="dot dot-online"></div> Online</div>
-                    <div style="font-size: 4rem; margin-bottom: 20px">✨</div>
+                    <img src="https://res.cloudinary.com/dly8m6clv/image/upload/v1711186545/logo-inscrevase_zjx7y5.png" style="width: 160px; margin-bottom: 24px" alt="Logo Inscreva-se" />
                     <div class="title">Conexão Pronta!</div>
-                    <div class="subtitle">O WhatsApp está agora vinculado à sua plataforma e pronto para automatizar as suas vendas.</div>
-                    <a href="/api/admin/whatsapp/restart" class="btn-link">Trocar de Número</a>
-                    <script>
-                        setInterval(async () => {
-                          const res = await fetch('/api/admin/whatsapp/status');
-                          const data = await res.json();
-                          if (!data.connected) window.location.reload();
-                        }, 5000);
-                    </script>
+                    <div class="subtitle">O WhatsApp está oficialmente vinculado à sua plataforma e pronto para enviar mensagens.</div>
+                    
+                    <a href="/api/admin/whatsapp/test-message" class="btn-primary btn-success">🚀 ENVIAR MENSAGEM DE TESTE</a>
+                    
+                    <a href="/api/admin/whatsapp/restart" class="btn-link">Trocar de Número de WhatsApp</a>
                 </div>
             `);
         }
@@ -88,7 +98,7 @@ router.get('/qr', async (req, res) => {
                 <div class="spinner"></div>
                 <div class="title">A preparar o Motor...</div>
                 <div class="subtitle">Estamos a criar uma ligação encriptada com os servidores do WhatsApp.</div>
-                <div id="status" style="font-size: 0.85rem; color: #999; font-weight: 500; text-transform: uppercase;">Próxima tentativa em <span id="countdown">7</span>s</div>
+                <div id="status" style="font-size: 0.85rem; color: #999; font-weight: 500;">Próxima tentativa em <span id="countdown">7</span>s</div>
                 <script>
                     let timeLeft = 7;
                     setInterval(() => {
