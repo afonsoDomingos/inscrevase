@@ -5,8 +5,14 @@ const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const http = require('http'); // Import http
 const { Server } = require('socket.io'); // Import Socket.IO
+
+// --- CONFIGURAÇÕES DE AMBIENTE (TOP IMPORTANCE) ---
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+require('dotenv').config(); // Fallback to current dir
+
 const whatsappService = require('./services/whatsappService');
-// Iniciar Motor do WhatsApp IMEDIATAMENTE (sem esperar por DB)
+// Iniciar Motor do WhatsApp IMEDIATAMENTE (agora com envs carregados)
 whatsappService.init().catch(err => console.error('⚠️ WhatsApp Init Error:', err));
 
 const app = express();
