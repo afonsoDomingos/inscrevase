@@ -18,6 +18,7 @@ import SystemSettings from '@/components/admin/SystemSettings';
 import MarketingRequestList from '@/components/admin/MarketingRequestList';
 import PaypalPayouts from '@/components/admin/PaypalPayouts';
 import BooksManager from '@/components/admin/BooksManager';
+import WhatsAppLogs from '@/components/dashboard/WhatsAppLogs';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Plus, Book, MessageCircle, Smartphone } from 'lucide-react';
@@ -1870,6 +1871,9 @@ export default function AdminDashboard() {
                                     <li>Mantenha o telemóvel ligado à internet para envios em tempo real.</li>
                                 </ol>
                             </div>
+
+                            {/* Tabela de Relatórios e Auditoria de Disparos */}
+                            <WhatsAppLogs />
                         </div>
                     )}
 
