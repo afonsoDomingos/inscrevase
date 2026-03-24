@@ -157,7 +157,8 @@ const submitForm = async (req, res) => {
                         ? `\n💰 *Valor:* ${form.priceAmount} ${form.currency}` 
                         : `\n🏷️ *Tipo:* Gratuito`;
 
-                    const msg = `Olá *${recipientName}*! 👋\n\n📩 *Nova Inscrição!*\nAlguém acabou de se inscrever em "${form.title}".\n\n👤 *Nome:* ${participantName}\n📧 *Email:* ${pEmail}${priceInfo}\n\nAcede ao teu painel na plataforma para validar.`;
+                    const baseUrl = process.env.FRONTEND_URL || 'https://inscreva-se.com';
+                    const msg = `Olá *${recipientName}*! 👋\n\n📩 *Nova Inscrição!*\nAlguém acabou de se inscrever em "${form.title}".\n\n👤 *Nome:* ${participantName}\n📧 *Email:* ${pEmail}${priceInfo}\n\n🔗 *Acede ao painel para validar:*\n${baseUrl}/dashboard/mentor`;
                     whatsappService.sendMessage(recipientUser.phone, msg);
                 }
             }));
@@ -285,7 +286,8 @@ const submitForm = async (req, res) => {
                         ? 'O teu pagamento foi recebido e a tua inscrição está Confirmada!' 
                         : 'A tua inscrição foi registada e está a aguardar validação do mentor.';
                         
-                    const partMsg = `Olá *${firstName}*! 🎉\n\n✅ *Inscrição Recebida!*\n\n📅 *Evento:* "${form.title}"\n${statusMsg}\n\nPodes consultar o teu painel a qualquer momento para ver os detalhes.`;
+                    const baseUrl = process.env.FRONTEND_URL || 'https://inscreva-se.com';
+                    const partMsg = `Olá *${firstName}*! 🎉\n\n✅ *Inscrição Recebida!*\n\n📅 *Evento:* "${form.title}"\n${statusMsg}\n\n🔗 *Acede ao teu painel:*\n${baseUrl}/dashboard/participant`;
                     whatsappService.sendMessage(pPhone, partMsg);
                 }
             } catch (pwaErr) {
