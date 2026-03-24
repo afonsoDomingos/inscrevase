@@ -4,8 +4,8 @@ const fs = require('fs');
 const QRCode = require('qrcode');
 const pino = require('pino');
 
-// Directório para guardar a sessão do WhatsApp (não perder o login)
-const AUTH_PATH = path.join(__dirname, '../../auth_info_baileys');
+// Porta-fólio de sessão (Usar /tmp para garantir escrita em cloud servers como o Render)
+const AUTH_PATH = path.join('/tmp', 'auth_info_baileys');
 
 class WhatsAppService {
     constructor() {
@@ -31,17 +31,18 @@ class WhatsAppService {
             const { connection, lastDisconnect, qr } = update;
 
             if (qr) {
+                console.log('📡 [WhatsApp Engine] NOVO QR CODE GERADO COM SUCESSO!');
                 this.qrCodeData = qr; // QR Code bruto para gerar imagem base64
-                // console.log('Novo QR Code gerado.');
             }
 
             if (connection === 'close') {
                 const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
-                console.log('WhatsApp Connection closed due to ', lastDisconnect.error, ', reconnecting ', shouldReconnect);
+                console.log('❌ [WhatsApp Engine] Ligação Fechada:', lastDisconnect.error?.message || 'Erro desconhecido');
+                console.log('🔄 [WhatsApp Engine] A tentar reconectar:', shouldReconnect);
                 this.isConnected = false;
                 if (shouldReconnect) this.init();
             } else if (connection === 'open') {
-                console.log('✅ WHATSAPP ENGINE: Conectado com sucesso!');
+                console.log('✅ [WhatsApp Engine] CONECTADO COM SUCESSO!');
                 this.isConnected = true;
                 this.qrCodeData = null;
             }
