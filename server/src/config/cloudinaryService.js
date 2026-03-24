@@ -10,13 +10,15 @@ const uploadToCloudinary = async (fileBuffer, folder) => {
 
     return new Promise((resolve, reject) => {
         try {
+            const uploadOptions = {
+                folder: `inscreva-se/${folder}`,
+                resource_type: 'auto',
+                access_mode: 'public',
+                type: 'upload'
+            };
+
             const uploadStream = cloudinary.uploader.upload_stream(
-                {
-                    folder: `inscreva-se/${folder}`,
-                    resource_type: 'auto', // Detectar se é imagem ou pdf
-                    access_mode: 'public',
-                    type: 'upload'
-                },
+                uploadOptions,
                 (error, result) => {
                     if (error) {
                         console.error('[CloudinaryService] Erro retornado pelo Cloudinary:', error);

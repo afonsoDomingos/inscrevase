@@ -127,7 +127,8 @@ export default function BooksPage() {
 
         // Se for uma submissão de utilizador com preço, redireciona para o checkout ou paypal
         if (book.isUserSubmission && book.price && book.sellerPaypalEmail) {
-            const paypalUrl = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=${encodeURIComponent(book.sellerPaypalEmail)}&item_name=${encodeURIComponent(book.title)}&amount=${book.price}&currency_code=USD`;
+            const successUrl = `${window.location.origin}/books/success?bookId=${book._id}`;
+            const paypalUrl = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=${encodeURIComponent(book.sellerPaypalEmail)}&item_name=${encodeURIComponent(book.title)}&amount=${book.price}&currency_code=USD&return=${encodeURIComponent(successUrl)}`;
             window.open(paypalUrl, '_blank');
             return;
         }
