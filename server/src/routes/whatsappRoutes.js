@@ -68,16 +68,43 @@ const styles = `
 router.get('/status', (req, res) => res.json({ connected: whatsappService.isConnected }));
 
 router.get('/test-message', async (req, res) => {
+    const toastPage = (icon, color, title, msg, redirect='/api/admin/whatsapp/qr') => `
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+            * { margin:0; padding:0; box-sizing:border-box; }
+            body { font-family:'Inter',sans-serif; background:#fff; display:flex; align-items:center; justify-content:center; height:100vh; }
+            .toast {
+                background:#fff; border-radius:20px; padding:28px 32px; text-align:center;
+                box-shadow:0 8px 30px rgba(0,0,0,0.08); border:1.5px solid #f0f0f0;
+                max-width:320px; width:90%; animation:pop .3s cubic-bezier(.175,.885,.32,1.275);
+            }
+            @keyframes pop { from{opacity:0;transform:scale(.85)} to{opacity:1;transform:scale(1)} }
+            .icon { font-size:2.5rem; margin-bottom:14px; }
+            .title { font-size:1.1rem; font-weight:800; color:#111; margin-bottom:6px; }
+            .msg { font-size:0.82rem; color:#6b7280; margin-bottom:20px; line-height:1.5; }
+            .btn { display:inline-block; padding:11px 28px; background:${color}; color:#fff; border-radius:12px; font-weight:800; font-size:0.85rem; text-decoration:none; border:none; cursor:pointer; }
+        </style>
+        <div class="toast">
+            <div class="icon">${icon}</div>
+            <div class="title">${title}</div>
+            <div class="msg">${msg}</div>
+            <a href="${redirect}" class="btn">OK</a>
+        </div>`;
+
     try {
-        if (!whatsappService.isConnected) return res.send('<script>alert("Ligue o WhatsApp primeiro!"); window.location.href="/api/admin/whatsapp/qr";</script>');
+        if (!whatsappService.isConnected) {
+            return res.send(toastPage('⚠️','#f59e0b','WhatsApp Desligado','Ligue o WhatsApp antes de enviar mensagens de teste.'));
+        }
         const fullId = whatsappService.sock?.user?.id;
-        if (!fullId) return res.status(400).send('ID não encontrado. Aguarde.');
+        if (!fullId) {
+            return res.send(toastPage('⏳','#6366f1','A Conectar...','O número ainda está a ser identificado. Aguarde uns segundos e tente novamente.'));
+        }
         const number = fullId.split(':')[0].split('@')[0];
         await whatsappService.sendMessage(number, '🚀 *TESTE INSCREVA.SE*: Automação 100% operacional! 🎯');
-        res.send(`<script>alert('✅ Mensagem enviada!'); window.location.href='/api/admin/whatsapp/qr';</script>`);
+        res.send(toastPage('✅','#10b981','Mensagem Enviada!','A mensagem de teste foi entregue ao teu WhatsApp com sucesso.'));
     } catch (e) {
         console.error('ERRO TEST:', e);
-        res.status(500).send('Erro: ' + e.message);
+        res.send(toastPage('❌','#ef4444','Erro no Envio',`Detalhe: ${e.message}`));
     }
 });
 
