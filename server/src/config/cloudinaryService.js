@@ -13,7 +13,9 @@ const uploadToCloudinary = async (fileBuffer, folder) => {
             const uploadStream = cloudinary.uploader.upload_stream(
                 {
                     folder: `inscreva-se/${folder}`,
-                    resource_type: 'auto' // Detectar se é imagem ou pdf
+                    resource_type: 'auto', // Detectar se é imagem ou pdf
+                    access_mode: 'public',
+                    type: 'upload'
                 },
                 (error, result) => {
                     if (error) {
