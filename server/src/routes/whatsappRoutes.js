@@ -100,11 +100,12 @@ router.get('/test-message', async (req, res) => {
             return res.send(toastPage('⏳','#6366f1','A Conectar...','O número ainda está a ser identificado. Aguarde uns segundos e tente novamente.'));
         }
         const number = fullId.split(':')[0].split('@')[0];
+        console.log(`[TEST] Número extraído do Baileys: "${fullId}" → a enviar para: "${number}"`);
         await whatsappService.sendMessage(number, '🚀 *TESTE INSCREVA.SE*: Automação 100% operacional! 🎯');
-        res.send(toastPage('✅','#10b981','Mensagem Enviada!','A mensagem de teste foi entregue ao teu WhatsApp com sucesso.'));
+        res.send(toastPage('✅','#10b981','Mensagem Enviada!',`Entregue para o número +${number} com sucesso.`));
     } catch (e) {
         console.error('ERRO TEST:', e);
-        res.send(toastPage('❌','#ef4444','Erro no Envio',`Detalhe: ${e.message}`));
+        res.send(toastPage('❌','#ef4444','Erro no Envio',`${e.message}`));
     }
 });
 
