@@ -190,6 +190,11 @@ const stripeController = require('./controllers/stripeController');
 const smartLinkController = require('./controllers/smartLinkController'); // Added for global redirects
 app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), stripeController.handleWebhook);
 
+// --- TESTE DE ATUALIZAÇÃO ---
+app.get('/qr-test', (req, res) => {
+    res.send('✅ O Servidor da Inscreva-se está Atualizado!');
+});
+
 // Standard Middleware
 app.use(express.json()); // No more verify hack needed since webhook is handled above
 app.use(require('./config/passport').initialize());
