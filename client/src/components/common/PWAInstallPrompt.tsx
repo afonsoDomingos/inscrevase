@@ -4,17 +4,27 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, Smartphone, Zap } from 'lucide-react';
 
+interface BeforeInstallPromptEvent extends Event {
+    readonly platforms: string[];
+    readonly userChoice: Promise<{
+        outcome: 'accepted' | 'dismissed';
+        platform: string;
+    }>;
+    prompt(): Promise<void>;
+}
+
 export default function PWAInstallPrompt() {
-    const [installPrompt, setInstallPrompt] = useState<any>(null);
+    const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
         // Listen for the PWA install prompt event
-        const handleBeforeInstallPrompt = (e: any) => {
+        const handleBeforeInstallPrompt = (e: Event) => {
+            const promptEvent = e as BeforeInstallPromptEvent;
             // Prevent Chrome 67 and earlier from automatically showing the prompt
-            e.preventDefault();
+            promptEvent.preventDefault();
             // Stash the event so it can be triggered later.
-            setInstallPrompt(e);
+            setInstallPrompt(promptEvent);
             
             // Wait a few seconds before showing our custom UI
             const hasDismissed = localStorage.getItem('pwa_prompt_dismissed');
