@@ -29,6 +29,39 @@ router.get('/logs', async (req, res) => {
         res.status(500).json({ error: e.message });
     }
 });
+
+router.get('/pairing-code', async (req, res) => {
+    try {
+        const { phone } = req.query;
+        if (!phone) return res.send(toastPage('⚠️', '#f59e0b', 'Número em falta', 'Indique o seu número de telefone com indicativo.'));
+        
+        const code = await whatsappService.requestPairingCode(phone);
+        
+        res.send(`${styles}
+            <div class="toast" style="max-width:320px; text-align:center; padding:30px;">
+                <div class="icon" style="font-size:3rem; margin-bottom:15px;">📲</div>
+                <div class="title" style="font-size:1.2rem; font-weight:800; color:#111; margin-bottom:10px;">Vincular por Número</div>
+                <p style="color:#6b7280; font-size:0.85rem; margin-bottom:20px; line-height:1.4;">
+                    1. Abre o WhatsApp no telemóvel<br>
+                    2. Dispositivos → Ligar → Vincular pelo número<br>
+                    3. Digita o seguinte código de 8 letras:<br>
+                </p>
+                <div style="background:#f3f4f6; padding:15px; border-radius:12px; font-size:1.5rem; font-weight:800; letter-spacing:4px; color:#111; border:1px solid #e5e7eb;">
+                    ${code}
+                </div>
+                <a href="/api/admin/whatsapp/qr" class="link" style="margin-top:20px; display:inline-block;">Voltar para o QR Code</a>
+                <script>
+                    setInterval(async()=>{
+                        const r=await fetch('/api/admin/whatsapp/status');
+                        const d=await r.json();
+                        if(d.connected) window.location.href="/api/admin/whatsapp/qr";
+                    }, 4000);
+                </script>
+            </div>`);
+    } catch (e) {
+        res.send(toastPage('❌', '#ef4444', 'Erro ao Parear', e.message));
+    }
+});
 const styles = `
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
@@ -76,37 +109,35 @@ const styles = `
         transition: transform 0.15s;
     }
     .btn:hover { transform: translateY(-2px); background: #f5c200; }
-    .link { font-size: 0.68rem; color: #9ca3af; text-decoration: none; font-weight: 600; }
-    .link:hover { color: #111; }
 </style>
 `;
+
+const toastPage = (icon, color, title, msg, redirect = '/api/admin/whatsapp/qr') => `
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:#fff; display:flex; align-items:center; justify-content:center; height:100vh; }
+        .toast {
+            background:#fff; border-radius:20px; padding:28px 32px; text-align:center;
+            box-shadow:0 8px 30px rgba(0,0,0,0.08); border:1.5px solid #f0f0f0;
+            max-width:320px; width:90%; animation:pop .3s cubic-bezier(.175,.885,.32,1.275);
+        }
+        @keyframes pop { from{opacity:0;transform:scale(.85)} to{opacity:1;transform:scale(1)} }
+        .icon { font-size:2.5rem; margin-bottom:14px; }
+        .title { font-size:1.1rem; font-weight:800; color:#111; margin-bottom:6px; }
+        .msg { font-size:0.82rem; color:#6b7280; margin-bottom:20px; line-height:1.5; }
+        .btn { display:inline-block; padding:11px 28px; background:${color}; color:#fff; border-radius:12px; font-weight:800; font-size:0.85rem; text-decoration:none; border:none; cursor:pointer; }
+    </style>
+    <div class="toast">
+        <div class="icon">${icon}</div>
+        <div class="title">${title}</div>
+        <div class="msg">${msg}</div>
+        <a href="${redirect}" class="btn">OK</a>
+    </div>`;
 
 router.get('/status', (req, res) => res.json({ connected: whatsappService.isConnected }));
 
 router.get('/test-message', async (req, res) => {
-    const toastPage = (icon, color, title, msg, redirect='/api/admin/whatsapp/qr') => `
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-            * { margin:0; padding:0; box-sizing:border-box; }
-            body { font-family:'Inter',sans-serif; background:#fff; display:flex; align-items:center; justify-content:center; height:100vh; }
-            .toast {
-                background:#fff; border-radius:20px; padding:28px 32px; text-align:center;
-                box-shadow:0 8px 30px rgba(0,0,0,0.08); border:1.5px solid #f0f0f0;
-                max-width:320px; width:90%; animation:pop .3s cubic-bezier(.175,.885,.32,1.275);
-            }
-            @keyframes pop { from{opacity:0;transform:scale(.85)} to{opacity:1;transform:scale(1)} }
-            .icon { font-size:2.5rem; margin-bottom:14px; }
-            .title { font-size:1.1rem; font-weight:800; color:#111; margin-bottom:6px; }
-            .msg { font-size:0.82rem; color:#6b7280; margin-bottom:20px; line-height:1.5; }
-            .btn { display:inline-block; padding:11px 28px; background:${color}; color:#fff; border-radius:12px; font-weight:800; font-size:0.85rem; text-decoration:none; border:none; cursor:pointer; }
-        </style>
-        <div class="toast">
-            <div class="icon">${icon}</div>
-            <div class="title">${title}</div>
-            <div class="msg">${msg}</div>
-            <a href="${redirect}" class="btn">OK</a>
-        </div>`;
-
     try {
         if (!whatsappService.isConnected || !whatsappService.sock) {
             return res.send(toastPage('⚠️','#f59e0b','WhatsApp Desligado','Ligue o WhatsApp antes de enviar mensagens de teste.'));
@@ -181,7 +212,16 @@ router.get('/qr', async (req, res) => {
                 <div class="sub">Abra o WhatsApp → Dispositivos → Ligar.</div>
                 <img src="${qrImage}" class="qr-img" />
                 <button onclick="window.location.reload()" class="btn">↻ Actualizar QR</button>
-                <a href="/api/admin/whatsapp/restart" class="link">Reiniciar motor</a>
+                
+                <div style="margin-top:15px; width:100%; max-width:240px; border-top:1px solid #eee; padding-top:10px;">
+                    <p style="font-size:0.65rem; color:#9ca3af; margin-bottom:8px;">Prefere usar um código de 8 letras?</p>
+                    <form action="/api/admin/whatsapp/pairing-code" method="GET" style="display:flex; gap:5px;">
+                        <input type="text" name="phone" placeholder="+258..." style="flex:1; padding:6px 10px; border-radius:8px; border:1px solid #ddd; font-size:0.75rem; outline:none;" />
+                        <button type="submit" style="background:#f3f4f6; border:none; padding:6px 10px; border-radius:8px; font-size:0.7rem; font-weight:700; cursor:pointer; color:#374151;">Gerar</button>
+                    </form>
+                </div>
+
+                <a href="/api/admin/whatsapp/restart" class="link" style="margin-top:10px;">Reiniciar motor</a>
                 <script>setInterval(async()=>{const r=await fetch('/api/admin/whatsapp/status');const d=await r.json();if(d.connected)window.location.reload();},4000);</script>`);
         }
 

@@ -1,5 +1,5 @@
 const makeWASocket = require('@whiskeysockets/baileys').default;
-const { useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
+const { useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, Browsers } = require('@whiskeysockets/baileys');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
@@ -42,7 +42,7 @@ class WhatsAppService {
                 auth: state,
                 printQRInTerminal: true, // Vamos forçar no terminal do Render também!
                 logger: pino({ level: 'info' }), // Baixar de 'silent' para 'info' para vermos erros
-                browser: ['Inscreva-Se Automations', 'Safari', '1.0.0']
+                browser: Browsers.ubuntu('Chrome') // Importante para o Pairing Code funcionar correctamente no Baileys!
             });
 
             console.log('📡 [WA] Socket criado e à escuta...');
@@ -95,6 +95,21 @@ class WhatsAppService {
         } catch (err) {
             return null;
         }
+    }
+
+    async requestPairingCode(phoneNumber) {
+        if (!this.sock) throw new Error('Servidor não está a escutar ligações.');
+        if (this.isConnected) throw new Error('WhatsApp já está ligado.');
+        
+        const clean = phoneNumber.replace(/[^0-9]/g, '');
+        if (clean.length < 9) throw new Error('Número de telefone muito curto.');
+        
+        console.log(`[WA] Requisitando código de vinculação para: ${clean}`);
+        // Aguarda 1.5s antes do pedido conforme sugestões do próprio Baileys
+        await new Promise(r => setTimeout(r, 1500));
+        
+        const code = await this.sock.requestPairingCode(clean);
+        return code;
     }
 
     async sendMessage(to, text) {
