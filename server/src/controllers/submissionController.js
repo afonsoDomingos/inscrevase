@@ -153,8 +153,12 @@ const submitForm = async (req, res) => {
                     }
 
                     // Verificar se foi um evento pago
-                    const priceInfo = form.paymentRequired 
-                        ? `\n💰 *Valor:* ${form.priceAmount} ${form.currency}` 
+                    const isPaid = form.paymentConfig?.enabled || false;
+                    const price = form.paymentConfig?.price || 0;
+                    const currency = form.paymentConfig?.currency || 'MZN';
+
+                    const priceInfo = isPaid 
+                        ? `\n💰 *Valor:* ${price} ${currency}` 
                         : `\n🏷️ *Tipo:* Gratuito`;
 
                     const baseUrl = process.env.FRONTEND_URL || 'https://inscreva-se.com';
@@ -282,8 +286,9 @@ const submitForm = async (req, res) => {
                 }
 
                 if (pPhone) {
-                    const statusMsg = form.paymentRequired 
-                        ? 'O teu pagamento foi recebido e a tua inscrição está Confirmada!' 
+                    const isPaid = form.paymentConfig?.enabled || false;
+                    const statusMsg = isPaid 
+                        ? 'O teu pagamento foi registado e está a aguardar validação do comprovativo.' 
                         : 'A tua inscrição foi registada e está a aguardar validação do mentor.';
                         
                     const baseUrl = process.env.FRONTEND_URL || 'https://inscreva-se.com';

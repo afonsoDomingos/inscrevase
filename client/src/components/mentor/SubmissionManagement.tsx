@@ -617,7 +617,7 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                             </td>
                                             <td style={{ padding: '0.6rem 1rem', textAlign: 'right' }}>
                                                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '4px' }}>
-                                                    {submission.paymentStatus === 'paid' && submission.status !== 'approved' && (
+                                                    {submission.status !== 'approved' && (
                                                         <Tooltip content={t('events.submissions.approve')}>
                                                             <button
                                                                 onClick={() => handleUpdateStatus(submission._id, 'approved')}
