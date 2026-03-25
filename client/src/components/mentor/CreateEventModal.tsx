@@ -116,11 +116,16 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
             const user = authService.getCurrentUser();
             setCurrentUser(user);
 
+            // Pre-fill WhatsApp if user has it and it's not set yet
+            if (user?.whatsapp && !whatsappConfig.phoneNumber) {
+                setWhatsappConfig(prev => ({ ...prev, phoneNumber: user.whatsapp || '' }));
+            }
+
             formService.getMyForms()
                 .then(events => setPreviousEvents(events))
                 .catch(err => console.error("Failed to load previous events", err));
         }
-    }, [isOpen]);
+    }, [isOpen, currentUser?.whatsapp]); // Added dependency to react to user loading
 
     const copyFromEvent = (eventId: string) => {
         if (!eventId) return;
@@ -155,6 +160,14 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 manualMethods: event.paymentConfig.manualMethods || [],
                 pricingTiers: (event.paymentConfig as any).pricingTiers || [],
                 useTieredPricing: (event.paymentConfig as any).useTieredPricing || false
+            });
+        }
+
+        if (event.whatsappConfig) {
+            setWhatsappConfig({
+                phoneNumber: (event.whatsappConfig as any).phoneNumber || '',
+                message: (event.whatsappConfig as any).message || t('events.whatsappDefaultMessage'),
+                communityUrl: (event.whatsappConfig as any).communityUrl || ''
             });
         }
 
@@ -1089,15 +1102,19 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
             }
         }
 
-        // 11. Validar telefone WhatsApp se fornecido
-        if (whatsappConfig.phoneNumber && whatsappConfig.phoneNumber.trim()) {
-            const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-            const cleanPhone = whatsappConfig.phoneNumber.replace(/[\s\-()]/g, '');
-            if (!phoneRegex.test(cleanPhone)) {
-                toast.error('Formato de telefone WhatsApp inválido. Use formato internacional: +258...');
-                setStep(7);
-                return;
-            }
+        // 11. Validar telefone WhatsApp (OBRIGATÓRIO para garantir notificações)
+        if (!whatsappConfig.phoneNumber || !whatsappConfig.phoneNumber.trim()) {
+            toast.error(t('events.whatsappNumberRequiredToast'));
+            setStep(6);
+            return;
+        }
+
+        const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+        const cleanPhone = whatsappConfig.phoneNumber.replace(/[\s\-()]/g, '');
+        if (!phoneRegex.test(cleanPhone)) {
+            toast.error('Formato de telefone WhatsApp inválido. Use formato internacional (ex: +258...)');
+            setStep(6);
+            return;
         }
 
         // 12. Validar URL da comunidade WhatsApp se fornecida
@@ -1106,7 +1123,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 new URL(whatsappConfig.communityUrl);
             } catch {
                 toast.error('URL da comunidade WhatsApp inválida');
-                setStep(7);
+                setStep(6);
                 return;
             }
         }
@@ -3535,21 +3552,37 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
                                             <div style={{ background: '#e6fffa', padding: '1.5rem', borderRadius: '20px', border: '1px solid #b2f5ea', display: 'flex', gap: '1rem' }}>
-                                                <div style={{ color: '#319795' }}><CheckCircle size={24} /></div>
+                                                <div style={{ color: '#319795' }}><MessageCircle size={24} /></div>
                                                 <p style={{ color: '#2c7a7b', fontSize: '0.9rem', lineHeight: '1.5' }}>
                                                     {t('events.whatsappHelp')}
                                                 </p>
                                             </div>
 
                                             <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.whatsappNumber')}</label>
+                                                <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.5rem', fontSize: '0.9rem', color: '#333' }}>
+                                                    {t('events.whatsappNumber')} <span style={{ color: '#ef4444' }}>*</span>
+                                                </label>
                                                 <input
                                                     type="text"
                                                     value={whatsappConfig.phoneNumber}
                                                     onChange={(e) => setWhatsappConfig({ ...whatsappConfig, phoneNumber: e.target.value })}
-                                                    placeholder={t('events.whatsappNumberPlaceholder')}
-                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                    placeholder="Ex: +258 84 000 0000"
+                                                    style={{ 
+                                                        width: '100%', 
+                                                        padding: '1.1rem', 
+                                                        borderRadius: '12px', 
+                                                        border: !whatsappConfig.phoneNumber ? '2px solid #FEF2F2' : '1px solid #ddd', 
+                                                        background: !whatsappConfig.phoneNumber ? '#FFFAF9' : '#fff',
+                                                        outline: 'none',
+                                                        fontSize: '1rem',
+                                                        fontWeight: 500
+                                                    }}
                                                 />
+                                                {!whatsappConfig.phoneNumber && (
+                                                    <span style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '5px', display: 'block', fontWeight: 600 }}>
+                                                        {t('events.whatsappNotificationNote')}
+                                                    </span>
+                                                )}
                                             </div>
 
                                             <div>
@@ -3852,7 +3885,13 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                     )}
                                     {step > 0 && (
                                         <button
-                                            onClick={step === 9 ? handleSubmit : () => setStep(step + 1)}
+                                            onClick={
+                                                step === 9 
+                                                    ? handleSubmit 
+                                                    : (step === 6 && !whatsappConfig.phoneNumber?.trim()) 
+                                                        ? () => toast.error(t('events.whatsappNumberRequiredToast')) 
+                                                        : () => setStep(step + 1)
+                                            }
                                             disabled={loading}
                                             className="btn-primary"
                                             style={{
