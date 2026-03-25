@@ -319,7 +319,7 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
                                                         marginLeft: isMe ? '0' : '4px',
                                                         marginRight: isMe ? '4px' : '0'
                                                     }}>
-                                                        {isMe ? (t('hub.salaDeEventos.me') || 'Eu') : msg.sender.name}
+                                                        {isMe ? (t('hub.me') || 'Eu') : msg.sender.name}
                                                         {msg.sender.isVerified && <PremiumBadge type="verified" size="sm" showLabel={false} />}
                                                         {(msg.sender._id === creatorId || msg.sender.role === 'admin') && (
                                                             <span style={{

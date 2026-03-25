@@ -2275,6 +2275,7 @@
         "descriptionRegeneratePrompt": "Crie uma alternativa criativa e diferente da anterior para a descrição do evento \"{title}\". Mantenha o tom de luxo e elite. NÃO use markdown."
     },
     "hub": {
+        "me": "Eu",
         "remainingTime": "Tempo Restante",
         "days": "Dias",
         "hours": "Horas",
