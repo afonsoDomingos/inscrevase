@@ -73,12 +73,12 @@ const styles = `
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start; /* Alinhado ao topo para evitar cortes */
         height: 100%;
-        padding: 12px;
+        padding: 15px 12px; /* Adicionado padding superior */
         gap: 8px;
     }
-    .logo { width: 80px; height: auto; display: block; }
+    .logo { width: 70px; height: auto; display: block; margin-bottom: 2px; }
     .badge {
         display: inline-flex; align-items: center; gap: 6px;
         font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
@@ -91,8 +91,8 @@ const styles = `
     .dot-waiting { background: #ffcc00; animation: blink 1s infinite; }
     @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
     @keyframes blink { 0%,100%{opacity:.5} 50%{opacity:1} }
-    .title { font-size: 1rem; font-weight: 800; color: #111; text-align: center; }
-    .sub { font-size: 0.72rem; color: #6b7280; text-align: center; }
+    .title { font-size: 0.95rem; font-weight: 800; color: #111; text-align: center; }
+    .sub { font-size: 0.7rem; color: #6b7280; text-align: center; }
     .qr-img { width: 160px; height: 160px; border-radius: 10px; border: 1px solid #eee; display: block; }
     .spinner {
         width: 28px; height: 28px;
@@ -109,6 +109,8 @@ const styles = `
         transition: transform 0.15s;
     }
     .btn:hover { transform: translateY(-2px); background: #f5c200; }
+    .link { font-size: 0.65rem; color: #9ca3af; text-decoration: none; font-weight: 600; margin-top: 5px; }
+    .link:hover { color: #111; }
 </style>
 `;
 
