@@ -2350,6 +2350,8 @@
             "testMode": "(MODO TESTE)",
             "undo_title": "Desfazer (Undo)",
             "clear_title": "Apagar Tudo",
+            "noMessages": "Sem mensagens ainda",
+            "startConversation": "Participe da aula enviando a sua primeira pergunta!",
             "maximize_label": "Maximizar",
             "announcements": {
                 "welcome": {
@@ -2405,7 +2407,8 @@
             "minutes_5": "5 minutos",
             "startNow": "Começar Agora",
             "countdownTitle": "Contagem Decrescente",
-            "countdownMessage": "Prepare o seu material, começamos em {seconds} segundos! 🚀"
+            "countdownMessage": "Prepare o seu material, começamos em {seconds} segundos! 🚀",
+            "chatTip": "APERTE ENTER PARA ENVIAR"
         },
         "communityTitle": "Comunidade",
         "chatSubscribersOnly": "Apenas participantes inscritos podem interagir no chat.",
