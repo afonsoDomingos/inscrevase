@@ -276,10 +276,9 @@ const updateStatus = async (req, res) => {
                     const platformFee = amount * planConfig.commissionRate;
 
                     const currency = (submission.form.paymentConfig.currency || 'MZN').toUpperCase();
-                    const rates = await exchangeRateService.getCurrentRates();
-                    const usdRate = rates[currency] || 1;
-                    const mznRate = rates['MZN'] || 63.8;
-                    const rate = mznRate / usdRate;
+                    const conversion = await exchangeRateService.convert(amount, currency, 'MZN');
+                    const baseAmount = conversion.amount;
+                    const rate = conversion.rate;
 
                     // Create manual transaction (Status: pending until mentor pays platform)
                     const transaction = new Transaction({

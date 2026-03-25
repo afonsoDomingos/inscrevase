@@ -1339,32 +1339,86 @@ exports.submitManualSubscription = async (req, res) => {
 
 exports.getAdminFinancialSummary = async (req, res) => {
     try {
-        const allTransactions = await Transaction.find().populate('mentor', 'name businessName');
-
-        const summary = allTransactions.reduce((acc, tx) => {
-            const isCompleted = tx.status === 'completed';
-            const isManualPending = tx.status === 'pending' && tx.paymentMethod === 'manual';
-
-            if (isCompleted || isManualPending) {
-                const amount = tx.baseAmount || tx.amount;
-                const platformFee = tx.basePlatformFee || tx.platformFee;
-
-                acc.totalRevenue += amount;
-
-                if (tx.type === 'subscription') {
-                    acc.subscriptionRevenue += amount;
-                    if (isCompleted) acc.collectedFees += amount;
-                } else {
-                    acc.eventFeeRevenue += platformFee;
-                    if (isCompleted) acc.collectedFees += platformFee;
+        // Use aggregation for consistent, deduplicated totals
+        const financeSummary = await Transaction.aggregate([
+            {
+                $match: {
+                    $or: [
+                        { status: 'completed' },
+                        { paymentMethod: 'manual', status: 'pending' }
+                    ]
+                }
+            },
+            {
+                $group: {
+                    _id: { $ifNull: ["$stripePaymentIntentId", "$paypalCaptureId", "$_id"] },
+                    type: { $first: "$type" },
+                    status: { $first: "$status" },
+                    baseAmount: { $first: "$baseAmount" },
+                    amount: { $first: "$amount" },
+                    exchangeRate: { $first: "$exchangeRate" },
+                    basePlatformFee: { $first: "$basePlatformFee" },
+                    platformFee: { $first: "$platformFee" }
+                }
+            },
+            {
+                $addFields: {
+                    safeAmount: { 
+                        $ifNull: [
+                            "$baseAmount", 
+                            { $multiply: ["$amount", { $ifNull: ["$exchangeRate", 1] }] }
+                        ] 
+                    },
+                    safeFee: {
+                        $ifNull: [
+                            "$basePlatformFee",
+                            { $multiply: ["$platformFee", { $ifNull: ["$exchangeRate", 1] }] }
+                        ]
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: "$safeAmount" },
+                    subscriptionRevenue: {
+                        $sum: {
+                            $cond: [{ $eq: ["$type", "subscription"] }, "$safeAmount", 0]
+                        }
+                    },
+                    eventFeeRevenue: {
+                        $sum: {
+                            $cond: [{ $ne: ["$type", "subscription"] }, "$safeFee", 0]
+                        }
+                    },
+                    collectedFees: {
+                        $sum: {
+                            $cond: [
+                                { $eq: ["$status", "completed"] },
+                                { $cond: [{ $eq: ["$type", "subscription"] }, "$safeAmount", "$safeFee"] },
+                                0
+                            ]
+                        }
+                    },
+                    pendingFees: {
+                        $sum: {
+                            $cond: [
+                                { $eq: ["$status", "pending"] },
+                                { $cond: [{ $eq: ["$type", "subscription"] }, "$safeAmount", "$safeFee"] },
+                                0
+                            ]
+                        }
+                    }
                 }
             }
+        ]);
 
-            if (tx.status === 'pending') {
-                acc.pendingFees += tx.basePlatformFee || tx.platformFee;
-            }
-            return acc;
-        }, { collectedFees: 0, pendingFees: 0, totalRevenue: 0, subscriptionRevenue: 0, eventFeeRevenue: 0 });
+        const summary = financeSummary[0] || { collectedFees: 0, pendingFees: 0, totalRevenue: 0, subscriptionRevenue: 0, eventFeeRevenue: 0 };
+
+        // Detail lists still need full docs
+        const allTransactions = await Transaction.find()
+            .populate('mentor', 'name businessName')
+            .sort({ createdAt: -1 });
 
         // Growth Chart (Last 12 months)
         const currentYear = new Date().getFullYear();
@@ -1380,14 +1434,14 @@ exports.getAdminFinancialSummary = async (req, res) => {
 
             if (date.getFullYear() === currentYear && isValid) {
                 const month = date.getMonth();
-                const amount = tx.baseAmount || tx.amount;
-                const platformFee = tx.basePlatformFee || tx.platformFee;
+                const safeAmount = tx.baseAmount || (tx.amount * (tx.exchangeRate || 1));
+                const safeFee = tx.basePlatformFee || (tx.platformFee * (tx.exchangeRate || 1));
 
-                monthlyStats[month].revenue += amount;
+                monthlyStats[month].revenue += safeAmount;
                 if (tx.type === 'subscription') {
-                    monthlyStats[month].platformFees += amount;
+                    monthlyStats[month].platformFees += safeAmount;
                 } else {
-                    monthlyStats[month].platformFees += platformFee;
+                    monthlyStats[month].platformFees += safeFee;
                 }
             }
         });
@@ -1407,8 +1461,8 @@ exports.getAdminFinancialSummary = async (req, res) => {
             const isValid = tx.status === 'completed' || (tx.status === 'pending' && tx.paymentMethod === 'manual');
             if (isValid && tx.mentor) {
                 const mentorId = tx.mentor._id.toString();
-                const amount = tx.baseAmount || tx.amount;
-                const platformFee = tx.basePlatformFee || tx.platformFee;
+                const safeAmount = tx.baseAmount || (tx.amount * (tx.exchangeRate || 1));
+                const safeFee = tx.basePlatformFee || (tx.platformFee * (tx.exchangeRate || 1));
 
                 if (!mentorRevenue[mentorId]) {
                     mentorRevenue[mentorId] = {
@@ -1418,8 +1472,8 @@ exports.getAdminFinancialSummary = async (req, res) => {
                         platformFees: 0
                     };
                 }
-                mentorRevenue[mentorId].totalGenerated += amount;
-                mentorRevenue[mentorId].platformFees += platformFee;
+                mentorRevenue[mentorId].totalGenerated += safeAmount;
+                mentorRevenue[mentorId].platformFees += safeFee;
             }
         });
 
