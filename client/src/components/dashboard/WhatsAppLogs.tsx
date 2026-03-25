@@ -18,8 +18,8 @@ export default function WhatsAppLogs() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
-    const fetchLogs = async () => {
-        setLoading(true);
+    const fetchLogs = async (silent = false) => {
+        if (!silent) setLoading(true);
         try {
             const token = localStorage.getItem('token');
             const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/admin/whatsapp/logs?page=${page}&limit=15`, {
@@ -30,12 +30,19 @@ export default function WhatsAppLogs() {
         } catch (error) {
             console.error('Falha ao carregar logs do WhatsApp', error);
         } finally {
-            setLoading(false);
+            if (!silent) setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchLogs();
+        
+        // Auto-refresh a cada 10 segundos para garantir que os disparos atualizam sozinhos
+        const interval = setInterval(() => {
+            fetchLogs(true); // Passamos um flag de silent refresh
+        }, 10000);
+
+        return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page]);
 
@@ -49,7 +56,7 @@ export default function WhatsAppLogs() {
                     <p style={{ color: '#666', fontSize: '0.85rem', marginTop: '4px' }}>Auditoria em tempo real de mensagens enviadas.</p>
                 </div>
                 <button 
-                    onClick={fetchLogs}
+                    onClick={() => fetchLogs()}
                     style={{ background: '#f8f9fa', border: '1px solid #ddd', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}
                 >
                     <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> {loading ? 'A carregar...' : 'Actualizar'}
@@ -113,7 +120,7 @@ export default function WhatsAppLogs() {
                 <div style={{ padding: '1rem', borderTop: '1px solid #eaeaea', display: 'flex', justifyContent: 'center', gap: '8px' }}>
                     <button 
                         disabled={page === 1}
-                        onClick={() => setPage(p => p - 1)}
+                        onClick={() => setPage((p: number) => p - 1)}
                         style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #ddd', background: page === 1 ? '#f5f5f5' : '#fff', cursor: page === 1 ? 'not-allowed' : 'pointer', fontSize: '0.85rem' }}
                     >
                         Anterior
@@ -121,7 +128,7 @@ export default function WhatsAppLogs() {
                     <span style={{ fontSize: '0.85rem', color: '#666', padding: '6px 12px' }}>Página {page} de {totalPages}</span>
                     <button 
                         disabled={page === totalPages}
-                        onClick={() => setPage(p => p + 1)}
+                        onClick={() => setPage((p: number) => p + 1)}
                         style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #ddd', background: page === totalPages ? '#f5f5f5' : '#fff', cursor: page === totalPages ? 'not-allowed' : 'pointer', fontSize: '0.85rem' }}
                     >
                         Seguinte
