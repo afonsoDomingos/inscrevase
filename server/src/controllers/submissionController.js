@@ -142,7 +142,7 @@ const submitForm = async (req, res) => {
 
                 // --- WHATSAPP NOTIFICATION TO MENTOR ---
                 const recipientUser = await User.findById(recipientId);
-                if (recipientUser && recipientUser.phone) {
+                if (recipientUser && recipientUser.whatsapp) {
                     const recipientName = recipientUser.name ? recipientUser.name.split(' ')[0] : 'Mentor';
                     
                     // Procurar Email para incluir
@@ -159,7 +159,7 @@ const submitForm = async (req, res) => {
 
                     const baseUrl = process.env.FRONTEND_URL || 'https://inscreva-se.com';
                     const msg = `Olá *${recipientName}*! 👋\n\n📩 *Nova Inscrição!*\nAlguém acabou de se inscrever em "${form.title}".\n\n👤 *Nome:* ${participantName}\n📧 *Email:* ${pEmail}${priceInfo}\n\n🔗 *Acede ao painel para validar:*\n${baseUrl}/dashboard/mentor`;
-                    whatsappService.sendMessage(recipientUser.phone, msg);
+                    whatsappService.sendMessage(recipientUser.whatsapp, msg);
                 }
             }));
 
@@ -272,13 +272,13 @@ const submitForm = async (req, res) => {
         // ── WHATSAPP NOTIFICATION TO PARTICIPANT ─────────────────────────────
         (async () => {
             try {
-                let pPhone = data.telefone || data.telef || data.phone || data.Phone || data['telefone (whatsapp)'];
+                let pPhone = data.whatsapp || data.Whatsapp || data.telefone || data.telef || data.phone || data.Phone || data['telefone (whatsapp)'];
                 if (!pPhone) {
-                    const phoneKey = Object.keys(data).find(k => k.toLowerCase().includes('telef') || k.toLowerCase().includes('phone') || k.toLowerCase().includes('contacto') || k.toLowerCase().includes('whatsapp'));
+                    const phoneKey = Object.keys(data).find(k => k.toLowerCase().includes('whatsapp') || k.toLowerCase().includes('telef') || k.toLowerCase().includes('contacto') || k.toLowerCase().includes('phone'));
                     if (phoneKey) pPhone = String(data[phoneKey]);
                 }
-                if (!pPhone && req.user && req.user.phone) {
-                    pPhone = req.user.phone;
+                if (!pPhone && req.user && req.user.whatsapp) {
+                    pPhone = req.user.whatsapp;
                 }
 
                 if (pPhone) {

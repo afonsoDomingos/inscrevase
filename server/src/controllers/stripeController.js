@@ -391,11 +391,11 @@ const completeOrder = async (session) => {
                         );
 
                         // --- WHATSAPP NOTIFICATION TO ADMINS ---
-                        if (admin.phone) {
+                        if (admin && admin.whatsapp) {
                             const adminName = admin.name ? admin.name.split(' ')[0] : 'Admin';
                             const baseUrl = process.env.FRONTEND_URL || 'https://inscreva-se.com';
                             const msg = `Olá *${adminName}*! 👋\n\n💎 *NOVO PAGAMENTO DE ANÚNCIO!*\nAcaba de entrar na plataforma um pagamento aprovado para a campanha "${adRequest.title}".\n\n👤 *Empresa/Utilizador:* ${advertiser.name}\n💰 *Valor Pago:* ${adRequest.priceTotal} ${adRequest.currency}\n\n🔗 *Aprovar Criativos:*\n${baseUrl}/dashboard/admin/ads`;
-                            whatsappService.sendMessage(admin.phone, msg);
+                            whatsappService.sendMessage(admin.whatsapp, msg);
                         }
                     }
                 }
@@ -782,14 +782,14 @@ exports.handleWebhook = async (req, res) => {
                             );
 
                             // --- WHATSAPP NOTIFICATION TO ADMINS ---
-                            if (admin.phone) {
+                            if (admin && admin.whatsapp) {
                                 const adminName = admin.name ? admin.name.split(' ')[0] : 'Admin';
                                 const userEmail = user ? user.email : 'Sem email';
                                 const userName = user ? user.name : 'Novo Utilizador';
                                 const baseUrl = process.env.FRONTEND_URL || 'https://inscreva-se.com';
                                 
                                 const msg = `Olá *${adminName}*! 🚀\n\n💳 *NOVA ASSINATURA PREMIUM!*\nAlguém acabou de fazer upgrade à sua conta!\n\n👤 *Nome:* ${userName}\n📧 *Email:* ${userEmail}\n⭐ *Plano Activado:* ${plan.toUpperCase()}\n\n🔗 *Ver Painel:*\n${baseUrl}/dashboard/admin`;
-                                whatsappService.sendMessage(admin.phone, msg);
+                                whatsappService.sendMessage(admin.whatsapp, msg);
                             }
                         }
                     } catch (pushErr) {

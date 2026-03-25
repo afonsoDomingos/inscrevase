@@ -42,20 +42,20 @@ exports.recordPurchase = async (req, res) => {
                 const customerUser = await User.findById(userId);
                 const customerName = customerUser ? customerUser.name : 'Anónimo';
                 const bookTitle = bookDoc.title;
-                if (mentor.phone) {
+                if (mentor.whatsapp) {
                     const mentorName = mentor.name ? mentor.name.split(' ')[0] : 'Mentor';
                     const customerEmail = customerUser ? customerUser.email : 'Sem email';
                     const baseUrl = process.env.FRONTEND_URL || 'https://inscreva-se.com';
                     const msg = `Olá *${mentorName}*! 👋\n\n📚 *NOVA VENDA DE LIVRO!*\nParabéns! O teu e-book "${bookTitle}" acabou de ser vendido!\n\n💳 *Comprador:* ${customerName}\n📧 *Email:* ${customerEmail}\n\n🔗 *Acede às tuas vendas:*\n${baseUrl}/dashboard/mentor?tab=mysales`;
-                    whatsappService.sendMessage(mentor.phone, msg);
+                    whatsappService.sendMessage(mentor.whatsapp, msg);
                 }
 
                 // --- WHATSAPP NOTIFICATION TO CUSTOMER ---------
-                if (customerUser && customerUser.phone) {
+                if (customerUser && customerUser.whatsapp) {
                     const custFirstName = customerName.split(' ')[0] || 'Participante';
                     const baseUrl = process.env.FRONTEND_URL || 'https://inscreva-se.com';
                     const custMsg = `Olá *${custFirstName}*! 🎉\n\n✅ *Compra Concluída!*\nO teu e-book "${bookTitle}" já está disponível na tua conta.\n\n🔗 *Iniciar leitura:*\n${baseUrl}/dashboard/participant?tab=mybooks`;
-                    whatsappService.sendMessage(customerUser.phone, custMsg);
+                    whatsappService.sendMessage(customerUser.whatsapp, custMsg);
                 }
             }
         } catch (pushErr) {
