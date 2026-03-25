@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { RefreshCw, CheckCircle, XCircle, Search, MessageSquare, AlertTriangle } from 'lucide-react';
+import { RefreshCw, CheckCircle, XCircle, MessageSquare, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
 
 interface WaLog {
@@ -37,6 +36,7 @@ export default function WhatsAppLogs() {
 
     useEffect(() => {
         fetchLogs();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page]);
 
     return (
