@@ -1826,35 +1826,19 @@ export default function AdminDashboard() {
                             maxWidth: '800px',
                             margin: '0 auto'
                         }}>
-                            <div style={{
-                                width: '80px',
-                                height: '80px',
-                                background: 'var(--gold-gradient)',
-                                borderRadius: '20px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                marginBottom: '1.5rem',
-                                color: '#000'
-                            }}>
-                                <MessageCircle size={40} />
-                            </div>
-                            <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', fontFamily: 'var(--font-playfair)' }}>
-                                Conectar WhatsApp de Automação 💬
+                            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '2rem', fontFamily: 'var(--font-playfair)' }}>
+                                Automação WhatsApp 💬
                             </h2>
-                            <p style={{ color: '#666', maxWidth: '500px', marginBottom: '2rem', lineHeight: '1.6' }}>
-                                Ligue o número oficial da plataforma para enviar notificações automáticas de vendas, inscrições e upgrades para os seus utilizadores.
-                            </p>
 
                             <iframe 
                                     src={`${(process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? (window.location.origin.includes('localhost') ? 'http://localhost:5000' : window.location.origin) : 'http://localhost:5000')).replace(/\/api$/, '')}/api/admin/whatsapp/qr`}
                                     style={{
                                         width: '100%',
-                                        height: '420px',
+                                        height: '460px', // Aumentado ligeiramente para acomodar o form de código
                                         border: 'none',
                                         overflow: 'hidden',
                                         borderRadius: '16px',
-                                        marginBottom: '2rem',
+                                        marginBottom: '1rem',
                                         background: '#fff'
                                     }}
                                     title="WhatsApp QR Monitor"
