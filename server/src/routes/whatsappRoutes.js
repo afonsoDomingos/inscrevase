@@ -195,16 +195,43 @@ router.get('/qr', async (req, res) => {
             return res.send(`${styles}${logo}
                 <div class="badge"><div class="dot dot-online"></div>Online</div>
                 <div class="title">WhatsApp Ligado ✅</div>
-                <div class="sub" style="margin-bottom: 4px;">Teste as notificações abaixo:</div>
-                <form action="/api/admin/whatsapp/test-message" method="GET" style="display:flex; flex-direction:column; gap:8px; width:100%; max-width:240px;">
-                    <textarea name="customMessage" placeholder="Mensagem personalizada (ou deixa em branco)..." style="width:100%; border:1px solid #ddd; border-radius:10px; padding:8px 12px; font-family:'Inter', sans-serif; font-size:0.75rem; resize:none; outline:none; background:#f9fafb;" rows="2"></textarea>
-                    <button type="submit" class="btn" style="width:100%;">🚀 Testar no meu nº</button>
-                    <div style="display:flex; gap:6px; align-items:stretch; margin-top:2px;">
-                        <input type="text" name="phone" placeholder="+258..." style="flex:1; min-width:0; padding:8px 12px; border-radius:10px; border:1px solid #ddd; font-family:'Inter', sans-serif; font-size:0.8rem; outline:none;" />
-                        <button type="submit" class="btn" style="width:auto; padding:0 12px; font-size:0.75rem;">Testar Ex.</button>
-                    </div>
-                </form>
-                <a href="/api/admin/whatsapp/restart" class="link" style="margin-top:6px;">Desconectar / Trocar de Conta</a>`);
+                <div class="sub" style="margin-bottom: 4px;">Teste as notificações e templates abaixo:</div>
+                
+                <div style="width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 12px; align-items: center;">
+                    <form action="/api/admin/whatsapp/test-message" method="GET" style="display:flex; flex-direction:column; gap:8px; width:100%;">
+                        <textarea id="customMsg" name="customMessage" placeholder="Escreve aqui ou escolhe um template abaixo..." style="width:100%; border:1px solid #ddd; border-radius:12px; padding:10px 14px; font-family:'Inter', sans-serif; font-size:0.75rem; resize:none; outline:none; background:#f9fafb; min-height:80px;" rows="3"></textarea>
+                        
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; width:100%; margin-bottom:5px;">
+                            <button type="button" onclick="setTemplate('mentor_new')" style="padding:6px; font-size:0.6rem; font-weight:700; background:#f3f4f6; border:1px solid #ddd; border-radius:8px; cursor:pointer;">🛎️ Inscrição (Mentor)</button>
+                            <button type="button" onclick="setTemplate('part_new')" style="padding:6px; font-size:0.6rem; font-weight:700; background:#f3f4f6; border:1px solid #ddd; border-radius:8px; cursor:pointer;">🎉 Inscrição (Part.)</button>
+                            <button type="button" onclick="setTemplate('part_app')" style="padding:6px; font-size:0.6rem; font-weight:700; background:#f3f4f6; border:1px solid #ddd; border-radius:8px; cursor:pointer;">✅ Aprovação</button>
+                            <button type="button" onclick="setTemplate('book_sale')" style="padding:6px; font-size:0.6rem; font-weight:700; background:#f3f4f6; border:1px solid #ddd; border-radius:8px; cursor:pointer;">📚 Venda Livro</button>
+                        </div>
+
+                        <button type="submit" class="btn" style="width:100%;">🚀 Testar no meu nº</button>
+                        
+                        <div style="display:flex; gap:6px; align-items:stretch; margin-top:4px;">
+                            <input type="text" name="phone" placeholder="+258..." style="flex:1; min-width:0; padding:8px 12px; border-radius:12px; border:1px solid #ddd; font-family:'Inter', sans-serif; font-size:0.8rem; outline:none;" />
+                            <button type="submit" class="btn" style="width:auto; padding:0 15px; font-size:0.75rem;">Testar Ex.</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <script>
+                    function setTemplate(type) {
+                        const area = document.getElementById('customMsg');
+                        const baseUrl = window.location.origin.replace('/api/admin/whatsapp', '');
+                        const templates = {
+                            mentor_new: 'Olá *Mentor*! 👋\\n\\n📩 *Nova Inscrição!*\\nAlguém acabou de se inscrever em "WorkShop de IA".\\n\\n👤 *Nome:* Carlos Afonso\\n📧 *Email:* carlos@exemplo.com\\n💰 *Valor:* 2.500 MZN\\n\\n🔗 *Acede ao painel para validar:*\\n' + baseUrl + '/dashboard/mentor',
+                            part_new: 'Olá *Carlos*! 🎉\\n\\n✅ *Inscrição Recebida!*\\n\\n📅 *Evento:* "WorkShop de IA"\\nO teu pagamento foi registado e está a aguardar validação.\\n\\n🔗 *Acede ao teu painel:*\\n' + baseUrl + '/dashboard/participant',
+                            part_app: 'Olá *Carlos*! 🎉\\n\\n✅ *A tua vaga está confirmada!*\\n\\nA tua inscrição para o evento "WorkShop de IA" foi aprovada pelo mentor.\\n\\n🔗 *Acede agora ao teu Hub do Inscrito:*\\n' + baseUrl + '/hub/65e9f1...',
+                            book_sale: 'Olá *Escritor*! 👋\\n\\n📚 *NOVA VENDA DE LIVRO!*\\nParabéns! O teu e-book "Marketing Digital para Iniciantes" acabou de ser vendido!\\n\\n💳 *Comprador:* Maria João\\n📧 *Email:* maria@exemplo.com\\n\\n🔗 *Acede às tuas vendas:*\\n' + baseUrl + '/dashboard/mentor?tab=mysales'
+                        };
+                        area.value = templates[type] || "";
+                    }
+                </script>
+
+                <a href="/api/admin/whatsapp/restart" class="link" style="margin-top:10px;">Desconectar / Trocar de Conta</a>`);
         }
 
         if (qrImage) {

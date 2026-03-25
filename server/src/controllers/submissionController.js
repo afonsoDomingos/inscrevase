@@ -400,6 +400,32 @@ const updateStatus = async (req, res) => {
                             `/hub/${submission._id}`
                         );
                     }
+
+                    // --- NEW: WHATSAPP NOTIFICATION FOR APPROVAL ---
+                    (async () => {
+                        try {
+                            const dataObj = submission.data instanceof Map ? Object.fromEntries(submission.data) : submission.data;
+                            let pPhone = dataObj.whatsapp || dataObj.telefone || dataObj.telef || dataObj.phone || dataObj['telefone (whatsapp)'];
+                            
+                            if (!pPhone) {
+                                const phoneKey = Object.keys(dataObj).find(k => k.toLowerCase().includes('whatsapp') || k.toLowerCase().includes('telef') || k.toLowerCase().includes('contacto') || k.toLowerCase().includes('phone'));
+                                if (phoneKey) pPhone = String(dataObj[phoneKey]);
+                            }
+
+                            if (!pPhone && submission.user) {
+                                const u = await User.findById(submission.user).select('whatsapp');
+                                if (u?.whatsapp) pPhone = u.whatsapp;
+                            }
+
+                            if (pPhone) {
+                                const hubUrl = `${process.env.FRONTEND_URL || 'https://inscreva-se.com'}/hub/${submission._id}`;
+                                const msg = `Olá *${participantName.split(' ')[0]}*! 🎉\n\n✅ *A tua vaga está confirmada!*\n\nA tua inscrição para o evento "${submission.form.title}" foi aprovada pelo mentor.\n\n🔗 *Acede agora ao teu Hub do Inscrito:*\n${hubUrl}\n\nEstamos à tua espera! 🚀`;
+                                whatsappService.sendMessage(pPhone, msg).catch(() => {});
+                            }
+                        } catch (waErr) {
+                            console.error('[Submission] Error sending approval WA:', waErr);
+                        }
+                    })();
                 }
             } catch (emailErr) {
                 console.error('[Submission] Error sending approval email:', emailErr);
