@@ -1266,13 +1266,15 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                             {isMobile && (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <button
-                                        onClick={() => setShowPreview(true)}
+                                        type="button"
+                                        onClick={(e) => { e.stopPropagation(); setShowPreview(true); }}
                                         style={{ background: 'rgba(255,255,255,0.1)', border: 'none', width: '36px', height: '36px', borderRadius: '50%', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                     >
                                         <Eye size={18} />
                                     </button>
                                     <button
-                                        onClick={onClose}
+                                        type="button"
+                                        onClick={(e) => { e.stopPropagation(); onClose(); }}
                                         style={{ background: 'rgba(255,255,255,0.1)', border: 'none', width: '36px', height: '36px', borderRadius: '50%', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                     >
                                         <X size={18} />
@@ -1411,7 +1413,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                 {!isMobile && (
                                     <div style={{ position: 'absolute', top: isMobile ? '2.5rem' : '2rem', right: isMobile ? '1.2rem' : '2.5rem', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 30 }}>
                                         <button
-                                            onClick={() => setShowPreview(true)}
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); setShowPreview(true); }}
                                             title="Pré-visualizar Evento"
                                             style={{
                                                 background: '#fff',
@@ -1432,7 +1435,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                             {!isMobile && "Pré-visualizar"}
                                         </button>
                                         <button
-                                            onClick={onClose}
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); onClose(); }}
                                             style={{ background: '#eee', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                         >
                                             <X size={16} />
@@ -2550,12 +2554,34 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                                             <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800 }}>{t('events.formFields')}</h2>
-                                            <button
-                                                onClick={handleAddField}
-                                                style={{ background: '#000', color: '#FFD700', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
-                                            >
-                                                <Plus size={16} /> {isMobile ? '' : t('events.addField')}
-                                            </button>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => { e.stopPropagation(); setShowPreview(true); }}
+                                                    style={{
+                                                        background: '#fff',
+                                                        color: '#333',
+                                                        border: '1px solid #ddd',
+                                                        padding: '0.6rem 1.2rem',
+                                                        borderRadius: '8px',
+                                                        fontWeight: 700,
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '5px',
+                                                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                                    }}
+                                                >
+                                                    <Eye size={16} /> {isMobile ? '' : "Pré-visualizar"}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleAddField}
+                                                    style={{ background: '#000', color: '#FFD700', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+                                                >
+                                                    <Plus size={16} /> {isMobile ? '' : t('events.addField')}
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div style={{ background: '#f0f9ff', padding: '1rem', borderRadius: '12px', border: '1px solid #bae6fd', marginBottom: '2rem', display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -2591,10 +2617,25 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                                 /> {t('events.requiredField')}
                                                             </label>
                                                             <button
+                                                                type="button"
                                                                 onClick={() => handleRemoveField(field.id)}
-                                                                style={{ color: '#ef4444', background: '#fef2f2', border: 'none', cursor: 'pointer', padding: '10px', borderRadius: '10px' }}
+                                                                style={{
+                                                                    color: '#ef4444',
+                                                                    background: '#fef2f2',
+                                                                    border: 'none',
+                                                                    cursor: 'pointer',
+                                                                    width: '32px',
+                                                                    height: '32px',
+                                                                    borderRadius: '50%',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    transition: 'all 0.2s'
+                                                                }}
+                                                                onMouseOver={(e) => e.currentTarget.style.background = '#fee2e2'}
+                                                                onMouseOut={(e) => e.currentTarget.style.background = '#fef2f2'}
                                                             >
-                                                                <Trash2 size={16} />
+                                                                <Trash2 size={14} />
                                                             </button>
                                                         </div>
                                                     </div>
@@ -2833,12 +2874,13 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                 {t('events.steps.hub') || 'Área do Participante'}
                                             </h2>
                                             <button
-                                                onClick={() => setShowHubPreview(true)}
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); setShowHubPreview(true); }}
                                                 style={{
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     gap: '8px',
-                                                    padding: '8px 16px',
+                                                    padding: '0.6rem 1.2rem',
                                                     borderRadius: '12px',
                                                     background: '#000',
                                                     color: '#FFD700',
@@ -2846,12 +2888,11 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                     fontSize: '0.85rem',
                                                     fontWeight: 700,
                                                     cursor: 'pointer',
-                                                    transition: 'all 0.2',
+                                                    transition: 'all 0.2s',
                                                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                                 }}
                                             >
-                                                <Eye size={16} />
-                                                Visualizar Hub
+                                                <Eye size={16} /> Visualizar Hub
                                             </button>
                                         </div>
                                         <p style={{ color: '#666', marginBottom: '2rem' }}>
@@ -3837,7 +3878,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                         {/* Unified Sticky Footer Action */}
                         {step !== 0 && (
                             <div style={{
-                                padding: isMobile ? '1rem 1.5rem calc(1rem + env(safe-area-inset-bottom))' : '1rem 2rem', // Safe area for footer
+                                padding: isMobile ? '1rem 1.5rem calc(1rem + env(safe-area-inset-bottom))' : '1rem 2rem', 
                                 background: '#fff',
                                 borderTop: '2px solid #FFD700',
                                 display: 'flex',
@@ -3848,22 +3889,11 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                 gap: '12px',
                                 flexShrink: 0,
                                 position: 'relative'
-                            }
-                            }>
-                                {/* Shortucts Info (Desktop Only) */}
-                                {
-                                    !isMobile && (
-                                        <div style={{ fontSize: '0.7rem', color: '#666', display: 'flex', gap: '15px' }}>
-                                            <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + →</span> {t('common.next')}</span>
-                                            <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + ←</span> {t('common.back')}</span>
-                                            {step === 9 && <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + Enter</span> {t('events.publish')}</span>}
-                                        </div>
-                                    )
-                                }
-
+                            }}>
                                 <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto', marginLeft: 'auto' }}>
                                     {step > 0 && (
                                         <button
+                                            type="button"
                                             onClick={() => setStep(step - 1)}
                                             style={{
                                                 padding: isMobile ? '0.8rem 1rem' : '0.8rem 2.5rem',
@@ -3872,19 +3902,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                 background: '#fff',
                                                 color: '#333',
                                                 fontWeight: 700,
-                                                fontSize: isMobile ? '0.9rem' : '1rem', // Smaller font on mobile
+                                                fontSize: isMobile ? '0.9rem' : '1rem',
                                                 cursor: 'pointer',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 gap: '8px',
-                                                whiteSpace: 'nowrap' // Prevent text wrap inside button
+                                                whiteSpace: 'nowrap'
                                             }}
                                         >
-                                            <ExternalLink size={18} style={{ transform: 'rotate(180deg)' }} /> {t('common.back')}
+                                            <ArrowLeft size={18} /> {t('common.back')}
                                         </button>
                                     )}
                                     {step > 0 && (
                                         <button
+                                            type="button"
                                             onClick={
                                                 step === 9 
                                                     ? handleSubmit 
@@ -3908,7 +3939,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                 whiteSpace: 'nowrap'
                                             }}
                                         >
-                                            {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 9 ? <><Save size={20} /> {t('events.publish')}</> : <>{t('common.next')} <ExternalLink size={18} /></>)}
+                                            {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 9 ? <><Save size={20} /> {t('events.publish')}</> : <>{t('common.next')} <ChevronRight size={18} /></>)}
                                         </button>
                                     )}
                                 </div>

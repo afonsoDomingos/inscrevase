@@ -30,7 +30,6 @@ const submitForm = async (req, res) => {
             return res.status(400).json({ message: 'Dados do formulário inválidos' });
         }
 
-        // Sanitise keys (prevent dots in Mongoose Map keys)
         const sanitizedData = {};
         for (const [key, value] of Object.entries(data)) {
             const cleanKey = key.replace(/\./g, '_');
@@ -43,12 +42,10 @@ const submitForm = async (req, res) => {
             return res.status(404).json({ message: 'Form not found or inactive' });
         }
 
-        // Capacity check
         if (form.capacity && form.capacity > 0) {
             const currentSubmissions = await Submission.countDocuments({ form: formId });
             const totalAllowed = form.capacity + (form.extraCapacity || 0);
             if (currentSubmissions >= totalAllowed) {
-                console.warn(`[Submission] Capacity reached for form ${formId}: ${currentSubmissions}/${totalAllowed}`);
                 return res.status(400).json({ message: 'Capacidade máxima atingida para este evento.' });
             }
         }
@@ -59,36 +56,26 @@ const submitForm = async (req, res) => {
             paymentProof
         };
 
-        // Link the submission
         if (req.user) {
-            console.log('[Submission] User is logged in, linking to:', req.user.id);
             submissionData.user = req.user.id;
         } else {
-            // Try to find email in data and link to existing user
             const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail'];
             let foundEmail = null;
-
             for (const key of emailKeys) {
                 if (data[key] && typeof data[key] === 'string') {
                     foundEmail = data[key];
                     break;
                 }
             }
-
             if (!foundEmail) {
-                // Try searching all keys for something that looks like an email if no common key found
                 const allValues = Object.values(data);
                 foundEmail = allValues.find(v => typeof v === 'string' && v.includes('@') && v.includes('.'));
             }
 
             if (foundEmail && typeof foundEmail === 'string') {
-                console.log('[Submission] Found email in submission data:', foundEmail);
                 try {
                     const existingUser = await User.findOne({ email: foundEmail.toLowerCase().trim() });
-                    if (existingUser) {
-                        console.log('[Submission] Linking submission to existing user:', existingUser._id);
-                        submissionData.user = existingUser._id;
-                    }
+                    if (existingUser) submissionData.user = existingUser._id;
                 } catch (linkError) {
                     console.error("Error linking submission to user:", linkError);
                 }
@@ -97,255 +84,110 @@ const submitForm = async (req, res) => {
 
         const submission = new Submission(submissionData);
         await submission.save();
-        console.log('[Submission] Submission saved successfully:', submission._id);
 
-        // Notify Creator and Partners (Non-blocking)
-        // Try to find participant name in data with case-insensitive search
-        let participantName = data.nome || data.name;
-        if (!participantName) {
-            const nameKey = Object.keys(data).find(k => k.toLowerCase().includes('nome') || k.toLowerCase().includes('name'));
-            if (nameKey) participantName = data[nameKey];
-        }
+        // Respond immediately to prevent client timeout
+        res.status(201).json({ message: 'Inscrição enviada com sucesso', submission });
+        console.log('[Submission] Submission saved successfully. Starting background tasks...');
 
-        // Fallback to logged user name or default
-        if (!participantName || typeof participantName !== 'string') {
-            participantName = (req.user && req.user.name) ? req.user.name : 'Um novo participante';
-        }
-
-        // Final safety check for split
-        const firstName = (typeof participantName === 'string' && participantName.trim()) 
-            ? participantName.split(' ')[0] 
-            : 'Participante';
-        try {
-            console.log('[Submission] Sending notification to creator:', form.creator);
-            const recipients = [form.creator, ...(form.partners || [])];
-
-            await Promise.all(recipients.map(async (recipientId) => {
-                // In-app Notification
-                await NotificationService.notify({
-                    recipient: recipientId,
-                    sender: req.user ? req.user.id : recipientId,
-                    title: 'Nova Inscrição Recebida! 📩',
-                    content: `${participantName} acabou de se inscrever em seu evento "${form.title}".`,
-                    type: 'personal',
-                    actionUrl: '/dashboard/mentor'
-                });
-
-                // --- REAL PUSH NOTIFICATION (Shopify Style) ---
-                pushController.sendNotification(
-                    recipientId,
-                    '📩 Nova Inscrição!',
-                    `${participantName} inscreveu-se em "${form.title}".`,
-                    form.coverImage || '/logo.png',
-                    '/dashboard/mentor'
-                );
-
-                // --- WHATSAPP NOTIFICATION TO MENTOR ---
-                const recipientUser = await User.findById(recipientId);
-                if (recipientUser && recipientUser.whatsapp) {
-                    const recipientName = recipientUser.name ? recipientUser.name.split(' ')[0] : 'Mentor';
-                    
-                    // Procurar Email para incluir
-                    let pEmail = data.email || data.Email || 'Não fornecido';
-                    if (pEmail === 'Não fornecido') {
-                         const emKey = Object.keys(data).find(k => k.toLowerCase().includes('email'));
-                         if (emKey) pEmail = data[emKey];
-                    }
-
-                    // Verificar se foi um evento pago
-                    const isPaid = form.paymentConfig?.enabled || false;
-                    const price = form.paymentConfig?.price || 0;
-                    const currency = form.paymentConfig?.currency || 'MZN';
-
-                    const priceInfo = isPaid 
-                        ? `\n💰 *Valor:* ${price} ${currency}` 
-                        : `\n🏷️ *Tipo:* Gratuito`;
-
-                    const baseUrl = process.env.FRONTEND_URL || 'https://inscreva-se.com';
-                    const msg = `Olá *${recipientName}*! 👋\n\n📩 *Nova Inscrição!*\nAlguém acabou de se inscrever em "${form.title}".\n\n👤 *Nome:* ${participantName}\n📧 *Email:* ${pEmail}${priceInfo}\n\n🔗 *Acede ao painel para validar:*\n${baseUrl}/dashboard/mentor`;
-                    whatsappService.sendMessage(recipientUser.whatsapp, msg);
+        // BACKGROUND TASKS
+        (async () => {
+            try {
+                let participantName = data.nome || data.name;
+                if (!participantName) {
+                    const nameKey = Object.keys(data).find(k => k.toLowerCase().includes('nome') || k.toLowerCase().includes('name'));
+                    if (nameKey) participantName = data[nameKey];
                 }
-            }));
+                if (!participantName || typeof participantName !== 'string') {
+                    participantName = (req.user && req.user.name) ? req.user.name : 'Um novo participante';
+                }
+                const firstName = participantName.split(' ')[0] || 'Participante';
 
-            // Notify Creator via Email
-            const mentor = await User.findById(form.creator);
-            if (mentor && mentor.email) {
-                const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/mentor`;
+                const recipients = [form.creator, ...(form.partners || [])];
+                const dashboardUrl = `${process.env.FRONTEND_URL || 'https://inscreva-se.com'}/dashboard/mentor`;
 
-                // Use the new "Pending Approval" template if the form expects manual validation (default behavior)
-                const emailHtml = generatePendingApprovalEmail(
-                    mentor.name,
-                    participantName,
-                    form.title,
-                    dashboardUrl
-                );
-
-                await sendEmail(mentor.email, `⏳ Aprovação Pendente: ${participantName} - ${form.title}`, emailHtml);
-
-                await logCommunication({
-                    recipientIds: [mentor._id],
-                    recipientEmails: [mentor.email],
-                    subject: `⏳ Aprovação Pendente: ${participantName} - ${form.title}`,
-                    content: `Inscrição recebida para o evento "${form.title}".`,
-                    status: 'sent'
-                });
-
-                // --- AUTOMATION: First Submission Ever ---
-                if (!mentor.receivedFirstSubmissionNudge) {
-                    const totalSubmissions = await Submission.countDocuments({
-                        form: { $in: await Form.find({ creator: mentor._id }).distinct('_id') }
-                    });
-
-                    if (totalSubmissions === 1) {
-                        const content = `Que momento fantástico! Acabamos de registar a <strong>primeira inscrição</strong> num evento criado por ti. Este é o início oficial da tua faturação e impacto através do teu conhecimento. O primeiro passo foi dado com sucesso!`;
-                        const congratsHtml = generateBasicEmail(
-                            '🎉 Parabéns! A tua PRIMEIRA inscrição chegou!',
-                            mentor.name,
-                            content,
-                            'Ver Submissão',
-                            dashboardUrl
-                        );
-
-                        await sendEmail(mentor.email, '🎉 Vitória! Recebeste a tua primeira inscrição! - Inscreva-se', congratsHtml);
-                        await logCommunication({
-                            recipientIds: [mentor._id],
-                            recipientEmails: [mentor.email],
-                            subject: '🎉 Vitória! Recebeste a tua primeira inscrição!',
-                            content: `Parabéns pela sua primeira inscrição na plataforma!`,
-                            status: 'sent'
+                // 1. Notify Creator and Partners
+                await Promise.all(recipients.map(async (recipientId) => {
+                    try {
+                        await NotificationService.notify({
+                            recipient: recipientId,
+                            sender: req.user ? req.user.id : recipientId,
+                            title: 'Nova Inscrição Recebida! 📩',
+                            content: `${participantName} acabou de se inscrever em seu evento "${form.title}".`,
+                            type: 'personal',
+                            actionUrl: '/dashboard/mentor'
                         });
 
-                        // Mark as nudge sent
-                        mentor.receivedFirstSubmissionNudge = true;
-                        await mentor.save();
-                    }
-                }
-                // ------------------------------------------
-            }
-        } catch (notifErr) {
-            console.error('[Submission] Error sending notifications:', notifErr);
-        }
+                        pushController.sendNotification(
+                            recipientId,
+                            '📩 Nova Inscrição!',
+                            `${participantName} inscreveu-se em "${form.title}".`,
+                            form.coverImage || '/logo.png',
+                            '/dashboard/mentor'
+                        );
 
-        // ── SIGNUP INCENTIVE EMAIL (Non-blocking) ────────────────────────────
-        // If the participant does NOT have a platform account, send an email
-        // encouraging them to create one as a Participant.
-        (async () => {
-            try {
-                // Only fire when the registrant is NOT a logged-in user
+                        const rUser = await User.findById(recipientId);
+                        if (rUser?.whatsapp) {
+                            const isPaid = form.paymentConfig?.enabled || false;
+                            const priceInfo = isPaid ? `\n💰 *Valor:* ${form.paymentConfig.price} ${form.paymentConfig.currency}` : `\n🏷️ *Tipo:* Gratuito`;
+                            const msg = `Olá *${rUser.name?.split(' ')[0] || 'Mentor'}*! 👋\n\n📩 *Nova Inscrição!*\nAlguém acabou de se inscrever em "${form.title}".\n\n👤 *Nome:* ${participantName}${priceInfo}\n\n🔗 *Acede ao painel:*\n${dashboardUrl}`;
+                            whatsappService.sendMessage(rUser.whatsapp, msg).catch(() => {});
+                        }
+                    } catch (e) {
+                        console.error('[Submission BG] Partner Notify Error:', e);
+                    }
+                }));
+
+                // 2. Email to Mentor
+                const mentor = await User.findById(form.creator);
+                if (mentor?.email) {
+                    const emailHtml = generatePendingApprovalEmail(mentor.name, participantName, form.title, dashboardUrl);
+                    await sendEmail(mentor.email, `⏳ Aprovação Pendente: ${participantName} - ${form.title}`, emailHtml).catch(() => {});
+                }
+
+                // 3. Signup Incentive for Guests
                 if (!req.user) {
-                    // Resolve the participant email from submission data
-                    const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail'];
-                    let participantEmail = null;
-                    for (const key of emailKeys) {
-                        if (data[key] && typeof data[key] === 'string') {
-                            participantEmail = data[key].toLowerCase().trim();
-                            break;
-                        }
-                    }
-                    if (!participantEmail) {
-                        const allValues = Object.values(data);
-                        const found = allValues.find(v => typeof v === 'string' && v.includes('@') && v.includes('.'));
-                        if (found) participantEmail = found.toLowerCase().trim();
-                    }
-
-                    if (participantEmail) {
-                        // Check if an account already exists for this email
-                        const existingUser = await User.findOne({ email: participantEmail }).select('_id').lean();
-                        if (!existingUser) {
+                    const pEmail = data.email || data.Email || Object.values(data).find(v => typeof v === 'string' && v.includes('@'));
+                    if (pEmail) {
+                        const exists = await User.findOne({ email: pEmail.toLowerCase().trim() });
+                        if (!exists) {
                             const signupUrl = `${process.env.FRONTEND_URL || 'https://inscreva-se.com'}/entrar?mode=register`;
-                            const incentiveHtml = generateSignupIncentiveEmail(
-                                participantName,
-                                form.title,
-                                signupUrl
-                            );
-                            await sendEmail(
-                                participantEmail,
-                                `💡 Cria a Tua Conta e Acompanha a Tua Inscrição em "${form.title}"`,
-                                incentiveHtml
-                            );
-                            console.log('[Submission] Signup incentive email sent to:', participantEmail);
+                            const incentiveHtml = generateSignupIncentiveEmail(participantName, form.title, signupUrl);
+                            await sendEmail(pEmail, `💡 Cria a Tua Conta e Acompanha a Tua Inscrição em "${form.title}"`, incentiveHtml).catch(() => {});
                         }
                     }
                 }
-            } catch (incentiveErr) {
-                console.error('[Submission] Error sending signup incentive email:', incentiveErr);
-            }
-        })();
-        // ─────────────────────────────────────────────────────────────────────
 
-        // ── WHATSAPP NOTIFICATION TO PARTICIPANT ─────────────────────────────
-        (async () => {
-            try {
-                let pPhone = data.whatsapp || data.Whatsapp || data.telefone || data.telef || data.phone || data.Phone || data['telefone (whatsapp)'];
-                if (!pPhone) {
-                    const phoneKey = Object.keys(data).find(k => k.toLowerCase().includes('whatsapp') || k.toLowerCase().includes('telef') || k.toLowerCase().includes('contacto') || k.toLowerCase().includes('phone'));
-                    if (phoneKey) pPhone = String(data[phoneKey]);
-                }
-                if (!pPhone && req.user && req.user.whatsapp) {
-                    pPhone = req.user.whatsapp;
-                }
-
+                // 4. WhatsApp to Participant
+                let pPhone = data.whatsapp || data.telefone || data.telef || data.phone || data['telefone (whatsapp)'];
+                if (!pPhone && req.user?.whatsapp) pPhone = req.user.whatsapp;
                 if (pPhone) {
-                    const isPaid = form.paymentConfig?.enabled || false;
-                    const statusMsg = isPaid 
-                        ? 'O teu pagamento foi registado e está a aguardar validação do comprovativo.' 
-                        : 'A tua inscrição foi registada e está a aguardar validação do mentor.';
-                        
-                    const baseUrl = process.env.FRONTEND_URL || 'https://inscreva-se.com';
-                    const partMsg = `Olá *${firstName}*! 🎉\n\n✅ *Inscrição Recebida!*\n\n📅 *Evento:* "${form.title}"\n${statusMsg}\n\n🔗 *Acede ao teu painel:*\n${baseUrl}/dashboard/participant`;
-                    whatsappService.sendMessage(pPhone, partMsg);
+                    const statusMsg = form.paymentConfig?.enabled ? 'O teu pagamento foi registado e está a aguardar validação.' : 'A tua inscrição foi registada e está a aguardar validação.';
+                    const partMsg = `Olá *${firstName}*! 🎉\n\n✅ *Inscrição Recebida!*\n\n📅 *Evento:* "${form.title}"\n${statusMsg}\n\n🔗 *Vê aqui:*\n${process.env.FRONTEND_URL}/dashboard/participant`;
+                    whatsappService.sendMessage(pPhone, partMsg).catch(() => {});
                 }
-            } catch (pwaErr) {
-                console.error('[Submission] Error sending WA to participant:', pwaErr);
+
+                // 5. Welcome Ticket
+                if (submission.user) {
+                    const welcomeText = form.welcomeMessage || `Olá ${firstName}! Obrigado por se inscrever no evento "${form.title}".`;
+                    await SupportTicket.create({
+                        user: submission.user,
+                        mentor: form.creator,
+                        subject: `Bem-vindo: ${form.title}`,
+                        messages: [{ sender: 'mentor', content: welcomeText }],
+                        unreadByUser: true
+                    }).catch(() => {});
+                }
+
+            } catch (err) {
+                console.error('[Submission BG] Critical background error:', err);
             }
         })();
-        // ─────────────────────────────────────────────────────────────────────
 
-        // AUTOMATIC WELCOME MESSAGE (Non-blocking)
-        // Only if we have a user to reply to
-        if (req.user && submissionData.user && req.user.id !== form.creator.toString()) {
-            console.log('[Submission] Creating welcome support ticket for user:', submissionData.user);
-            try {
-                const welcomeText = form.welcomeMessage || `Olá ${firstName}! Obrigado por se inscrever no evento "${form.title}". Se tiver alguma dúvida, pode mandar por aqui.`;
-
-                await SupportTicket.create({
-                    user: submissionData.user, // Use the linked user ID
-                    mentor: form.creator,
-                    subject: `Bem-vindo: ${form.title}`,
-                    messages: [{
-                        sender: 'mentor',
-                        content: welcomeText
-                    }],
-                    unreadByUser: true
-                });
-            } catch (ticketErr) {
-                console.error('[Submission] Error creating welcome ticket:', ticketErr);
-            }
-        } else if (!req.user && submissionData.user) {
-            // If guest became linked user, we can still try to create ticket
-            console.log('[Submission] Creating welcome support ticket for LINKED guest user:', submissionData.user);
-            try {
-                const welcomeText = form.welcomeMessage || `Olá ${firstName}! Obrigado por se inscrever no evento "${form.title}". Se tiver alguma dúvida, pode mandar por aqui.`;
-
-                await SupportTicket.create({
-                    user: submissionData.user,
-                    mentor: form.creator,
-                    subject: `Bem-vindo: ${form.title}`,
-                    messages: [{
-                        sender: 'mentor',
-                        content: welcomeText
-                    }],
-                    unreadByUser: true
-                });
-            } catch (ticketErr) {
-                console.error('[Submission] Error creating welcome ticket (guest):', ticketErr);
-            }
-        }
-
-        res.status(201).json({ message: 'Inscrição enviada com sucesso', submission });
     } catch (err) {
         console.error('[Submission] CRITICAL ERROR:', err);
-        res.status(500).json({ message: 'Server error', error: err.message });
+        if (!res.headersSent) {
+            res.status(500).json({ message: 'Server error', error: err.message });
+        }
     }
 };
 

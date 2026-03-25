@@ -20,6 +20,7 @@ import {
     ArrowRight,
     Phone,
     Info,
+    FileText,
     Coins,
     Star,
     Users,
@@ -514,7 +515,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                     border-color: ${primaryColor}70 !important;
                     background: ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'} !important;
                     transform: translateY(-2px);
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
                 }
                 .premium-input:focus {
                     border-color: ${primaryColor} !important;
@@ -1430,11 +1431,15 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
 
                                                                     <div style={{ marginBottom: '1.5rem' }}>
                                                                         <label className="premium-upload" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', background: 'rgba(255,255,255,0.02)', border: `2px dashed ${borderColor}` }}>
-                                                                            <input type="file" hidden accept="image/*,.pdf" onChange={handleFileChange} />
+                                                                            <input type="file" hidden accept="image/*,application/pdf,.pdf" onChange={handleFileChange} />
                                                                             {filePreview ? (
                                                                                 <div style={{ textAlign: 'center' }}>
-                                                                                    <div style={{ position: 'relative', width: '60px', height: '60px', margin: '0 auto 10px', borderRadius: '12px', overflow: 'hidden' }}>
-                                                                                        <Image src={filePreview} alt="Preview" fill style={{ objectFit: 'cover' }} />
+                                                                                    <div style={{ position: 'relative', width: '60px', height: '60px', margin: '0 auto 10px', borderRadius: '12px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: file?.type === 'application/pdf' ? 'rgba(0,0,0,0.05)' : 'transparent' }}>
+                                                                                        {file?.type === 'application/pdf' ? (
+                                                                                            <FileText size={32} color={primaryColor} />
+                                                                                        ) : (
+                                                                                            <Image src={filePreview} alt="Preview" fill style={{ objectFit: 'cover' }} />
+                                                                                        )}
                                                                                     </div>
                                                                                     <div style={{ fontSize: '0.8rem', color: primaryColor, fontWeight: 700 }}>{file?.name.substring(0, 15)}...</div>
                                                                                 </div>

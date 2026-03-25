@@ -202,7 +202,7 @@ app.get('/qr-test', (req, res) => {
 });
 
 // Standard Middleware
-app.use(express.json()); // No more verify hack needed since webhook is handled above
+app.use(express.json({ limit: '10mb' })); // Increase limit for larger form submissions
 app.use(require('./config/passport').initialize());
 
 // Routes

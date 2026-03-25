@@ -597,7 +597,7 @@ export default function AnunciarPage() {
                                                         ) : (
                                                             <>
                                                                 <span style={{ fontSize: '0.75rem', color: '#999' }}>Suba o comprovativo aqui</span>
-                                                                <input type="file" onChange={handleProofUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                                                                <input type="file" onChange={handleProofUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} accept="image/*,application/pdf,.pdf" />
                                                             </>
                                                         )}
                                                     </div>
