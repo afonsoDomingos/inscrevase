@@ -2319,6 +2319,7 @@
             "waitingApproval": "Aguardando aprovação do {role}"
         },
         "salaDeEventos": {
+            "me": "Eu",
             "callStudents": "Chamar Inscritos",
             "eventRoom": "SALA DE EVENTOS",
             "endSession": "Encerramento",
