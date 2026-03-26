@@ -1084,7 +1084,6 @@
                     "noAttempts": "Nenhuma tentativa de pagamento registrada."
                 }
             }
-
         },
         "adminForms": {
             "title": "Gestão de Formulários",
@@ -2392,6 +2391,8 @@
             "yes": "SIM",
             "no": "NÃO",
             "chat": "Chat",
+            "chatTitle": "Perguntas e Chat",
+            "chatPlaceholder": "Escreva uma mensagem...",
             "revokeDrawing": "Revogar",
             "giveDrawing": "Dar Giz",
             "closeMic": "Fechar Mic",
