@@ -569,8 +569,7 @@ function MentorDashboardContent() {
                         style={{
                             position: 'fixed',
                             inset: 0,
-                            background: 'rgba(0,0,0,0.5)',
-                            backdropFilter: 'blur(4px)',
+                            background: 'rgba(0,0,0,0.7)',
                             zIndex: 1999
                         }}
                     />
@@ -1185,7 +1184,7 @@ function MentorDashboardContent() {
                                     value={stats?.approved || 0}
                                     trend="+5%"
                                 />
-                                
+
                                 {/* Botão de Suporte WhatsApp */}
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'center' : 'flex-start', gridColumn: isMobile ? 'auto' : 'span 2' }}>
                                     <a

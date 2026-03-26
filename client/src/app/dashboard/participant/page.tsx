@@ -419,8 +419,7 @@ function ParticipantDashboardContent() {
                         style={{
                             position: 'fixed',
                             inset: 0,
-                            background: 'rgba(0,0,0,0.5)',
-                            backdropFilter: 'blur(4px)',
+                            background: 'rgba(0,0,0,0.7)',
                             zIndex: 1999
                         }}
                     />
@@ -1255,20 +1254,20 @@ function ParticipantDashboardContent() {
                                     {libraryBooks.map(book => (
                                         <div key={book._id} className="luxury-card" style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                                             <div style={{ height: '240px', position: 'relative' }}>
-                                                <Image 
-                                                    src={book.coverImage || '/placeholder.png'} 
-                                                    alt={book.title} 
-                                                    fill 
-                                                    style={{ objectFit: 'cover' }} 
+                                                <Image
+                                                    src={book.coverImage || '/placeholder.png'}
+                                                    alt={book.title}
+                                                    fill
+                                                    style={{ objectFit: 'cover' }}
                                                 />
                                             </div>
                                             <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                                                 <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--foreground)' }}>{book.title}</h3>
                                                 <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1.5rem' }}>por {book.author}</p>
-                                                
+
                                                 <div style={{ marginTop: 'auto' }}>
                                                     {book.pdfUrl ? (
-                                                        <button 
+                                                        <button
                                                             onClick={() => window.open(book.pdfUrl, '_blank')}
                                                             style={{
                                                                 width: '100%',
@@ -1298,17 +1297,17 @@ function ParticipantDashboardContent() {
                                     ))}
                                 </div>
                             ) : (
-                                <div style={{ 
-                                    padding: '5rem 2rem', 
-                                    background: 'var(--paper)', 
-                                    borderRadius: '24px', 
+                                <div style={{
+                                    padding: '5rem 2rem',
+                                    background: 'var(--paper)',
+                                    borderRadius: '24px',
                                     textAlign: 'center',
-                                    border: '1px dashed var(--border)' 
+                                    border: '1px dashed var(--border)'
                                 }}>
                                     <BookOpen size={60} color="#D4AF37" style={{ opacity: 0.3, marginBottom: '1.5rem' }} />
                                     <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--foreground)' }}>A sua estante está vazia</h3>
                                     <p style={{ color: '#666', marginBottom: '2rem' }}>Adquira livros incríveis para começar a sua coleção.</p>
-                                    <button 
+                                    <button
                                         onClick={() => router.push('/books')}
                                         className="btn-primary"
                                         style={{ padding: '12px 30px', borderRadius: '50px' }}

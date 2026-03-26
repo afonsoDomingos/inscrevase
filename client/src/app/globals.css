@@ -725,9 +725,8 @@ h6 {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   z-index: 999;
-  backdrop-filter: blur(4px);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
