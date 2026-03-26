@@ -121,6 +121,7 @@
         "backToHome": "Back to home",
         "next": "Next",
         "prev": "Previous",
+        "refresh": "Refresh",
         "previous": "Previous",
         "complete": "Complete",
         "yes": "Yes",
@@ -135,6 +136,13 @@
         "hello": "Hello",
         "toBeDefined": "To be defined",
         "atTime": "at",
+        "day": "day",
+        "days": "days",
+        "system": "System",
+        "upgrade": "Upgrade",
+        "event": "Event",
+        "sendEmail": "Send Email",
+        "manualPayment": "Manual (Transfer)",
         "growth": "Growth",
         "recommended": "RECOMMENDED",
         "free": "Free",
@@ -217,7 +225,7 @@
         "dataIsPower": "Data is Power",
         "you": "You",
         "pts": "pts",
-        "days": {
+        "weekDays": {
             "sun": "Sun",
             "mon": "Mon",
             "tue": "Tue",
@@ -239,6 +247,7 @@
         "calendar": "Calendar",
         "blog": "Blog",
         "updates": "Updates",
+        "books": "Books",
         "feedback": "Feedback"
     },
     "calendar": {
@@ -454,6 +463,10 @@
         "newsletter": "Newsletter",
         "manageBlog": "Manage Blog",
         "blogArticles": "Blog Articles",
+        "ads": "Ads",
+        "smartlinks": "SmartLinks",
+        "marketing": "Marketing",
+        "payouts": "Financial Tracking",
         "services": "Services",
         "servicesManagement": {
             "title": "My Services",
@@ -654,6 +667,59 @@
                     "title": "Your Digital Identity",
                     "desc": "Customize your profile, add your photo, and keep your details updated for your certificates."
                 }
+            },
+            "adsManagement": {
+                "title": "Ads Management",
+                "subtitle": "Total control of the platform's advertising and billing.",
+                "syncing": "Syncing Global Advertising...",
+                "status": {
+                    "pending": "Pending",
+                    "approved": "Published",
+                    "suspended": "Suspended",
+                    "rejected": "Rejected"
+                },
+                "placeholders": {
+                    "merchant": "Merchant/Mentor",
+                    "owner": "Ad Owner"
+                },
+                "stats": {
+                    "total": "Total",
+                    "pending": "Pending",
+                    "active": "Active"
+                },
+                "filters": {
+                    "all": "View All",
+                    "pending": "Requests",
+                    "approved": "On Display",
+                    "rejected": "Rejected",
+                    "suspended": "Suspended"
+                },
+                "noAds": "No ads found",
+                "noAdsDesc": "There are no records matching the \"{filter}\" filter at the moment.",
+                "investment": "Investment",
+                "duration": "Duration",
+                "weeks": "Weeks",
+                "metrics": {
+                    "views": "Views",
+                    "clicks": "Clicks",
+                    "ctr": "CTR"
+                },
+                "payment": "Payment",
+                "paymentStatus": {
+                    "paid": "Paid",
+                    "pending": "Pending"
+                },
+                "actions": {
+                    "proof": "Proof",
+                    "target": "Target Link",
+                    "refuse": "Refuse",
+                    "approve": "Approve & Publish",
+                    "reactivate": "Reactivate",
+                    "suspend": "Suspend",
+                    "pause": "Pause Display",
+                    "resume": "Resume Display",
+                    "delete": "Permanently delete ad"
+                }
             }
         },
         "finance": {
@@ -808,7 +874,11 @@
                 "status": "Status",
                 "online": "Online",
                 "accesses": "Accesses",
-                "actions": "Actions"
+                "actions": "Actions",
+                "selectAll": "Select all",
+                "deselectAll": "Deselect all",
+                "select": "Select",
+                "deselect": "Deselect"
             },
             "status": {
                 "active": "Active",
@@ -819,6 +889,53 @@
             "pagination": "Showing {start}-{end} of {total} users",
             "audience": {
                 "participants": "Participants"
+            },
+            "messages": {
+                "statusError": "Error updating status",
+                "eventsPermissionError": "Error updating events permission",
+                "deleteConfirm": "Are you sure you want to delete this user? This action is irreversible.",
+                "deleteError": "Error deleting user",
+                "verificationError": "Error updating verification"
+            },
+            "actions": {
+                "approveVerification": "Approve Verification",
+                "rejectVerification": "Reject Request",
+                "removeVerification": "Remove Verification",
+                "verifyManually": "Verify Manually",
+                "sendNotification": "Send Notification",
+                "sendEmail": "Send Email",
+                "blockEvents": "Block Event Creation",
+                "enableEvents": "Enable Event Creation",
+                "blockUser": "Block User",
+                "unblockUser": "Unblock User",
+                "edit": "Edit",
+                "deleteUser": "Permanently Delete User"
+            },
+            "editModal": {
+                "title": "Edit User",
+                "subtitle": "Manage information for {name}",
+                "changePhoto": "Change profile photo",
+                "adminSettings": "Administrative Settings",
+                "role": "Role",
+                "plan": "Plan",
+                "status": "Status",
+                "isPublic": "Show profile publicly in Mentor tab",
+                "canCreateEvents": "Enable creation of new events and forms",
+                "badgesTitle": "Badges and Distinctions",
+                "fullName": "Full Name",
+                "email": "Email Address",
+                "businessName": "Business/Brand Name",
+                "whatsapp": "Corporate WhatsApp",
+                "bio": "Short Bio",
+                "securityTitle": "Security (Reset Password)",
+                "newPassword": "New Password",
+                "passwordHint": "Leave blank to keep current password.",
+                "socialLinks": "Social Links",
+                "saveChanges": "Save Changes",
+                "messages": {
+                    "uploadError": "Error uploading photo",
+                    "updateError": "Error updating user"
+                }
             }
         },
         "impactRankingEmpty": "The impact ranking will start growing soon! 🚀",
@@ -855,6 +972,301 @@
             "todayPeakMessage": "Today's peak was at {hour}h with {count} users.",
             "patternPeakMessage": "Typically, the highest volume occurs on {day}.",
             "peakNow": "Today's Peak"
+        },
+        "adminFinance": {
+            "title": "Financial Management",
+            "totalRevenue": "Transacted Volume",
+            "subscriptionRevenue": "Subscription Revenue",
+            "eventFeeRevenue": "Event Fees",
+            "pendingFees": "Pending Fees",
+            "growthChart": "Revenue Growth",
+            "growthChartSubtitle": "Total Revenue ({currency}) per month",
+            "paymentMethods": "Payment Methods",
+            "paymentMethodsSubtitle": "Automatic vs Manual Split",
+            "topMentors": "Top Mentors (Generated Revenue)",
+            "topMentorsFees": "Fees generated",
+            "searchPlaceholder": "Search by mentor or event...",
+            "allStatus": "All Status",
+            "status": {
+                "pending": "Pending",
+                "rejected": "Rejected",
+                "completed": "Reconciled"
+            },
+            "allMethods": "All Methods",
+            "table": {
+                "mentorBusiness": "Mentor / Business",
+                "eventMethod": "Event / Method",
+                "totalAmount": "Total Amount",
+                "platformFee": "Platform Fee",
+                "directSubscription": "Direct Subscription",
+                "subscription": "Subscription: {plan}",
+                "status": "Status",
+                "actions": "Actions"
+            },
+            "statusLabels": {
+                "completed": "RECONCILED",
+                "rejected": "REJECTED",
+                "pending": "AWAITING MENTOR"
+            },
+            "actions": {
+                "viewProof": "View Proof",
+                "approve": "Approve",
+                "reject": "Reject",
+                "delete": "Delete Record"
+            },
+            "messages": {
+                "loadError": "Error loading financial data",
+                "confirmPayment": "Are you sure you want to confirm this payment?",
+                "paymentSuccess": "Payment confirmed and plan activated!",
+                "rejectConfirm": "Are you sure you want to REJECT this payment?",
+                "rejectSuccess": "Payment rejected.",
+                "deleteConfirm": "WARNING: This will permanently delete the financial record. Continue?",
+                "deleteSuccess": "Transaction deleted.",
+                "refreshRateSuccess": "Rate updated! Market: {marketRate} MT | Adjusted: {adjustedRate} MT",
+                "refreshRateError": "Error updating exchange rate",
+                "syncing": "Syncing...",
+                "syncExchange": "Sync Exchange",
+                "syncExchangeTooltip": "Update exchange rate via API now",
+                "noTransactions": "No transactions found.",
+                "loading": "Loading finance...",
+                "pagination": "Showing {start}-{end} of {total} transactions"
+            },
+            "proofModal": {
+                "title": "Proof of Payment",
+                "pdfDetected": "PDF file detected.",
+                "openPdf": "OPEN PDF",
+                "downloadOriginal": "DOWNLOAD ORIGINAL"
+            },
+            "stats": {
+                "totalProcessed": "Total processed (Stripe + Manual)",
+                "mentorUpgrades": "Mentor plan upgrades",
+                "collectedFees": "Fees collected from registrations",
+                "manualCharges": "Manual charges to mentors"
+            }
+        },
+        "adminForms": {
+            "title": "Form Management",
+            "searchPlaceholder": "Search by title or mentor...",
+            "table": {
+                "title": "Event Title",
+                "creator": "Creator (Mentor)",
+                "status": "Status",
+                "date": "Date",
+                "visits": "Visits",
+                "actions": "Actions"
+            },
+            "status": {
+                "active": "Active",
+                "inactive": "Inactive"
+            },
+            "sponsored": "SPONSORED",
+            "noCompany": "No Company",
+            "actions": {
+                "viewPublic": "View Public Page",
+                "emailMentor": "Email Mentor",
+                "editEvent": "Edit Event",
+                "promoteEvent": "Promote Event",
+                "removePromote": "Remove Highlight",
+                "activate": "Activate",
+                "deactivate": "Deactivate",
+                "delete": "Delete",
+                "deleteConfirm": "Are you sure you want to delete this form? All linked data will be lost.",
+                "gotIt": "Got it"
+            },
+            "messages": {
+                "limitReached": "You can promote a maximum of 4 events simultaneously. Remove the highlight from another event to continue.",
+                "limitTitle": "Limit Reached",
+                "loadError": "Loading forms...",
+                "noForms": "No forms found.",
+                "statusError": "Error updating form status",
+                "promoteError": "Error promoting event",
+                "deleteError": "Error deleting form"
+            },
+            "pagination": {
+                "showing": "Showing {start}-{end} of {total} forms",
+                "prev": "Previous",
+                "next": "Next"
+            }
+        },
+        "adminMarketing": {
+            "title": "Marketing & Sales Management",
+            "searchPlaceholder": "Search by name, email or tel...",
+            "statusFilter": "All Status",
+            "status": {
+                "pending": "Pending",
+                "contacted": "Contacted",
+                "in_progress": "In Progress",
+                "completed": "Completed",
+                "cancelled": "Cancelled"
+            },
+            "table": {
+                "mentor": "Mentor / Company",
+                "contact": "Contact (Zap)",
+                "service": "Service",
+                "date": "Date",
+                "status": "Status",
+                "actions": "Actions"
+            },
+            "buttonManage": "Manage Request",
+            "modal": {
+                "title": "Manage Request: {name}",
+                "details": "Request Details",
+                "currentStatus": "Current Status",
+                "quickActions": "Quick Actions",
+                "internalNotes": "Internal Notes (The mentor will see this)",
+                "save": "Save Changes"
+            },
+            "messages": {
+                "success": "Request updated successfully!",
+                "error": "Error updating request"
+            }
+        },
+        "adminSubmissions": {
+            "title": "Registration Management",
+            "results": "{count} results",
+            "result": "{count} result",
+            "searchPlaceholder": "Search by event or data...",
+            "table": {
+                "registrant": "Registrant / Data",
+                "event": "Event",
+                "dateTime": "Date / Time",
+                "payment": "Payment",
+                "status": "Status",
+                "details": "Details",
+                "actions": "Actions"
+            },
+            "viewProof": "View Proof",
+            "noProof": "No Proof",
+            "hub": "HUB",
+            "actions": {
+                "approve": "Approve",
+                "reject": "Reject"
+            },
+            "messages": {
+                "copySuccess": "Data copied!",
+                "loading": "Loading registrations..."
+            },
+            "modal": {
+                "title": "Registration Data",
+                "submittedOn": "Submitted on: {date}",
+                "copy": "COPY"
+            }
+        },
+        "adminSmartLinks": {
+            "title": "SmartLink Management",
+            "subtitle": "Audit and compliance control of bio links and redirects.",
+            "allStatus": "All Status",
+            "status": {
+                "active": "Active",
+                "suspended": "Suspended",
+                "paused": "Paused"
+            },
+            "searchPlaceholder": "Search slug or title...",
+            "table": {
+                "smartlink": "SmartLink",
+                "owner": "Owner / Mentor",
+                "type": "Type",
+                "status": "Status",
+                "clicks": "Clicks",
+                "actions": "Audit Actions"
+            },
+            "types": {
+                "bio": "Bio Page",
+                "redirect": "Redirect"
+            },
+            "statusLabels": {
+                "active": "Active",
+                "banned": "SUSPENDED"
+            },
+            "actions": {
+                "view": "View Link",
+                "contact": "Contact Mentor",
+                "reactivate": "Reactivate",
+                "ban": "Ban / Suspend",
+                "delete": "Permanently Delete"
+            },
+            "messages": {
+                "deleteConfirm": "Are you sure you want to permanently delete this SmartLink?",
+                "auditError": "Error in audit",
+                "loadError": "Error loading SmartLinks",
+                "noLinks": "No SmartLink found for audit."
+            }
+        },
+        "adminNewsletter": {
+            "title": "Newsletter Subscribers",
+            "subtitle": "Manage people who signed up for blog updates.",
+            "searchPlaceholder": "Search email...",
+            "export": "Export CSV",
+            "table": {
+                "email": "Email",
+                "date": "Subscription Date",
+                "status": "Status",
+                "actions": "Actions"
+            },
+            "status": {
+                "active": "ACTIVE",
+                "unsubscribed": "UNSUBSCRIBED"
+            },
+            "messages": {
+                "funcSoon": "Manual sending feature coming soon",
+                "loadError": "Error loading subscribers"
+            }
+        },
+        "adsManagement": {
+            "title": "Ads Management",
+            "subtitle": "Track and manage ad requests on the platform.",
+            "syncing": "SYNCING ADS...",
+            "errorLoading": "Error loading ads",
+            "updateError": "Error updating ad status",
+            "noAds": "No ads found",
+            "noAdsDesc": "We didn't find any ads with the filter '{filter}'.",
+            "investment": "INVESTMENT",
+            "weeks": "Weeks",
+            "duration": "DURATION",
+            "payment": "PAYMENT",
+            "noProof": "No Proof",
+            "stats": {
+                "total": "Total",
+                "pending": "Pending",
+                "active": "Active"
+            },
+            "filters": {
+                "all": "All",
+                "pending": "Pending",
+                "approved": "Approved",
+                "rejected": "Rejected",
+                "suspended": "Suspended"
+            },
+            "status": {
+                "approved": "APPROVED",
+                "pending": "PENDING",
+                "suspended": "SUSPENDED",
+                "rejected": "REJECTED"
+            },
+            "metrics": {
+                "views": "VIEWS",
+                "clicks": "CLICKS",
+                "ctr": "CTR (CLICKS/VIEWS)"
+            },
+            "placeholders": {
+                "merchant": "Merchant / Mentor",
+                "owner": "Ad Owner"
+            },
+            "paymentStatus": {
+                "paid": "PAID",
+                "pending": "PENDING"
+            },
+            "actions": {
+                "proof": "View Proof",
+                "target": "Target Link",
+                "refuse": "Reject",
+                "approve": "Approve",
+                "reactivate": "Reactivate",
+                "suspend": "Suspend",
+                "pause": "Pause",
+                "resume": "Resume",
+                "delete": "Delete"
+            }
         }
     },
     "academy": {
@@ -899,12 +1311,18 @@
             "avancado": "Advanced"
         },
         "audience": {
-            "mentors": "Mentor",
-            "participants": "Participant",
-            "companies": "Company",
-            "specialists": "Specialist",
-            "both": "Both",
-            "all": "All"
+            "mentors": "Mentors (Academy)",
+            "participants": "Participants",
+            "companies": "Companies",
+            "specialists": "Specialists",
+            "both": "Both (Mentors and Participants)",
+            "all": "All Audiences",
+            "mentorsDesc": "🎓 Visible in the \"Academy\" for mentors to learn how to use the platform.",
+            "participantsDesc": "👥 Visible to participants on their dashboard.",
+            "companiesDesc": "🏢 Visible only for company profiles.",
+            "specialistsDesc": "⚡ Visible only for specialists.",
+            "allDesc": "🌍 Visible to all types of users.",
+            "bothDesc": "👥🎓 Visible to both mentors and participants."
         },
         "status": {
             "published": "Published",
@@ -953,7 +1371,55 @@
         "errorMoving": "Error moving lesson",
         "errorSaving": "Error saving lesson",
         "certGenSuccess": "Certificate generated successfully! You will be redirected.",
-        "certGenError": "Error generating certificate."
+        "certGenError": "Error generating certificate.",
+        "actions": {
+            "publish": "Publish",
+            "unpublish": "Unpublish",
+            "lock": "Lock",
+            "unlock": "Unlock"
+        },
+        "modal": {
+            "videoLabel": "Lesson Video",
+            "upload": "Upload",
+            "url": "Video URL",
+            "videoPlaceholder": "Paste link here...",
+            "videoSupport": "💡 Supports: YouTube, Vimeo, or direct link.",
+            "videoSupportUpdate": "Paste a new link above to update.",
+            "videoPreview": "Video Preview:",
+            "uploadStart": "Click to upload a new video",
+            "uploading": "Uploading...",
+            "uploadLimits": "MP4, AVI, MOV (max. 500MB)",
+            "removeVideo": "Remove and Choose New Video",
+            "thumbnailLabel": "Lesson Thumbnail",
+            "thumbnailUpload": "Upload Thumbnail",
+            "thumbnailPlaceholder": "Or paste image URL here...",
+            "titleLabel": "Title *",
+            "titlePlaceholder": "e.g., Platform Introduction",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Describe the lesson content...",
+            "categoryLabel": "Category",
+            "audienceLabel": "Target Audience",
+            "orderLabel": "Display Order",
+            "isPublished": "Publish lesson",
+            "isLocked": "Lock lesson (Premium/Restricted)",
+            "save": "Save Lesson",
+            "update": "Update",
+            "create": "Create",
+            "lesson": "Lesson",
+            "cancel": "Cancel"
+        },
+        "messages": {
+            "saveSuccess": "Lesson saved successfully!",
+            "saveError": "Error saving lesson.",
+            "deleteSuccess": "Lesson deleted successfully!",
+            "deleteError": "Error deleting lesson.",
+            "togglePublishSuccess": "Publication status updated!",
+            "togglePublishError": "Error updating publication status.",
+            "toggleLockSuccess": "Access status updated!",
+            "toggleLockError": "Error updating access status.",
+            "uploadError": "Upload error."
+        },
+        "noLessons": "No lessons found"
     },
     "plans": {
         "discountLabel": "OFF",
@@ -1296,13 +1762,13 @@
         "typeText": "Text",
         "typeEmail": "Email",
         "typeNumber": "Number",
-        "typePhone": "Phone/WhatsApp",
         "typeSelect": "Select (Dropdown)",
         "typeRadio": "Single Choice (Radio)",
         "typeCheckbox": "Multiple Choice (Checkbox)",
         "typeDate": "Date",
         "typeFile": "File / Document",
         "typeTextarea": "Text Area (Large)",
+        "typePhone": "Phone / WhatsApp",
         "requiredField": "Required",
         "optionsPlaceholder": "Options separated by commas (ex: Morning, Afternoon, Evening)",
         "primaryColor": "Primary Color",
@@ -1319,11 +1785,13 @@
         "currencyLabel": "Currency",
         "paymentInstructions": "Payment Instructions",
         "requireProof": "Require payment proof on registration?",
-        "whatsappHelp": "After registration, the participant will be redirected to your WhatsApp for direct contact.",
+        "whatsappHelp": "Get instant notifications! Enter the WhatsApp number where you want to receive alerts for new registrations and payments. This field is mandatory to ensure system notification delivery.",
         "whatsappNumber": "Your WhatsApp Number",
         "whatsappNumberPlaceholder": "Ex: 258840000000",
         "whatsappMessage": "Automatic Message",
         "whatsappDefaultMessage": "Hello! I would like to confirm my registration.",
+        "whatsappNotificationNote": "This number will be used exclusively for event management notifications.",
+        "whatsappNumberRequiredToast": "WhatsApp number is required so you can receive registration and sales notifications.",
         "emptyFieldsAlert": "All form fields must have a name (label).",
         "fillTitleDescAlert": "Please fill in the title and description.",
         "pricePlaceholder": "Ex: 500",
@@ -1652,7 +2120,8 @@
         "termsAgreement": "By clicking finish, you agree to our privacy terms.",
         "poweredBy": "Powered by Inscreva-se",
         "acceptOrConfirm": "I accept and confirm",
-        "allRightsReserved": "All rights reserved."
+        "allRightsReserved": "All rights reserved.",
+        "paypalSecureHint": "Secure transaction processed by PayPal."
     },
     "aura": {
         "welcome": "Hello, I am Aura. Your digital luxury concierge. How can I elevate your event today?",
@@ -2046,6 +2515,50 @@
             "subtitle": "What our experts and students are saying about the new era of Inscreva-se."
         }
     },
+    "referral": {
+        "title": "Referrals & Rewards",
+        "subtitle": "Invite mentors and friends to the platform and unlock exclusive benefits for each referral.",
+        "inviteButton": "Invite Friends & Mentors",
+        "copyLink": "Copy Referral Link",
+        "linkCopied": "Link copied successfully!",
+        "points": "Accumulated Points",
+        "totalInvites": "Invites Sent",
+        "converted": "Converted",
+        "rewards": "Rewards & Benefits",
+        "nextGoal": "Next Goal",
+        "socialMissions": "Social Missions",
+        "socialMissionsDesc": "Earn +10 points for each network you follow",
+        "followTask": "Follow",
+        "shareMessage": "The Revolution of Events and Networking Has Begun — And You Are Invited\n\nThere is a new platform transforming how experts, companies, mentors, and knowledge seekers connect, learn, and grow together.\n\nI am inviting you to experience this new way of living high-level events and networking.\n\nConnect with experts\nExpand your networking\nAccess events and knowledge that yield results\nBe part of a community focused on real growth\n\nAccept the invitation, get to know the platform, and invite others to be part of this new era.\n\nInnovation must be shared.\n\nThe future of knowledge is collaborative. Start today.\n\nRegister here: ",
+        "shareEmail": "Invite by Email",
+        "shareLinkedIn": "Share on LinkedIn",
+        "shareFacebook": "Share on Facebook",
+        "shareWhatsApp": "Share on WhatsApp",
+        "emailSubject": "Invitation: Discover Inscreva-se - The Revolution of Events and Networking",
+        "ranking": "Impact Ranking",
+        "adminTitle": "Referral Management",
+        "assignReward": "Assign Reward",
+        "benefits": {
+            "pro": "Pro Plan (30 days)",
+            "enterprise": "Enterprise Plan (15 days)",
+            "exclusive": "Exclusive Features"
+        },
+        "table": {
+            "member": "Member",
+            "currentPlan": "Current Plan",
+            "activeInvites": "Active Invites",
+            "points": "Points",
+            "actions": "Actions",
+            "viewReferrals": "View Referrals (Audit)",
+            "assignPro": "Assign Pro",
+            "noActivity": "No referral activity found."
+        },
+        "motivation": {
+            "education": "Knowledge is the only wealth that grows when it is shared.",
+            "networking": "Your network is your net worth. Keep the best close by.",
+            "value": "Create real value for your community through Inscreva.se."
+        }
+    },
     "marketing": {
         "accelerator": {
             "title": "Sales",
@@ -2088,19 +2601,5 @@
         "paused": "Paused",
         "pause": "Pause",
         "activate": "Activate"
-    },
-    "referral": {
-        "networkSubtitle": "Your network of influence and community impact",
-        "myPoints": "My Points",
-        "convertedInvites": "Converted Invites",
-        "myPosition": "My Position",
-        "impactLeaders": "Impact Leaders",
-        "rankingEmpty": "The impact ranking will start growing soon! 🚀",
-        "youImpactMaster": "You (Impact Master)",
-        "mentorsInvited": "mentors invited",
-        "foundingPartner": "Founding Partner",
-        "ctaTitle": "Your influence generates real rewards",
-        "ctaDesc": "By inviting new elite mentors to Inscreva-se, you accumulate points that can be exchanged for Pro Plan months, ad highlights, and exclusive benefits.",
-        "inviteBtn": "Invite & Expand My Network"
     }
 }

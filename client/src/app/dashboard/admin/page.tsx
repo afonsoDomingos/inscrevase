@@ -17,9 +17,11 @@ import SmartLinkList from '@/components/admin/SmartLinkList';
 import SystemSettings from '@/components/admin/SystemSettings';
 import MarketingRequestList from '@/components/admin/MarketingRequestList';
 import PaypalPayouts from '@/components/admin/PaypalPayouts';
+import BooksManager from '@/components/admin/BooksManager';
+import WhatsAppLogs from '@/components/dashboard/WhatsAppLogs';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Plus } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Plus, Book, MessageCircle, Smartphone } from 'lucide-react';
 
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
@@ -48,7 +50,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
 import Tooltip from '@/components/common/Tooltip';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts' | 'books' | 'whatsapp';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -367,7 +369,7 @@ export default function AdminDashboard() {
         { label: t('dashboard.onlineNow'), value: onlineUsers.length, icon: <Wifi size={24} />, color: '#38a169', tab: 'users' },
         { label: t('dashboard.visitsToday'), value: trafficStats?.visitsToday || 0, icon: <Eye size={24} />, color: '#ed8936', tab: 'overview' },
         { label: t('dashboard.totalVisitors') || 'Total Visitantes', value: trafficStats?.totalVisits || 0, icon: <Globe size={24} />, color: '#3182ce', tab: 'overview' },
-        { label: t('dashboard.finance.totalRevenue'), value: showValues ? formatPrice(stats?.revenue || 0, 'MZN', currency) : '••••', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
+        { label: t('dashboard.adminFinance.totalRevenue'), value: showValues ? formatPrice(stats?.revenue || 0, 'MZN', currency) : '••••', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
         { label: t('dashboard.submissions'), value: showValues ? stats?.submissions || 0 : '••', icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
     ];
 
@@ -394,37 +396,39 @@ export default function AdminDashboard() {
             items: [
                 { id: 'forms', label: t('dashboard.forms'), icon: <FileText size={18} /> },
                 { id: 'submissions', label: t('dashboard.submissions') || 'Inscrições', icon: <Database size={18} /> },
-                { id: 'smartlinks', label: 'SmartLinks', icon: <LinkIcon size={18} /> },
-                { id: 'ads', label: t('dashboard.menuItems.ads') || 'Anúncios', icon: <Megaphone size={18} /> },
+                { id: 'smartlinks', label: t('dashboard.smartlinks') || 'SmartLinks', icon: <LinkIcon size={18} /> },
+                { id: 'ads', label: t('dashboard.ads') || 'Anúncios', icon: <Megaphone size={18} /> },
                 { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={18} /> },
+                { id: 'books', label: t('nav.books') || 'Livros', icon: <Book size={18} /> },
             ]
         },
         {
             title: t('dashboard.marketingAndOps') || 'Marketing & Operações',
             items: [
-                { id: 'marketing', label: 'Marketing', icon: <Zap size={18} /> },
+                { id: 'marketing', label: t('dashboard.marketing') || 'Marketing', icon: <Zap size={18} /> },
                 { id: 'referrals', label: t('referral.title') || 'Referenciações', icon: <Trophy size={18} /> },
                 { id: 'newsletter', label: t('dashboard.newsletter'), icon: <Mail size={18} /> },
             ]
         },
         {
-            title: t('dashboard.finance.title') || 'Financeiro',
+            title: t('dashboard.adminFinance.title') || 'Financeiro',
             items: [
-                { id: 'finance', label: t('dashboard.finance.title') || 'Financeiro', icon: <Wallet size={18} /> },
-                { id: 'payouts', label: 'PayPal', icon: <DollarSign size={18} /> },
+                { id: 'finance', label: t('dashboard.adminFinance.title') || 'Financeiro', icon: <Wallet size={18} /> },
+                { id: 'payouts', label: t('dashboard.payouts') || 'Pagamentos', icon: <DollarSign size={18} /> },
             ]
         },
         {
             title: t('dashboard.system') || 'Sistema',
             items: [
                 { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={18} /> },
+                { id: 'whatsapp', label: 'WhatsApp Automação', icon: <MessageCircle size={18} /> },
                 { id: 'settings', label: t('dashboard.settings.title') || 'Definições', icon: <Settings size={18} /> },
             ]
         }
 
     ].map(group => ({
         ...group,
-        items: group.items.filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing' && item.id !== 'payouts') || user?.role === 'SuperAdmin')
+        items: group.items.filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing' && item.id !== 'payouts' && item.id !== 'whatsapp') || user?.role === 'SuperAdmin')
     }));
 
     return (
@@ -785,7 +789,7 @@ export default function AdminDashboard() {
                             }}
                             className="hover:translate-y-[-2px] hover:shadow-lg"
                         >
-                            <Mail size={16} /> Enviar Email
+                            <Mail size={16} /> {t('common.sendEmail')}
                         </button>
                         <Link
                             href="/"
@@ -1803,18 +1807,77 @@ export default function AdminDashboard() {
                         )
                     }
 
+                    {activeTab === 'support' && (
+                        <ErrorBoundary>
+                            <SupportTicketList />
+                        </ErrorBoundary>
+                    )}
+
+                    {activeTab === 'whatsapp' && user.role === 'SuperAdmin' && (
+                        <div style={{
+                            background: '#fff',
+                            borderRadius: '24px',
+                            padding: '3rem',
+                            textAlign: 'center',
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            maxWidth: '800px',
+                            margin: '0 auto'
+                        }}>
+                            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '2rem', fontFamily: 'var(--font-playfair)' }}>
+                                Automação WhatsApp 💬
+                            </h2>
+
+                            <iframe 
+                                    src={`${(process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? (window.location.origin.includes('localhost') ? 'http://localhost:5000' : window.location.origin) : 'http://localhost:5000')).replace(/\/api$/, '')}/api/admin/whatsapp/qr`}
+                                    style={{
+                                        width: '100%',
+                                        height: '460px', // Aumentado ligeiramente para acomodar o form de código
+                                        border: 'none',
+                                        overflow: 'hidden',
+                                        borderRadius: '16px',
+                                        marginBottom: '1rem',
+                                        background: '#fff'
+                                    }}
+                                    title="WhatsApp QR Monitor"
+                                />
+
+                            <div style={{ textAlign: 'left', background: '#f8f9fa', padding: '1.5rem', borderRadius: '16px', width: '100%' }}>
+                                <h3 style={{ fontWeight: 700, marginBottom: '0.8rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Smartphone size={18} /> Instruções Rápidas:
+                                </h3>
+                                <ol style={{ paddingLeft: '1.2rem', color: '#555', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    <li>Abra o WhatsApp no telemóvel da empresa.</li>
+                                    <li>Vá a <strong>Definições</strong> ou <strong>Aparelhos Conectados</strong>.</li>
+                                    <li>Se aparecer &quot;Connected&quot;, o sistema está ativo! Se aparecer um QR Code, lê-o agora.</li>
+                                    <li>Mantenha o telemóvel ligado à internet para envios em tempo real.</li>
+                                </ol>
+                            </div>
+
+                            {/* Tabela de Relatórios e Auditoria de Disparos */}
+                            <WhatsAppLogs />
+                        </div>
+                    )}
+
+                    {activeTab === 'settings' && user.role === 'SuperAdmin' && (
+                        <ErrorBoundary>
+                            <SystemSettings />
+                        </ErrorBoundary>
+                    )}
                     {
-                        activeTab === 'support' && (
-                            <motion.div key="support" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
-                                <SupportTicketList />
+                        activeTab === 'finance' && user?.role === 'SuperAdmin' && (
+                            <motion.div key="finance" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+                                <AdminFinance />
                             </motion.div>
                         )
                     }
 
                     {
-                        activeTab === 'finance' && user?.role === 'SuperAdmin' && (
-                            <motion.div key="finance" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
-                                <AdminFinance />
+                        activeTab === 'books' && (
+                            <motion.div key="books" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+                                <BooksManager />
                             </motion.div>
                         )
                     }
@@ -1888,11 +1951,11 @@ export default function AdminDashboard() {
                                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                         <thead>
                                             <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
-                                                <th style={{ padding: '1rem', color: '#666' }}>Membro</th>
-                                                <th style={{ padding: '1rem', color: '#666' }}>Plano Atual</th>
-                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>Convites Ativos</th>
-                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>Pontuação</th>
-                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>Ações</th>
+                                                <th style={{ padding: '1rem', color: '#666' }}>{t('referral.table.member')}</th>
+                                                <th style={{ padding: '1rem', color: '#666' }}>{t('referral.table.currentPlan')}</th>
+                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>{t('referral.table.activeInvites')}</th>
+                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'center' }}>{t('referral.table.points')}</th>
+                                                <th style={{ padding: '1rem', color: '#666', textAlign: 'right' }}>{t('referral.table.actions')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -1922,24 +1985,24 @@ export default function AdminDashboard() {
                                                             <button
                                                                 onClick={() => handleAuditUser(r._id)}
                                                                 style={{ padding: '6px', borderRadius: '8px', background: '#f0f0f0', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                                title="Ver Indicações (Audit)"
+                                                                title={t('referral.table.viewReferrals')}
                                                             >
                                                                 <Eye size={16} />
                                                             </button>
                                                             <button
                                                                 onClick={async () => {
-                                                                    if (confirm(`Atribuir Plano Pro (30 dias) a ${r.name}?`)) {
+                                                                    if (confirm(`${t('referral.assignReward')} Pro (30 ${t('common.days')}) a ${r.name}?`)) {
                                                                         try {
                                                                             await referralService.assignReward(r._id, 'pro', 30);
-                                                                            toast.success('Recompensa atribuída!');
+                                                                            toast.success(t('common.success'));
                                                                             const updRanking = await referralService.getRanking();
                                                                             setReferralRanking(updRanking);
-                                                                        } catch { toast.error('Erro ao atribuir prémio'); }
+                                                                        } catch { toast.error(t('common.error')); }
                                                                     }
                                                                 }}
                                                                 style={{ padding: '6px 12px', borderRadius: '8px', background: '#111', color: '#FFD700', border: 'none', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}
                                                             >
-                                                                Atribuir Pro
+                                                                {t('referral.table.assignPro')}
                                                             </button>
                                                         </div>
                                                     </td>
@@ -1948,7 +2011,7 @@ export default function AdminDashboard() {
                                             {referralRanking.length === 0 && (
                                                 <tr>
                                                     <td colSpan={5} style={{ padding: '3rem', textAlign: 'center', color: '#666' }}>
-                                                        Nenhuma atividade de referenciação encontrada.
+                                                        {t('referral.table.noActivity')}
                                                     </td>
                                                 </tr>
                                             )}

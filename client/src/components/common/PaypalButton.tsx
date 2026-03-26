@@ -3,25 +3,29 @@
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { toast } from "sonner";
 import Cookies from 'js-cookie';
+import { logService } from '@/lib/logService';
 
 export interface PaypalSuccessDetails {
     success: boolean;
     submissionId?: string;
-    type?: 'subscription' | 'event_registration';
+    type?: 'subscription' | 'event_registration' | 'ad_checkout';
     plan?: string;
+    adId?: string;
 }
 
 interface PaypalButtonProps {
-    type: 'subscription' | 'event_registration';
+    type: 'subscription' | 'event_registration' | 'ad_checkout';
     planId?: string;
     formId?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    adData?: any;
     submissionData?: Record<string, unknown>;
     currency: string;
     amount?: number;
     onSuccess: (data: PaypalSuccessDetails) => void;
 }
 
-export default function PaypalButton({ type, planId, formId, submissionData, currency, onSuccess }: PaypalButtonProps) {
+export default function PaypalButton({ type, planId, formId, submissionData, adData, currency, onSuccess }: PaypalButtonProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const initialOptions: any = {
         clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test",
@@ -34,13 +38,18 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
         const loadingToast = toast.loading("Preparando ambiente seguro PayPal...", { duration: 25000 });
         try {
             const token = Cookies.get('token');
-            const endpoint = type === 'subscription'
+            let endpoint = type === 'subscription'
                 ? `${process.env.NEXT_PUBLIC_API_URL}/paypal/subscription/create`
                 : `${process.env.NEXT_PUBLIC_API_URL}/paypal/checkout/create`;
+            
+            if (type === 'ad_checkout') {
+                endpoint = `${process.env.NEXT_PUBLIC_API_URL}/paypal/checkout/ad`;
+            }
 
-            const body = type === 'subscription'
-                ? { plan: planId, currency }
-                : { formId, submissionData };
+            let body: Record<string, unknown> = {};
+            if (type === 'subscription') body = { plan: planId, currency };
+            else if (type === 'ad_checkout') body = { adData, currency };
+            else body = { formId, submissionData, currency };
 
             const response = await fetch(endpoint, {
                 method: "POST",
@@ -72,6 +81,14 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
 
     const onApprove = async (data: { orderID: string }) => {
         try {
+            const logType = type === 'ad_checkout' ? 'ad_purchase' : type as 'subscription' | 'event_registration';
+            logService.logPaymentAttempt({
+                type: logType,
+                method: 'paypal',
+                status: 'capture_started',
+                metadata: { orderID: data.orderID }
+            });
+
             const token = Cookies.get('token');
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/paypal/orders/capture`, {
                 method: "POST",
@@ -86,20 +103,41 @@ export default function PaypalButton({ type, planId, formId, submissionData, cur
 
             if (!response.ok) {
                 const errorData = await response.text();
+                const logType = type === 'ad_checkout' ? 'ad_purchase' : type as 'subscription' | 'event_registration';
+                logService.logPaymentAttempt({
+                    type: logType,
+                    method: 'paypal',
+                    status: 'capture_failed',
+                    metadata: { orderID: data.orderID, error: errorData, status: response.status }
+                });
                 throw new Error(`Server Error: ${response.status} - ${errorData}`);
             }
 
             const details = (await response.json()) as PaypalSuccessDetails;
             if (details.success) {
                 toast.success("Pagamento confirmado via PayPal!");
+                const logType = type === 'ad_checkout' ? 'ad_purchase' : type as 'subscription' | 'event_registration';
+                logService.logPaymentAttempt({
+                    type: logType,
+                    method: 'paypal',
+                    status: 'completed',
+                    metadata: { orderID: data.orderID }
+                });
                 onSuccess(details);
             } else {
+                const logType = type === 'ad_checkout' ? 'ad_purchase' : type as 'subscription' | 'event_registration';
+                logService.logPaymentAttempt({
+                    type: logType,
+                    method: 'paypal',
+                    status: 'capture_failed',
+                    metadata: { orderID: data.orderID, error: "Backend returned success: false" }
+                });
                 throw new Error("Capture failed. Backend explicitly returned success: false");
             }
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (err: any) {
+        } catch (err) {
+            const error = err as Error;
             console.error('\n❌ Frontend PayPal Capture Error:', err);
-            toast.error(`Erro ao confirmar pagamento: ${err.message || 'Falha no PayPal'}`);
+            toast.error(`Erro ao confirmar pagamento: ${error.message || 'Falha no PayPal'}`);
         }
     };
 

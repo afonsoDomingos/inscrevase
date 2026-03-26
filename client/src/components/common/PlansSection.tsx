@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle, Zap, ShieldCheck, Crown, Loader2, Info, Clock } from "lucide-react";
+import { CheckCircle, Zap, ShieldCheck, Crown, Info, Clock, Lock } from "lucide-react";
 import { useCurrency, Currency } from "@/context/CurrencyContext";
 import { useEffect, useState } from "react";
 import { authService, UserData } from "@/lib/authService";
@@ -14,7 +14,6 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
     const { t } = useTranslate();
     const { currency, setCurrency, formatPrice, getPlanPrice, getPlanConfig } = useCurrency();
     const [user, setUser] = useState<UserData | null>(null);
-    const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
     const [selectedManualPlan, setSelectedManualPlan] = useState<{ id: string, amount: number } | null>(null);
     const [pendingSub, setPendingSub] = useState<{ pending: boolean; plan: string | null } | null>(null);
@@ -39,40 +38,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
         checkPendingSub();
     }, []);
 
-    const handleSubscribe = async (plan: string) => {
-        if (!user) {
-            window.location.href = `/cadastro?plan=${plan.toLowerCase()}`;
-            return;
-        }
 
-        setLoadingPlan(plan);
-        try {
-            const token = authService.getToken();
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/subscription/create`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    plan: plan.toLowerCase(),
-                    currency: currency
-                })
-            });
-
-            const data = await response.json();
-            if (data.url) {
-                window.location.href = data.url;
-            } else {
-                toast.error(data.message || 'Erro ao iniciar assinatura');
-            }
-        } catch (error) {
-            console.error('Subscription error:', error);
-            toast.error('Erro ao conectar com o servidor de pagamentos');
-        } finally {
-            setLoadingPlan(null);
-        }
-    };
 
     return (
         <div style={{ width: '100%', maxWidth: '1400px', margin: '0 auto', paddingBottom: '2rem' }}>
@@ -251,18 +217,25 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <button
-                            onClick={() => handleSubscribe('pro')}
-                            disabled={loadingPlan === 'pro' || user?.plan === 'pro'}
-                            style={{ width: '100%', height: '45px', background: '#635BFF', color: '#fff', borderRadius: '10px', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: 0 }}
+                            onClick={() => toast.info("Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!")}
+                            style={{ 
+                                width: '100%', height: '45px', 
+                                background: 'rgba(255,255,255,0.05)', 
+                                color: '#999', borderRadius: '10px', 
+                                fontWeight: 800, border: '1px dashed rgba(255,255,255,0.2)', 
+                                cursor: 'help', display: 'flex', 
+                                alignItems: 'center', justifyContent: 'center', 
+                                gap: '10px', padding: 0,
+                                position: 'relative'
+                            }}
                         >
-                            {loadingPlan === 'pro' ? <Loader2 className="animate-spin" size={20} /> : (
-                                user?.plan === 'pro' ? t('plans.currentPlan') : (
-                                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                                        <svg width="42" height="13" viewBox="0 0 24 8" fill="#fff"><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z" transform="translate(0, -7.5)" /></svg>
-                                        <svg width="22" height="14" viewBox="0 0 45 28" fill="none"><circle cx="17" cy="14" r="9" fill="#EB001B" fillOpacity="0.85" /><circle cx="28" cy="14" r="9" fill="#F79E1B" fillOpacity="0.85" /></svg>
-                                    </div>
-                                )
-                            )}
+                            <div style={{ position: 'absolute', top: '5px', right: '10px', opacity: 0.3 }}>
+                                <Lock size={12} />
+                            </div>
+                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', opacity: 0.5 }}>
+                                <svg width="42" height="13" viewBox="0 0 24 8" fill="#fff"><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z" transform="translate(0, -7.5)" /></svg>
+                                <svg width="22" height="14" viewBox="0 0 45 28" fill="none"><circle cx="17" cy="14" r="9" fill="#EB001B" fillOpacity="0.85" /><circle cx="28" cy="14" r="9" fill="#F79E1B" fillOpacity="0.85" /></svg>
+                            </div>
                         </button>
 
                         {user?.plan !== 'pro' && (
@@ -343,18 +316,25 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <button
-                            onClick={() => handleSubscribe('enterprise')}
-                            disabled={loadingPlan === 'enterprise' || user?.plan === 'enterprise'}
-                            style={{ width: '100%', height: '45px', background: '#fff', color: '#000', borderRadius: '10px', fontWeight: 900, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: 0 }}
+                            onClick={() => toast.info("Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!")}
+                            style={{ 
+                                width: '100%', height: '45px', 
+                                background: 'rgba(255,255,255,0.05)', 
+                                color: '#999', borderRadius: '10px', 
+                                fontWeight: 800, border: '1px dashed rgba(255,255,255,0.2)', 
+                                cursor: 'help', display: 'flex', 
+                                alignItems: 'center', justifyContent: 'center', 
+                                gap: '10px', padding: 0,
+                                position: 'relative'
+                            }}
                         >
-                            {loadingPlan === 'enterprise' ? <Loader2 className="animate-spin" size={20} /> : (
-                                user?.plan === 'enterprise' ? t('plans.currentPlan') : (
-                                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                                        <svg width="42" height="13" viewBox="0 0 24 8" fill="#111"><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z" transform="translate(0, -7.5)" /></svg>
-                                        <svg width="22" height="14" viewBox="0 0 45 28" fill="none"><circle cx="17" cy="14" r="9" fill="#EB001B" fillOpacity="0.85" /><circle cx="28" cy="14" r="9" fill="#F79E1B" fillOpacity="0.85" /></svg>
-                                    </div>
-                                )
-                            )}
+                            <div style={{ position: 'absolute', top: '5px', right: '10px', opacity: 0.3 }}>
+                                <Lock size={12} />
+                            </div>
+                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', opacity: 0.5 }}>
+                                <svg width="42" height="13" viewBox="0 0 24 8" fill="#fff"><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z" transform="translate(0, -7.5)" /></svg>
+                                <svg width="22" height="14" viewBox="0 0 45 28" fill="none"><circle cx="17" cy="14" r="9" fill="#EB001B" fillOpacity="0.85" /><circle cx="28" cy="14" r="9" fill="#F79E1B" fillOpacity="0.85" /></svg>
+                            </div>
                         </button>
 
                         {user?.plan !== 'enterprise' && (

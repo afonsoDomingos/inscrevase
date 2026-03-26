@@ -7,36 +7,85 @@ const exchangeRateService = require('../services/exchangeRateService');
 
 exports.getAdminStats = async (req, res) => {
     try {
-        const totalMentors = await User.countDocuments({ role: 'mentor' });
-        const totalParticipants = await User.countDocuments({ role: 'participant' });
-        const totalForms = await Form.countDocuments();
-        const totalSubmissions = await Submission.countDocuments();
-        const approvedSubmissions = await Submission.countDocuments({ status: 'approved' });
+        const [
+            totalMentors,
+            totalParticipants,
+            totalForms,
+            totalSubmissions,
+            approvedSubmissions,
+            googleUsers,
+            linkedinUsers,
+            totalUsers
+        ] = await Promise.all([
+            User.countDocuments({ role: 'mentor' }),
+            User.countDocuments({ role: 'participant' }),
+            Form.countDocuments(),
+            Submission.countDocuments(),
+            Submission.countDocuments({ status: 'approved' }),
+            User.countDocuments({ googleId: { $ne: null } }),
+            User.countDocuments({ linkedinId: { $ne: null } }),
+            User.countDocuments()
+        ]);
 
-        // Financial Stats
-        const allTx = await Transaction.find({
-            $or: [
-                { status: 'completed' },
-                { paymentMethod: 'manual', status: 'pending' }
-            ]
-        });
-        const summary = allTx.reduce((acc, tx) => {
-            acc.totalRevenue += tx.baseAmount || tx.amount; // Use baseAmount (MZN) if available
-            if (tx.type === 'subscription') {
-                acc.subscriptionRevenue += tx.baseAmount || tx.amount;
-            } else {
-                acc.eventFeeRevenue += tx.basePlatformFee || tx.platformFee;
+        // Financial Stats - Using Aggregation for better performance and consistency
+        // Note: For 'manual' payments, we count 'pending' as approved by mentor but pending platform settlement
+        const financeSummary = await Transaction.aggregate([
+            {
+                $match: {
+                    $or: [
+                        { status: 'completed' },
+                        { paymentMethod: 'manual', status: 'pending' }
+                    ]
+                }
+            },
+            {
+                // Unique grouping to avoid double counting (e.g. from webhook + direct redirect)
+                $group: {
+                    _id: { $ifNull: ["$stripePaymentIntentId", "$paypalCaptureId", "$_id"] },
+                    type: { $first: "$type" },
+                    baseAmount: { $first: "$baseAmount" },
+                    amount: { $first: "$amount" },
+                    exchangeRate: { $first: "$exchangeRate" },
+                    basePlatformFee: { $first: "$basePlatformFee" },
+                    platformFee: { $first: "$platformFee" }
+                }
+            },
+            {
+                $addFields: {
+                    // Safe calculation of MZN amount: baseAmount > calculated > original amount
+                    safeAmount: { 
+                        $ifNull: [
+                            "$baseAmount", 
+                            { $multiply: ["$amount", { $ifNull: ["$exchangeRate", 1] }] }
+                        ] 
+                    },
+                    safeFee: {
+                        $ifNull: [
+                            "$basePlatformFee",
+                            { $multiply: ["$platformFee", { $ifNull: ["$exchangeRate", 1] }] }
+                        ]
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: "$safeAmount" },
+                    subscriptionRevenue: {
+                        $sum: {
+                            $cond: [{ $eq: ["$type", "subscription"] }, "$safeAmount", 0]
+                        }
+                    },
+                    eventFeeRevenue: {
+                        $sum: {
+                            $cond: [{ $ne: ["$type", "subscription"] }, "$safeFee", 0]
+                        }
+                    }
+                }
             }
-            return acc;
-        }, { totalRevenue: 0, subscriptionRevenue: 0, eventFeeRevenue: 0 });
+        ]);
 
-        // For "growth", we can calculate based on last 30 days vs previous 30 days
-        // but for now let's just return real counts
-
-        // Auth distribution stats
-        const googleUsers = await User.countDocuments({ googleId: { $ne: null } });
-        const linkedinUsers = await User.countDocuments({ linkedinId: { $ne: null } });
-        const totalUsers = await User.countDocuments();
+        const summary = financeSummary[0] || { totalRevenue: 0, subscriptionRevenue: 0, eventFeeRevenue: 0 };
         const nativeUsers = totalUsers - googleUsers - linkedinUsers;
 
         res.json({
@@ -56,7 +105,8 @@ exports.getAdminStats = async (req, res) => {
             }
         });
     } catch (err) {
-        res.status(500).json({ message: 'Error fetching stats' });
+        console.error('Error in getAdminStats:', err);
+        res.status(500).json({ message: 'Error fetching stats', error: err.message });
     }
 };
 
@@ -92,24 +142,55 @@ exports.getMentorStats = async (req, res) => {
             status: 'approved'
         });
 
-        // 3. Financials from Transactions (more accurate than summing form prices)
+        // Aggregate financial stats for this mentor
         const financeStats = await Transaction.aggregate([
             {
                 $match: {
                     mentor: new mongoose.Types.ObjectId(userId),
-                    $or: [
-                        { status: 'completed' },
-                        { paymentMethod: 'manual', status: 'pending' }
-                    ],
-                    type: 'event_registration'
+                    status: 'completed'
+                }
+            },
+            {
+                // Unify by ID/Intent to avoid double-counting
+                $group: {
+                    _id: { $ifNull: ["$stripePaymentIntentId", "$paypalCaptureId", "$_id"] },
+                    baseAmount: { $first: "$baseAmount" },
+                    amount: { $first: "$amount" },
+                    exchangeRate: { $first: "$exchangeRate" },
+                    baseMentorEarnings: { $first: "$baseMentorEarnings" },
+                    mentorEarnings: { $first: "$mentorEarnings" },
+                    basePlatformFee: { $first: "$basePlatformFee" },
+                    platformFee: { $first: "$platformFee" }
+                }
+            },
+            {
+                $addFields: {
+                    safeAmount: { 
+                        $ifNull: [
+                            "$baseAmount", 
+                            { $multiply: ["$amount", { $ifNull: ["$exchangeRate", 1] }] }
+                        ] 
+                    },
+                    safeEarnings: {
+                        $ifNull: [
+                            "$baseMentorEarnings",
+                            { $multiply: ["$mentorEarnings", { $ifNull: ["$exchangeRate", 1] }] }
+                        ]
+                    },
+                    safeFees: {
+                        $ifNull: [
+                            "$basePlatformFee",
+                            { $multiply: ["$platformFee", { $ifNull: ["$exchangeRate", 1] }] }
+                        ]
+                    }
                 }
             },
             {
                 $group: {
                     _id: null,
-                    totalRevenue: { $sum: "$baseAmount" },
-                    totalEarnings: { $sum: "$baseMentorEarnings" },
-                    totalFees: { $sum: "$basePlatformFee" }
+                    totalRevenue: { $sum: "$safeAmount" },
+                    totalEarnings: { $sum: "$safeEarnings" },
+                    totalFees: { $sum: "$safeFees" }
                 }
             }
         ]);
@@ -158,17 +239,13 @@ exports.getAnalytics = async (req, res) => {
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
         // Fetch data using AGGREGATION for speed and memory efficiency
-        const [submissionStats, visitStats, geoRawData] = await Promise.all([
-            // 1. Daily Submissions & Status (for revenue calculation)
+        const [submissionStats, visitStats, dailyRevenueStats, geoRawData] = await Promise.all([
+            // 1. Daily Submissions
             Submission.aggregate([
                 { $match: { form: { $in: formIds }, submittedAt: { $gte: thirtyDaysAgo } } },
                 {
                     $group: {
-                        _id: {
-                            date: { $dateToString: { format: "%Y-%m-%d", date: "$submittedAt" } },
-                            formId: "$form",
-                            status: "$status"
-                        },
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$submittedAt" } },
                         count: { $sum: 1 }
                     }
                 }
@@ -183,8 +260,26 @@ exports.getAnalytics = async (req, res) => {
                     }
                 }
             ]),
-            // 3. Geo data - We still need to process this in JS because data is in a Map, 
-            // but we only fetch what's needed (just the 'data' field)
+            // 3. Daily Revenue from Transactions (more accurate than calculating from current form price)
+            Transaction.aggregate([
+                {
+                    $match: {
+                        form: { $in: formIds },
+                        $or: [
+                            { status: 'completed' },
+                            { paymentMethod: 'manual', status: 'pending' }
+                        ],
+                        createdAt: { $gte: thirtyDaysAgo }
+                    }
+                },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                        revenue: { $sum: { $ifNull: ["$baseAmount", "$amount"] } }
+                    }
+                }
+            ]),
+            // 4. Geo data
             Submission.find(
                 { form: { $in: formIds }, submittedAt: { $gte: thirtyDaysAgo } },
                 { data: 1 }
@@ -193,25 +288,24 @@ exports.getAnalytics = async (req, res) => {
 
         // Process results into final format
         const dailyMap = {};
-        for (let i = 13; i >= 0; i--) {
+        for (let i = 29; i >= 0; i--) { // Match thirtyDaysAgo window (30 days)
             const d = new Date();
             d.setDate(d.getDate() - i);
             const dateStr = d.toISOString().split('T')[0];
             dailyMap[dateStr] = { date: dateStr, count: 0, visits: 0, revenue: 0 };
         }
 
-        // Merge Submission Stats
+        // Merge Submission Count Stats
         submissionStats.forEach(stat => {
-            const { date, formId, status } = stat._id;
-            if (dailyMap[date]) {
-                dailyMap[date].count += stat.count;
-                // Revenue calculation
-                if (status === 'approved') {
-                    const form = formsMap[formId.toString()];
-                    if (form && form.paymentConfig?.enabled) {
-                        dailyMap[date].revenue += (form.paymentConfig.price || 0) * stat.count;
-                    }
-                }
+            if (dailyMap[stat._id]) {
+                dailyMap[stat._id].count = stat.count;
+            }
+        });
+
+        // Merge Revenue Stats
+        dailyRevenueStats.forEach(stat => {
+            if (dailyMap[stat._id]) {
+                dailyMap[stat._id].revenue = stat.revenue;
             }
         });
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Megaphone, Calendar, CreditCard, Upload, CheckCircle2, AlertCircle, Package, Briefcase, Zap, Info, ChevronRight, MapPin, ArrowRight } from 'lucide-react';
+import { Megaphone, Calendar, CreditCard, Upload, CheckCircle2, AlertCircle, Package, Briefcase, Zap, Info, ChevronRight, MapPin, ArrowRight, Copy, Lock } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -12,6 +12,9 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { FormModel } from '@/lib/formService';
 import Cookies from 'js-cookie';
+import PaypalButton from '@/components/common/PaypalButton';
+import { toast } from 'sonner';
+import { logService } from '@/lib/logService';
 
 const PRICING_PER_WEEK = 5; // USD
 
@@ -36,6 +39,7 @@ export default function AnunciarPage() {
         mediaType: 'image',
         durationWeeks: 1,
         priceTotal: PRICING_PER_WEEK,
+        currency: 'USD',
         paymentMethod: 'manual',
         status: 'pending',
         targetUrl: ''
@@ -459,23 +463,66 @@ export default function AnunciarPage() {
                                         <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '2rem' }}>Escolha o método de sua preferência para concluir.</p>
 
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                                                 <button
-                                                    onClick={() => setForm({ ...form, paymentMethod: 'stripe' })}
+                                                    onClick={() => {
+                                                        const msg = "Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!";
+                                                        setError(msg);
+                                                        logService.logPaymentAttempt({
+                                                            type: 'ad_purchase',
+                                                            method: 'stripe',
+                                                            status: 'blocked_maintenance',
+                                                            amount: form.priceTotal,
+                                                            currency: 'USD',
+                                                            metadata: { title: form.title }
+                                                        });
+                                                    }}
+                                                    style={{
+                                                        padding: '1.5rem',
+                                                        borderRadius: '24px',
+                                                        border: '2px dashed #eee',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        gap: '12px',
+                                                        background: '#fcfcfc',
+                                                        cursor: 'help',
+                                                        opacity: 0.6,
+                                                        position: 'relative'
+                                                    }}
+                                                >
+                                                    <div style={{ position: 'absolute', top: '10px', right: '10px', opacity: 0.5 }}>
+                                                        <Lock size={14} />
+                                                    </div>
+                                                    <CreditCard size={28} opacity={0.5} />
+                                                    <span style={{ fontWeight: 800, fontSize: '0.8rem', color: '#999' }}>Stripe</span>
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setForm({ ...form, paymentMethod: 'paypal' });
+                                                        logService.logPaymentAttempt({
+                                                            type: 'ad_purchase',
+                                                            method: 'paypal',
+                                                            status: 'initiated',
+                                                            amount: form.priceTotal,
+                                                            currency: 'USD',
+                                                            metadata: { title: form.title }
+                                                        });
+                                                    }}
                                                     style={{
                                                         padding: '1.5rem',
                                                         borderRadius: '16px',
-                                                        border: form.paymentMethod === 'stripe' ? '2px solid #FFD700' : '1px solid #eee',
+                                                        border: form.paymentMethod === 'paypal' ? '2px solid #003087' : '1px solid #eee',
                                                         display: 'flex',
                                                         flexDirection: 'column',
                                                         alignItems: 'center',
                                                         gap: '10px',
-                                                        background: form.paymentMethod === 'stripe' ? '#FFD70005' : 'transparent',
+                                                        background: form.paymentMethod === 'paypal' ? '#00308705' : 'transparent',
                                                         cursor: 'pointer'
                                                     }}
                                                 >
-                                                    <CreditCard size={24} />
-                                                    <span style={{ fontWeight: 800 }}>Stripe / Cartão</span>
+                                                    <Image src="/payments/paypal.png" alt="PayPal" width={32} height={32} style={{ objectFit: 'contain' }} />
+                                                    <span style={{ fontWeight: 800, fontSize: '0.8rem' }}>PayPal</span>
                                                 </button>
                                                 <button
                                                     onClick={() => setForm({ ...form, paymentMethod: 'manual' })}
@@ -492,9 +539,29 @@ export default function AnunciarPage() {
                                                     }}
                                                 >
                                                     <Upload size={24} />
-                                                    <span style={{ fontWeight: 800 }}>Transferência / M-Pesa</span>
+                                                    <span style={{ fontWeight: 800, fontSize: '0.75rem' }}>Manual (MZ)</span>
                                                 </button>
                                             </div>
+                                            {form.paymentMethod === 'paypal' && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    style={{ background: '#f0f9ff', padding: '2rem', borderRadius: '16px', border: '1.5px solid #bae6fd' }}
+                                                >
+                                                    <p style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0369a1', marginBottom: '1rem', textAlign: 'center' }}>Pagar com PayPal (Instantâneo)</p>
+                                                    <div style={{ height: '45px', overflow: 'hidden', borderRadius: '12px', border: '1px solid #003087' }}>
+                                                        <PaypalButton 
+                                                            type="ad_checkout" 
+                                                            adData={form}
+                                                            currency="USD"
+                                                            onSuccess={() => {
+                                                                setSuccess(true);
+                                                                toast.success("Pagamento realizado com sucesso!");
+                                                            }} 
+                                                        />
+                                                    </div>
+                                                </motion.div>
+                                            )}
 
                                             {form.paymentMethod === 'manual' && (
                                                 <motion.div
@@ -503,10 +570,23 @@ export default function AnunciarPage() {
                                                     style={{ background: '#f9f9f9', padding: '1.5rem', borderRadius: '16px', border: '1px solid #eee' }}
                                                 >
                                                     <p style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem' }}>Siga estas instruções:</p>
-                                                    <ul style={{ fontSize: '0.8rem', color: '#666', lineHeight: 2, marginBottom: '1.5rem', paddingLeft: '1rem' }}>
-                                                        <li><b>M-Pesa:</b> 84 123 4567 (Inscreva-se)</li>
-                                                        <li><b>E-Mola:</b> 86 123 4567 (Inscreva-se)</li>
-                                                        <li><b>Banco:</b> BCI - 1234567890 (NIB)</li>
+                                                    <ul style={{ fontSize: '0.8rem', color: '#666', listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '1.5rem' }}>
+                                                        <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <span><b>M-Pesa:</b> 847877405 (Afonso Domingos)</span>
+                                                            <button onClick={() => { navigator.clipboard.writeText('847877405'); toast.success('Número copiado!'); }} style={{ padding: '4px', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                        </li>
+                                                        <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <span><b>E-Mola:</b> 879642412 (Afonso Domingos)</span>
+                                                            <button onClick={() => { navigator.clipboard.writeText('879642412'); toast.success('Número copiado!'); }} style={{ padding: '4px', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                        </li>
+                                                        <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <span><b>NIB:</b> 000100000074301049557</span>
+                                                            <button onClick={() => { navigator.clipboard.writeText('000100000074301049557'); toast.success('NIB copiado!'); }} style={{ padding: '4px', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                        </li>
+                                                        <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <span><b>PayPal:</b> karinganastudio23@gmail.com</span>
+                                                            <button onClick={() => { navigator.clipboard.writeText('karinganastudio23@gmail.com'); toast.success('PayPal copiado!'); }} style={{ padding: '4px', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                        </li>
                                                     </ul>
 
                                                     <div style={{ position: 'relative', border: '2px dashed #ddd', borderRadius: '12px', padding: '1rem', textAlign: 'center' }}>
@@ -517,7 +597,7 @@ export default function AnunciarPage() {
                                                         ) : (
                                                             <>
                                                                 <span style={{ fontSize: '0.75rem', color: '#999' }}>Suba o comprovativo aqui</span>
-                                                                <input type="file" onChange={handleProofUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                                                                <input type="file" onChange={handleProofUpload} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} accept="image/*,application/pdf,.pdf" />
                                                             </>
                                                         )}
                                                     </div>
@@ -526,13 +606,15 @@ export default function AnunciarPage() {
 
                                             {error && <div style={{ color: '#e53e3e', fontSize: '0.85rem', background: '#fff5f5', padding: '10px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}><AlertCircle size={16} /> {error}</div>}
 
-                                            <button
-                                                onClick={handleSubmit}
-                                                disabled={isSubmitting || (form.paymentMethod === 'manual' && !paymentProof)}
-                                                style={{ padding: '1.2rem', background: 'var(--gold-gradient)', color: '#000', borderRadius: '16px', border: 'none', fontWeight: 800, cursor: 'pointer', opacity: (isSubmitting || (form.paymentMethod === 'manual' && !paymentProof)) ? 0.5 : 1 }}
-                                            >
-                                                {isSubmitting ? 'Enviando...' : `Pagar ${formatPrice(form.priceTotal, 'USD')}`}
-                                            </button>
+                                            {form.paymentMethod !== 'paypal' && (
+                                                <button
+                                                    onClick={handleSubmit}
+                                                    disabled={isSubmitting || (form.paymentMethod === 'manual' && !paymentProof)}
+                                                    style={{ padding: '1.2rem', background: 'var(--gold-gradient)', color: '#000', borderRadius: '16px', border: 'none', fontWeight: 800, cursor: 'pointer', opacity: (isSubmitting || (form.paymentMethod === 'manual' && !paymentProof)) ? 0.5 : 1 }}
+                                                >
+                                                    {isSubmitting ? 'Enviando...' : `Pagar ${formatPrice(form.priceTotal, 'USD')}`}
+                                                </button>
+                                            )}
 
                                             <button onClick={() => setStep(2)} style={{ padding: '1rem', background: 'transparent', color: '#888', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Cancelar</button>
                                         </div>

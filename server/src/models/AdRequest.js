@@ -49,7 +49,7 @@ const adRequestSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['stripe', 'manual'],
+        enum: ['stripe', 'manual', 'paypal'],
         required: true
     },
     paymentProofUrl: {

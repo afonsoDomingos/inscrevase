@@ -1,0 +1,8 @@
+node_modules
+.env
+auth_info_baileys
+auth_info_baileys/
+uploads
+dist
+package-lock.json
+*.log

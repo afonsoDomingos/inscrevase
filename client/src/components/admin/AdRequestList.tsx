@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Megaphone, CheckCircle, XCircle, Clock, ExternalLink,
@@ -13,6 +13,7 @@ import { useCurrency } from '@/context/CurrencyContext';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import Tooltip from '../common/Tooltip';
+import { useTranslate } from '@/context/LanguageContext';
 
 
 const cardStyles = `
@@ -88,12 +89,9 @@ export default function AdRequestList() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'suspended'>('all');
     const { formatPrice } = useCurrency();
+    const { t, locale } = useTranslate();
 
-    useEffect(() => {
-        loadRequests();
-    }, []);
-
-    const loadRequests = async () => {
+    const loadRequests = useCallback(async () => {
         setLoading(true);
         try {
             const data = await adService.getAllAdRequestsAdmin();
@@ -101,47 +99,50 @@ export default function AdRequestList() {
         } catch (error) {
             console.error('Error loading ads:', error);
             setRequests([]);
-            toast.error('Erro ao carregar anúncios');
+            toast.error(t('dashboard.adsManagement.errorLoading') || 'Erro ao carregar anúncios');
         } finally {
             setLoading(false);
         }
-    };
+    }, [t]);
+
+    useEffect(() => {
+        loadRequests();
+    }, [loadRequests]);
 
     const handleUpdateStatus = async (id: string, status: 'approved' | 'rejected' | 'suspended') => {
-        const loadingToast = toast.loading('Atualizando status...');
+        const loadingToast = toast.loading(t('common.loading') || 'Atualizando...');
         try {
             await adService.updateAdRequestStatus(id, status);
-            const msg = status === 'approved' ? 'aprovado' : status === 'rejected' ? 'rejeitado' : 'suspenso';
-            toast.success(`Anúncio ${msg} com sucesso`, { id: loadingToast });
+            toast.success(t('common.success'), { id: loadingToast });
             loadRequests();
         } catch (err) {
             console.error('Error updating ad status:', err);
-            toast.error('Erro ao atualizar status do anúncio', { id: loadingToast });
+            toast.error(t('dashboard.adsManagement.updateError') || 'Erro ao atualizar status do anúncio', { id: loadingToast });
         }
     };
 
     const handleToggleActive = async (id: string, current: boolean | undefined) => {
-        const loadingToast = toast.loading(current ? 'Pausando...' : 'Ativando...');
+        const loadingToast = toast.loading(t('common.loading') || 'Carregando...');
         try {
             await adService.toggleAdStatus(id, !current);
-            toast.success(`Anúncio ${!current ? 'ativado' : 'pausado'} com sucesso`, { id: loadingToast });
+            toast.success(t('common.success'), { id: loadingToast });
             loadRequests();
         } catch (err) {
             console.error('Error toggling ad status:', err);
-            toast.error('Erro ao alternar status do anúncio', { id: loadingToast });
+            toast.error(t('common.error'), { id: loadingToast });
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (confirm('Deseja realmente excluir este anúncio permanentemente?')) {
-            const loadingToast = toast.loading('Excluindo...');
+        if (confirm(t('common.confirmDelete') || 'Deseja realmente excluir este anúncio permanentemente?')) {
+            const loadingToast = toast.loading(t('common.loading') || 'Excluindo...');
             try {
                 await adService.deleteAdRequest(id);
-                toast.success('Anúncio excluído', { id: loadingToast });
+                toast.success(t('common.success'), { id: loadingToast });
                 loadRequests();
             } catch (err) {
                 console.error('Error deleting ad:', err);
-                toast.error('Erro ao excluir anúncio', { id: loadingToast });
+                toast.error(t('common.error'), { id: loadingToast });
             }
         }
     };
@@ -161,7 +162,7 @@ export default function AdRequestList() {
                 <Megaphone size={60} />
             </motion.div>
             <p style={{ color: '#666', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.8rem' }} className="animate-pulse">
-                Sincronizando Publicidade Global...
+                {t('dashboard.adsManagement.syncing')}
             </p>
         </div>
     );
@@ -197,10 +198,10 @@ export default function AdRequestList() {
                         </div>
                         <div>
                             <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#000', margin: 0, letterSpacing: '-0.5px' }}>
-                                Gestão de <span style={{ color: '#000' }}>Anúncios</span>
+                                {t('dashboard.adsManagement.title')}
                             </h2>
                             <p style={{ color: '#64748b', fontSize: '1rem', marginTop: '4px', fontWeight: 500 }}>
-                                Controle total da publicidade e faturamento da plataforma.
+                                {t('dashboard.adsManagement.subtitle')}
                             </p>
                         </div>
                     </div>
@@ -210,21 +211,21 @@ export default function AdRequestList() {
                             background: '#f8fafc', padding: '1rem 1.5rem', borderRadius: '18px',
                             border: '1px solid #e2e8f0', minWidth: '100px'
                         }}>
-                            <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Total</div>
+                            <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>{t('dashboard.adsManagement.stats.total')}</div>
                             <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#000' }}>{requests.length}</div>
                         </div>
                         <div style={{
                             background: '#eff6ff', padding: '1rem 1.5rem', borderRadius: '18px',
                             border: '1px solid #dbeafe', minWidth: '100px'
                         }}>
-                            <div style={{ fontSize: '0.7rem', color: '#3b82f6', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Pendentes</div>
+                            <div style={{ fontSize: '0.7rem', color: '#3b82f6', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>{t('dashboard.adsManagement.stats.pending')}</div>
                             <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#1d4ed8' }}>{requests.filter(r => r.status === 'pending').length}</div>
                         </div>
                         <div style={{
                             background: '#f0fdf4', padding: '1rem 1.5rem', borderRadius: '18px',
                             border: '1px solid #dcfce7', minWidth: '100px'
                         }}>
-                            <div style={{ fontSize: '0.7rem', color: '#22c55e', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Ativos</div>
+                            <div style={{ fontSize: '0.7rem', color: '#22c55e', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>{t('dashboard.adsManagement.stats.active')}</div>
                             <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#15803d' }}>{requests.filter(r => r.isActive).length}</div>
                         </div>
                     </div>
@@ -261,7 +262,7 @@ export default function AdRequestList() {
                             {f === 'approved' && <CheckCircle size={14} />}
                             {f === 'rejected' && <XCircle size={14} />}
                             {f === 'suspended' && <PowerOff size={14} />}
-                            {f === 'all' ? 'Ver Todos' : f === 'pending' ? 'Solicitações' : f === 'approved' ? 'Em Exibição' : f === 'rejected' ? 'Reprovados' : 'Suspensos'}
+                            {f === 'all' ? t('dashboard.adsManagement.filters.all') : f === 'pending' ? t('dashboard.adsManagement.filters.pending') : f === 'approved' ? t('dashboard.adsManagement.filters.approved') : f === 'rejected' ? t('dashboard.adsManagement.filters.rejected') : t('dashboard.adsManagement.filters.suspended')}
                         </button>
                     ))}
                 </div>
@@ -285,9 +286,9 @@ export default function AdRequestList() {
                                 <AlertCircle size={48} />
                             </div>
                             <div>
-                                <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>Nenhum anúncio encontrado</h3>
+                                <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>{t('dashboard.adsManagement.noAds')}</h3>
                                 <p style={{ color: '#64748b', maxWidth: '300px', margin: '0 auto' }}>
-                                    Não existem registros correspondentes ao filtro &quot;{filter}&quot; no momento.
+                                    {t('dashboard.adsManagement.noAdsDesc', { filter: t(`dashboard.adsManagement.filters.${filter}`) })}
                                 </p>
                             </div>
                         </motion.div>
@@ -338,7 +339,7 @@ export default function AdRequestList() {
                                                     req.status === 'pending' ? 'rgba(59, 130, 246, 0.85)' :
                                                         req.status === 'suspended' ? 'rgba(217, 119, 6, 0.85)' : 'rgba(239, 68, 68, 0.85)'
                                             }}>
-                                                {req.status === 'approved' ? 'Publicado' : req.status === 'pending' ? 'Pendente' : req.status === 'suspended' ? 'Suspenso' : 'Reprovado'}
+                                                {req.status === 'approved' ? t('dashboard.adsManagement.status.approved') : req.status === 'pending' ? t('dashboard.adsManagement.status.pending') : req.status === 'suspended' ? t('dashboard.adsManagement.status.suspended') : t('dashboard.adsManagement.status.rejected')}
                                             </div>
                                             {req.isActive && req.status === 'approved' && (
                                                 <div style={{
@@ -346,7 +347,7 @@ export default function AdRequestList() {
                                                     textTransform: 'uppercase', background: 'rgba(255, 215, 0, 0.95)', color: '#000',
                                                     boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
                                                 }}>
-                                                    🟢 Ativo
+                                                    {t('common.active')}
                                                 </div>
                                             )}
                                         </div>
@@ -364,7 +365,7 @@ export default function AdRequestList() {
                                                         {req.category}
                                                     </span>
                                                     <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                        <Calendar size={12} /> {req.createdAt ? new Date(req.createdAt).toLocaleDateString() : 'N/A'}
+                                                        <Calendar size={12} /> {req.createdAt ? new Date(req.createdAt).toLocaleDateString(locale === 'pt' ? 'pt-MZ' : 'en-US') : 'N/A'}
                                                     </span>
                                                 </div>
                                                 <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', margin: '0 0 10px 0', lineHeight: 1.2 }}>
@@ -380,13 +381,13 @@ export default function AdRequestList() {
                                                 padding: '1.25rem', display: 'flex', gap: '1.5rem', alignItems: 'center'
                                             }}>
                                                 <div>
-                                                    <div style={{ fontSize: '0.65rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Investimento</div>
+                                                    <div style={{ fontSize: '0.65rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>{t('dashboard.adsManagement.investment')}</div>
                                                     <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#059669' }}>{formatPrice(req.priceTotal, req.currency || 'USD')}</div>
                                                 </div>
                                                 <div style={{ width: '1px', height: '32px', background: '#e2e8f0' }} />
                                                 <div>
-                                                    <div style={{ fontSize: '0.65rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Duração</div>
-                                                    <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b' }}>{req.durationWeeks} Semanas</div>
+                                                    <div style={{ fontSize: '0.65rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>{t('dashboard.adsManagement.duration')}</div>
+                                                    <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b' }}>{req.durationWeeks} {t('dashboard.adsManagement.weeks')}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -395,19 +396,19 @@ export default function AdRequestList() {
                                         <div className="ad-metrics-grid">
                                             <div style={{ background: 'rgba(59, 130, 246, 0.03)', border: '1px solid rgba(59, 130, 246, 0.1)', padding: '1rem', borderRadius: '16px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#2563eb', fontWeight: 800, fontSize: '0.65rem', textTransform: 'uppercase', marginBottom: '4px' }}>
-                                                    <Eye size={14} /> Views
+                                                    <Eye size={14} /> {t('dashboard.adsManagement.metrics.views')}
                                                 </div>
                                                 <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e3a8a' }}>{req.views || 0}</div>
                                             </div>
                                             <div style={{ background: 'rgba(147, 51, 234, 0.03)', border: '1px solid rgba(147, 51, 234, 0.1)', padding: '1rem', borderRadius: '16px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#9333ea', fontWeight: 800, fontSize: '0.65rem', textTransform: 'uppercase', marginBottom: '4px' }}>
-                                                    <MousePointer2 size={14} /> Clicks
+                                                    <MousePointer2 size={14} /> {t('dashboard.adsManagement.metrics.clicks')}
                                                 </div>
                                                 <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#581c87' }}>{req.clicks || 0}</div>
                                             </div>
                                             <div style={{ background: 'rgba(234, 179, 8, 0.03)', border: '1px solid rgba(234, 179, 8, 0.1)', padding: '1rem', borderRadius: '16px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ca8a04', fontWeight: 800, fontSize: '0.65rem', textTransform: 'uppercase', marginBottom: '4px' }}>
-                                                    <Activity size={14} /> CTR
+                                                    <Activity size={14} /> {t('dashboard.adsManagement.metrics.ctr')}
                                                 </div>
                                                 <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#854d0e' }}>
                                                     {req.views && req.views > 0 ? ((req.clicks || 0) / req.views * 100).toFixed(2) : '0.00'}%
@@ -420,15 +421,15 @@ export default function AdRequestList() {
                                                     </div>
                                                     <div>
                                                         <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#1e293b' }}>
-                                                            {(typeof req.userId === 'object' && req.userId !== null) ? req.userId.name : 'Vendedor/Mentor'}
+                                                            {typeof req.userId === 'object' && req.userId !== null ? req.userId.name : t('dashboard.adsManagement.placeholders.merchant')}
                                                         </div>
                                                         <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
-                                                            {(typeof req.userId === 'object' && req.userId !== null) ? req.userId.email : 'Proprietário do anúncio'}
+                                                            {typeof req.userId === 'object' && req.userId !== null ? req.userId.email : t('dashboard.adsManagement.placeholders.owner')}
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div style={{ textAlign: 'right' }}>
-                                                    <div style={{ fontSize: '0.6rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Pagamento</div>
+                                                    <div style={{ fontSize: '0.6rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>{t('dashboard.adsManagement.payment')}</div>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end' }}>
                                                         <span style={{ fontSize: '0.75rem', fontWeight: 900, color: req.paymentMethod === 'stripe' ? '#4f46e5' : '#ea580c' }}>
                                                             {req.paymentMethod?.toUpperCase() || 'MANUAL'}
@@ -444,7 +445,7 @@ export default function AdRequestList() {
                                                                 background: req.paymentStatus === 'paid' ? '#22c55e' : '#94a3b8'
                                                             }} />
                                                             <span style={{ fontSize: '0.65rem', fontWeight: 900, color: req.paymentStatus === 'paid' ? '#166534' : '#64748b', textTransform: 'uppercase' }}>
-                                                                {req.paymentStatus === 'paid' ? 'Pago' : 'Pendente'}
+                                                                {req.paymentStatus === 'paid' ? t('dashboard.adsManagement.paymentStatus.paid') : t('dashboard.adsManagement.paymentStatus.pending')}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -464,7 +465,7 @@ export default function AdRequestList() {
                                                                 display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
                                                                 transition: 'all 0.2s'
                                                             }}>
-                                                                <CreditCard size={16} /> Comprovativo
+                                                                <CreditCard size={16} /> {t('dashboard.adsManagement.actions.proof')}
                                                             </div>
                                                         </a>
                                                     </Tooltip>
@@ -479,7 +480,7 @@ export default function AdRequestList() {
                                                                 display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
                                                                 transition: 'all 0.2s'
                                                             }}>
-                                                                <ExternalLink size={16} /> Link Destino
+                                                                <ExternalLink size={16} /> {t('dashboard.adsManagement.actions.target')}
                                                             </div>
                                                         </a>
                                                     </Tooltip>
@@ -499,7 +500,7 @@ export default function AdRequestList() {
                                                                     fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer'
                                                                 }}
                                                             >
-                                                                Recusar
+                                                                {t('dashboard.adsManagement.actions.refuse')}
                                                             </button>
                                                         </Tooltip>
                                                         <Tooltip content="Aprovar e publicar anúncio imediatamente">
@@ -512,7 +513,7 @@ export default function AdRequestList() {
                                                                     boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
                                                                 }}
                                                             >
-                                                                Aprovar & Publicar
+                                                                {t('dashboard.adsManagement.actions.approve')}
                                                             </button>
                                                         </Tooltip>
                                                     </>
@@ -532,7 +533,7 @@ export default function AdRequestList() {
                                                                     borderRadius: '12px', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer'
                                                                 }}
                                                             >
-                                                                {req.status === 'suspended' ? 'Reativar' : 'Suspender'}
+                                                                {req.status === 'suspended' ? t('dashboard.adsManagement.actions.reactivate') : t('dashboard.adsManagement.actions.suspend')}
                                                             </button>
                                                         </Tooltip>
                                                         {req.status === 'approved' && (
@@ -547,7 +548,7 @@ export default function AdRequestList() {
                                                                         borderRadius: '12px', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer'
                                                                     }}
                                                                 >
-                                                                    {req.isActive ? 'Pausar Exibição' : 'Retomar Exibição'}
+                                                                    {req.isActive ? t('dashboard.adsManagement.actions.pause') : t('dashboard.adsManagement.actions.resume')}
                                                                 </button>
                                                             </Tooltip>
                                                         )}
@@ -555,7 +556,7 @@ export default function AdRequestList() {
                                                 )}
 
 
-                                                <Tooltip content="Excluir anúncio permanentemente">
+                                                <Tooltip content={t('dashboard.adsManagement.actions.delete')}>
                                                     <button
                                                         onClick={() => req._id && handleDelete(req._id)}
                                                         style={{

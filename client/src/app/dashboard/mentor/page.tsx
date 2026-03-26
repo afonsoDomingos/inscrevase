@@ -82,8 +82,11 @@ import {
     Megaphone,
     ChevronDown,
     TrendingUp,
-    Wallet
+    Wallet,
+    BookOpen,
+    Download
 } from 'lucide-react';
+import { bookService, BookModel } from '@/lib/bookService';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
 import EarningsDashboard from '../../../components/EarningsDashboard';
@@ -95,8 +98,10 @@ import InternalBlogView from '@/components/common/InternalBlogView';
 import ThemeToggle from '@/components/common/ThemeToggle';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
+import MySalesPanel from '@/components/books/MySalesPanel';
+import { pushService } from '@/lib/pushService';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard' | 'referral';
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard' | 'referral' | 'library' | 'mysales';
 
 import { Suspense } from 'react';
 
@@ -138,6 +143,8 @@ function MentorDashboardContent() {
     const [platformTutorials, setPlatformTutorials] = useState<Lesson[]>([]);
     const [selectedTutorial, setSelectedTutorial] = useState<Lesson | null>(null);
     const [isLabActive, setIsLabActive] = useState(false);
+    const [libraryBooks, setLibraryBooks] = useState<BookModel[]>([]);
+    const [libraryLoading, setLibraryLoading] = useState(false);
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
         "DASHBOARD": true,
         "CONTEÚDO / PRODUTOS": true,
@@ -442,6 +449,34 @@ function MentorDashboardContent() {
         return () => clearInterval(interval);
     }, [loadDashboard, refreshData]);
 
+    const fetchLibrary = useCallback(async () => {
+        setLibraryLoading(true);
+        try {
+            const data = await bookService.getMyLibrary();
+            setLibraryBooks(data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLibraryLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (activeTab === 'library') {
+            fetchLibrary();
+        }
+    }, [activeTab, fetchLibrary]);
+
+    // Subscrição Automática de Notificações Push
+    useEffect(() => {
+        // Regista o Service Worker customizado e subscreve o utilizador
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(() => {
+                pushService.subscribeUser();
+            });
+        }
+    }, []);
+
     const copyToClipboard = (slug: string) => {
         const url = `${window.location.origin}/f/${slug}`;
         navigator.clipboard.writeText(url);
@@ -634,6 +669,8 @@ function MentorDashboardContent() {
                         {
                             title: t('dashboard.sidebarGroups.account') || "CONTA / SISTEMA",
                             items: [
+                                { id: 'library', label: 'Meus Livros', icon: <BookOpen size={20} /> },
+                                { id: 'mysales', label: 'Minhas Vendas', icon: <TrendingUp size={20} /> },
                                 { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
                                 { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
                             ]
@@ -2240,6 +2277,61 @@ function MentorDashboardContent() {
                     {activeTab === 'feedback' && (
                         <motion.div key="feedback" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <FeedbackManagement />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'library' && (
+                        <motion.div key="library" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <BookOpen color="#D4AF37" /> Minha Biblioteca Digital
+                            </h2>
+                            {libraryLoading ? (
+                                <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
+                                    <Loader2 className="animate-spin" size={40} color="#FFD700" />
+                                </div>
+                            ) : libraryBooks.length > 0 ? (
+                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                                    {libraryBooks.map(book => (
+                                        <div key={book._id} className="luxury-card" style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column', border: '1px solid var(--border)', borderRadius: '20px' }}>
+                                            <div style={{ height: '220px', position: 'relative' }}>
+                                                <Image src={book.coverImage || '/placeholder.png'} alt={book.title} fill style={{ objectFit: 'cover' }} />
+                                            </div>
+                                            <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.3rem', color: 'var(--foreground)' }}>{book.title}</h3>
+                                                <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '1.5rem' }}>por {book.author}</p>
+                                                {book.pdfUrl ? (
+                                                    <button
+                                                        onClick={() => window.open(book.pdfUrl, '_blank')}
+                                                        style={{ width: '100%', padding: '10px', background: 'var(--gold-gradient)', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', marginTop: 'auto' }}
+                                                    >
+                                                        <Download size={18} /> ABRIR PDF
+                                                    </button>
+                                                ) : (
+                                                    <div style={{ fontSize: '0.85rem', color: '#888', fontStyle: 'italic', textAlign: 'center', marginTop: 'auto' }}>PDF não disponível</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div style={{ padding: '5rem 2rem', background: 'var(--paper)', borderRadius: '24px', textAlign: 'center', border: '1px dashed var(--border)' }}>
+                                    <BookOpen size={60} color="#D4AF37" style={{ opacity: 0.3, marginBottom: '1.5rem' }} />
+                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--foreground)' }}>A sua estante está vazia</h3>
+                                    <p style={{ color: '#888', marginBottom: '2rem' }}>Adquira livros para começar a sua coleção digital.</p>
+                                    <button onClick={() => router.push('/books')} className="btn-primary" style={{ padding: '12px 30px', borderRadius: '50px' }}>
+                                        Explorar Mercado de Livros
+                                    </button>
+                                </div>
+                            )}
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'mysales' && (
+                        <motion.div key="mysales" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <TrendingUp color="#22c55e" /> Minhas Vendas de Livros
+                            </h2>
+                            <MySalesPanel />
                         </motion.div>
                     )}
                 </AnimatePresence>

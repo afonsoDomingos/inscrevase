@@ -1,4 +1,5 @@
 const GlobalSettings = require('../models/GlobalSettings');
+const PaymentAttempt = require('../models/PaymentAttempt');
 
 /**
  * Get manual payment methods from global settings
@@ -15,7 +16,7 @@ exports.getManualPaymentMethods = async (req, res) => {
                 countryLabel: 'Moçambique',
                 label: 'M-Pesa',
                 icon: '🇲🇿',
-                details: '850000000 (Nome do Titular)',
+                details: '847877405 (Afonso Domingos)',
                 active: true
             },
             {
@@ -24,7 +25,7 @@ exports.getManualPaymentMethods = async (req, res) => {
                 countryLabel: 'Moçambique',
                 label: 'e-Mola',
                 icon: '🇲🇿',
-                details: '870000000 (Nome do Titular)',
+                details: '879642412 (Afonso Domingos)',
                 active: true
             },
             {
@@ -33,7 +34,7 @@ exports.getManualPaymentMethods = async (req, res) => {
                 countryLabel: 'Moçambique',
                 label: 'NIB',
                 icon: '🏦',
-                details: '0000 0000 0000 0000 0000 0',
+                details: '000100000074301049557',
                 active: true
             },
             {
@@ -42,7 +43,7 @@ exports.getManualPaymentMethods = async (req, res) => {
                 countryLabel: 'Internacional',
                 label: 'PayPal (Manual)',
                 icon: '🌎',
-                details: 'pagamentos@inscreva-se.com',
+                details: 'karinganastudio23@gmail.com',
                 active: true
             }
         ];
@@ -95,5 +96,50 @@ exports.getAllSettings = async (req, res) => {
         res.status(200).json(settings);
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * Log a payment attempt
+ */
+exports.logPaymentAttempt = async (req, res) => {
+    try {
+        const { type, method, status, amount, currency, metadata } = req.body;
+        const userId = req.user.id;
+
+        const attempt = new PaymentAttempt({
+            userId,
+            type,
+            method,
+            status,
+            amount,
+            currency,
+            metadata,
+            ip: req.ip || req.headers['x-forwarded-for'],
+            userAgent: req.headers['user-agent']
+        });
+
+        await attempt.save();
+        res.status(201).json({ success: true, id: attempt._id });
+    } catch (error) {
+        console.error('[PAYMENT_LOG] Error logging attempt:', error.message);
+        res.status(500).json({ message: 'Error logging payment attempt' });
+    }
+};
+
+/**
+ * Get all payment attempts (Admin only)
+ */
+exports.getPaymentAttempts = async (req, res) => {
+    try {
+        const attempts = await PaymentAttempt.find()
+            .populate('userId', 'name email businessName')
+            .sort({ createdAt: -1 })
+            .limit(200);
+        
+        res.status(200).json(attempts);
+    } catch (error) {
+        console.error('[PAYMENT_LOG] Error fetching attempts:', error.message);
+        res.status(500).json({ message: 'Error fetching payment attempts' });
     }
 };

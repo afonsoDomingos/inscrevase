@@ -5,8 +5,15 @@ const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const http = require('http'); // Import http
 const { Server } = require('socket.io'); // Import Socket.IO
-require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
+
+// --- CONFIGURAÇÕES DE AMBIENTE (TOP IMPORTANCE) ---
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 require('dotenv').config(); // Fallback to current dir
+
+const whatsappService = require('./services/whatsappService');
+// Iniciar Motor do WhatsApp IMEDIATAMENTE (agora com envs carregados)
+whatsappService.init().catch(err => console.error('⚠️ WhatsApp Init Error:', err));
 
 const app = express();
 const server = http.createServer(app);
@@ -15,8 +22,20 @@ const PORT = process.env.PORT || 5000;
 // Trust Proxy for Render/Proxy environments
 app.set('trust proxy', 1);
 
+// --- GLOBAL REQUEST LOGGER (DEBUG) ---
+app.use((req, res, next) => {
+    console.log(`📡 [REQ] ${req.method} ${req.url} - ${new Date().toLocaleTimeString()}`);
+    next();
+});
+
 // Security Middlewares
-app.use(helmet()); // Set security HTTP headers
+app.use(helmet({
+    contentSecurityPolicy: false, // Desativar CSP temporariamente para garantir que as imagens carregam no iframe
+    crossOriginEmbedderPolicy: false,
+    frameguard: {
+        action: 'sameorigin' // Permitir que o teu site use iframes do teu próprio API
+    }
+})); // Set security HTTP headers
 
 // CORS Configuration
 const allowedOrigins = [
@@ -177,12 +196,18 @@ const stripeController = require('./controllers/stripeController');
 const smartLinkController = require('./controllers/smartLinkController'); // Added for global redirects
 app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), stripeController.handleWebhook);
 
+// --- TESTE DE ATUALIZAÇÃO ---
+app.get('/qr-test', (req, res) => {
+    res.send('✅ O Servidor da Inscreva-se está Atualizado!');
+});
+
 // Standard Middleware
-app.use(express.json()); // No more verify hack needed since webhook is handled above
+app.use(express.json({ limit: '10mb' })); // Increase limit for larger form submissions
 app.use(require('./config/passport').initialize());
 
 // Routes
 app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
+app.use('/api/books', require('./routes/bookRoutes'));
 app.use('/api/forms', require('./routes/formRoutes'));
 app.use('/api/submissions', require('./routes/submissionRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
@@ -207,6 +232,8 @@ app.use('/api/feedback', require('./routes/feedbackRoutes'));
 app.use('/api/smartlinks', require('./routes/smartLinkRoutes'));
 app.use('/api/marketing', require('./routes/marketingRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
+app.use('/api/push', require('./routes/pushRoutes'));
+app.use('/api/admin/whatsapp', require('./routes/whatsappRoutes'));
 
 // --- GLOBAL SMARTLINK REDIRECT ---
 // This allows clean links like inscreva-se.com/l/meu-evento

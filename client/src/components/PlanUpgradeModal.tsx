@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, Crown, Sparkles, Loader2, Upload, ChevronDown, Globe, AlertCircle, Copy } from 'lucide-react';
+import { Check, X, Crown, Sparkles, Loader2, Upload, ChevronDown, Globe, AlertCircle, Copy, Lock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useCurrency } from '@/context/CurrencyContext';
 import { useTranslate } from '@/context/LanguageContext';
 import { formService } from '@/lib/formService';
 import { toast } from 'sonner';
+import { logService } from '@/lib/logService';
 import PaypalButton, { PaypalSuccessDetails } from './common/PaypalButton';
 import Image from 'next/image';
 
@@ -182,6 +183,18 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                         onSelect={() => handleUpgradeStripe('pro')}
                                         onManual={() => setManualPlan({ id: 'pro', amount: proPrice })}
                                         onPaypalSuccess={() => { onClose(); router.push('/dashboard/mentor?subscription=success&plan=pro'); }}
+                                        onStripeLocked={() => {
+                                            const msg = "Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!";
+                                            toast.info(msg);
+                                            logService.logPaymentAttempt({
+                                                type: 'subscription',
+                                                method: 'stripe',
+                                                status: 'blocked_maintenance',
+                                                amount: proPrice,
+                                                currency: currency,
+                                                metadata: { plan: 'pro' }
+                                            });
+                                        }}
                                         loading={loading === 'pro'} currency={currency} t={t}
                                     />
                                     <PlanCard
@@ -191,7 +204,22 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                         features={[t('dashboard.plans.f4'), t('dashboard.plans.f5'), t('dashboard.plans.f6')]}
                                         onSelect={() => handleUpgradeStripe('enterprise')}
                                         onManual={() => setManualPlan({ id: 'enterprise', amount: enterprisePrice })}
-                                        onPaypalSuccess={() => { onClose(); router.push('/dashboard/mentor?subscription=success&plan=enterprise'); }}
+                                        onPaypalSuccess={() => {
+                                            onClose();
+                                            router.push('/dashboard/mentor?subscription=success&plan=enterprise');
+                                        }}
+                                        onStripeLocked={() => {
+                                            const msg = "Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!";
+                                            toast.info(msg);
+                                            logService.logPaymentAttempt({
+                                                type: 'subscription',
+                                                method: 'stripe',
+                                                status: 'blocked_maintenance',
+                                                amount: enterprisePrice,
+                                                currency: currency,
+                                                metadata: { plan: 'enterprise' }
+                                            });
+                                        }}
                                         loading={loading === 'enterprise'} currency={currency} t={t}
                                     />
                                 </div>
@@ -287,7 +315,8 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                                         <button
                                                             onClick={(e) => {
                                                                 e.preventDefault();
-                                                                navigator.clipboard.writeText(method.details);
+                                                                const numberToCopy = method.details.split('(')[0].trim();
+                                                                navigator.clipboard.writeText(numberToCopy);
                                                                 toast.success(t('plans.manualUpgrade.copySuccess'));
                                                             }}
                                                             style={{ background: '#f3f4f6', border: 'none', borderRadius: '6px', padding: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6b7280', transition: 'all 0.2s' }}
@@ -342,9 +371,10 @@ interface PlanCardProps {
     icon: React.ReactNode; features: string[]; onSelect: () => void;
     onManual: () => void; onPaypalSuccess: (data: PaypalSuccessDetails) => void;
     loading: boolean; currency: string; t: (key: string) => string;
+    onStripeLocked: () => void;
 }
 
-function PlanCard({ id, name, price, color, icon, features, onSelect, onManual, onPaypalSuccess, loading, currency, t }: PlanCardProps) {
+function PlanCard({ id, name, price, color, icon, features, onManual, onPaypalSuccess, currency, t, onStripeLocked }: PlanCardProps) {
     return (
         <div style={{ border: `1.5px solid ${color}25`, background: '#fff', padding: '28px 24px', borderRadius: '24px', display: 'flex', flexDirection: 'column', transition: 'all 0.25s', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}
             onMouseOver={e => (e.currentTarget.style.transform = 'translateY(-4px)', e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.1)')}
@@ -369,16 +399,23 @@ function PlanCard({ id, name, price, color, icon, features, onSelect, onManual, 
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {/* Stripe */}
-                <button onClick={onSelect} disabled={loading}
-                    style={{ width: '100%', height: '45px', background: '#fff', color: '#000', borderRadius: '8px', fontWeight: 800, border: '2px solid #000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '0.9rem', transition: 'all 0.2s', padding: 0 }}
-                    onMouseOver={e => (e.currentTarget.style.background = '#000', e.currentTarget.style.color = '#fff')}
-                    onMouseOut={e => (e.currentTarget.style.background = '#fff', e.currentTarget.style.color = '#000')}>
-                    {loading ? <Loader2 size={16} className="animate-spin" /> : (
-                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                            <svg width="42" height="13" viewBox="0 0 24 8" fill="currentColor"><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z" transform="translate(0, -7.5)" /></svg>
-                        </div>
-                    )}
+                {/* Stripe (Locked) */}
+                <button 
+                    onClick={onStripeLocked}
+                    style={{ 
+                        width: '100%', height: '45px', 
+                        background: '#f8f8f8', color: '#999', 
+                        borderRadius: '8px', fontWeight: 700, 
+                        border: '1.5px dashed #ddd', 
+                        cursor: 'help', display: 'flex', 
+                        alignItems: 'center', justifyContent: 'center', 
+                        gap: '10px', fontSize: '0.85rem', transition: 'all 0.2s', padding: 0 
+                    }}
+                >
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <Lock size={14} opacity={0.5} />
+                        <span>Checkout Global (Stripe)</span>
+                    </div>
                 </button>
 
                 {/* PayPal */}

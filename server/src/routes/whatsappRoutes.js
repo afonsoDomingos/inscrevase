@@ -1,0 +1,279 @@
+const express = require('express');
+const router = express.Router();
+const fs = require('fs');
+const path = require('path');
+const whatsappService = require('../services/whatsappService');
+
+// Lê o logo do disco em base64
+let logoBase64 = '';
+try {
+    const logoPath = path.join(__dirname, '../../../client/public/logo.png');
+    logoBase64 = `data:image/png;base64,${fs.readFileSync(logoPath).toString('base64')}`;
+} catch (e) {
+    console.warn('[Monitor] Logo não encontrado:', e.message);
+}
+const WhatsAppLog = require('../models/WhatsAppLog');
+
+router.get('/logs', async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 50;
+        const logs = await WhatsAppLog.find()
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * limit)
+            .limit(limit);
+        const total = await WhatsAppLog.countDocuments();
+        
+        res.json({ logs, total, pages: Math.ceil(total / limit), currentPage: page });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get('/pairing-code', async (req, res) => {
+    try {
+        const { phone } = req.query;
+        if (!phone) return res.send(toastPage('⚠️', '#f59e0b', 'Número em falta', 'Indique o seu número de telefone com indicativo.'));
+        
+        const code = await whatsappService.requestPairingCode(phone);
+        
+        res.send(`${styles}
+            <div class="toast" style="max-width:320px; text-align:center; padding:30px;">
+                <div class="icon" style="font-size:3rem; margin-bottom:15px;">📲</div>
+                <div class="title" style="font-size:1.2rem; font-weight:800; color:#111; margin-bottom:10px;">Vincular por Número</div>
+                <p style="color:#6b7280; font-size:0.85rem; margin-bottom:20px; line-height:1.4;">
+                    1. Abre o WhatsApp no telemóvel<br>
+                    2. Dispositivos → Ligar → Vincular pelo número<br>
+                    3. Digita o seguinte código de 8 letras:<br>
+                </p>
+                <div style="background:#f3f4f6; padding:15px; border-radius:12px; font-size:1.5rem; font-weight:800; letter-spacing:4px; color:#111; border:1px solid #e5e7eb;">
+                    ${code}
+                </div>
+                <a href="/api/admin/whatsapp/qr" class="link" style="margin-top:20px; display:inline-block;">Voltar para o QR Code</a>
+                <script>
+                    setInterval(async()=>{
+                        const r=await fetch('/api/admin/whatsapp/status');
+                        const d=await r.json();
+                        if(d.connected) window.location.href="/api/admin/whatsapp/qr";
+                    }, 4000);
+                </script>
+            </div>`);
+    } catch (e) {
+        res.send(toastPage('❌', '#ef4444', 'Erro ao Parear', e.message));
+    }
+});
+const styles = `
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start; /* Alinhado ao topo para evitar cortes */
+        height: 100%;
+        padding: 15px 12px; /* Adicionado padding superior */
+        gap: 8px;
+    }
+    .logo { width: 70px; height: auto; display: block; margin-bottom: 2px; }
+    .badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.08em; padding: 4px 10px; border-radius: 99px;
+        border: 1.5px solid #eee; background: #fff; color: #374151;
+    }
+    .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .dot-online { background: #10b981; animation: pulse 2s infinite; }
+    .dot-offline { background: #ef4444; }
+    .dot-waiting { background: #ffcc00; animation: blink 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+    @keyframes blink { 0%,100%{opacity:.5} 50%{opacity:1} }
+    .title { font-size: 0.95rem; font-weight: 800; color: #111; text-align: center; }
+    .sub { font-size: 0.7rem; color: #6b7280; text-align: center; }
+    .qr-img { width: 160px; height: 160px; border-radius: 10px; border: 1px solid #eee; display: block; }
+    .spinner {
+        width: 28px; height: 28px;
+        border: 3px solid #f0f0f0; border-top-color: #ffcc00;
+        border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn {
+        display: block; width: 200px; padding: 11px 0;
+        background: #ffcc00; color: #000; font-weight: 800;
+        font-size: 0.8rem; border: none; border-radius: 12px;
+        cursor: pointer; text-decoration: none; text-align: center;
+        box-shadow: 0 4px 14px rgba(255,204,0,0.35);
+        transition: transform 0.15s;
+    }
+    .btn:hover { transform: translateY(-2px); background: #f5c200; }
+    .link { font-size: 0.65rem; color: #9ca3af; text-decoration: none; font-weight: 600; margin-top: 5px; }
+    .link:hover { color: #111; }
+</style>
+`;
+
+const toastPage = (icon, color, title, msg, redirect = '/api/admin/whatsapp/qr') => `
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:#fff; display:flex; align-items:center; justify-content:center; height:100vh; }
+        .toast {
+            background:#fff; border-radius:20px; padding:28px 32px; text-align:center;
+            box-shadow:0 8px 30px rgba(0,0,0,0.08); border:1.5px solid #f0f0f0;
+            max-width:320px; width:90%; animation:pop .3s cubic-bezier(.175,.885,.32,1.275);
+        }
+        @keyframes pop { from{opacity:0;transform:scale(.85)} to{opacity:1;transform:scale(1)} }
+        .icon { font-size:2.5rem; margin-bottom:14px; }
+        .title { font-size:1.1rem; font-weight:800; color:#111; margin-bottom:6px; }
+        .msg { font-size:0.82rem; color:#6b7280; margin-bottom:20px; line-height:1.5; }
+        .btn { display:inline-block; padding:11px 28px; background:${color}; color:#fff; border-radius:12px; font-weight:800; font-size:0.85rem; text-decoration:none; border:none; cursor:pointer; }
+    </style>
+    <div class="toast">
+        <div class="icon">${icon}</div>
+        <div class="title">${title}</div>
+        <div class="msg">${msg}</div>
+        <a href="${redirect}" class="btn">OK</a>
+    </div>`;
+
+router.get('/status', (req, res) => res.json({ connected: whatsappService.isConnected }));
+
+router.get('/test-message', async (req, res) => {
+    try {
+        if (!whatsappService.isConnected || !whatsappService.sock) {
+            return res.send(toastPage('⚠️','#f59e0b','WhatsApp Desligado','Ligue o WhatsApp antes de enviar mensagens de teste.'));
+        }
+        let targetNumber = '';
+        let isSelf = false;
+
+        if (req.query.phone) {
+            targetNumber = req.query.phone.replace(/[^0-9]/g, '');
+            if (targetNumber.length === 9 && targetNumber.startsWith('8')) {
+                targetNumber = `258${targetNumber}`;
+            }
+            if (!targetNumber) {
+                return res.send(toastPage('⚠️','#f59e0b','Número Inválido','Forneça um número válido com código de país (ex: 25884...).'));
+            }
+        } else {
+            const fullId = whatsappService.sock?.user?.id;
+            if (!fullId) {
+                return res.send(toastPage('⏳','#6366f1','A Conectar...','O número ainda está a ser identificado. Aguarde uns segundos e tente novamente.'));
+            }
+            // Para auto-mensagem
+            targetNumber = fullId.split(':')[0]; // "258847877405"
+            isSelf = true;
+        }
+
+        console.log(`[TEST] Enviando teste para: ${targetNumber}`);
+
+        const defaultMessage = '🚀 *TESTE INSCREVA.SE*\n\nAutomação 100% operacional! ✅\n\nEste número comunica com a plataforma.';
+        const finalMessage = req.query.customMessage && req.query.customMessage.trim() !== '' 
+                             ? req.query.customMessage 
+                             : defaultMessage;
+
+        // Usar serviço comum
+        await whatsappService.sendMessage(targetNumber, finalMessage);
+
+        const detailMsg = isSelf 
+            ? `Enviada para <b>+${targetNumber}</b>. <br>Verifique o chat "Mensagens Guardadas".`
+            : `Enviada para o número <br><b>+${targetNumber}</b> com sucesso.`;
+
+        res.send(toastPage('✅','#10b981','Mensagem Enviada!', detailMsg));
+    } catch (e) {
+        console.error('ERRO TEST:', e);
+        res.send(toastPage('❌','#ef4444','Erro no Envio', e.message));
+    }
+});
+
+router.get('/qr', async (req, res) => {
+    try {
+        const qrImage = await whatsappService.getQRImage();
+        const logo = logoBase64 ? `<img src="${logoBase64}" class="logo" />` : '';
+
+        if (whatsappService.isConnected) {
+            return res.send(`${styles}${logo}
+                <div class="badge"><div class="dot dot-online"></div>Online</div>
+                <div class="title">WhatsApp Ligado ✅</div>
+                <div class="sub" style="margin-bottom: 4px;">Teste as notificações e templates abaixo:</div>
+                
+                <div style="width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 12px; align-items: center;">
+                    <form action="/api/admin/whatsapp/test-message" method="GET" style="display:flex; flex-direction:column; gap:8px; width:100%;">
+                        <textarea id="customMsg" name="customMessage" placeholder="Escreve aqui ou escolhe um template abaixo..." style="width:100%; border:1px solid #ddd; border-radius:12px; padding:10px 14px; font-family:'Inter', sans-serif; font-size:0.75rem; resize:none; outline:none; background:#f9fafb; min-height:80px;" rows="3"></textarea>
+                        
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; width:100%; margin-bottom:5px;">
+                            <button type="button" onclick="setTemplate('mentor_new')" style="padding:6px; font-size:0.6rem; font-weight:700; background:#f3f4f6; border:1px solid #ddd; border-radius:8px; cursor:pointer;">🛎️ Inscrição (Mentor)</button>
+                            <button type="button" onclick="setTemplate('part_new')" style="padding:6px; font-size:0.6rem; font-weight:700; background:#f3f4f6; border:1px solid #ddd; border-radius:8px; cursor:pointer;">🎉 Inscrição (Part.)</button>
+                            <button type="button" onclick="setTemplate('part_app')" style="padding:6px; font-size:0.6rem; font-weight:700; background:#f3f4f6; border:1px solid #ddd; border-radius:8px; cursor:pointer;">✅ Aprovação</button>
+                            <button type="button" onclick="setTemplate('book_sale')" style="padding:6px; font-size:0.6rem; font-weight:700; background:#f3f4f6; border:1px solid #ddd; border-radius:8px; cursor:pointer;">📚 Venda Livro</button>
+                        </div>
+
+                        <button type="submit" class="btn" style="width:100%;">🚀 Testar no meu nº</button>
+                        
+                        <div style="display:flex; gap:6px; align-items:stretch; margin-top:4px;">
+                            <input type="text" name="phone" placeholder="+258..." style="flex:1; min-width:0; padding:8px 12px; border-radius:12px; border:1px solid #ddd; font-family:'Inter', sans-serif; font-size:0.8rem; outline:none;" />
+                            <button type="submit" class="btn" style="width:auto; padding:0 15px; font-size:0.75rem;">Testar Ex.</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <script>
+                    function setTemplate(type) {
+                        const area = document.getElementById('customMsg');
+                        const baseUrl = window.location.origin.replace('/api/admin/whatsapp', '');
+                        const templates = {
+                            mentor_new: 'Olá *Mentor*! 👋\\n\\n📩 *Nova Inscrição!*\\nAlguém acabou de se inscrever em "WorkShop de IA".\\n\\n👤 *Nome:* Carlos Afonso\\n📧 *Email:* carlos@exemplo.com\\n💰 *Valor:* 2.500 MZN\\n\\n🔗 *Acede ao painel para validar:*\\n' + baseUrl + '/dashboard/mentor',
+                            part_new: 'Olá *Carlos*! 🎉\\n\\n✅ *Inscrição Recebida!*\\n\\n📅 *Evento:* "WorkShop de IA"\\nO teu pagamento foi registado e está a aguardar validação.\\n\\n🔗 *Acede ao teu painel:*\\n' + baseUrl + '/dashboard/participant',
+                            part_app: 'Olá *Carlos*! 🎉\\n\\n✅ *A tua vaga está confirmada!*\\n\\nA tua inscrição para o evento "WorkShop de IA" foi aprovada pelo mentor.\\n\\n🔗 *Acede agora ao teu Hub do Inscrito:*\\n' + baseUrl + '/hub/65e9f1...',
+                            book_sale: 'Olá *Escritor*! 👋\\n\\n📚 *NOVA VENDA DE LIVRO!*\\nParabéns! O teu e-book "Marketing Digital para Iniciantes" acabou de ser vendido!\\n\\n💳 *Comprador:* Maria João\\n📧 *Email:* maria@exemplo.com\\n\\n🔗 *Acede às tuas vendas:*\\n' + baseUrl + '/dashboard/mentor?tab=mysales'
+                        };
+                        area.value = templates[type] || "";
+                    }
+                </script>
+
+                <a href="/api/admin/whatsapp/restart" class="link" style="margin-top:10px;">Desconectar / Trocar de Conta</a>`);
+        }
+
+        if (qrImage) {
+            return res.send(`${styles}${logo}
+                <div class="badge"><div class="dot dot-waiting"></div>Aguardando</div>
+                <div class="title">Leia o QR Code</div>
+                <div class="sub">Abra o WhatsApp → Dispositivos → Ligar.</div>
+                <img src="${qrImage}" class="qr-img" />
+                <button onclick="window.location.reload()" class="btn">↻ Actualizar QR</button>
+                
+                <div style="margin-top:15px; width:100%; max-width:240px; border-top:1px solid #eee; padding-top:10px;">
+                    <p style="font-size:0.65rem; color:#9ca3af; margin-bottom:8px;">Prefere usar um código de 8 letras?</p>
+                    <form action="/api/admin/whatsapp/pairing-code" method="GET" style="display:flex; gap:5px;">
+                        <input type="text" name="phone" placeholder="+258..." style="flex:1; padding:6px 10px; border-radius:8px; border:1px solid #ddd; font-size:0.75rem; outline:none;" />
+                        <button type="submit" style="background:#f3f4f6; border:none; padding:6px 10px; border-radius:8px; font-size:0.7rem; font-weight:700; cursor:pointer; color:#374151;">Gerar</button>
+                    </form>
+                </div>
+
+                <a href="/api/admin/whatsapp/restart" class="link" style="margin-top:10px;">Reiniciar motor</a>
+                <script>setInterval(async()=>{const r=await fetch('/api/admin/whatsapp/status');const d=await r.json();if(d.connected)window.location.reload();},4000);</script>`);
+        }
+
+        // A iniciar ou Reconectar
+        const isReconn = whatsappService.isReconnecting;
+        const statusText = isReconn ? 'A Restabelecer...' : 'A Iniciar...';
+        const subText = isReconn ? 'A reconectar...' : 'A conectar ao servidor WhatsApp.';
+
+        res.send(`${styles}${logo}
+            <div class="badge"><div class="dot dot-${isReconn ? 'waiting' : 'offline'}"></div>${isReconn ? 'Reconectando' : 'Offline'}</div>
+            <div class="spinner"></div>
+            <div class="title">${statusText}</div>
+            <div class="sub">${subText}</div>
+            <script>setTimeout(()=>window.location.reload(),5000);</script>`);
+
+    } catch (err) {
+        res.status(500).send('Erro interno');
+    }
+});
+
+router.get('/restart', async (req, res) => {
+    whatsappService.forceRestart().catch(e => console.error(e));
+    res.send('<script>window.location.href="/api/admin/whatsapp/qr";</script>');
+});
+
+module.exports = router;

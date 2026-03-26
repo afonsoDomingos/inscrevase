@@ -24,6 +24,7 @@ import Image from 'next/image';
 import TableScrollWrapper from '../common/TableScrollWrapper';
 import Tooltip from '../common/Tooltip';
 import { useTranslate } from '@/context/LanguageContext';
+import { toast } from 'sonner';
 
 interface Lesson {
     _id: string;
@@ -204,58 +205,79 @@ export default function LessonsManager() {
             });
 
             if (response.ok) {
+                toast.success(t('academy.messages.saveSuccess'));
                 fetchLessons();
                 closeModal();
+            } else {
+                toast.error(t('academy.messages.saveError'));
             }
         } catch (error) {
             console.error('Error saving lesson:', error);
+            toast.error(t('academy.messages.saveError'));
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Tem certeza que deseja deletar esta aula?')) return;
+        if (!confirm(t('academy.deleteConfirm'))) return;
 
         try {
             const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-            await fetch(`${API_URL}/lessons/${id}`, {
+            const response = await fetch(`${API_URL}/lessons/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            fetchLessons();
+
+            if (response.ok) {
+                toast.success(t('academy.messages.deleteSuccess'));
+                fetchLessons();
+            } else {
+                toast.error(t('academy.messages.deleteError'));
+            }
         } catch (error) {
             console.error('Error deleting lesson:', error);
+            toast.error(t('academy.messages.deleteError'));
         }
     };
 
     const togglePublish = async (id: string) => {
         try {
             const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-            await fetch(`${API_URL}/lessons/${id}/toggle-publish`, {
+            const response = await fetch(`${API_URL}/lessons/${id}/toggle-publish`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            fetchLessons();
+
+            if (response.ok) {
+                toast.success(t('academy.messages.togglePublishSuccess'));
+                fetchLessons();
+            }
         } catch (error) {
             console.error('Error toggling publish:', error);
+            toast.error(t('academy.messages.togglePublishError'));
         }
     };
 
     const toggleLock = async (id: string) => {
         try {
             const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-            await fetch(`${API_URL}/lessons/${id}/toggle-lock`, {
+            const response = await fetch(`${API_URL}/lessons/${id}/toggle-lock`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            fetchLessons();
+
+            if (response.ok) {
+                toast.success(t('academy.messages.toggleLockSuccess'));
+                fetchLessons();
+            }
         } catch (error) {
             console.error('Error toggling lock:', error);
+            toast.error(t('academy.messages.toggleLockError'));
         }
     };
 
@@ -300,7 +322,7 @@ export default function LessonsManager() {
     };
 
     const filteredLessons = lessons.filter(lesson => {
-        const matchesSearch = lesson.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = (lesson.title || '').toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = filterCategory === 'all' || lesson.category === filterCategory;
         return matchesSearch && matchesCategory;
     });
@@ -514,11 +536,11 @@ export default function LessonsManager() {
                                                         lesson.targetAudience === 'all' ? '#166534' : '#4b5563',
                                         border: '1px solid transparent'
                                     }}>
-                                        {lesson.targetAudience === 'both' ? '👥🎓 Ambos' :
-                                            lesson.targetAudience === 'mentors' ? '🎓 Mentor' :
-                                                lesson.targetAudience === 'companies' ? '🏢 Empresa' :
-                                                    lesson.targetAudience === 'specialists' ? '⚡ Especialista' :
-                                                        lesson.targetAudience === 'all' ? '🌍 Todos' : '👥 Participante'}
+                                        {lesson.targetAudience === 'both' ? `👥🎓 ${t('academy.audience.both')}` :
+                                            lesson.targetAudience === 'mentors' ? `🎓 ${t('academy.audience.mentors')}` :
+                                                lesson.targetAudience === 'companies' ? `🏢 ${t('academy.audience.companies')}` :
+                                                    lesson.targetAudience === 'specialists' ? `⚡ ${t('academy.audience.specialists')}` :
+                                                        lesson.targetAudience === 'all' ? `🌍 ${t('academy.audience.all')}` : `👥 ${t('academy.audience.participants')}`}
                                     </span>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
@@ -530,7 +552,7 @@ export default function LessonsManager() {
                                         background: lesson.isPublished ? '#dcfce7' : '#fef3c7',
                                         color: lesson.isPublished ? '#166534' : '#92400e'
                                     }}>
-                                        {lesson.isPublished ? 'Publicada' : 'Rascunho'}
+                                        {lesson.isPublished ? t('academy.status.published') : t('academy.status.draft')}
                                     </span>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
@@ -547,12 +569,12 @@ export default function LessonsManager() {
                                         width: 'fit-content'
                                     }}>
                                         {lesson.isLocked ? <Lock size={12} /> : <Unlock size={12} />}
-                                        {lesson.isLocked ? 'Bloqueada' : 'Livre'}
+                                        {lesson.isLocked ? t('academy.status.locked') : t('academy.status.free')}
                                     </span>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                                        <Tooltip content={lesson.isPublished ? 'Despublicar' : 'Publicar'}>
+                                        <Tooltip content={lesson.isPublished ? t('academy.actions.unpublish') : t('academy.actions.publish')}>
                                             <button
                                                 onClick={() => togglePublish(lesson._id)}
                                                 style={{
@@ -567,7 +589,7 @@ export default function LessonsManager() {
                                                 {lesson.isPublished ? <EyeOff size={18} /> : <Eye size={18} />}
                                             </button>
                                         </Tooltip>
-                                        <Tooltip content={lesson.isLocked ? 'Desbloquear' : 'Bloquear'}>
+                                        <Tooltip content={lesson.isLocked ? t('academy.actions.unlock') : t('academy.actions.lock')}>
                                             <button
                                                 onClick={() => toggleLock(lesson._id)}
                                                 style={{
@@ -582,7 +604,7 @@ export default function LessonsManager() {
                                                 {lesson.isLocked ? <Lock size={18} /> : <Unlock size={18} />}
                                             </button>
                                         </Tooltip>
-                                        <Tooltip content="Editar">
+                                        <Tooltip content={t('common.edit')}>
                                             <button
                                                 onClick={() => openModal(lesson)}
                                                 style={{
@@ -597,7 +619,7 @@ export default function LessonsManager() {
                                                 <Edit size={18} />
                                             </button>
                                         </Tooltip>
-                                        <Tooltip content="Deletar">
+                                        <Tooltip content={t('common.delete')}>
                                             <button
                                                 onClick={() => handleDelete(lesson._id)}
                                                 style={{
@@ -621,7 +643,7 @@ export default function LessonsManager() {
                 {filteredLessons.length === 0 && (
                     <div style={{ padding: '3rem', textAlign: 'center', color: '#999' }}>
                         <Video size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-                        <p>Nenhuma aula encontrada</p>
+                        <p>{t('academy.noLessons')}</p>
                     </div>
                 )}
             </TableScrollWrapper>
@@ -663,7 +685,7 @@ export default function LessonsManager() {
                         >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                                 <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                                    {editingLesson ? 'Editar Aula' : 'Nova Aula'}
+                                    {editingLesson ? t('academy.editLesson') : t('academy.newLesson')}
                                 </h2>
                                 <button onClick={closeModal} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
                                     <X size={24} />
@@ -674,7 +696,7 @@ export default function LessonsManager() {
                                 {/* Video Upload */}
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
-                                        Vídeo da Aula
+                                        {t('academy.modal.videoLabel')}
                                     </label>
                                     {/* Toggle between Upload and URL */}
                                     <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
@@ -693,7 +715,7 @@ export default function LessonsManager() {
                                                 transition: 'all 0.2s'
                                             }}
                                         >
-                                            📤 Upload de Arquivo
+                                            📤 {t('academy.modal.upload')}
                                         </button>
                                         <button
                                             type="button"
@@ -710,7 +732,7 @@ export default function LessonsManager() {
                                                 transition: 'all 0.2s'
                                             }}
                                         >
-                                            🔗 URL do Vídeo
+                                            🔗 {t('academy.modal.url')}
                                         </button>
                                     </div>
 
@@ -719,7 +741,7 @@ export default function LessonsManager() {
                                             <div>
                                                 <input
                                                     type="url"
-                                                    placeholder="https://www.youtube.com/watch?v=... ou https://vimeo.com/..."
+                                                    placeholder={t('academy.modal.videoPlaceholder')}
                                                     value={formData.videoUrl}
                                                     onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
                                                     style={{
@@ -733,12 +755,12 @@ export default function LessonsManager() {
                                                     }}
                                                 />
                                                 <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '8px' }}>
-                                                    💡 Suporta: YouTube, Vimeo, ou link direto para vídeo (.mp4, .webm, etc.).
-                                                    {formData.videoUrl && " Cole um novo link acima para atualizar."}
+                                                    {t('academy.modal.videoSupport')}
+                                                    {formData.videoUrl && " " + t('academy.modal.videoSupportUpdate')}
                                                 </p>
                                                 {formData.videoUrl && (
                                                     <div style={{ marginTop: '1rem' }}>
-                                                        <p style={{ fontSize: '0.8rem', fontWeight: '600', marginBottom: '8px', color: '#666' }}>Prévia do Vídeo:</p>
+                                                        <p style={{ fontSize: '0.8rem', fontWeight: '600', marginBottom: '8px', color: '#666' }}>{t('academy.modal.videoPreview')}</p>
                                                         {formData.videoUrl.includes('drive.google.com') ? (
                                                             <iframe
                                                                 src={formData.videoUrl.replace('/view', '/preview').replace('/edit', '/preview').replace('usp=sharing', '')}
@@ -791,9 +813,9 @@ export default function LessonsManager() {
                                                         >
                                                             <Upload size={48} color="#D4AF37" style={{ marginBottom: '1rem' }} />
                                                             <p style={{ fontWeight: '600', marginBottom: '4px' }}>
-                                                                {isUploading ? 'Fazendo upload...' : 'Clique para fazer upload do novo vídeo'}
+                                                                {isUploading ? t('academy.modal.uploading') : t('academy.modal.uploadStart')}
                                                             </p>
-                                                            <p style={{ fontSize: '0.875rem', color: '#666' }}>MP4, AVI, MOV (máx. 500MB)</p>
+                                                            <p style={{ fontSize: '0.875rem', color: '#666' }}>{t('academy.modal.uploadLimits')}</p>
                                                         </label>
                                                         {isUploading && (
                                                             <div style={{ marginTop: '1rem' }}>
@@ -843,7 +865,7 @@ export default function LessonsManager() {
                                                                     gap: '8px'
                                                                 }}
                                                             >
-                                                                <Trash2 size={16} /> Remover e Escolher Novo Vídeo
+                                                                <Trash2 size={16} /> {t('academy.modal.removeVideo')}
                                                             </button>
                                                         </div>
                                                     </div>
@@ -857,7 +879,7 @@ export default function LessonsManager() {
                                 <div style={{ border: '1px solid #eee', padding: '1.5rem', borderRadius: '16px', background: '#fcfcfc', marginTop: '1rem' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                                         <label style={{ fontWeight: '600', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <ImageIcon size={18} color="#D4AF37" /> Capa da Aula (Thumbnail)
+                                            <ImageIcon size={18} color="#D4AF37" /> {t('academy.modal.thumbnailLabel')}
                                         </label>
                                     </div>
 
@@ -907,7 +929,7 @@ export default function LessonsManager() {
                                                 onClick={() => document.getElementById('thumb-upload-manager')?.click()}
                                             >
                                                 <Upload size={24} color="#666" />
-                                                <span style={{ fontSize: '0.875rem', color: '#666', marginTop: '4px' }}>Upload da Capa</span>
+                                                <span style={{ fontSize: '0.875rem', color: '#666', marginTop: '4px' }}>{t('academy.modal.thumbnailUpload')}</span>
                                                 <input
                                                     type="file"
                                                     id="thumb-upload-manager"
@@ -921,7 +943,7 @@ export default function LessonsManager() {
                                         <div>
                                             <input
                                                 type="url"
-                                                placeholder="Ou cole a URL da imagem aqui..."
+                                                placeholder={t('academy.modal.thumbnailPlaceholder')}
                                                 value={formData.thumbnailUrl}
                                                 onChange={(e) => setFormData(prev => ({ ...prev, thumbnailUrl: e.target.value }))}
                                                 style={{
@@ -939,14 +961,14 @@ export default function LessonsManager() {
                                 {/* Title */}
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
-                                        Título *
+                                        {t('academy.modal.titleLabel')}
                                     </label>
                                     <input
                                         type="text"
                                         required
                                         value={formData.title}
                                         onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                                        placeholder="Ex: Introdução à Plataforma"
+                                        placeholder={t('academy.modal.titlePlaceholder')}
                                         style={{
                                             width: '100%',
                                             padding: '12px',
@@ -960,12 +982,12 @@ export default function LessonsManager() {
                                 {/* Description */}
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
-                                        Descrição
+                                        {t('academy.modal.descriptionLabel')}
                                     </label>
                                     <textarea
                                         value={formData.description}
                                         onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                                        placeholder="Descreva o conteúdo da aula..."
+                                        placeholder={t('academy.modal.descriptionPlaceholder')}
                                         rows={4}
                                         style={{
                                             width: '100%',
@@ -981,7 +1003,7 @@ export default function LessonsManager() {
                                 {/* Category */}
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
-                                        Categoria
+                                        {t('academy.modal.categoryLabel')}
                                     </label>
                                     <select
                                         value={formData.category}
@@ -995,16 +1017,16 @@ export default function LessonsManager() {
                                             cursor: 'pointer'
                                         }}
                                     >
-                                        <option value="basico">Básico</option>
-                                        <option value="intermediario">Intermediário</option>
-                                        <option value="avancado">Avançado</option>
+                                        <option value="basico">{t('academy.categories.basico')}</option>
+                                        <option value="intermediario">{t('academy.categories.intermediario')}</option>
+                                        <option value="avancado">{t('academy.categories.avancado')}</option>
                                     </select>
                                 </div>
 
                                 {/* Order */}
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
-                                        Ordem de Exibição
+                                        {t('academy.modal.orderLabel')}
                                     </label>
                                     <input
                                         type="number"
@@ -1023,7 +1045,7 @@ export default function LessonsManager() {
                                 {/* Target Audience */}
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
-                                        Público-Alvo
+                                        {t('academy.modal.audienceLabel')}
                                     </label>
                                     <select
                                         value={formData.targetAudience}
@@ -1037,25 +1059,25 @@ export default function LessonsManager() {
                                             cursor: 'pointer'
                                         }}
                                     >
-                                        <option value="mentors">Mentores (Academia)</option>
-                                        <option value="participants">Participantes</option>
-                                        <option value="companies">🏢 Empresas</option>
-                                        <option value="specialists">⚡ Especialistas</option>
-                                        <option value="both">Ambos (Mentores e Participantes)</option>
-                                        <option value="all">🌍 Todos os Públicos</option>
+                                        <option value="mentors">{t('academy.audience.mentors')}</option>
+                                        <option value="participants">{t('academy.audience.participants')}</option>
+                                        <option value="companies">🏢 {t('academy.audience.companies')}</option>
+                                        <option value="specialists">⚡ {t('academy.audience.specialists')}</option>
+                                        <option value="both">{t('academy.audience.both')}</option>
+                                        <option value="all">🌍 {t('academy.audience.all')}</option>
                                     </select>
                                     <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
                                         {formData.targetAudience === 'mentors'
-                                            ? '🎓 Visível na "Academia" para mentores aprenderem a usar a plataforma.'
+                                            ? t('academy.audience.mentorsDesc')
                                             : formData.targetAudience === 'participants'
-                                                ? '👥 Visível para os participantes no dashboard deles.'
+                                                ? t('academy.audience.participantsDesc')
                                                 : formData.targetAudience === 'companies'
-                                                    ? '🏢 Visível apenas para perfis de empresa.'
+                                                    ? t('academy.audience.companiesDesc')
                                                     : formData.targetAudience === 'specialists'
-                                                        ? '⚡ Visível apenas para especialistas.'
+                                                        ? t('academy.audience.specialistsDesc')
                                                         : formData.targetAudience === 'all'
-                                                            ? '🌍 Visível para todos os tipos de usuários.'
-                                                            : '👥🎓 Visível para mentores e participantes.'}
+                                                            ? t('academy.audience.allDesc')
+                                                            : t('academy.audience.bothDesc')}
                                     </p>
                                 </div>
 
@@ -1070,7 +1092,7 @@ export default function LessonsManager() {
                                             style={{ width: '20px', height: '20px', cursor: 'pointer' }}
                                         />
                                         <label htmlFor="published" style={{ fontWeight: '600', color: '#374151', cursor: 'pointer' }}>
-                                            Publicar aula
+                                            {t('academy.modal.isPublished')}
                                         </label>
                                     </div>
 
@@ -1084,7 +1106,7 @@ export default function LessonsManager() {
                                         />
                                         <label htmlFor="locked" style={{ fontWeight: '600', color: '#374151', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                             {formData.isLocked ? <Lock size={14} color="#ef4444" /> : <Unlock size={14} color="#10b981" />}
-                                            Bloquear aula (Premium/Restrita)
+                                            {t('academy.modal.isLocked')}
                                         </label>
                                     </div>
                                 </div>
@@ -1104,7 +1126,7 @@ export default function LessonsManager() {
                                             cursor: 'pointer'
                                         }}
                                     >
-                                        Cancelar
+                                        {t('academy.modal.cancel')}
                                     </button>
                                     <button
                                         type="submit"
@@ -1122,7 +1144,7 @@ export default function LessonsManager() {
                                             cursor: formData.videoUrl && formData.title ? 'pointer' : 'not-allowed'
                                         }}
                                     >
-                                        {editingLesson ? 'Atualizar' : 'Criar'} Aula
+                                        {editingLesson ? t('academy.modal.update') : t('academy.modal.create')} {t('academy.modal.lesson')}
                                     </button>
                                 </div>
                             </form>

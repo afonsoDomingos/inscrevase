@@ -569,12 +569,20 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                                     <Tooltip content={t('events.submissions.viewDetails')}>
                                                         <button
                                                             onClick={() => setSelectedSubmission(submission)}
-                                                            className="luxury-card"
                                                             style={{
                                                                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                                                                width: '32px', height: '32px', borderRadius: '8px',
-                                                                border: '1px solid var(--border)', background: 'var(--paper)',
-                                                                color: 'var(--foreground)', cursor: 'pointer'
+                                                                width: '30px', height: '30px', borderRadius: '50%',
+                                                                border: '1px solid #e5e7eb', background: '#fff',
+                                                                color: '#666', cursor: 'pointer', transition: 'all 0.2s',
+                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                                            }}
+                                                            onMouseOver={(e) => {
+                                                                e.currentTarget.style.background = '#f9fafb';
+                                                                e.currentTarget.style.borderColor = '#d1d5db';
+                                                            }}
+                                                            onMouseOut={(e) => {
+                                                                e.currentTarget.style.background = '#fff';
+                                                                e.currentTarget.style.borderColor = '#e5e7eb';
                                                             }}
                                                         >
                                                             <Eye size={14} />
@@ -584,13 +592,20 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                                         <button
                                                             onClick={() => handleViewProgress(submission._id)}
                                                             disabled={submission.status !== 'approved'}
-                                                            className="luxury-card"
                                                             style={{
                                                                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                                                                width: '32px', height: '32px', borderRadius: '8px',
-                                                                border: '1px solid var(--border)', background: submission.status === 'approved' ? 'rgba(212,175,55,0.05)' : 'var(--paper)',
+                                                                width: '30px', height: '30px', borderRadius: '50%',
+                                                                border: submission.status === 'approved' ? '1px solid rgba(212,175,55,0.3)' : '1px solid #f3f4f6', 
+                                                                background: submission.status === 'approved' ? 'rgba(212,175,55,0.05)' : '#f9fafb',
                                                                 color: '#D4AF37', cursor: submission.status !== 'approved' ? 'not-allowed' : 'pointer',
-                                                                opacity: submission.status !== 'approved' ? 0.3 : 1
+                                                                opacity: submission.status !== 'approved' ? 0.3 : 1,
+                                                                transition: 'all 0.2s'
+                                                            }}
+                                                            onMouseOver={(e) => {
+                                                                if (submission.status === 'approved') e.currentTarget.style.background = 'rgba(212,175,55,0.15)';
+                                                            }}
+                                                            onMouseOut={(e) => {
+                                                                if (submission.status === 'approved') e.currentTarget.style.background = 'rgba(212,175,55,0.05)';
                                                             }}
                                                         >
                                                             {loadingProgress ? <Loader2 size={14} className="animate-spin" /> : <BarChart3 size={14} />}
@@ -601,14 +616,16 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                                             href={`/hub/${submission._id}`}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="luxury-card"
                                                             style={{
                                                                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                                                                width: '32px', height: '32px', borderRadius: '8px',
-                                                                border: '1px solid var(--border)', background: 'var(--foreground)',
-                                                                color: 'var(--font-gold)', cursor: 'pointer',
-                                                                textDecoration: 'none'
+                                                                width: '30px', height: '30px', borderRadius: '50%',
+                                                                background: '#0a0a0a',
+                                                                color: '#FFD700', cursor: 'pointer',
+                                                                textDecoration: 'none', transition: 'all 0.2s',
+                                                                boxShadow: '0 4px 10px rgba(0,0,0,0.15)'
                                                             }}
+                                                            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                                                            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                                                         >
                                                             <ExternalLink size={14} />
                                                         </a>
@@ -617,7 +634,7 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                             </td>
                                             <td style={{ padding: '0.6rem 1rem', textAlign: 'right' }}>
                                                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '4px' }}>
-                                                    {submission.paymentStatus === 'paid' && submission.status !== 'approved' && (
+                                                    {submission.status !== 'approved' && (
                                                         <Tooltip content={t('events.submissions.approve')}>
                                                             <button
                                                                 onClick={() => handleUpdateStatus(submission._id, 'approved')}
@@ -1026,7 +1043,7 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                                     <div style={{ flex: 1 }}>
                                                         <label style={{ display: 'block', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, color: '#999', marginBottom: '0.4rem', letterSpacing: '0.5px' }}>
-                                                            {key}
+                                                            {t(key)}
                                                         </label>
                                                         <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#000', wordBreak: 'break-word' }}>
                                                             {String(value)}

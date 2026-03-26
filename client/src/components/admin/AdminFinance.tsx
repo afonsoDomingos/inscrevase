@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { financeService, TransactionModel, FinancialSummary } from '@/lib/financeService';
+import { logService, PaymentAttemptLog } from '@/lib/logService';
 import {
     Clock,
     CheckCircle,
@@ -16,6 +17,7 @@ import {
     XCircle,
     RefreshCcw
 } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -48,9 +50,14 @@ export default function AdminFinance() {
     const [paymentMethodFilter, setPaymentMethodFilter] = useState('all');
     const [selectedProof, setSelectedProof] = useState<string | null>(null);
     const [isRefreshingRate, setIsRefreshingRate] = useState(false);
+    const [activeTab, setActiveTab] = useState<'transactions' | 'attempts'>('transactions');
+    const [attempts, setAttempts] = useState<PaymentAttemptLog[]>([]);
+    const [loadingAttempts, setLoadingAttempts] = useState(false);
 
 
-    const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const [processingCapture, setProcessingCapture] = useState<string | null>(null);
+    const monthKeys = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    const monthNames = monthKeys.map(key => t(`common.months.${key}`));
 
     const getConvertedValue = useCallback((valueMZN: number) => {
         // We use formatPrice logic which is more robust, but for charts we need numbers.
@@ -82,58 +89,111 @@ export default function AdminFinance() {
             setSummary(summaryData);
         } catch (error) {
             console.error(error);
-            toast.error("Erro ao carregar dados financeiros");
+            toast.error(t('dashboard.adminFinance.messages.loadError'));
         } finally {
             setLoading(false);
         }
-    }, [statusFilter, paymentMethodFilter]);
+    }, [statusFilter, paymentMethodFilter, t]);
 
     useEffect(() => {
         loadData();
     }, [loadData]);
 
+    useEffect(() => {
+        if (activeTab === 'attempts') {
+            loadAttempts();
+        }
+    }, [activeTab]);
+
+    const loadAttempts = async () => {
+        try {
+            setLoadingAttempts(true);
+            const data = await logService.getPaymentAttempts();
+            setAttempts(data);
+        } catch (error) {
+            console.error(error);
+            toast.error("Erro ao carregar tentativas de pagamento");
+        } finally {
+            setLoadingAttempts(false);
+        }
+    };
+
     const handleConfirmPayment = async (id: string) => {
-        if (!confirm('Tem certeza que deseja confirmar este pagamento?')) return;
+        if (!confirm(t('dashboard.adminFinance.messages.confirmPayment'))) return;
         try {
             const res = await financeService.confirmPayment(id);
             if (res.success) {
-                toast.success("Pagamento confirmado e plano ativado!");
+                toast.success(t('dashboard.adminFinance.messages.paymentSuccess'));
                 loadData();
             } else {
                 toast.error(res.message);
             }
         } catch {
-            toast.error("Erro ao confirmar pagamento");
+            toast.error(t('dashboard.adminFinance.messages.approveError'));
+        }
+    };
+
+
+    const handleManualCapture = async (orderId: string) => {
+        if (!orderId) return;
+        try {
+            setProcessingCapture(orderId);
+            toast.loading("Tentando capturar pagamento no PayPal...");
+            const token = Cookies.get('token');
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/paypal/orders/capture`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ orderID: orderId }),
+            });
+
+            const data = await response.json();
+            toast.dismiss();
+
+            if (response.ok && data.success) {
+                toast.success("Pagamento capturado com sucesso!");
+                loadAttempts();
+            } else {
+                toast.error(data.message || "Erro ao capturar");
+            }
+        } catch (error: unknown) {
+            const err = error as Error;
+            toast.dismiss();
+            toast.error(`Erro: ${err.message || "Falha desconhecida"}`);
+        } finally {
+            setProcessingCapture(null);
         }
     };
 
     const handleRejectPayment = async (id: string) => {
-        if (!confirm('Tem certeza que deseja REJEITAR este pagamento?')) return;
+        if (!confirm(t('dashboard.adminFinance.messages.rejectConfirm'))) return;
         try {
             const res = await financeService.rejectPayment(id);
             if (res.success) {
-                toast.success("Pagamento rejeitado.");
+                toast.success(t('dashboard.adminFinance.messages.rejectSuccess'));
                 loadData();
             } else {
                 toast.error(res.message);
             }
         } catch {
-            toast.error("Erro ao rejeitar pagamento");
+            toast.error(t('dashboard.adminFinance.messages.rejectError'));
         }
     };
 
     const handleDeleteTransaction = async (id: string) => {
-        if (!confirm('ATENÇÃO: Isso excluirá permanentemente o registro financeiro. Continuar?')) return;
+        if (!confirm(t('dashboard.adminFinance.messages.deleteConfirm'))) return;
         try {
             const res = await financeService.deleteTransaction(id);
             if (res.success) {
-                toast.success("Transação eliminada.");
+                toast.success(t('dashboard.adminFinance.messages.deleteSuccess'));
                 loadData();
             } else {
                 toast.error(res.message);
             }
         } catch {
-            toast.error("Erro ao eliminar transação");
+            toast.error(t('dashboard.adminFinance.messages.deleteError'));
         }
     };
 
@@ -142,14 +202,17 @@ export default function AdminFinance() {
             setIsRefreshingRate(true);
             const res = await financeService.refreshExchangeRate();
             if (res.success) {
-                toast.success(`Taxa atualizada! Mercado: ${res.marketRate} MT | Ajustada: ${res.adjustedRate.toFixed(2)} MT`);
+                toast.success(t('dashboard.adminFinance.messages.refreshRateSuccess', {
+                    marketRate: res.marketRate,
+                    adjustedRate: res.adjustedRate.toFixed(2)
+                }));
                 loadData();
             } else {
                 toast.error(res.message);
             }
         } catch (error) {
             console.error(error);
-            toast.error("Erro ao atualizar taxa de câmbio");
+            toast.error(t('dashboard.adminFinance.messages.refreshRateError'));
         } finally {
             setIsRefreshingRate(false);
         }
@@ -176,7 +239,7 @@ export default function AdminFinance() {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentTransactions = filteredTransactions.slice(indexOfFirstItem, indexOfLastItem);
 
-    if (loading && !summary) return <div style={{ textAlign: 'center', padding: '4rem' }}>Carregando finanças...</div>;
+    if (loading && !summary) return <div style={{ textAlign: 'center', padding: '4rem' }}>{t('dashboard.adminFinance.messages.loading')}</div>;
 
     const chartData = summary?.monthlyStats?.map((s: { month: number; platformFees: number; revenue: number }) => ({
         name: monthNames[s.month],
@@ -185,44 +248,84 @@ export default function AdminFinance() {
     })) || [];
 
     const pieData = summary?.paymentMethods ? Object.entries(summary.paymentMethods).map(([name, value]: [string, number]) => ({
-        name: name === 'stripe' ? 'Stripe (Cartão)' : (name === 'paypal' ? 'PayPal' : 'Manual (Transferência)'),
+        name: name === 'stripe' ? 'Stripe (Card)' : (name === 'paypal' ? 'PayPal' : (name === 'manual' ? t('common.manualPayment') : name)),
         value
     })) : [];
 
     return (
         <div style={{ display: 'grid', gap: '2rem' }}>
+            {/* Tab Selector */}
+            <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid #eee', paddingBottom: '1rem' }}>
+                <button
+                    onClick={() => setActiveTab('transactions')}
+                    style={{
+                        padding: '0.8rem 1.5rem',
+                        borderRadius: '12px',
+                        border: 'none',
+                        background: activeTab === 'transactions' ? '#000' : 'transparent',
+                        color: activeTab === 'transactions' ? '#FFD700' : '#666',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        transition: 'all 0.3s'
+                    }}
+                >
+                    {t('dashboard.adminFinance.transactionsTab')}
+                </button>
+                <button
+                    onClick={() => setActiveTab('attempts')}
+                    style={{
+                        padding: '0.8rem 1.5rem',
+                        borderRadius: '12px',
+                        border: 'none',
+                        background: activeTab === 'attempts' ? '#000' : 'transparent',
+                        color: activeTab === 'attempts' ? '#FFD700' : '#666',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        transition: 'all 0.3s',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }}
+                >
+                    <Clock size={16} /> {t('dashboard.adminFinance.attemptsTab')}
+                </button>
+            </div>
+
+            {activeTab === 'transactions' ? (
+                <>
+
             {/* Header Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
                 <StatsCard
-                    title="Volume Transacionado"
+                    title={t('dashboard.adminFinance.totalRevenue')}
                     value={summary?.totalRevenue || 0}
                     icon={<TrendingUp size={24} />}
                     color="#D4AF37"
-                    subtitle="Total processado (Stripe + Manual)"
+                    subtitle={t('dashboard.adminFinance.stats.totalProcessed')}
                     formattedValue={formatCurrency(summary?.totalRevenue || 0)}
                 />
                 <StatsCard
-                    title={t('dashboard.finance.subscriptionRevenue')}
+                    title={t('dashboard.adminFinance.subscriptionRevenue')}
                     value={summary?.subscriptionRevenue || 0}
                     icon={<TrendingUp size={24} />}
                     color="#6366f1"
-                    subtitle="Upgrades de planos Mentores"
+                    subtitle={t('dashboard.adminFinance.stats.mentorUpgrades')}
                     formattedValue={formatCurrency(summary?.subscriptionRevenue || 0)}
                 />
                 <StatsCard
-                    title={t('dashboard.finance.eventFeeRevenue')}
+                    title={t('dashboard.adminFinance.eventFeeRevenue')}
                     value={summary?.eventFeeRevenue || 0}
                     icon={<TrendingUp size={24} />}
                     color="#10b981"
-                    subtitle="Taxas coletadas de inscrições"
+                    subtitle={t('dashboard.adminFinance.stats.collectedFees')}
                     formattedValue={formatCurrency(summary?.eventFeeRevenue || 0)}
                 />
                 <StatsCard
-                    title="Taxas Pendentes"
+                    title={t('dashboard.adminFinance.pendingFees')}
                     value={summary?.pendingFees || 0}
                     icon={<Clock size={24} />}
                     color="#f59e0b"
-                    subtitle="Cobranças manuais a mentores"
+                    subtitle={t('dashboard.adminFinance.stats.manualCharges')}
                     formattedValue={formatCurrency(summary?.pendingFees || 0)}
                 />
             </div>
@@ -233,11 +336,11 @@ export default function AdminFinance() {
                 <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem', height: '400px' }}>
                     <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Crescimento de Receita</h3>
-                            <p style={{ fontSize: '0.85rem', color: '#1a1a1a', fontWeight: 600 }}>Receita Total ({currency}) por mês</p>
+                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>{t('dashboard.adminFinance.growthChart')}</h3>
+                            <p style={{ fontSize: '0.85rem', color: '#1a1a1a', fontWeight: 600 }}>{t('dashboard.adminFinance.growthChartSubtitle', { currency })}</p>
                         </div>
                         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                            <Tooltip content="Atualizar taxa de câmbio via API agora">
+                            <Tooltip content={t('dashboard.adminFinance.messages.syncExchangeTooltip')}>
                                 <motion.button
                                     whileHover={{
                                         scale: 1.03,
@@ -267,7 +370,7 @@ export default function AdminFinance() {
                                     }}
                                 >
                                     <RefreshCcw size={18} className={isRefreshingRate ? 'animate-spin' : ''} />
-                                    {isRefreshingRate ? 'Sincronizando...' : 'Sincronizar Câmbio'}
+                                    {isRefreshingRate ? t('dashboard.adminFinance.messages.syncing') : t('dashboard.adminFinance.messages.syncExchange')}
                                 </motion.button>
                             </Tooltip>
 
@@ -299,8 +402,8 @@ export default function AdminFinance() {
                 <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: '1.5rem' }}>
                     <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '2rem' }}>
                         <div style={{ flex: 1 }}>
-                            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>Métodos de Pagamento</h3>
-                            <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: '1.5rem' }}>Divisão entre Automático e Manual</p>
+                            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>{t('dashboard.adminFinance.paymentMethods')}</h3>
+                            <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: '1.5rem' }}>{t('dashboard.adminFinance.paymentMethodsSubtitle')}</p>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 {pieData.map((item, idx) => (
                                     <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
@@ -325,7 +428,7 @@ export default function AdminFinance() {
                     </div>
 
                     <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem' }}>
-                        <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>Top Mentors (Receita Gerada)</h3>
+                        <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>{t('dashboard.adminFinance.topMentors')}</h3>
                         <div style={{ display: 'grid', gap: '0.8rem' }}>
                             {summary?.topMentors?.map((m: { name: string; business: string; platformFees: number }, idx: number) => (
                                 <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0', borderBottom: idx < 4 ? '1px solid #f9f9f9' : 'none' }}>
@@ -335,7 +438,7 @@ export default function AdminFinance() {
                                     </div>
                                     <div style={{ textAlign: 'right' }}>
                                         <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#10b981' }}>+{formatCurrency(m.platformFees)}</div>
-                                        <div style={{ fontSize: '0.7rem', color: '#ccc' }}>Taxas geradas</div>
+                                        <div style={{ fontSize: '0.7rem', color: '#ccc' }}>{t('dashboard.adminFinance.topMentorsFees')}</div>
                                     </div>
                                 </div>
                             ))}
@@ -350,7 +453,7 @@ export default function AdminFinance() {
                     <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
                     <input
                         type="text"
-                        placeholder="Buscar por mentor ou evento..."
+                        placeholder={t('dashboard.adminFinance.searchPlaceholder')}
                         value={searchTerm}
                         onChange={(e) => {
                             setSearchTerm(e.target.value);
@@ -381,7 +484,7 @@ export default function AdminFinance() {
                                     textTransform: 'capitalize'
                                 }}
                             >
-                                {status === 'all' ? 'Todos os Status' : status === 'pending' ? 'Pendentes' : status === 'rejected' ? 'Rejeitados' : 'Conciliados'}
+                                {status === 'all' ? t('dashboard.adminFinance.allStatus') : t(`dashboard.adminFinance.status.${status}`)}
                             </button>
                         ))}
                     </div>
@@ -409,7 +512,7 @@ export default function AdminFinance() {
                                     fontSize: '0.8rem'
                                 }}
                             >
-                                {method.label}
+                                {method.id === 'all' ? t('dashboard.adminFinance.allMethods') : method.label}
                             </button>
                         ))}
                     </div>
@@ -421,12 +524,12 @@ export default function AdminFinance() {
                 <table style={{ minWidth: '1000px', width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ textAlign: 'left', background: '#fcfcfc', borderBottom: '1px solid #eee' }}>
-                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>Mentor / Business</th>
-                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>Evento / Método</th>
-                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>Valor Total</th>
-                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>Taxa Plataforma</th>
-                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>Status</th>
-                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800, textAlign: 'right' }}>Ação</th>
+                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>{t('dashboard.adminFinance.table.mentorBusiness')}</th>
+                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>{t('dashboard.adminFinance.table.eventMethod')}</th>
+                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>{t('dashboard.adminFinance.table.totalAmount')}</th>
+                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>{t('dashboard.adminFinance.table.platformFee')}</th>
+                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800 }}>{t('dashboard.adminFinance.table.status')}</th>
+                            <th style={{ padding: '1.2rem', color: '#1a1a1a', fontSize: '0.85rem', fontWeight: 800, textAlign: 'right' }}>{t('dashboard.adminFinance.table.actions')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -441,11 +544,11 @@ export default function AdminFinance() {
                                     style={{ borderBottom: '1px solid #f9f9f9', fontSize: '0.9rem' }}
                                 >
                                     <td style={{ padding: '1.2rem' }}>
-                                        <div style={{ fontWeight: 700 }}>{tx.mentor?.name || tx.user?.name || 'Sistema'}</div>
-                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{tx.mentor?.businessName || tx.user?.businessName || tx.mentor?.email || tx.user?.email || 'Assinatura Direta'}</div>
+                                        <div style={{ fontWeight: 700 }}>{tx.mentor?.name || tx.user?.name || t('common.system')}</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{tx.mentor?.businessName || tx.user?.businessName || tx.mentor?.email || tx.user?.email || t('dashboard.adminFinance.table.directSubscription')}</div>
                                     </td>
                                     <td style={{ padding: '1.2rem' }}>
-                                        <div style={{ fontWeight: 600 }}>{tx.type === 'subscription' ? `Assinatura: ${tx.metadata?.plan || 'Upgrade'}` : (tx.form?.title || 'Evento')}</div>
+                                        <div style={{ fontWeight: 600 }}>{tx.type === 'subscription' ? t('dashboard.adminFinance.table.subscription', { plan: tx.metadata?.plan || t('common.upgrade') }) : (tx.form?.title || t('common.event'))}</div>
                                         <span style={{
                                             fontSize: '0.7rem',
                                             fontWeight: 800,
@@ -474,13 +577,13 @@ export default function AdminFinance() {
                                             color: tx.status === 'completed' ? '#38a169' : tx.status === 'rejected' ? '#e53e3e' : '#b45309'
                                         }}>
                                             {tx.status === 'completed' ? <CheckCircle size={12} /> : tx.status === 'rejected' ? <XCircle size={12} /> : <Clock size={12} />}
-                                            {tx.status === 'completed' ? 'CONCILIADO' : tx.status === 'rejected' ? 'REJEITADO' : 'AGUARDANDO MENTOR'}
+                                            {t(`dashboard.adminFinance.statusLabels.${tx.status}`)}
                                         </div>
                                     </td>
                                     <td style={{ padding: '1.2rem', textAlign: 'right' }}>
                                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                                             {tx.proofUrl && (
-                                                <Tooltip content="Ver Comprovativo">
+                                                <Tooltip content={t('dashboard.adminFinance.actions.viewProof')}>
                                                     <button
                                                         onClick={() => setSelectedProof(tx.proofUrl!)}
                                                         style={{
@@ -495,7 +598,7 @@ export default function AdminFinance() {
                                             )}
                                             {tx.status === 'pending' && (
                                                 <>
-                                                    <Tooltip content="Aprovar">
+                                                    <Tooltip content={t('dashboard.adminFinance.actions.approve')}>
                                                         <button
                                                             onClick={() => handleConfirmPayment(tx._id)}
                                                             style={{
@@ -507,7 +610,7 @@ export default function AdminFinance() {
                                                             <CheckCircle size={14} />
                                                         </button>
                                                     </Tooltip>
-                                                    <Tooltip content="Rejeitar">
+                                                    <Tooltip content={t('dashboard.adminFinance.actions.reject')}>
                                                         <button
                                                             onClick={() => handleRejectPayment(tx._id)}
                                                             style={{
@@ -521,7 +624,7 @@ export default function AdminFinance() {
                                                     </Tooltip>
                                                 </>
                                             )}
-                                            <Tooltip content="Eliminar Registro">
+                                            <Tooltip content={t('dashboard.adminFinance.actions.delete')}>
                                                 <button
                                                     onClick={() => handleDeleteTransaction(tx._id)}
                                                     style={{
@@ -542,7 +645,7 @@ export default function AdminFinance() {
                 {filteredTransactions.length === 0 && (
                     <div style={{ textAlign: 'center', padding: '4rem', color: '#999' }}>
                         <FileText size={48} style={{ opacity: 0.2, marginBottom: '1rem' }} />
-                        <p>Nenhuma transação encontrada.</p>
+                        <p>{t('dashboard.adminFinance.messages.noTransactions')}</p>
                     </div>
                 )}
             </TableScrollWrapper>
@@ -551,7 +654,11 @@ export default function AdminFinance() {
             {filteredTransactions.length > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #eee', fontSize: '0.9rem', color: '#666' }}>
                     <div>
-                        Mostrando {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredTransactions.length)} de {filteredTransactions.length} transações
+                        {t('dashboard.adminFinance.messages.pagination', {
+                            start: indexOfFirstItem + 1,
+                            end: Math.min(indexOfLastItem, filteredTransactions.length),
+                            total: filteredTransactions.length
+                        })}
                     </div>
                     <div style={{ display: 'flex', gap: '8px' }}>
                         <button
@@ -566,7 +673,7 @@ export default function AdminFinance() {
                                 cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
                             }}
                         >
-                            Anterior
+                            {t('common.previous')}
                         </button>
                         {Array.from({ length: Math.ceil(filteredTransactions.length / itemsPerPage) }, (_, i) => (
                             <button
@@ -601,7 +708,7 @@ export default function AdminFinance() {
                                 cursor: indexOfLastItem >= filteredTransactions.length ? 'not-allowed' : 'pointer'
                             }}
                         >
-                            Próximo
+                            {t('common.next')}
                         </button>
                     </div>
                 </div>
@@ -613,16 +720,16 @@ export default function AdminFinance() {
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedProof(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(5px)' }} />
                         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} style={{ position: 'relative', background: '#fff', borderRadius: '24px', maxWidth: '800px', width: '100%', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                             <div style={{ padding: '1.5rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Comprovativo de Pagamento</h3>
+                                <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>{t('dashboard.adminFinance.proofModal.title')}</h3>
                                 <button onClick={() => setSelectedProof(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}><X size={24} /></button>
                             </div>
                             <div style={{ flex: 1, overflow: 'auto', background: '#f8f9fa', padding: '2rem', display: 'flex', justifyContent: 'center' }}>
                                 {selectedProof.toLowerCase().includes('.pdf') ? (
                                     <div style={{ textAlign: 'center' }}>
                                         <FileText size={64} color="#666" style={{ marginBottom: '1rem' }} />
-                                        <p>Ficheiro PDF detectado.</p>
+                                        <p>{t('dashboard.adminFinance.proofModal.pdfDetected')}</p>
                                         <a href={selectedProof} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.8rem 1.5rem', background: '#000', color: '#FFD700', borderRadius: '12px', textDecoration: 'none', fontWeight: 700, marginTop: '1rem' }}>
-                                            <ExternalLink size={18} /> ABRIR PDF
+                                            <ExternalLink size={18} /> {t('dashboard.adminFinance.proofModal.openPdf')}
                                         </a>
                                     </div>
                                 ) : (
@@ -633,13 +740,132 @@ export default function AdminFinance() {
                             </div>
                             <div style={{ padding: '1.5rem', borderTop: '1px solid #eee', textAlign: 'right' }}>
                                 <a href={selectedProof} download style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.7rem 1.2rem', background: '#f0f0f0', color: '#000', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '0.85rem' }}>
-                                    <Download size={16} /> DOWNLOAD ORIGINAL
+                                    <Download size={16} /> {t('dashboard.adminFinance.proofModal.downloadOriginal')}
                                 </a>
                             </div>
                         </motion.div>
                     </div>
                 )}
             </AnimatePresence>
+                </>
+            ) : (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="luxury-card" style={{ background: '#fff', padding: '2rem' }}>
+                    <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>{t('dashboard.adminFinance.attempts.title')}</h2>
+                            <p style={{ color: '#888', fontSize: '0.9rem' }}>{t('dashboard.adminFinance.attempts.subtitle')}</p>
+                        </div>
+                        <button 
+                            onClick={loadAttempts} 
+                            disabled={loadingAttempts}
+                            style={{ 
+                                background: '#eee', border: 'none', padding: '10px 20px', borderRadius: '12px', 
+                                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 
+                            }}
+                        >
+                            <RefreshCcw size={16} className={loadingAttempts ? 'animate-spin' : ''} /> 
+                            {t('common.refresh')}
+                        </button>
+                    </div>
+
+                    <TableScrollWrapper>
+                        <table style={{ minWidth: '1000px', width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                                <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
+                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>{t('dashboard.adminFinance.attempts.table.userMentor')}</th>
+                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>{t('dashboard.adminFinance.attempts.table.eventDetails')}</th>
+                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>{t('dashboard.adminFinance.attempts.table.orderId')}</th>
+                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>{t('dashboard.adminFinance.attempts.table.status')}</th>
+                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>{t('dashboard.adminFinance.attempts.table.lastUpdate')}</th>
+                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', textAlign: 'right' }}>{t('dashboard.adminFinance.attempts.table.actions')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {loadingAttempts ? (
+                                    <tr>
+                                        <td colSpan={6} style={{ textAlign: 'center', padding: '4rem' }}>
+                                            <RefreshCcw size={32} className="animate-spin" style={{ margin: '0 auto', color: '#ccc' }} />
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    <>
+                                        {attempts.map((attempt) => {
+                                            const paypalOrderId = attempt.metadata?.orderID as string || attempt.metadata?.orderId as string;
+                                            const formTitle = attempt.metadata?.formTitle as string || attempt.type;
+                                            return (
+                                                <tr key={attempt._id} style={{ borderBottom: '1px solid #f9f9f9' }}>
+                                                    <td style={{ padding: '1.2rem' }}>
+                                                        <div style={{ fontWeight: 700 }}>{attempt.userId?.name || 'Anon'}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{attempt.userId?.email || '-'}</div>
+                                                    </td>
+                                                    <td style={{ padding: '1.2rem' }}>
+                                                        <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{formTitle}</div>
+                                                        <div style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 700 }}>{attempt.amount} {attempt.currency}</div>
+                                                    </td>
+                                                    <td style={{ padding: '1.2rem', fontFamily: 'monospace', fontSize: '0.8rem', color: '#666' }}>
+                                                        {paypalOrderId || '-'}
+                                                    </td>
+                                                    <td style={{ padding: '1.2rem' }}>
+                                                        <span style={{
+                                                            padding: '4px 10px',
+                                                            borderRadius: '20px',
+                                                            fontSize: '0.7rem',
+                                                            fontWeight: 800,
+                                                            background: attempt.status === 'completed' ? '#38a16915' : attempt.status === 'capture_failed' ? '#e53e3e15' : '#f59e0b15',
+                                                            color: attempt.status === 'completed' ? '#38a169' : attempt.status === 'capture_failed' ? '#e53e3e' : '#b45309',
+                                                            textTransform: 'uppercase'
+                                                        }}>
+                                                            {attempt.status}
+                                                        </span>
+                                                    </td>
+                                                    <td style={{ padding: '1.2rem', fontSize: '0.8rem', color: '#888' }}>
+                                                        {attempt.createdAt ? new Date(attempt.createdAt).toLocaleString() : '-'}
+                                                    </td>
+                                                    <td style={{ padding: '1.2rem', textAlign: 'right' }}>
+                                                        {(attempt.status === 'capture_started' || attempt.status === 'capture_failed' || (attempt.status === 'initiated' && paypalOrderId)) ? (
+                                                            <button
+                                                                onClick={() => handleManualCapture(paypalOrderId)}
+                                                                disabled={processingCapture === paypalOrderId}
+                                                                style={{
+                                                                    padding: '0.5rem 1rem',
+                                                                    background: '#003087',
+                                                                    color: '#fff',
+                                                                    border: 'none',
+                                                                    borderRadius: '8px',
+                                                                    fontSize: '0.75rem',
+                                                                    fontWeight: 800,
+                                                                    cursor: processingCapture === paypalOrderId ? 'not-allowed' : 'pointer',
+                                                                    display: 'inline-flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '6px'
+                                                                }}
+                                                            >
+                                                                {processingCapture === paypalOrderId ? (
+                                                                    <><RefreshCcw size={14} className="animate-spin" /> {t('dashboard.adminFinance.attempts.table.capturing')}</>
+                                                                ) : (
+                                                                    <><RefreshCcw size={14} /> {t('dashboard.adminFinance.attempts.table.captureNow')}</>
+                                                                )}
+                                                            </button>
+                                                        ) : null}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                        {attempts.length === 0 && (
+                                            <tr>
+                                                <td colSpan={6} style={{ textAlign: 'center', padding: '4rem', color: '#999' }}>
+                                                    <FileText size={48} style={{ opacity: 0.1, marginBottom: '1rem' }} />
+                                                    <p>{t('dashboard.adminFinance.attempts.table.noAttempts')}</p>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </>
+                                )}
+                            </tbody>
+                        </table>
+                    </TableScrollWrapper>
+                </motion.div>
+            )}
         </div>
     );
 }

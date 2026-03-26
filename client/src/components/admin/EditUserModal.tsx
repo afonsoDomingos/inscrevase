@@ -9,6 +9,7 @@ import { authService, UserData } from '@/lib/authService';
 import { formService } from '@/lib/formService'; // For uploading images if admin wants to change user photo
 import Image from 'next/image';
 import Tooltip from '../common/Tooltip';
+import { useTranslate } from '@/context/LanguageContext';
 
 
 interface EditUserModalProps {
@@ -19,6 +20,7 @@ interface EditUserModalProps {
 }
 
 export default function EditUserModal({ isOpen, onClose, user, onSuccess }: EditUserModalProps) {
+    const { t } = useTranslate();
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
 
@@ -71,7 +73,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                 setProfilePhoto(url);
             } catch (err) {
                 console.error(err);
-                alert('Erro no upload da foto');
+                alert(t('dashboard.usersList.editModal.messages.uploadError'));
             } finally {
                 setUploading(false);
             }
@@ -102,7 +104,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
             onClose();
         } catch (err: unknown) {
             const error = err as Error;
-            alert(error.message || 'Erro ao atualizar usuário');
+            alert(error.message || t('dashboard.usersList.editModal.messages.updateError'));
         } finally {
             setLoading(false);
         }
@@ -141,7 +143,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                 >
                     {/* Header */}
                     <div style={{ padding: '2rem 2rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexShrink: 0 }}>
-                        <Tooltip content="Fechar">
+                        <Tooltip content={t('common.close')}>
                             <button
                                 onClick={onClose}
                                 style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: '#f8f9fa', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -151,8 +153,8 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                         </Tooltip>
 
                         <div style={{ textAlign: 'center' }}>
-                            <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Editar Usuário</h2>
-                            <p style={{ color: '#666', fontSize: '0.9rem' }}>Gerencie as informações de {user.name}</p>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{t('dashboard.usersList.editModal.title')}</h2>
+                            <p style={{ color: '#666', fontSize: '0.9rem' }}>{t('dashboard.usersList.editModal.subtitle', { name: user.name })}</p>
                         </div>
                     </div>
 
@@ -192,7 +194,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                             </div>
                                         )}
                                     </div>
-                                    <Tooltip content="Mudar foto de perfil">
+                                    <Tooltip content={t('dashboard.usersList.editModal.changePhoto')}>
                                         <label style={{ position: 'absolute', bottom: 0, right: 0, width: '32px', height: '32px', background: '#000', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFD700', cursor: 'pointer', border: '2px solid #fff' }}>
                                             <Camera size={16} />
                                             <input type="file" hidden onChange={handleImageUpload} accept="image/*" />
@@ -205,11 +207,11 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                             {/* Admin Settings Section */}
                             <div style={{ background: '#f0f0f0', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd' }}>
                                 <div style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem', color: '#333', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                    <Shield size={14} /> Configurações Administrativas
+                                    <Shield size={14} /> {t('dashboard.usersList.editModal.adminSettings')}
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.8rem' }}>
                                     <div className="input-group">
-                                        <label style={{ fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px', display: 'block' }}>Função</label>
+                                        <label style={{ fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px', display: 'block' }}>{t('dashboard.usersList.editModal.role')}</label>
                                         <select
                                             className="input-luxury"
                                             value={role}
@@ -230,7 +232,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                         </select>
                                     </div>
                                     <div className="input-group">
-                                        <label style={{ fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px', display: 'block' }}>Plano</label>
+                                        <label style={{ fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px', display: 'block' }}>{t('dashboard.usersList.editModal.plan')}</label>
                                         <select
                                             className="input-luxury"
                                             value={plan}
@@ -243,7 +245,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                         </select>
                                     </div>
                                     <div className="input-group">
-                                        <label style={{ fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px', display: 'block' }}>Status</label>
+                                        <label style={{ fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px', display: 'block' }}>{t('dashboard.usersList.editModal.status')}</label>
                                         <select
                                             className="input-luxury"
                                             value={status}
@@ -266,7 +268,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                             style={{ width: '18px', height: '18px', cursor: 'pointer' }}
                                         />
                                         <label htmlFor="isPublic" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2c7a7b', cursor: 'pointer' }}>
-                                            Exibir perfil publicamente na aba Mentor
+                                            {t('dashboard.usersList.editModal.isPublic')}
                                         </label>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: canCreateEvents ? '#f0fff4' : '#fff5f5', padding: '0.8rem', borderRadius: '8px', border: `1px solid ${canCreateEvents ? '#c6f6d5' : '#fed7d7'}` }}>
@@ -278,7 +280,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                             style={{ width: '18px', height: '18px', cursor: 'pointer' }}
                                         />
                                         <label htmlFor="canCreateEvents" style={{ fontSize: '0.85rem', fontWeight: 700, color: canCreateEvents ? '#2f855a' : '#c53030', cursor: 'pointer' }}>
-                                            Habilitar criação de novos eventos e formulários
+                                            {t('dashboard.usersList.editModal.canCreateEvents')}
                                         </label>
                                     </div>
                                 </div>
@@ -286,7 +288,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                 {/* Badges Management */}
                                 <div style={{ marginTop: '1rem', borderTop: '1px solid #ddd', paddingTop: '1rem' }}>
                                     <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#666', marginBottom: '0.8rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                        <Award size={14} /> Selos e Distinções
+                                        <Award size={14} /> {t('dashboard.usersList.editModal.badgesTitle')}
                                     </div>
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '1rem' }}>
                                         {['Especialista', 'Top Mentor', 'Verificado', 'Elite'].map(badgeName => {
@@ -325,7 +327,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
                                 <div className="input-group">
                                     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                        <User size={14} /> Nome Completo
+                                        <User size={14} /> {t('dashboard.usersList.editModal.fullName')}
                                     </label>
                                     <input
                                         type="text"
@@ -338,7 +340,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
 
                                 <div className="input-group">
                                     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                        <Globe size={14} /> Endereço de E-mail
+                                        <Globe size={14} /> {t('dashboard.usersList.editModal.email')}
                                     </label>
                                     <input
                                         type="email"
@@ -351,7 +353,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
 
                                 <div className="input-group">
                                     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                        <Briefcase size={14} /> Nome do Negócio/Marca
+                                        <Briefcase size={14} /> {t('dashboard.usersList.editModal.businessName')}
                                     </label>
                                     <input
                                         type="text"
@@ -364,7 +366,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
 
                                 <div className="input-group">
                                     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                        <Phone size={14} /> WhatsApp Corporativo
+                                        <Phone size={14} /> {t('dashboard.usersList.editModal.whatsapp')}
                                     </label>
                                     <input
                                         type="text"
@@ -382,7 +384,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
 
                             <div className="input-group">
                                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
-                                    <FileText size={14} /> Bio Curta
+                                    <FileText size={14} /> {t('dashboard.usersList.editModal.bio')}
                                 </label>
                                 <textarea
                                     className="input-luxury"
@@ -396,10 +398,10 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                             {/* Security Section */}
                             <div style={{ background: '#fff5f5', padding: '1rem', borderRadius: '12px', border: '1px solid #fed7d7' }}>
                                 <div style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem', color: '#e53e3e', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                    <Key size={14} /> Segurança (Redefinir Senha)
+                                    <Key size={14} /> {t('dashboard.usersList.editModal.securityTitle')}
                                 </div>
                                 <div className="input-group">
-                                    <label style={{ fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px', display: 'block', color: '#c53030' }}>Nova Senha</label>
+                                    <label style={{ fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px', display: 'block', color: '#c53030' }}>{t('dashboard.usersList.editModal.newPassword')}</label>
                                     <input
                                         type="text"
                                         className="input-luxury"
@@ -409,14 +411,14 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                         style={{ borderColor: '#fed7d7' }}
                                         autoComplete="new-password"
                                     />
-                                    <p style={{ fontSize: '0.7rem', color: '#e53e3e', marginTop: '4px' }}>Deixe em branco para manter a senha atual.</p>
+                                    <p style={{ fontSize: '0.7rem', color: '#e53e3e', marginTop: '4px' }}>{t('dashboard.usersList.editModal.passwordHint')}</p>
                                 </div>
                             </div>
 
                             {/* Social Links Section */}
                             <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '12px' }}>
                                 <div style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem', color: '#666', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                    <Globe size={14} /> Redes Sociais
+                                    <Globe size={14} /> {t('dashboard.usersList.editModal.socialLinks')}
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
                                     <div className="input-group">
@@ -499,7 +501,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                     cursor: 'pointer'
                                 }}
                             >
-                                Cancelar
+                                {t('common.cancel')}
                             </button>
                             <button
                                 type="submit"
@@ -521,7 +523,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                     cursor: 'pointer'
                                 }}
                             >
-                                {loading ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} /> Salvar Alterações</>}
+                                {loading ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} /> {t('dashboard.usersList.editModal.saveChanges')}</>}
                             </button>
                         </div>
                     </form>

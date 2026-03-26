@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown, Activity, Clock, XCircle, Edit2, Share2, MessageCircle } from 'lucide-react';
+import { Megaphone, Plus, Eye, MousePointer2, Trash2, Power, PowerOff, ExternalLink, AlertCircle, Calendar, Package, Briefcase, Zap, MapPin, ArrowLeft, Upload, CreditCard, CheckCircle2, Loader2, TrendingUp, ChevronDown, Activity, Clock, XCircle, Edit2, Share2, MessageCircle, Lock, Copy } from 'lucide-react';
 import { adService, AdRequestModel } from '@/lib/adService';
 import { formService, FormModel } from '@/lib/formService';
 import { toast } from 'sonner';
@@ -9,6 +9,8 @@ import { useCurrency } from '@/context/CurrencyContext';
 import { useTranslate } from '@/context/LanguageContext';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
+import PaypalButton from '../common/PaypalButton';
+import { logService } from '@/lib/logService';
 
 export default function AdManagement() {
     const [ads, setAds] = useState<AdRequestModel[]>([]);
@@ -782,30 +784,90 @@ export default function AdManagement() {
                                     >
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                             <label style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#666', letterSpacing: '0.5px' }}>Método de Pagamento</label>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                                <button
-                                                    onClick={() => setForm({ ...form, paymentMethod: 'stripe' })}
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem' }}>
+                                                {/* PayPal (New & Recommended) */}
+                                                <div
+                                                    onClick={() => {
+                                                        setForm({ ...form, paymentMethod: 'paypal' });
+                                                        logService.logPaymentAttempt({
+                                                            type: 'ad_purchase',
+                                                            method: 'paypal',
+                                                            status: 'initiated',
+                                                            amount: form.priceTotal,
+                                                            currency: 'USD',
+                                                            metadata: { title: form.title }
+                                                        });
+                                                    }}
                                                     style={{
-                                                        padding: '1.5rem',
+                                                        background: '#FFC439',
                                                         borderRadius: '20px',
-                                                        border: form.paymentMethod === 'stripe' ? '2px solid #FFD700' : '2px solid #eee',
-                                                        background: form.paymentMethod === 'stripe' ? 'rgba(255, 215, 0, 0.05)' : '#fff',
-                                                        color: form.paymentMethod === 'stripe' ? '#B8860B' : '#999',
-                                                        cursor: 'pointer',
+                                                        height: '110px',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        overflow: 'hidden',
+                                                        border: form.paymentMethod === 'paypal' ? '2px solid #003087' : '2px solid transparent',
+                                                        position: 'relative',
+                                                        cursor: 'pointer'
+                                                    }}>
+                                                    <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 1 }}>
+                                                        <Image src="/payments/paypal.png" alt="PayPal" width={32} height={32} style={{ objectFit: 'contain' }} />
+                                                        <span style={{ fontWeight: 800, fontSize: '0.8rem', color: '#003087', marginTop: '5px' }}>PayPal</span>
+                                                    </div>
+                                                    <div style={{ position: 'relative', zIndex: 2, height: '100%' }}>
+                                                        <PaypalButton 
+                                                            type="ad_checkout" 
+                                                            adData={form}
+                                                            currency="USD"
+                                                            onSuccess={() => {
+                                                                toast.success("Anúncio criado com sucesso!");
+                                                                setShowCreateForm(false);
+                                                                setStep(1);
+                                                                loadAds();
+                                                            }} 
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <button
+                                                    onClick={() => {
+                                                        const msg = "Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal below para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!";
+                                                        toast.info(msg);
+                                                        logService.logPaymentAttempt({
+                                                            type: 'ad_purchase',
+                                                            method: 'stripe',
+                                                            status: 'blocked_maintenance',
+                                                            amount: form.priceTotal,
+                                                            currency: 'USD',
+                                                            metadata: { title: form.title }
+                                                        });
+                                                    }}
+                                                    style={{
+                                                        padding: '1.2rem',
+                                                        borderRadius: '20px',
+                                                        border: '2px dashed #eee',
+                                                        background: '#f8fafc',
+                                                        color: '#94a3b8',
+                                                        cursor: 'help',
                                                         display: 'flex',
                                                         flexDirection: 'column',
                                                         alignItems: 'center',
+                                                        justifyContent: 'center',
                                                         gap: '0.5rem',
-                                                        transition: 'all 0.2s'
+                                                        transition: 'all 0.2s',
+                                                        position: 'relative'
                                                     }}
                                                 >
-                                                    <CreditCard size={32} />
-                                                    <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>Cartão / Stripe</span>
+                                                    <div style={{ position: 'absolute', top: '10px', right: '10px', opacity: 0.5 }}>
+                                                        <Lock size={12} />
+                                                    </div>
+                                                    <CreditCard size={24} opacity={0.5} />
+                                                    <span style={{ fontWeight: 800, fontSize: '0.8rem' }}>Stripe (Lock)</span>
                                                 </button>
+
                                                 <button
                                                     onClick={() => setForm({ ...form, paymentMethod: 'manual' })}
                                                     style={{
-                                                        padding: '1.5rem',
+                                                        padding: '1.2rem',
                                                         borderRadius: '20px',
                                                         border: form.paymentMethod === 'manual' ? '2px solid #FFD700' : '2px solid #eee',
                                                         background: form.paymentMethod === 'manual' ? 'rgba(255, 215, 0, 0.05)' : '#fff',
@@ -814,12 +876,13 @@ export default function AdManagement() {
                                                         display: 'flex',
                                                         flexDirection: 'column',
                                                         alignItems: 'center',
+                                                        justifyContent: 'center',
                                                         gap: '0.5rem',
                                                         transition: 'all 0.2s'
                                                     }}
                                                 >
-                                                    <Megaphone size={32} />
-                                                    <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>M-Pesa / E-Mola</span>
+                                                    <Megaphone size={24} />
+                                                    <span style={{ fontWeight: 800, fontSize: '0.8rem' }}>Manual (NIB)</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -828,9 +891,22 @@ export default function AdManagement() {
                                             <div style={{ background: '#f9f9f9', padding: '1.5rem', borderRadius: '16px', border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                                 <p style={{ fontSize: '0.75rem', fontWeight: 900, color: '#666', textTransform: 'uppercase', letterSpacing: '1px' }}>Contas para Depósito</p>
                                                 <div style={{ fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, color: '#444' }}>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>M-Pesa:</span> <span>84 123 4567</span></div>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>E-Mola:</span> <span>86 123 4567</span></div>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>NIB:</span> <span>123456789 (BCI)</span></div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <span>M-Pesa: 847877405 (Afonso Domingos)</span>
+                                                        <button onClick={() => { navigator.clipboard.writeText('847877405'); toast.success('Número copiado!'); }} style={{ padding: '4px', background: '#fff', border: '1px solid #eee', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                    </div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <span>E-Mola: 879642412 (Afonso Domingos)</span>
+                                                        <button onClick={() => { navigator.clipboard.writeText('879642412'); toast.success('Número copiado!'); }} style={{ padding: '4px', background: '#fff', border: '1px solid #eee', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                    </div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <span>NIB: 000100000074301049557</span>
+                                                        <button onClick={() => { navigator.clipboard.writeText('000100000074301049557'); toast.success('NIB copiado!'); }} style={{ padding: '4px', background: '#fff', border: '1px solid #eee', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                    </div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <span>PayPal: karinganastudio23@gmail.com</span>
+                                                        <button onClick={() => { navigator.clipboard.writeText('karinganastudio23@gmail.com'); toast.success('PayPal copiado!'); }} style={{ padding: '4px', background: '#fff', border: '1px solid #eee', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                    </div>
                                                 </div>
                                                 <div style={{
                                                     position: 'relative',

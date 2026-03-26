@@ -116,11 +116,16 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
             const user = authService.getCurrentUser();
             setCurrentUser(user);
 
+            // Pre-fill WhatsApp if user has it and it's not set yet
+            if (user?.whatsapp && !whatsappConfig.phoneNumber) {
+                setWhatsappConfig(prev => ({ ...prev, phoneNumber: user.whatsapp || '' }));
+            }
+
             formService.getMyForms()
                 .then(events => setPreviousEvents(events))
                 .catch(err => console.error("Failed to load previous events", err));
         }
-    }, [isOpen]);
+    }, [isOpen, currentUser?.whatsapp]); // Added dependency to react to user loading
 
     const copyFromEvent = (eventId: string) => {
         if (!eventId) return;
@@ -130,7 +135,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
         if (event.title) setTitle(event.title);
         if (event.description) setDescription(event.description);
         if (event.category) setCategory(event.category);
-        if (event.fields) setFields(event.fields.map(f => ({ ...f, options: f.options || [] })));
+        if (event.fields) setFields(event.fields.map(f => ({ ...f, label: t(f.label), options: f.options || [] })));
         if (event.capacity) setCapacity(event.capacity.toString());
         if (event.extraCapacity) setExtraCapacity(event.extraCapacity.toString());
         if (event.eventType) setEventType(event.eventType);
@@ -149,11 +154,20 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 instructions: event.paymentConfig.instructions || '',
                 requireProof: event.paymentConfig.requireProof || false,
                 stripeEnabled: event.paymentConfig.stripeEnabled || false,
+                paypalEnabled: (event.paymentConfig as any).paypalEnabled || false,
                 stripePriceId: event.paymentConfig.stripePriceId || '',
                 stripeProductId: event.paymentConfig.stripeProductId || '',
                 manualMethods: event.paymentConfig.manualMethods || [],
                 pricingTiers: (event.paymentConfig as any).pricingTiers || [],
                 useTieredPricing: (event.paymentConfig as any).useTieredPricing || false
+            });
+        }
+
+        if (event.whatsappConfig) {
+            setWhatsappConfig({
+                phoneNumber: (event.whatsappConfig as any).phoneNumber || '',
+                message: (event.whatsappConfig as any).message || t('events.whatsappDefaultMessage'),
+                communityUrl: (event.whatsappConfig as any).communityUrl || ''
             });
         }
 
@@ -254,6 +268,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
         instructions: '',
         requireProof: false,
         stripeEnabled: false,
+        paypalEnabled: false, // NEW: PayPal toggle
         stripePriceId: '',
         stripeProductId: '',
         manualMethods: [] as { label: string; value: string; icon?: string }[],
@@ -1087,15 +1102,19 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
             }
         }
 
-        // 11. Validar telefone WhatsApp se fornecido
-        if (whatsappConfig.phoneNumber && whatsappConfig.phoneNumber.trim()) {
-            const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-            const cleanPhone = whatsappConfig.phoneNumber.replace(/[\s\-()]/g, '');
-            if (!phoneRegex.test(cleanPhone)) {
-                toast.error('Formato de telefone WhatsApp inválido. Use formato internacional: +258...');
-                setStep(7);
-                return;
-            }
+        // 11. Validar telefone WhatsApp (OBRIGATÓRIO para garantir notificações)
+        if (!whatsappConfig.phoneNumber || !whatsappConfig.phoneNumber.trim()) {
+            toast.error(t('events.whatsappNumberRequiredToast'));
+            setStep(6);
+            return;
+        }
+
+        const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+        const cleanPhone = whatsappConfig.phoneNumber.replace(/[\s\-()]/g, '');
+        if (!phoneRegex.test(cleanPhone)) {
+            toast.error('Formato de telefone WhatsApp inválido. Use formato internacional (ex: +258...)');
+            setStep(6);
+            return;
         }
 
         // 12. Validar URL da comunidade WhatsApp se fornecida
@@ -1104,7 +1123,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                 new URL(whatsappConfig.communityUrl);
             } catch {
                 toast.error('URL da comunidade WhatsApp inválida');
-                setStep(7);
+                setStep(6);
                 return;
             }
         }
@@ -1112,7 +1131,10 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
         // Clean up fields (remove temporary id)
         const cleanedFields = fields.map(f => {
             const { id, ...rest } = f;
-            return rest;
+            return {
+                ...rest,
+                label: t(rest.label)
+            };
         });
 
         // Clean up arrays to avoid Mongoose validation errors
@@ -1244,13 +1266,15 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                             {isMobile && (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <button
-                                        onClick={() => setShowPreview(true)}
+                                        type="button"
+                                        onClick={(e) => { e.stopPropagation(); setShowPreview(true); }}
                                         style={{ background: 'rgba(255,255,255,0.1)', border: 'none', width: '36px', height: '36px', borderRadius: '50%', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                     >
                                         <Eye size={18} />
                                     </button>
                                     <button
-                                        onClick={onClose}
+                                        type="button"
+                                        onClick={(e) => { e.stopPropagation(); onClose(); }}
                                         style={{ background: 'rgba(255,255,255,0.1)', border: 'none', width: '36px', height: '36px', borderRadius: '50%', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                     >
                                         <X size={18} />
@@ -1389,7 +1413,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                 {!isMobile && (
                                     <div style={{ position: 'absolute', top: isMobile ? '2.5rem' : '2rem', right: isMobile ? '1.2rem' : '2.5rem', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 30 }}>
                                         <button
-                                            onClick={() => setShowPreview(true)}
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); setShowPreview(true); }}
                                             title="Pré-visualizar Evento"
                                             style={{
                                                 background: '#fff',
@@ -1410,7 +1435,8 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                             {!isMobile && "Pré-visualizar"}
                                         </button>
                                         <button
-                                            onClick={onClose}
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); onClose(); }}
                                             style={{ background: '#eee', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                         >
                                             <X size={16} />
@@ -2528,12 +2554,34 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                                             <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800 }}>{t('events.formFields')}</h2>
-                                            <button
-                                                onClick={handleAddField}
-                                                style={{ background: '#000', color: '#FFD700', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
-                                            >
-                                                <Plus size={16} /> {isMobile ? '' : t('events.addField')}
-                                            </button>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => { e.stopPropagation(); setShowPreview(true); }}
+                                                    style={{
+                                                        background: '#fff',
+                                                        color: '#333',
+                                                        border: '1px solid #ddd',
+                                                        padding: '0.6rem 1.2rem',
+                                                        borderRadius: '8px',
+                                                        fontWeight: 700,
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '5px',
+                                                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                                    }}
+                                                >
+                                                    <Eye size={16} /> {isMobile ? '' : "Pré-visualizar"}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleAddField}
+                                                    style={{ background: '#000', color: '#FFD700', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+                                                >
+                                                    <Plus size={16} /> {isMobile ? '' : t('events.addField')}
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div style={{ background: '#f0f9ff', padding: '1rem', borderRadius: '12px', border: '1px solid #bae6fd', marginBottom: '2rem', display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -2569,10 +2617,25 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                                 /> {t('events.requiredField')}
                                                             </label>
                                                             <button
+                                                                type="button"
                                                                 onClick={() => handleRemoveField(field.id)}
-                                                                style={{ color: '#ef4444', background: '#fef2f2', border: 'none', cursor: 'pointer', padding: '10px', borderRadius: '10px' }}
+                                                                style={{
+                                                                    color: '#ef4444',
+                                                                    background: '#fef2f2',
+                                                                    border: 'none',
+                                                                    cursor: 'pointer',
+                                                                    width: '32px',
+                                                                    height: '32px',
+                                                                    borderRadius: '50%',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    transition: 'all 0.2s'
+                                                                }}
+                                                                onMouseOver={(e) => e.currentTarget.style.background = '#fee2e2'}
+                                                                onMouseOut={(e) => e.currentTarget.style.background = '#fef2f2'}
                                                             >
-                                                                <Trash2 size={16} />
+                                                                <Trash2 size={14} />
                                                             </button>
                                                         </div>
                                                     </div>
@@ -2811,12 +2874,13 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                 {t('events.steps.hub') || 'Área do Participante'}
                                             </h2>
                                             <button
-                                                onClick={() => setShowHubPreview(true)}
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); setShowHubPreview(true); }}
                                                 style={{
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     gap: '8px',
-                                                    padding: '8px 16px',
+                                                    padding: '0.6rem 1.2rem',
                                                     borderRadius: '12px',
                                                     background: '#000',
                                                     color: '#FFD700',
@@ -2824,12 +2888,11 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                     fontSize: '0.85rem',
                                                     fontWeight: 700,
                                                     cursor: 'pointer',
-                                                    transition: 'all 0.2',
+                                                    transition: 'all 0.2s',
                                                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                                 }}
                                             >
-                                                <Eye size={16} />
-                                                Visualizar Hub
+                                                <Eye size={16} /> Visualizar Hub
                                             </button>
                                         </div>
                                         <p style={{ color: '#666', marginBottom: '2rem' }}>
@@ -3288,6 +3351,65 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                         </motion.div>
                                                     )}
 
+                                                    {/* PayPal Automatic Payment Option */}
+                                                    <div style={{
+                                                        background: currentUser?.paypalEmail ? '#f0fdf4' : '#fff1f2',
+                                                        padding: '1.5rem',
+                                                        borderRadius: '15px',
+                                                        border: `1px solid ${currentUser?.paypalEmail ? '#bbf7d0' : '#fecaca'}`,
+                                                        position: 'relative'
+                                                    }}>
+                                                        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', fontWeight: 700, color: currentUser?.paypalEmail ? '#166534' : '#991b1b', cursor: currentUser?.paypalEmail ? 'pointer' : 'default', marginBottom: '0.5rem' }}>
+                                                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={paymentConfig.paypalEnabled}
+                                                                    disabled={!currentUser?.paypalEmail}
+                                                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, paypalEnabled: e.target.checked })}
+                                                                    style={{ width: '20px', height: '20px', cursor: currentUser?.paypalEmail ? 'pointer' : 'not-allowed' }}
+                                                                />
+                                                                {currentUser?.paypalEmail && (
+                                                                    <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#fff', borderRadius: '50%', padding: '2px' }}>
+                                                                        <ShieldCheck2 size={12} color="#166534" />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            {t('events.paypalHeader')}
+                                                        </label>
+
+                                                        <p style={{ fontSize: '0.85rem', color: currentUser?.paypalEmail ? '#15803d' : '#be123c', margin: '0 0 1rem 30px', lineHeight: 1.5 }}>
+                                                            {t('events.paypalHelp')}
+                                                        </p>
+
+                                                        {!currentUser?.paypalEmail && (
+                                                            <div style={{ marginLeft: '30px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                                                <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{t('events.paypalNotConfigured')}</span>
+                                                                <a
+                                                                    href="/dashboard/mentor?tab=settings"
+                                                                    target="_blank"
+                                                                    style={{
+                                                                        fontSize: '0.8rem',
+                                                                        fontWeight: 800,
+                                                                        color: '#991b1b',
+                                                                        textDecoration: 'underline',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        gap: '4px'
+                                                                    }}
+                                                                >
+                                                                    {t('events.configureNow')} <ExternalLink size={12} />
+                                                                </a>
+                                                            </div>
+                                                        )}
+
+                                                        {currentUser?.paypalEmail && paymentConfig.paypalEnabled && (
+                                                            <div style={{ marginLeft: '30px', marginTop: '10px', padding: '10px', background: '#fff', borderRadius: '8px', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                                <Mail size={14} color="#166534" />
+                                                                <span style={{ fontSize: '0.85rem', color: '#166534', fontWeight: 600 }}>{currentUser.paypalEmail}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
                                                     <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '15px', border: '1px solid #e2e8f0', opacity: 0.7, cursor: 'not-allowed', position: 'relative' }}>
                                                         <div style={{
                                                             position: 'absolute',
@@ -3323,7 +3445,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                         <div style={{ display: 'grid', gap: '1rem' }}>
                                                             <div style={{ padding: '1rem', background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                                                                 <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem' }}>
-                                                                    Esta funcionalidade está a ser preparada para garantir total segurança nos seus pagamentos globais.
+                                                                    {t('events.stripeHelp')}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -3471,21 +3593,37 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
                                         <div style={{ display: 'grid', gap: '1.5rem' }}>
                                             <div style={{ background: '#e6fffa', padding: '1.5rem', borderRadius: '20px', border: '1px solid #b2f5ea', display: 'flex', gap: '1rem' }}>
-                                                <div style={{ color: '#319795' }}><CheckCircle size={24} /></div>
+                                                <div style={{ color: '#319795' }}><MessageCircle size={24} /></div>
                                                 <p style={{ color: '#2c7a7b', fontSize: '0.9rem', lineHeight: '1.5' }}>
                                                     {t('events.whatsappHelp')}
                                                 </p>
                                             </div>
 
                                             <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.whatsappNumber')}</label>
+                                                <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.5rem', fontSize: '0.9rem', color: '#333' }}>
+                                                    {t('events.whatsappNumber')} <span style={{ color: '#ef4444' }}>*</span>
+                                                </label>
                                                 <input
                                                     type="text"
                                                     value={whatsappConfig.phoneNumber}
                                                     onChange={(e) => setWhatsappConfig({ ...whatsappConfig, phoneNumber: e.target.value })}
-                                                    placeholder={t('events.whatsappNumberPlaceholder')}
-                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #ddd', outline: 'none' }}
+                                                    placeholder="Ex: +258 84 000 0000"
+                                                    style={{ 
+                                                        width: '100%', 
+                                                        padding: '1.1rem', 
+                                                        borderRadius: '12px', 
+                                                        border: !whatsappConfig.phoneNumber ? '2px solid #FEF2F2' : '1px solid #ddd', 
+                                                        background: !whatsappConfig.phoneNumber ? '#FFFAF9' : '#fff',
+                                                        outline: 'none',
+                                                        fontSize: '1rem',
+                                                        fontWeight: 500
+                                                    }}
                                                 />
+                                                {!whatsappConfig.phoneNumber && (
+                                                    <span style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '5px', display: 'block', fontWeight: 600 }}>
+                                                        {t('events.whatsappNotificationNote')}
+                                                    </span>
+                                                )}
                                             </div>
 
                                             <div>
@@ -3740,7 +3878,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                         {/* Unified Sticky Footer Action */}
                         {step !== 0 && (
                             <div style={{
-                                padding: isMobile ? '1rem 1.5rem calc(1rem + env(safe-area-inset-bottom))' : '1rem 2rem', // Safe area for footer
+                                padding: isMobile ? '1rem 1.5rem calc(1rem + env(safe-area-inset-bottom))' : '1rem 2rem', 
                                 background: '#fff',
                                 borderTop: '2px solid #FFD700',
                                 display: 'flex',
@@ -3751,22 +3889,11 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                 gap: '12px',
                                 flexShrink: 0,
                                 position: 'relative'
-                            }
-                            }>
-                                {/* Shortucts Info (Desktop Only) */}
-                                {
-                                    !isMobile && (
-                                        <div style={{ fontSize: '0.7rem', color: '#666', display: 'flex', gap: '15px' }}>
-                                            <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + →</span> {t('common.next')}</span>
-                                            <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + ←</span> {t('common.back')}</span>
-                                            {step === 9 && <span><span style={{ background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>Ctrl + Enter</span> {t('events.publish')}</span>}
-                                        </div>
-                                    )
-                                }
-
+                            }}>
                                 <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto', marginLeft: 'auto' }}>
                                     {step > 0 && (
                                         <button
+                                            type="button"
                                             onClick={() => setStep(step - 1)}
                                             style={{
                                                 padding: isMobile ? '0.8rem 1rem' : '0.8rem 2.5rem',
@@ -3775,20 +3902,27 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                 background: '#fff',
                                                 color: '#333',
                                                 fontWeight: 700,
-                                                fontSize: isMobile ? '0.9rem' : '1rem', // Smaller font on mobile
+                                                fontSize: isMobile ? '0.9rem' : '1rem',
                                                 cursor: 'pointer',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 gap: '8px',
-                                                whiteSpace: 'nowrap' // Prevent text wrap inside button
+                                                whiteSpace: 'nowrap'
                                             }}
                                         >
-                                            <ExternalLink size={18} style={{ transform: 'rotate(180deg)' }} /> {t('common.back')}
+                                            <ArrowLeft size={18} /> {t('common.back')}
                                         </button>
                                     )}
                                     {step > 0 && (
                                         <button
-                                            onClick={step === 9 ? handleSubmit : () => setStep(step + 1)}
+                                            type="button"
+                                            onClick={
+                                                step === 9 
+                                                    ? handleSubmit 
+                                                    : (step === 6 && !whatsappConfig.phoneNumber?.trim()) 
+                                                        ? () => toast.error(t('events.whatsappNumberRequiredToast')) 
+                                                        : () => setStep(step + 1)
+                                            }
                                             disabled={loading}
                                             className="btn-primary"
                                             style={{
@@ -3805,7 +3939,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                 whiteSpace: 'nowrap'
                                             }}
                                         >
-                                            {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 9 ? <><Save size={20} /> {t('events.publish')}</> : <>{t('common.next')} <ExternalLink size={18} /></>)}
+                                            {loading ? <Loader2 className="animate-spin" size={20} /> : (step === 9 ? <><Save size={20} /> {t('events.publish')}</> : <>{t('common.next')} <ChevronRight size={18} /></>)}
                                         </button>
                                     )}
                                 </div>

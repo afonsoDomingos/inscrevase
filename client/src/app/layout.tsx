@@ -13,6 +13,7 @@ import LoadingScreen from '@/components/common/LoadingScreen';
 import { ThemeProvider } from '@/context/ThemeContext';
 import WhatsAppFloat from '@/components/common/WhatsAppFloat';
 import HealthCheck from '@/components/common/HealthCheck';
+import PWAInstallPrompt from '@/components/common/PWAInstallPrompt';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -429,6 +430,7 @@ export default function RootLayout({
                   </Suspense>
                   {children}
                   <WhatsAppFloat />
+                  <PWAInstallPrompt />
                 </ClientLayoutWrapper>
               </SocketProvider>
             </CurrencyProvider>

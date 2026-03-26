@@ -77,6 +77,7 @@ export interface FormModel {
         accountHolder?: string;
         instructions?: string;
         stripeEnabled?: boolean;
+        paypalEnabled?: boolean; // NEW: PayPal toggle
         stripePriceId?: string;
         stripeProductId?: string;
         requireProof: boolean;
@@ -85,6 +86,13 @@ export interface FormModel {
             value: string;
             icon?: string;
         }[];
+        pricingTiers?: {
+            id: string;
+            category: string;
+            price: number;
+            description?: string;
+        }[];
+        useTieredPricing?: boolean;
     };
     certificateConfig?: {
         enabled: boolean;

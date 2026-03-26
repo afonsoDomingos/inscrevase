@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const exchangeRateService = require('../services/exchangeRateService');
+const pushController = require('./pushController');
+const whatsappService = require('../services/whatsappService');
 const axios = require('axios');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
@@ -378,6 +380,23 @@ const completeOrder = async (session) => {
                             type: 'system',
                             actionUrl: '/dashboard/admin/ads'
                         });
+
+                        // --- REAL PUSH NOTIFICATION ---
+                        pushController.sendNotification(
+                            admin._id,
+                            '💎 Novo Pagamento Ads!',
+                            `${advertiser.name} pagou por um anúncio: "${adRequest.title}".`,
+                            adRequest.mediaUrl || '/logo.png',
+                            '/dashboard/admin/ads'
+                        );
+
+                        // --- WHATSAPP NOTIFICATION TO ADMINS ---
+                        if (admin && admin.whatsapp) {
+                            const adminName = admin.name ? admin.name.split(' ')[0] : 'Admin';
+                            const baseUrl = process.env.FRONTEND_URL || 'https://inscreva-se.com';
+                            const msg = `Olá *${adminName}*! 👋\n\n💎 *NOVO PAGAMENTO DE ANÚNCIO!*\nAcaba de entrar na plataforma um pagamento aprovado para a campanha "${adRequest.title}".\n\n👤 *Empresa/Utilizador:* ${advertiser.name}\n💰 *Valor Pago:* ${adRequest.priceTotal} ${adRequest.currency}\n\n🔗 *Aprovar Criativos:*\n${baseUrl}/dashboard/admin/ads`;
+                            whatsappService.sendMessage(admin.whatsapp, msg);
+                        }
                     }
                 }
             } catch (emailError) {
@@ -485,6 +504,23 @@ const completeOrder = async (session) => {
         });
         await transaction.save();
         console.log('Transaction logged for mentor:', transaction.mentor);
+
+        // --- REAL PUSH NOTIFICATION (Shopify Style to Mentor) ---
+        try {
+            const mentor = await User.findById(paymentIntent.metadata.mentorId);
+            const form = await Form.findById(formId);
+            if (mentor && form) {
+                pushController.sendNotification(
+                    mentor._id,
+                    "🎉 Vendeste um Bilhete!",
+                    `Um novo participante acaba de pagar por "${form.title}".`,
+                    form.coverImage || '/logo.png',
+                    "/dashboard/mentor"
+                );
+            }
+        } catch (pushErr) {
+            console.error('Erro ao enviar push de venda de bilhete:', pushErr);
+        }
 
         return submission;
     } catch (error) {
@@ -732,6 +768,33 @@ exports.handleWebhook = async (req, res) => {
                     });
                     await tx.save();
                     console.log('💰 [Stripe Webhook] Transaction created via Session');
+
+                    // --- REAL PUSH NOTIFICATION TO ADMINS ---
+                    try {
+                        const superAdmins = await User.find({ role: 'SuperAdmin' });
+                        for (const admin of superAdmins) {
+                            pushController.sendNotification(
+                                admin._id,
+                                "🚀 Novo Assinante Premium!",
+                                `${user ? user.name : 'Alguém'} fez upgrade para o plano ${plan.toUpperCase()}.`,
+                                '/logo.png',
+                                "/dashboard/admin"
+                            );
+
+                            // --- WHATSAPP NOTIFICATION TO ADMINS ---
+                            if (admin && admin.whatsapp) {
+                                const adminName = admin.name ? admin.name.split(' ')[0] : 'Admin';
+                                const userEmail = user ? user.email : 'Sem email';
+                                const userName = user ? user.name : 'Novo Utilizador';
+                                const baseUrl = process.env.FRONTEND_URL || 'https://inscreva-se.com';
+                                
+                                const msg = `Olá *${adminName}*! 🚀\n\n💳 *NOVA ASSINATURA PREMIUM!*\nAlguém acabou de fazer upgrade à sua conta!\n\n👤 *Nome:* ${userName}\n📧 *Email:* ${userEmail}\n⭐ *Plano Activado:* ${plan.toUpperCase()}\n\n🔗 *Ver Painel:*\n${baseUrl}/dashboard/admin`;
+                                whatsappService.sendMessage(admin.whatsapp, msg);
+                            }
+                        }
+                    } catch (pushErr) {
+                        console.error('Erro ao enviar push de subscrição:', pushErr);
+                    }
                 }
             }
         } else {
@@ -1276,32 +1339,86 @@ exports.submitManualSubscription = async (req, res) => {
 
 exports.getAdminFinancialSummary = async (req, res) => {
     try {
-        const allTransactions = await Transaction.find().populate('mentor', 'name businessName');
-
-        const summary = allTransactions.reduce((acc, tx) => {
-            const isCompleted = tx.status === 'completed';
-            const isManualPending = tx.status === 'pending' && tx.paymentMethod === 'manual';
-
-            if (isCompleted || isManualPending) {
-                const amount = tx.baseAmount || tx.amount;
-                const platformFee = tx.basePlatformFee || tx.platformFee;
-
-                acc.totalRevenue += amount;
-
-                if (tx.type === 'subscription') {
-                    acc.subscriptionRevenue += amount;
-                    if (isCompleted) acc.collectedFees += amount;
-                } else {
-                    acc.eventFeeRevenue += platformFee;
-                    if (isCompleted) acc.collectedFees += platformFee;
+        // Use aggregation for consistent, deduplicated totals
+        const financeSummary = await Transaction.aggregate([
+            {
+                $match: {
+                    $or: [
+                        { status: 'completed' },
+                        { paymentMethod: 'manual', status: 'pending' }
+                    ]
+                }
+            },
+            {
+                $group: {
+                    _id: { $ifNull: ["$stripePaymentIntentId", "$paypalCaptureId", "$_id"] },
+                    type: { $first: "$type" },
+                    status: { $first: "$status" },
+                    baseAmount: { $first: "$baseAmount" },
+                    amount: { $first: "$amount" },
+                    exchangeRate: { $first: "$exchangeRate" },
+                    basePlatformFee: { $first: "$basePlatformFee" },
+                    platformFee: { $first: "$platformFee" }
+                }
+            },
+            {
+                $addFields: {
+                    safeAmount: { 
+                        $ifNull: [
+                            "$baseAmount", 
+                            { $multiply: ["$amount", { $ifNull: ["$exchangeRate", 1] }] }
+                        ] 
+                    },
+                    safeFee: {
+                        $ifNull: [
+                            "$basePlatformFee",
+                            { $multiply: ["$platformFee", { $ifNull: ["$exchangeRate", 1] }] }
+                        ]
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: "$safeAmount" },
+                    subscriptionRevenue: {
+                        $sum: {
+                            $cond: [{ $eq: ["$type", "subscription"] }, "$safeAmount", 0]
+                        }
+                    },
+                    eventFeeRevenue: {
+                        $sum: {
+                            $cond: [{ $ne: ["$type", "subscription"] }, "$safeFee", 0]
+                        }
+                    },
+                    collectedFees: {
+                        $sum: {
+                            $cond: [
+                                { $eq: ["$status", "completed"] },
+                                { $cond: [{ $eq: ["$type", "subscription"] }, "$safeAmount", "$safeFee"] },
+                                0
+                            ]
+                        }
+                    },
+                    pendingFees: {
+                        $sum: {
+                            $cond: [
+                                { $eq: ["$status", "pending"] },
+                                { $cond: [{ $eq: ["$type", "subscription"] }, "$safeAmount", "$safeFee"] },
+                                0
+                            ]
+                        }
+                    }
                 }
             }
+        ]);
 
-            if (tx.status === 'pending') {
-                acc.pendingFees += tx.basePlatformFee || tx.platformFee;
-            }
-            return acc;
-        }, { collectedFees: 0, pendingFees: 0, totalRevenue: 0, subscriptionRevenue: 0, eventFeeRevenue: 0 });
+        const summary = financeSummary[0] || { collectedFees: 0, pendingFees: 0, totalRevenue: 0, subscriptionRevenue: 0, eventFeeRevenue: 0 };
+
+        // Detail lists still need full docs
+        const allTransactions = await Transaction.find()
+            .populate('mentor', 'name businessName')
+            .sort({ createdAt: -1 });
 
         // Growth Chart (Last 12 months)
         const currentYear = new Date().getFullYear();
@@ -1317,14 +1434,14 @@ exports.getAdminFinancialSummary = async (req, res) => {
 
             if (date.getFullYear() === currentYear && isValid) {
                 const month = date.getMonth();
-                const amount = tx.baseAmount || tx.amount;
-                const platformFee = tx.basePlatformFee || tx.platformFee;
+                const safeAmount = tx.baseAmount || (tx.amount * (tx.exchangeRate || 1));
+                const safeFee = tx.basePlatformFee || (tx.platformFee * (tx.exchangeRate || 1));
 
-                monthlyStats[month].revenue += amount;
+                monthlyStats[month].revenue += safeAmount;
                 if (tx.type === 'subscription') {
-                    monthlyStats[month].platformFees += amount;
+                    monthlyStats[month].platformFees += safeAmount;
                 } else {
-                    monthlyStats[month].platformFees += platformFee;
+                    monthlyStats[month].platformFees += safeFee;
                 }
             }
         });
@@ -1344,8 +1461,8 @@ exports.getAdminFinancialSummary = async (req, res) => {
             const isValid = tx.status === 'completed' || (tx.status === 'pending' && tx.paymentMethod === 'manual');
             if (isValid && tx.mentor) {
                 const mentorId = tx.mentor._id.toString();
-                const amount = tx.baseAmount || tx.amount;
-                const platformFee = tx.basePlatformFee || tx.platformFee;
+                const safeAmount = tx.baseAmount || (tx.amount * (tx.exchangeRate || 1));
+                const safeFee = tx.basePlatformFee || (tx.platformFee * (tx.exchangeRate || 1));
 
                 if (!mentorRevenue[mentorId]) {
                     mentorRevenue[mentorId] = {
@@ -1355,8 +1472,8 @@ exports.getAdminFinancialSummary = async (req, res) => {
                         platformFees: 0
                     };
                 }
-                mentorRevenue[mentorId].totalGenerated += amount;
-                mentorRevenue[mentorId].platformFees += platformFee;
+                mentorRevenue[mentorId].totalGenerated += safeAmount;
+                mentorRevenue[mentorId].platformFees += safeFee;
             }
         });
 

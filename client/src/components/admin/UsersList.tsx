@@ -78,7 +78,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
             loadUsers();
         } catch (error: unknown) {
             console.error(error);
-            alert('Erro ao atualizar status');
+            alert(t('dashboard.usersList.messages.statusError'));
         }
     };
 
@@ -89,18 +89,18 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
             loadUsers();
         } catch (error: unknown) {
             console.error(error);
-            alert('Erro ao atualizar permissão de eventos');
+            alert(t('dashboard.usersList.messages.eventsPermissionError'));
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Tem certeza que deseja excluir este usuário? Esta ação é irreversível.')) return;
+        if (!confirm(t('dashboard.usersList.messages.deleteConfirm'))) return;
         try {
             await userService.deleteUser(id);
             loadUsers();
         } catch (error: unknown) {
             console.error(error);
-            alert('Erro ao excluir usuário');
+            alert(t('dashboard.usersList.messages.deleteError'));
         }
     };
 
@@ -113,7 +113,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
             loadUsers();
         } catch (error: unknown) {
             console.error(error);
-            alert('Erro ao atualizar verificação');
+            alert(t('dashboard.usersList.messages.verificationError'));
         }
     };
 
@@ -147,7 +147,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
             if (filterVerified === 'unverified' && (u.isVerified || u.verificationStatus === 'pending')) return false;
         }
 
-        if (filterOnline !== 'all') {
+        if (filterOnline !== 'all' && Array.isArray(onlineUsers)) {
             const isOnline = onlineUsers.includes(u.id || u._id || '');
             if (filterOnline === 'online' && !isOnline) return false;
             if (filterOnline === 'offline' && isOnline) return false;
@@ -159,7 +159,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
     // Pagination Logic
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = (filteredUsers || []).slice(indexOfFirstItem, indexOfLastItem);
 
     // Selection handlers
     const handleSelectUser = (userId: string) => {
@@ -293,7 +293,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                     <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
                             <th style={{ padding: '1rem', width: '40px' }}>
-                                <Tooltip content={isAllSelected ? 'Desmarcar todos' : 'Selecionar todos'}>
+                                <Tooltip content={isAllSelected ? t('dashboard.usersList.table.deselectAll') : t('dashboard.usersList.table.selectAll')}>
                                     <button
                                         onClick={handleSelectAll}
                                         style={{
@@ -338,7 +338,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                 animate={{ opacity: 1 }}
                             >
                                 <td style={{ padding: '1rem', width: '40px' }}>
-                                    <Tooltip content={selectedUsers.has(user.id || user._id || '') ? 'Desmarcar' : 'Selecionar'}>
+                                    <Tooltip content={selectedUsers.has(user.id || user._id || '') ? t('dashboard.usersList.table.deselect') : t('dashboard.usersList.table.select')}>
                                         <button
                                             onClick={() => handleSelectUser(user.id || user._id || '')}
                                             style={{
@@ -431,7 +431,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                     </div>
                                 </td>
                                 <td style={{ padding: '1rem', textAlign: 'center' }}>
-                                    {onlineUsers.includes(user.id || user._id || '') ? (
+                                    {Array.isArray(onlineUsers) && onlineUsers.includes(user.id || user._id || '') ? (
                                         <span style={{ color: '#38a169', fontWeight: 700, fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#f0fff4', padding: '2px 8px', borderRadius: '12px', border: '1px solid #c6f6d5' }}>
                                             <span style={{ width: '8px', height: '8px', background: '#38a169', borderRadius: '50%', display: 'inline-block' }}></span>
                                             ON
@@ -450,25 +450,25 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                         {/* Verification Controls */}
                                         {user.verificationStatus === 'pending' ? (
                                             <>
-                                                <Tooltip content="Aprovar Verificação">
+                                                <Tooltip content={t('dashboard.usersList.actions.approveVerification')}>
                                                     <button onClick={() => handleVerify(user, true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#38a169' }}>
                                                         <BadgeCheck size={18} />
                                                     </button>
                                                 </Tooltip>
-                                                <Tooltip content="Rejeitar Solicitação">
+                                                <Tooltip content={t('dashboard.usersList.actions.rejectVerification')}>
                                                     <button onClick={() => handleVerify(user, false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e' }}>
                                                         <XOctagon size={18} />
                                                     </button>
                                                 </Tooltip>
                                             </>
                                         ) : user.isVerified ? (
-                                            <Tooltip content="Remover Verificação">
+                                            <Tooltip content={t('dashboard.usersList.actions.removeVerification')}>
                                                 <button onClick={() => handleVerify(user, false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1877F2' }}>
                                                     <BadgeCheck size={18} fill="#e2e8f0" />
                                                 </button>
                                             </Tooltip>
                                         ) : (
-                                            <Tooltip content="Verificar Manualmente">
+                                            <Tooltip content={t('dashboard.usersList.actions.verifyManually')}>
                                                 <button onClick={() => handleVerify(user, true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#cbd5e0' }}>
                                                     <BadgeCheck size={18} />
                                                 </button>
@@ -476,7 +476,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                         )}
 
                                         {onMessageUser && (
-                                            <Tooltip content="Enviar Notificação">
+                                            <Tooltip content={t('dashboard.usersList.actions.sendNotification')}>
                                                 <button
                                                     onClick={() => onMessageUser(user)}
                                                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
@@ -486,7 +486,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                             </Tooltip>
                                         )}
                                         {onEmailUser && (
-                                            <Tooltip content="Enviar Email">
+                                            <Tooltip content={t('dashboard.usersList.actions.sendEmail')}>
                                                 <button
                                                     onClick={() => onEmailUser(user)}
                                                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
@@ -495,7 +495,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                                 </button>
                                             </Tooltip>
                                         )}
-                                        <Tooltip content={user.canCreateEvents !== false ? 'Bloquear Criação de Eventos' : 'Habilitar Criação de Eventos'}>
+                                        <Tooltip content={user.canCreateEvents !== false ? t('dashboard.usersList.actions.blockEvents') : t('dashboard.usersList.actions.enableEvents')}>
                                             <button
                                                 onClick={() => handleToggleEvents(user)}
                                                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: user.canCreateEvents !== false ? '#38a169' : '#e53e3e' }}
@@ -503,7 +503,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                                 {user.canCreateEvents !== false ? <Shield size={18} /> : <ShieldOff size={18} />}
                                             </button>
                                         </Tooltip>
-                                        <Tooltip content={user.status === 'active' ? 'Bloquear Usuário' : 'Desbloquear Usuário'}>
+                                        <Tooltip content={user.status === 'active' ? t('dashboard.usersList.actions.blockUser') : t('dashboard.usersList.actions.unblockUser')}>
                                             <button
                                                 onClick={() => handleToggleStatus(user)}
                                                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: user.status === 'active' ? '#e53e3e' : '#38a169' }}
@@ -511,7 +511,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                                 {user.status === 'active' ? <UserX size={18} /> : <UserCheck size={18} />}
                                             </button>
                                         </Tooltip>
-                                        <Tooltip content="Editar">
+                                        <Tooltip content={t('dashboard.usersList.actions.edit')}>
                                             <button
                                                 onClick={() => {
                                                     setEditingUser(user);
@@ -523,7 +523,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                             </button>
                                         </Tooltip>
                                         {currentUser?.role === 'SuperAdmin' && (
-                                            <Tooltip content="Excluir Usuário Permanentemente">
+                                            <Tooltip content={t('dashboard.usersList.actions.deleteUser')}>
                                                 <button
                                                     onClick={() => handleDelete(user.id || user._id || '')}
                                                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}

@@ -3,6 +3,7 @@ const exchangeRateService = require('../services/exchangeRateService');
 const User = require('../models/User');
 const Form = require('../models/Form');
 const Transaction = require('../models/Transaction');
+const AdRequest = require('../models/AdRequest');
 const Submission = require('../models/Submission');
 const { getDynamicPlanConfig } = require('../utils/planConfigs');
 const { PLANS } = require('../config/stripe');
@@ -29,18 +30,33 @@ exports.createSubscriptionOrder = async (req, res) => {
         const dynamicPlans = await getDynamicPlanConfig();
         const planConfig = dynamicPlans[plan] || dynamicPlans.pro || PLANS.pro;
 
-        // Plan prices are in cents in PLANS config (e.g. 299 for $2.99)
-        const rawPriceDecimal = planConfig.prices ? (planConfig.prices[currency] / 100) : (planConfig.price || 0);
+        let finalAmount;
+        let finalCurrency = currency;
 
-        // PayPal uses USD for most international transactions if MZN is not supported by Sandbox directly
-        const finalCurrency = currency === 'MZN' ? 'USD' : currency;
+        if (currency === 'MZN') {
+            // Se o plano tiver preço fixo em USD (ex: 299 -> 2.99), usamos esse para evitar flutuação cambial no checkout
+            if (planConfig.prices && planConfig.prices.USD) {
+                finalAmount = planConfig.prices.USD / 100;
+                finalCurrency = 'USD';
+                console.log(`💱 PayPal Sub: Using fixed USD price for MZN selection: ${finalAmount} USD`);
+            } else {
+                // Caso contrário, convertemos o preço MZN para USD
+                const mznPrice = planConfig.prices ? (planConfig.prices.MZN / 100) : (planConfig.price || 0);
+                const conversion = await exchangeRateService.convert(mznPrice, 'MZN', 'USD');
+                finalAmount = conversion.amount;
+                finalCurrency = 'USD';
+                console.log(`💱 PayPal Sub: Converted ${mznPrice} MZN to ${finalAmount} USD`);
+            }
+        } else {
+            finalAmount = planConfig.prices ? (planConfig.prices[currency] / 100) : (planConfig.price || 0);
+        }
 
         const orderData = {
             intent: 'CAPTURE',
             purchase_units: [{
                 amount: {
                     currency_code: finalCurrency,
-                    value: rawPriceDecimal.toFixed(2)
+                    value: finalAmount.toFixed(2)
                 },
                 description: `Upgrade para plano ${plan.toUpperCase()}`,
                 custom_id: JSON.stringify({ userId, plan, type: 'subscription' })
@@ -66,23 +82,155 @@ exports.createEventOrder = async (req, res) => {
         if (!form) return res.status(404).json({ message: 'Form not found' });
 
         const mentor = form.creator;
-        const totalAmount = form.paymentConfig.price;
+        const selectedTierId = submissionData?.selectedTierId;
+        
+        // 🎫 Determine the price based on Tier or base price
+        let totalAmountMZN = form.paymentConfig.price || 0;
+        
+        if (form.paymentConfig.useTieredPricing && selectedTierId && form.paymentConfig.pricingTiers?.length > 0) {
+            const tier = form.paymentConfig.pricingTiers.find(t => t.id === selectedTierId);
+            if (tier) {
+                totalAmountMZN = tier.price;
+                console.log(`🎫 Using Tiered Pricing: ${tier.category} - ${tier.price} MZN`);
+            }
+        }
 
-        const finalCurrency = currency === 'MZN' ? 'USD' : (currency || 'USD');
+        let finalAmount = 0;
+        let inputCurrency = currency || 'MZN';
+        
+        // 🔄 Normalize currency (e.g., MT -> MZN)
+        if (inputCurrency === 'MT') inputCurrency = 'MZN';
+        let finalCurrency = inputCurrency;
+
+        if (inputCurrency === 'MZN') {
+            // Se for MZN, precisamos converter para USD para o PayPal processar
+            const conversion = await exchangeRateService.convert(totalAmountMZN, 'MZN', 'USD');
+            finalAmount = conversion.amount;
+            finalCurrency = 'USD';
+            console.log(`💱 PayPal Event: Converted ${totalAmountMZN} MZN to ${finalAmount} USD`);
+        } else {
+            // Se for outra moeda (EUR/USD), convertemos de MZN para essa moeda
+            const conversion = await exchangeRateService.convert(totalAmountMZN, 'MZN', finalCurrency);
+            finalAmount = conversion.amount;
+        }
+
+        // 🛡️ Safety check to prevent PayPal 400 (NaN)
+        if (isNaN(finalAmount) || finalAmount <= 0) {
+            console.error('❌ Error: Calculated amount is NaN or zero:', { totalAmountMZN, finalAmount, finalCurrency });
+            return res.status(400).json({ 
+                message: 'Erro no cálculo do valor de pagamento. Por favor, contacte o suporte.',
+                debug: { totalAmountMZN, finalAmount, finalCurrency }
+            });
+        }
+
+        // 🚀 Fix: Create the Submission in the database FIRST to avoid 127-char limit in custom_id
+        const newSubmission = new Submission({
+            form: formId,
+            data: submissionData,
+            paymentMethod: 'paypal',
+            status: 'pending',
+            paymentStatus: 'pending'
+        });
+        await newSubmission.save();
 
         const orderData = {
             intent: 'CAPTURE',
             purchase_units: [{
                 amount: {
                     currency_code: finalCurrency,
-                    value: totalAmount.toFixed(2)
+                    value: finalAmount.toFixed(2)
                 },
                 description: `Inscrição: ${form.title}`,
+                // 🚀 Send money to mentor if they have paypalEmail configured
+                ...(mentor.paypalEmail ? {
+                    payee: {
+                        email_address: mentor.paypalEmail.trim()
+                    }
+                } : {}),
                 custom_id: JSON.stringify({
-                    formId,
-                    submissionData,
+                    submissionId: newSubmission._id,
                     mentorId: mentor._id,
                     type: 'event_registration'
+                })
+            }]
+        };
+
+        console.log(`🚀 PayPal Creating Order: ${finalAmount.toFixed(2)} ${finalCurrency} for ${form.title}`);
+        console.log(`📦 Order Body:`, JSON.stringify(orderData, null, 2));
+
+        const order = await paypalService.createOrder(orderData);
+        res.status(200).json(order);
+    } catch (error) {
+        console.error('❌ PayPal Create Event Order Error:', error.response?.data || error.message);
+        res.status(500).json({ 
+            message: error.message,
+            details: error.response?.data || "Erro interno na API do PayPal"
+        });
+    }
+};
+
+/**
+ * CREATE ORDER FOR AD CHECKOUT
+ */
+exports.createAdOrder = async (req, res) => {
+    try {
+        const { adData, currency } = req.body;
+        const userId = req.user.id;
+
+        if (!adData || !adData.priceTotal) {
+            return res.status(400).json({ message: 'Dados do anúncio ou preço total ausentes' });
+        }
+
+        const amount = adData.priceTotal;
+        const rawSourceCurrency = adData.currency || 'MZN';
+        const sourceCurrency = rawSourceCurrency === 'MT' ? 'MZN' : rawSourceCurrency;
+
+        let finalAmount;
+        let requestedCurrency = currency || 'USD';
+        if (requestedCurrency === 'MT') requestedCurrency = 'MZN';
+        let finalCurrency = requestedCurrency;
+
+        // Fix: Use the actual currency specified in the ad data instead of assuming MZN
+        if (sourceCurrency === finalCurrency) {
+            finalAmount = amount;
+            console.log(`✅ PayPal Ad: Using direct amount ${finalAmount} ${finalCurrency} (No conversion needed)`);
+        } else {
+            const conversion = await exchangeRateService.convert(amount, sourceCurrency, finalCurrency);
+            finalAmount = conversion.amount;
+            console.log(`💱 PayPal Ad: Converted ${amount} ${sourceCurrency} to ${finalAmount} ${finalCurrency}`);
+        }
+
+        // 🛡️ Safety check to prevent PayPal 400 (NaN)
+        if (isNaN(finalAmount) || finalAmount <= 0) {
+            console.error('❌ Error: Calculated Ad amount is NaN or zero:', { amount, finalAmount, finalCurrency });
+            return res.status(400).json({ 
+                message: 'Erro no cálculo do valor do anúncio. Por favor, tente novamente.',
+                debug: { amount, finalAmount, finalCurrency }
+            });
+        }
+
+        // 🚀 Fix: Create the AdRequest in the database FIRST to avoid 127-char limit in custom_id
+        const newAd = new AdRequest({
+            ...adData,
+            userId,
+            paymentMethod: 'paypal',
+            paymentStatus: 'pending',
+            status: 'pending'
+        });
+        await newAd.save();
+
+        const orderData = {
+            intent: 'CAPTURE',
+            purchase_units: [{
+                amount: {
+                    currency_code: finalCurrency,
+                    value: finalAmount.toFixed(2)
+                },
+                description: `Pagamento de Anúncio: ${adData.title}`,
+                custom_id: JSON.stringify({ 
+                    userId, 
+                    type: 'ad_checkout', 
+                    adId: newAd._id // Pass only the ID to keep custom_id short (< 127 chars)
                 })
             }]
         };
@@ -90,7 +238,7 @@ exports.createEventOrder = async (req, res) => {
         const order = await paypalService.createOrder(orderData);
         res.status(200).json(order);
     } catch (error) {
-        console.error('❌ PayPal Create Event Order Error:', error);
+        console.error('❌ PayPal Create Ad Order Error:', error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -148,12 +296,11 @@ exports.captureOrder = async (req, res) => {
         console.log('✅ PayPal Payment Captured:', capture.id);
         console.log('📦 Parsed Custom Data:', customData);
 
-        const rates = await exchangeRateService.getCurrentRates();
         const currentCurrency = capture.amount.currency_code;
-        // Rate is (Target MZN) / (Source Currency Rate in USD terms)
-        // Since rates are USD-based: 1 USD = rates['MZN'] MZN, 1 USD = rates[currentCurrency] CurrentCurrency
-        // So 1 CurrentCurrency = rates['MZN'] / rates[currentCurrency] MZN
-        const rate = (rates['MZN'] || 63.8) / (rates[currentCurrency] || (currentCurrency === 'USD' ? 1 : 0.92));
+        const amount = parseFloat(capture.amount.value);
+        const conversion = await exchangeRateService.convert(amount, currentCurrency, 'MZN');
+        const baseAmount = conversion.amount;
+        const rate = conversion.rate;
 
         if (customData.type === 'subscription') {
             const { userId, plan } = customData;
@@ -206,18 +353,20 @@ exports.captureOrder = async (req, res) => {
         }
 
         if (customData.type === 'event_registration') {
-            const { formId, submissionData, mentorId } = customData;
+            const { submissionId, mentorId } = customData;
 
-            // Create submission
-            const submission = new Submission({
-                form: formId,
-                data: submissionData,
-                paymentMethod: 'paypal',
-                paypalOrderId: orderID,
-                paypalCaptureId: capture.id,
-                status: 'approved',
-                paymentStatus: 'paid'
-            });
+            // Update existing submission created during order step
+            const submission = await Submission.findById(submissionId);
+            if (!submission) {
+                console.error('❌ Submission not found in database:', submissionId);
+                throw new Error("Inscrição não encontrada para o ID: " + submissionId);
+            }
+
+            // Update status
+            submission.status = 'approved';
+            submission.paymentStatus = 'paid';
+            submission.paypalOrderId = orderID;
+            submission.paypalCaptureId = capture.id;
             await submission.save();
 
             // Create transaction for mentor dashboard
@@ -248,9 +397,10 @@ exports.captureOrder = async (req, res) => {
 
             // 📧 Send confirmation email (Event Registration)
             try {
-                const form = await Form.findById(formId);
-                const userEmail = submissionData.Email || submissionData.email || submissionData['E-mail'];
-                const userName = submissionData.Nome || submissionData.Name || submissionData.name || 'Participante';
+                const form = await Form.findById(submission.form);
+                const submissionData = submission.data;
+                const userEmail = submissionData instanceof Map ? (submissionData.get('Email') || submissionData.get('email') || submissionData.get('E-mail')) : (submissionData.Email || submissionData.email || submissionData['E-mail']);
+                const userName = submissionData instanceof Map ? (submissionData.get('Nome') || submissionData.get('Name') || submissionData.get('name') || 'Participante') : (submissionData.Nome || submissionData.Name || submissionData.name || 'Participante');
 
                 if (userEmail && form) {
                     const hubUrl = `${process.env.CLIENT_URL}/hub/${form.slug}`;
@@ -269,6 +419,44 @@ exports.captureOrder = async (req, res) => {
             }
 
             return res.status(200).json({ success: true, type: 'event_registration', submissionId: submission._id });
+        }
+
+        if (customData.type === 'ad_checkout') {
+            const { adId } = customData;
+
+            // Find and Update existing Ad Request
+            const ad = await AdRequest.findById(adId);
+            if (!ad) {
+                console.error('❌ Ad Request not found in database:', adId);
+                throw new Error("Ad Request not found for ID: " + adId);
+            }
+
+            ad.paymentStatus = 'paid';
+            ad.paypalOrderId = orderID;
+            ad.paypalCaptureId = capture.id;
+            await ad.save();
+
+            // Create transaction record
+            const amount = parseFloat(capture.amount.value);
+            const tx = new Transaction({
+                type: 'ad_payment',
+                adId: ad._id,
+                user: customData.userId,
+                amount: amount,
+                currency: capture.amount.currency_code,
+                baseAmount: amount * rate,
+                exchangeRate: rate,
+                platformFee: amount,
+                basePlatformFee: amount * rate,
+                status: 'completed',
+                paymentMethod: 'paypal',
+                paypalOrderId: orderID,
+                paypalCaptureId: capture.id
+            });
+            await tx.save();
+
+            console.log('✅ Ad Payment Processed successfully via PayPal:', ad._id);
+            return res.status(200).json({ success: true, type: 'ad_checkout' });
         }
 
         res.status(200).json({ success: true, result });

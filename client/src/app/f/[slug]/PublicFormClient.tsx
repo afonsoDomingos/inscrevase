@@ -20,6 +20,7 @@ import {
     ArrowRight,
     Phone,
     Info,
+    FileText,
     Coins,
     Star,
     Users,
@@ -56,6 +57,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const [success, setSuccess] = useState(false);
     const [showPromo, setShowPromo] = useState(false); // Promo Popup State
     const [formData, setFormData] = useState<Record<string, string>>({});
+    const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
     const [file, setFile] = useState<File | null>(null);
     const [filePreview, setFilePreview] = useState<string | null>(null);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -140,6 +142,10 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     useEffect(() => {
         if (initialForm) {
             setLoading(false);
+            // Default select first tier if exists
+            if (initialForm.paymentConfig?.useTieredPricing && initialForm.paymentConfig.pricingTiers && initialForm.paymentConfig.pricingTiers.length > 0) {
+                setSelectedTierId(initialForm.paymentConfig.pricingTiers[0].id);
+            }
             if (initialForm) {
                 trackViewContent({
                     content_name: initialForm.title,
@@ -159,6 +165,9 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
             try {
                 const data = await formService.getFormBySlug(slug);
                 setForm(data);
+                if (data?.paymentConfig?.useTieredPricing && data.paymentConfig.pricingTiers && data.paymentConfig.pricingTiers.length > 0) {
+                    setSelectedTierId(data.paymentConfig.pricingTiers[0].id);
+                }
                 if (data) {
                     trackViewContent({
                         content_name: data.title,
@@ -506,7 +515,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                     border-color: ${primaryColor}70 !important;
                     background: ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'} !important;
                     transform: translateY(-2px);
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
                 }
                 .premium-input:focus {
                     border-color: ${primaryColor} !important;
@@ -1141,7 +1150,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                     <div key={field.label} style={{ marginBottom: '1.5rem' }}>
                                                         {field.type !== 'checkbox' && (
                                                             <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.6rem', color: textColor, textAlign: 'left' }}>
-                                                                {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
+                                                                {t(field.label)} {field.required && <span style={{ color: primaryColor }}>*</span>}
                                                             </label>
                                                         )}
                                                         {field.type === 'select' ? (
@@ -1167,7 +1176,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                             <motion.textarea
                                                                 whileFocus={{ scale: 1.01 }}
                                                                 required={field.required}
-                                                                placeholder={field.label}
+                                                                placeholder={t(field.label)}
                                                                 rows={4}
                                                                 onChange={(e) => handleInputChange(field.label, e.target.value)}
                                                                 className="premium-input"
@@ -1225,7 +1234,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                             style={{ width: '22px', height: '22px', accentColor: primaryColor, cursor: 'pointer' }}
                                                                         />
                                                                         <span style={{ fontSize: '0.95rem', color: textColor, fontWeight: 600 }}>
-                                                                            {field.label} {field.required && <span style={{ color: primaryColor }}>*</span>}
+                                                                            {t(field.label)} {field.required && <span style={{ color: primaryColor }}>*</span>}
                                                                         </span>
                                                                     </label>
                                                                 )}
@@ -1235,7 +1244,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                 whileFocus={{ scale: 1.01 }}
                                                                 type={field.type === 'phone' ? 'tel' : field.type}
                                                                 required={field.required}
-                                                                placeholder={field.label}
+                                                                placeholder={t(field.label)}
                                                                 onChange={(e) => handleInputChange(field.label, e.target.value)}
                                                                 className="premium-input"
                                                                 style={{ width: '100%', padding: '1.2rem', background: inputBg, borderRadius: '16px', color: textColor, outline: 'none', fontSize: '1rem' }}
@@ -1247,6 +1256,46 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                 {/* STEP CONTENT: PAYMENT SECTION (IF LAST STEP OR SINGLE STEP) */}
                                                 {form.paymentConfig?.enabled && (!isMultiStep || currentStep === totalSteps - 1) && (
                                                     <div style={{ marginTop: isMultiStep ? '0' : '2rem', paddingTop: isMultiStep ? '0' : '2rem', borderTop: isMultiStep ? 'none' : `1px solid ${borderColor}` }}>
+                                                        {/* PRICING TIERS SELECTION */}
+                                                        {form.paymentConfig?.useTieredPricing && form.paymentConfig.pricingTiers && form.paymentConfig.pricingTiers.length > 0 && (
+                                                            <div style={{ marginBottom: '2rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: `1px solid ${borderColor}` }}>
+                                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem', color: secondaryTextColor, textAlign: 'center' }}>
+                                                                    {t('form.selectTicketType') || 'Selecione o tipo de bilhete'}
+                                                                </label>
+                                                                <div style={{ display: 'grid', gap: '10px' }}>
+                                                                    {form.paymentConfig.pricingTiers.map(tier => (
+                                                                        <motion.div
+                                                                            key={tier.id}
+                                                                            whileHover={{ scale: 1.01 }}
+                                                                            whileTap={{ scale: 0.99 }}
+                                                                            onClick={() => setSelectedTierId(tier.id)}
+                                                                            className={`premium-card ${selectedTierId === tier.id ? 'active' : ''}`}
+                                                                            style={{
+                                                                                padding: '1rem',
+                                                                                borderRadius: '16px',
+                                                                                cursor: 'pointer',
+                                                                                border: `1px solid ${selectedTierId === tier.id ? primaryColor : borderColor}`,
+                                                                                background: selectedTierId === tier.id ? `${primaryColor}10` : 'transparent',
+                                                                                display: 'flex',
+                                                                                justifyContent: 'space-between',
+                                                                                alignItems: 'center'
+                                                                            }}
+                                                                        >
+                                                                            <div style={{ textAlign: 'left' }}>
+                                                                                <div style={{ fontWeight: 800, color: titleColor, fontSize: '0.95rem' }}>{tier.category}</div>
+                                                                                {tier.description && (
+                                                                                    <div style={{ fontSize: '0.7rem', color: secondaryTextColor }}>{tier.description}</div>
+                                                                                )}
+                                                                            </div>
+                                                                            <div style={{ fontWeight: 900, color: primaryColor, fontSize: '1rem' }}>
+                                                                                {formatPrice(tier.price, 'MZN', currency)}
+                                                                            </div>
+                                                                        </motion.div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
                                                         <h4 style={{ textAlign: 'center', fontWeight: 800, marginBottom: '1.5rem', color: titleColor }}>{t('form.paymentMethodHeader')}</h4>
 
                                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
@@ -1307,7 +1356,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                                     <PaypalButton
                                                                         type="event_registration"
                                                                         formId={form._id}
-                                                                        submissionData={formData}
+                                                                        submissionData={{ ...formData, selectedTierId }}
                                                                         currency={form.paymentConfig.currency || 'USD'}
                                                                         onSuccess={(details) => {
                                                                             if (details.submissionId) {
@@ -1382,11 +1431,15 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
 
                                                                     <div style={{ marginBottom: '1.5rem' }}>
                                                                         <label className="premium-upload" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', background: 'rgba(255,255,255,0.02)', border: `2px dashed ${borderColor}` }}>
-                                                                            <input type="file" hidden accept="image/*,.pdf" onChange={handleFileChange} />
+                                                                            <input type="file" hidden accept="image/*,application/pdf,.pdf" onChange={handleFileChange} />
                                                                             {filePreview ? (
                                                                                 <div style={{ textAlign: 'center' }}>
-                                                                                    <div style={{ position: 'relative', width: '60px', height: '60px', margin: '0 auto 10px', borderRadius: '12px', overflow: 'hidden' }}>
-                                                                                        <Image src={filePreview} alt="Preview" fill style={{ objectFit: 'cover' }} />
+                                                                                    <div style={{ position: 'relative', width: '60px', height: '60px', margin: '0 auto 10px', borderRadius: '12px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: file?.type === 'application/pdf' ? 'rgba(0,0,0,0.05)' : 'transparent' }}>
+                                                                                        {file?.type === 'application/pdf' ? (
+                                                                                            <FileText size={32} color={primaryColor} />
+                                                                                        ) : (
+                                                                                            <Image src={filePreview} alt="Preview" fill style={{ objectFit: 'cover' }} />
+                                                                                        )}
                                                                                     </div>
                                                                                     <div style={{ fontSize: '0.8rem', color: primaryColor, fontWeight: 700 }}>{file?.name.substring(0, 15)}...</div>
                                                                                 </div>
