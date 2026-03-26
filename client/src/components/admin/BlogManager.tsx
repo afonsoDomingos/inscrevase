@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import Cookies from 'js-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import Tooltip from '../common/Tooltip';
 
 export default function BlogManager() {
     const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -261,36 +262,38 @@ export default function BlogManager() {
                                 </div>
                             </div>
                             <div style={{ display: 'flex', gap: '0.75rem' }}>
-                                <button
-                                    onClick={() => handleEdit(post)}
-                                    style={{
-                                        padding: '10px',
-                                        background: '#f1f5f9',
-                                        border: 'none',
-                                        borderRadius: '10px',
-                                        cursor: 'pointer',
-                                        color: '#475569',
-                                        transition: 'all 0.2s'
-                                    }}
-                                    title="Editar artigo"
-                                >
-                                    <Edit2 size={18} />
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(post._id)}
-                                    style={{
-                                        padding: '10px',
-                                        background: '#fee2e2',
-                                        color: '#ef4444',
-                                        border: 'none',
-                                        borderRadius: '10px',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s'
-                                    }}
-                                    title="Excluir artigo"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
+                                <Tooltip content="Editar artigo">
+                                    <button
+                                        onClick={() => handleEdit(post)}
+                                        style={{
+                                            padding: '10px',
+                                            background: '#f1f5f9',
+                                            border: 'none',
+                                            borderRadius: '10px',
+                                            cursor: 'pointer',
+                                            color: '#475569',
+                                            transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        <Edit2 size={18} />
+                                    </button>
+                                </Tooltip>
+                                <Tooltip content="Excluir artigo">
+                                    <button
+                                        onClick={() => handleDelete(post._id)}
+                                        style={{
+                                            padding: '10px',
+                                            background: '#fee2e2',
+                                            color: '#ef4444',
+                                            border: 'none',
+                                            borderRadius: '10px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                </Tooltip>
                             </div>
                         </div>
                     )) : (

@@ -152,10 +152,10 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                         <X size={18} />
                     </button>
                     <h2 style={{ fontSize: 'clamp(1.4rem, 3.5vw, 2rem)', fontWeight: 900, marginBottom: '4px', fontFamily: 'var(--font-playfair)' }}>
-                        {manualPlan ? '📋 Enviar Comprovativo de Pagamento' : '🚀 Escolha o seu Plano'}
+                        {manualPlan ? t('plans.manualUpgrade.headerTitleManual') : t('plans.manualUpgrade.headerTitlePlans')}
                     </h2>
                     <p style={{ color: '#777', fontSize: '0.9rem' }}>
-                        {manualPlan ? `Plano Selecionado: ${manualPlan.id.toUpperCase()}` : 'Escale o seu negócio com mais recursos e menor comissão'}
+                        {manualPlan ? t('plans.manualUpgrade.selectedPlan').replace('{plan}', manualPlan.id.toUpperCase()) : t('dashboard.plans.boostReach')}
                     </p>
                 </div>
 
@@ -202,7 +202,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                 <div style={{ background: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)', border: '1px solid #bae6fd', borderRadius: '18px', padding: '22px', marginBottom: '20px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
                                         <span style={{ fontSize: '1.1rem' }}>⚡</span>
-                                        <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Pagamento Automático (Instantâneo)</span>
+                                        <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{t('plans.manualUpgrade.automaticPayment')}</span>
                                     </div>
                                     {/* PayPal automatic */}
                                     <div style={{ background: '#FFC439', borderRadius: '12px', padding: '0', border: '1px solid #e0f2fe', overflow: 'hidden', height: '45px', position: 'relative' }}>
@@ -218,7 +218,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                 {/* Divider */}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                                     <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
-                                    <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#9ca3af', background: '#fff', padding: '0 8px', whiteSpace: 'nowrap' }}>OU TRANSFERÊNCIA MANUAL (VALIDAÇÃO EM 24H)</span>
+                                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#9ca3af', background: '#fff', padding: '0 12px', whiteSpace: 'nowrap', letterSpacing: '0.05em' }}>{t('plans.manualUpgrade.manualTransferTitle')}</span>
                                     <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
                                 </div>
 
@@ -226,15 +226,17 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                 <div style={{ marginBottom: '16px' }}>
                                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>
                                         <Globe size={13} style={{ display: 'inline', marginRight: '5px', verticalAlign: 'middle' }} />
-                                        Selecione o seu País / Região
+                                        {t('plans.manualUpgrade.selectRegion')}
                                     </label>
                                     <div style={{ position: 'relative' }}>
                                         <select
                                             value={selectedCountry}
                                             onChange={(e) => setSelectedCountry(e.target.value)}
-                                            style={{ width: '100%', padding: '12px 40px 12px 14px', borderRadius: '12px', border: '1.5px solid #e5e7eb', fontSize: '0.9rem', fontWeight: 600, background: '#fff', cursor: 'pointer', appearance: 'none', color: '#111' }}
+                                            style={{ width: '100%', padding: '12px 40px 12px 14px', borderRadius: '12px', border: '1.5px solid #e5e7eb', fontSize: '0.9rem', fontWeight: 600, background: '#fff', cursor: 'pointer', appearance: 'none', color: '#111', transition: 'all 0.2s' }}
+                                            onFocus={(e) => e.target.style.borderColor = '#D4AF37'}
+                                            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                                         >
-                                            <option value="ALL">🌍 Todos os Países</option>
+                                            <option value="ALL">{t('plans.manualUpgrade.allCountries')}</option>
                                             {countryGroups.map(g => (
                                                 <option key={g.code} value={g.code}>{g.flag} {g.label}</option>
                                             ))}
@@ -286,7 +288,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                                             onClick={(e) => {
                                                                 e.preventDefault();
                                                                 navigator.clipboard.writeText(method.details);
-                                                                toast.success('Copiado para a área de transferência!');
+                                                                toast.success(t('plans.manualUpgrade.copySuccess'));
                                                             }}
                                                             style={{ background: '#f3f4f6', border: 'none', borderRadius: '6px', padding: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6b7280', transition: 'all 0.2s' }}
                                                             title="Copiar"
@@ -302,12 +304,14 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                 ) : (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#fef9c3', border: '1px solid #fde047', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px' }}>
                                         <AlertCircle size={18} color="#854d0e" />
-                                        <p style={{ fontSize: '0.85rem', color: '#854d0e', fontWeight: 600 }}>Nenhum método de pagamento disponível para este país ainda.</p>
+                                        <p style={{ fontSize: '0.85rem', color: '#854d0e', fontWeight: 600 }}>{t('plans.manualUpgrade.noMethods')}</p>
                                     </div>
                                 )}
 
                                 {/* Upload proof */}
-                                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '24px', background: '#fff', borderRadius: '16px', border: '2px dashed #D4AF37', cursor: 'pointer', transition: 'all 0.2s', marginBottom: '14px' }}>
+                                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '24px', background: '#fff', borderRadius: '16px', border: '2px dashed #D4AF37', cursor: 'pointer', transition: 'all 0.2s', marginBottom: '14px', position: 'relative', overflow: 'hidden' }}
+                                    onMouseOver={(e) => e.currentTarget.style.background = '#fffbeb'}
+                                    onMouseOut={(e) => e.currentTarget.style.background = '#fff'}>
                                     {uploading ? <Loader2 className="animate-spin" size={30} color="#D4AF37" /> : <Upload size={30} color="#D4AF37" />}
                                     <div style={{ textAlign: 'center' }}>
                                         <span style={{ fontWeight: 800, color: '#111', display: 'block', fontSize: '0.95rem' }}>{t('plans.manualUpgrade.uploadLabel')}</span>
@@ -318,9 +322,11 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
 
                                 <button
                                     onClick={() => setManualPlan(null)}
-                                    style={{ width: '100%', background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem', padding: '8px' }}
+                                    style={{ width: '100%', background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem', padding: '8px', transition: 'all 0.2s' }}
+                                    onMouseOver={(e) => e.currentTarget.style.color = '#6b7280'}
+                                    onMouseOut={(e) => e.currentTarget.style.color = '#9ca3af'}
                                 >
-                                    ← Voltar aos planos
+                                    ← {t('plans.manualUpgrade.backToPlans')}
                                 </button>
                             </motion.div>
                         )}
@@ -338,7 +344,7 @@ interface PlanCardProps {
     loading: boolean; currency: string; t: (key: string) => string;
 }
 
-function PlanCard({ id, name, price, color, icon, features, onSelect, onManual, onPaypalSuccess, loading, currency }: PlanCardProps) {
+function PlanCard({ id, name, price, color, icon, features, onSelect, onManual, onPaypalSuccess, loading, currency, t }: PlanCardProps) {
     return (
         <div style={{ border: `1.5px solid ${color}25`, background: '#fff', padding: '28px 24px', borderRadius: '24px', display: 'flex', flexDirection: 'column', transition: 'all 0.25s', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}
             onMouseOver={e => (e.currentTarget.style.transform = 'translateY(-4px)', e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.1)')}
@@ -390,7 +396,7 @@ function PlanCard({ id, name, price, color, icon, features, onSelect, onManual, 
                     style={{ width: '100%', height: '45px', background: '#333', color: '#fff', borderRadius: '8px', fontWeight: 800, border: '1px solid #444', cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.2s', padding: 0 }}
                     onMouseOver={e => (e.currentTarget.style.background = '#1a1a1a')}
                     onMouseOut={e => (e.currentTarget.style.background = '#333')}>
-                    M-Pesa / Transferência
+                    {t('plans.manualUpgrade.mpesaTransfer')}
                 </button>
             </div>
         </div>

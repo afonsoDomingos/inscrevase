@@ -67,17 +67,36 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--blue-gradient);
+  background: rgba(0,0,0,0.1);
   border-radius: 10px;
-  border: 2px solid #1a1a1a;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #B8860B;
+  background: rgba(0,0,0,0.2);
+  background-clip: content-box;
+}
+
+.luxury-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.luxury-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.luxury-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(212,175,55,0.2);
+  border-radius: 10px;
+}
+
+.luxury-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(212,175,55,0.4);
 }
 
 h1,
@@ -680,17 +699,26 @@ h6 {
 }
 
 .admin-mobile-toggle {
-  z-index: 1100;
+  display: none;
+  position: fixed;
+  top: 1.25rem;
+  left: 1.25rem;
+  z-index: 2001;
   background: #1a1a1a;
-  color: #1452AD;
-  border: 1px solid #333;
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
+  color: #FFD700;
+  border: 1px solid #FFD700;
+  border-radius: 10px;
+  width: 42px;
+  height: 42px;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.admin-mobile-toggle:active {
+  transform: scale(0.95);
 }
 
 .admin-overlay {

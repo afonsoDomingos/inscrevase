@@ -26,75 +26,77 @@ export default function CurrencySwitcher() {
                 style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.4rem',
-                    padding: '0.5rem 0.8rem',
-                    background: '#f8f9fa',
-                    border: '1px solid #eee',
+                    gap: '4px',
+                    padding: '4px 8px',
+                    background: 'var(--paper, #fff)',
+                    border: '1px solid var(--border-color, #eee)',
                     borderRadius: '8px',
-                    color: '#333',
+                    color: 'var(--foreground, #333)',
                     cursor: 'pointer',
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    transition: 'all 0.2s',
+                    fontSize: '0.7rem',
+                    fontWeight: 800,
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
                     whiteSpace: 'nowrap'
                 }}
-                onMouseOver={(e) => {
-                    e.currentTarget.style.background = '#eee';
-                }}
-                onMouseOut={(e) => {
-                    e.currentTarget.style.background = '#f8f9fa';
-                }}
             >
-                <Coins size={16} color="#B8860B" />
+                <Coins size={12} color="#D4AF37" />
                 <span>{currentCurrency.code}</span>
             </button>
 
             {isOpen && (
-                <div style={{
-                    position: 'absolute',
-                    top: 'calc(100% + 0.5rem)',
-                    right: 0,
-                    background: '#fff',
-                    border: '1px solid #eee',
-                    borderRadius: '12px',
-                    boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
-                    overflow: 'hidden',
-                    minWidth: '180px',
-                    zIndex: 1000,
-                    padding: '5px'
-                }}>
-                    {currencies.map((c) => (
-                        <button
-                            key={c.code}
-                            onClick={() => {
-                                setCurrency(c.code as Currency);
-                                setIsOpen(false);
-                            }}
-                            style={{
-                                width: '100%',
-                                padding: '0.8rem 1rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                background: currency === c.code ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
-                                border: 'none',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                                fontSize: '0.85rem',
-                                fontWeight: currency === c.code ? 700 : 500,
-                                color: currency === c.code ? '#B8860B' : '#333',
-                                transition: 'all 0.2s',
-                                textAlign: 'left'
-                            }}
-                        >
-                            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <span style={{ fontSize: '0.85rem' }}>{c.code}</span>
-                                <span style={{ fontSize: '0.7rem', opacity: 0.6 }}>{c.name}</span>
-                            </div>
-                            <span style={{ fontWeight: 800 }}>{c.symbol}</span>
-                        </button>
-                    ))}
-                </div>
+                <>
+                    <div
+                        style={{ position: 'fixed', inset: 0, zIndex: 999 }}
+                        onClick={() => setIsOpen(false)}
+                    />
+                    <div style={{
+                        position: 'absolute',
+                        top: 'calc(100% + 4px)',
+                        right: 0,
+                        background: 'var(--paper, #fff)',
+                        border: '1px solid var(--border-color, #eee)',
+                        borderRadius: '10px',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.12)',
+                        overflowY: 'auto',
+                        maxHeight: '300px',
+                        minWidth: '150px',
+                        zIndex: 9999,
+                        padding: '4px'
+                    }} className="custom-scrollbar">
+                        {currencies.map((c) => (
+                            <button
+                                key={c.code}
+                                onClick={() => {
+                                    setCurrency(c.code as Currency);
+                                    setIsOpen(false);
+                                }}
+                                style={{
+                                    width: '100%',
+                                    padding: '6px 10px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    background: currency === c.code ? 'rgba(212, 175, 55, 0.08)' : 'transparent',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    fontSize: '0.8rem',
+                                    fontWeight: currency === c.code ? 700 : 500,
+                                    color: currency === c.code ? '#D4AF37' : 'var(--foreground, #333)',
+                                    transition: 'all 0.1s',
+                                    textAlign: 'left'
+                                }}
+                            >
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>{c.code}</span>
+                                    <span style={{ fontSize: '0.6rem', opacity: 0.6 }}>{c.name}</span>
+                                </div>
+                                <span style={{ fontWeight: 800, color: '#D4AF37', fontSize: '0.8rem' }}>{c.symbol}</span>
+                            </button>
+                        ))}
+                    </div>
+                </>
             )}
         </div>
     );

@@ -9,6 +9,8 @@ import EditUserModal from './EditUserModal';
 import PremiumBadge from '../common/PremiumBadge';
 import { useSocket } from '@/context/SocketContext';
 import TableScrollWrapper from '../common/TableScrollWrapper';
+import { useTranslate } from '@/context/LanguageContext';
+import Tooltip from '../common/Tooltip';
 
 interface UsersListProps {
     onMessageUser?: (user: UserData) => void;
@@ -16,6 +18,7 @@ interface UsersListProps {
 }
 
 export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps) {
+    const { t } = useTranslate();
     const [users, setUsers] = useState<UserData[]>([]);
     const { onlineUsers } = useSocket();
     const [loading, setLoading] = useState(true);
@@ -55,10 +58,14 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
 
     const loadUsers = async () => {
         try {
+            console.log('🔄 A iniciar o carregamento de utilizadores pelo UsersList...');
             const data = await userService.getAllUsers();
+            console.log('✅ Utilizadores carregados com sucesso do Backend!', data?.length, 'registos encontrados.');
             setUsers(data);
         } catch (error: unknown) {
-            console.error(error);
+            console.error('❌ ERRO AO CARREGAR UTILIZADORES no UsersList:', error);
+            const errDetails = error instanceof Error ? error.stack : JSON.stringify(error);
+            console.error('Detalhes do erro:', errDetails);
         } finally {
             setLoading(false);
         }
@@ -183,22 +190,22 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
 
     const isAllSelected = currentItems.length > 0 && currentItems.every(u => selectedUsers.has(u.id || u._id || ''));
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '2rem' }}>Carregando usuários...</div>;
+    if (loading) return <div style={{ textAlign: 'center', padding: '2rem' }}>{t('common.loading')}</div>;
 
     return (
         <div className="luxury-card" style={{ background: '#fff' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    Gestão de Usuários
+                    {t('dashboard.usersList.title')}
                     <span style={{ fontSize: '0.8rem', background: '#f0f0f0', padding: '0.2rem 0.6rem', borderRadius: '20px', color: '#666' }}>
-                        {filteredUsers.length} {filteredUsers.length === 1 ? 'resultado' : 'resultados'}
+                        {filteredUsers.length} {filteredUsers.length === 1 ? t('dashboard.usersList.result', { count: filteredUsers.length }) : t('dashboard.usersList.results', { count: filteredUsers.length })}
                     </span>
                 </h3>
                 <div style={{ position: 'relative', width: '250px' }}>
                     <Search size={16} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: '#888' }} />
                     <input
                         type="text"
-                        placeholder="Buscar por nome ou email..."
+                        placeholder={t('dashboard.usersList.searchPlaceholder')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{ width: '100%', padding: '0.6rem 0.6rem 0.6rem 2.5rem', borderRadius: '8px', border: '1px solid #eee', fontSize: '0.9rem' }}
@@ -213,10 +220,10 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                     onChange={(e) => setFilterOrigin(e.target.value)}
                     style={{ padding: '0.6rem', borderRadius: '8px', border: '1px solid #eee', fontSize: '0.9rem', outline: 'none', color: '#555', background: '#fff' }}
                 >
-                    <option value="all">Todas Origens</option>
+                    <option value="all">{t('dashboard.usersList.allOrigins')}</option>
                     <option value="google">Google</option>
                     <option value="linkedin">LinkedIn</option>
-                    <option value="native">E-mail Nativo</option>
+                    <option value="native">{t('events.create.manual')}</option>
                 </select>
 
                 <select
@@ -224,11 +231,11 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                     onChange={(e) => setFilterRole(e.target.value)}
                     style={{ padding: '0.6rem', borderRadius: '8px', border: '1px solid #eee', fontSize: '0.9rem', outline: 'none', color: '#555', background: '#fff' }}
                 >
-                    <option value="all">Todos Cargos</option>
-                    <option value="mentor">Mentor</option>
-                    <option value="specialist">Especialista</option>
-                    <option value="company">Empresa</option>
-                    <option value="participant">Participante</option>
+                    <option value="all">{t('dashboard.usersList.allRoles')}</option>
+                    <option value="mentor">{t('dashboard.rolesHeader.mentor')}</option>
+                    <option value="specialist">{t('dashboard.rolesHeader.specialist')}</option>
+                    <option value="company">{t('dashboard.rolesHeader.company')}</option>
+                    <option value="participant">{t('events.participant')}</option>
                     <option value="admin">Admin</option>
                     {currentUser?.role === 'SuperAdmin' && <option value="superadmin">Super Admin</option>}
                 </select>
@@ -238,9 +245,9 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                     onChange={(e) => setFilterStatus(e.target.value)}
                     style={{ padding: '0.6rem', borderRadius: '8px', border: '1px solid #eee', fontSize: '0.9rem', outline: 'none', color: '#555', background: '#fff' }}
                 >
-                    <option value="all">Todos Status</option>
-                    <option value="active">Ativo</option>
-                    <option value="blocked">Bloqueado</option>
+                    <option value="all">{t('dashboard.usersList.allStatus')}</option>
+                    <option value="active">{t('dashboard.usersList.status.active')}</option>
+                    <option value="blocked">{t('dashboard.usersList.status.blocked')}</option>
                 </select>
 
                 <select
@@ -248,10 +255,10 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                     onChange={(e) => setFilterVerified(e.target.value)}
                     style={{ padding: '0.6rem', borderRadius: '8px', border: '1px solid #eee', fontSize: '0.9rem', outline: 'none', color: '#555', background: '#fff' }}
                 >
-                    <option value="all">Verificação</option>
-                    <option value="verified">Verificados</option>
-                    <option value="pending">Pendentes</option>
-                    <option value="unverified">Não Verificados</option>
+                    <option value="all">{t('dashboard.usersList.verification')}</option>
+                    <option value="verified">{t('dashboard.usersList.verified')}</option>
+                    <option value="pending">{t('dashboard.usersList.pending')}</option>
+                    <option value="unverified">{t('dashboard.usersList.unverified')}</option>
                 </select>
 
                 <select
@@ -259,9 +266,9 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                     onChange={(e) => setFilterOnline(e.target.value)}
                     style={{ padding: '0.6rem', borderRadius: '8px', border: '1px solid #eee', fontSize: '0.9rem', outline: 'none', color: '#555', background: '#fff' }}
                 >
-                    <option value="all">Online/Offline</option>
-                    <option value="online">Online Agora</option>
-                    <option value="offline">Offline</option>
+                    <option value="all">{t('dashboard.usersList.onlineOffline')}</option>
+                    <option value="online">{t('dashboard.usersList.onlineNow')}</option>
+                    <option value="offline">{t('dashboard.usersList.offline')}</option>
                 </select>
 
                 {(filterOrigin !== 'all' || filterRole !== 'all' || filterStatus !== 'all' || filterVerified !== 'all' || filterOnline !== 'all') && (
@@ -276,7 +283,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                         }}
                         style={{ padding: '0.6rem 1rem', borderRadius: '8px', border: 'none', background: '#f5f5f5', color: '#666', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 600 }}
                     >
-                        Limpar Filtros
+                        {t('dashboard.usersList.clearFilters')}
                     </button>
                 )}
             </div>
@@ -286,32 +293,33 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                     <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
                             <th style={{ padding: '1rem', width: '40px' }}>
-                                <button
-                                    onClick={handleSelectAll}
-                                    style={{
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        color: '#FFD700',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}
-                                    title={isAllSelected ? 'Desmarcar todos' : 'Selecionar todos'}
-                                >
-                                    {isAllSelected ? <CheckSquare size={20} /> : <Square size={20} />}
-                                </button>
+                                <Tooltip content={isAllSelected ? 'Desmarcar todos' : 'Selecionar todos'}>
+                                    <button
+                                        onClick={handleSelectAll}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            color: '#FFD700',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}
+                                    >
+                                        {isAllSelected ? <CheckSquare size={20} /> : <Square size={20} />}
+                                    </button>
+                                </Tooltip>
                             </th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Nome</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Origem</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Cadastro</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Cargo</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Plano</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Visibilidade</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Status</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'center' }}>Online</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'center' }}>Acessos</th>
-                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'right' }}>Ações</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.usersList.table.name')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.usersList.table.origin')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.usersList.table.registration')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.usersList.table.role')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.usersList.table.plan')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.usersList.table.visibility')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>{t('dashboard.usersList.table.status')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'center' }}>{t('dashboard.usersList.table.online')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'center' }}>{t('dashboard.usersList.table.accesses')}</th>
+                            <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800, textAlign: 'right' }}>{t('dashboard.usersList.table.actions')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -330,24 +338,25 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                 animate={{ opacity: 1 }}
                             >
                                 <td style={{ padding: '1rem', width: '40px' }}>
-                                    <button
-                                        onClick={() => handleSelectUser(user.id || user._id || '')}
-                                        style={{
-                                            background: 'none',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                            color: selectedUsers.has(user.id || user._id || '') ? '#FFD700' : '#ddd',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            transition: 'color 0.2s'
-                                        }}
-                                        title={selectedUsers.has(user.id || user._id || '') ? 'Desmarcar' : 'Selecionar'}
-                                    >
-                                        {selectedUsers.has(user.id || user._id || '')
-                                            ? <CheckSquare size={20} />
-                                            : <Square size={20} />}
-                                    </button>
+                                    <Tooltip content={selectedUsers.has(user.id || user._id || '') ? 'Desmarcar' : 'Selecionar'}>
+                                        <button
+                                            onClick={() => handleSelectUser(user.id || user._id || '')}
+                                            style={{
+                                                background: 'none',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                color: selectedUsers.has(user.id || user._id || '') ? '#FFD700' : '#ddd',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                transition: 'color 0.2s'
+                                            }}
+                                        >
+                                            {selectedUsers.has(user.id || user._id || '')
+                                                ? <CheckSquare size={20} />
+                                                : <Square size={20} />}
+                                        </button>
+                                    </Tooltip>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -412,13 +421,13 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                         color: user.isPublic ? '#2c7a7b' : '#c53030',
                                         border: `1px solid ${user.isPublic ? '#b2f5ea' : '#fed7d7'}`
                                     }}>
-                                        {user.isPublic ? 'Publicado' : 'Privado'}
+                                        {user.isPublic ? t('dashboard.usersList.status.published') : t('dashboard.usersList.status.private')}
                                     </span>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                         <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: user.status === 'active' ? '#38a169' : '#e53e3e' }}></div>
-                                        <span style={{ fontSize: '0.85rem' }}>{user.status === 'active' ? 'Ativo' : 'Bloqueado'}</span>
+                                        <span style={{ fontSize: '0.85rem' }}>{user.status === 'active' ? t('dashboard.usersList.status.active') : t('dashboard.usersList.status.blocked')}</span>
                                     </div>
                                 </td>
                                 <td style={{ padding: '1rem', textAlign: 'center' }}>
@@ -441,73 +450,87 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                                         {/* Verification Controls */}
                                         {user.verificationStatus === 'pending' ? (
                                             <>
-                                                <button onClick={() => handleVerify(user, true)} title="Aprovar Verificação" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#38a169' }}>
-                                                    <BadgeCheck size={18} />
-                                                </button>
-                                                <button onClick={() => handleVerify(user, false)} title="Rejeitar Solicitação" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e' }}>
-                                                    <XOctagon size={18} />
-                                                </button>
+                                                <Tooltip content="Aprovar Verificação">
+                                                    <button onClick={() => handleVerify(user, true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#38a169' }}>
+                                                        <BadgeCheck size={18} />
+                                                    </button>
+                                                </Tooltip>
+                                                <Tooltip content="Rejeitar Solicitação">
+                                                    <button onClick={() => handleVerify(user, false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e' }}>
+                                                        <XOctagon size={18} />
+                                                    </button>
+                                                </Tooltip>
                                             </>
                                         ) : user.isVerified ? (
-                                            <button onClick={() => handleVerify(user, false)} title="Remover Verificação" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1877F2' }}>
-                                                <BadgeCheck size={18} fill="#e2e8f0" />
-                                            </button>
+                                            <Tooltip content="Remover Verificação">
+                                                <button onClick={() => handleVerify(user, false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1877F2' }}>
+                                                    <BadgeCheck size={18} fill="#e2e8f0" />
+                                                </button>
+                                            </Tooltip>
                                         ) : (
-                                            <button onClick={() => handleVerify(user, true)} title="Verificar Manualmente" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#cbd5e0' }}>
-                                                <BadgeCheck size={18} />
-                                            </button>
+                                            <Tooltip content="Verificar Manualmente">
+                                                <button onClick={() => handleVerify(user, true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#cbd5e0' }}>
+                                                    <BadgeCheck size={18} />
+                                                </button>
+                                            </Tooltip>
                                         )}
 
                                         {onMessageUser && (
-                                            <button
-                                                onClick={() => onMessageUser(user)}
-                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
-                                                title="Enviar Notificação"
-                                            >
-                                                <MessageSquare size={18} />
-                                            </button>
+                                            <Tooltip content="Enviar Notificação">
+                                                <button
+                                                    onClick={() => onMessageUser(user)}
+                                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
+                                                >
+                                                    <MessageSquare size={18} />
+                                                </button>
+                                            </Tooltip>
                                         )}
                                         {onEmailUser && (
-                                            <button
-                                                onClick={() => onEmailUser(user)}
-                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
-                                                title="Enviar Email"
-                                            >
-                                                <Mail size={18} />
-                                            </button>
+                                            <Tooltip content="Enviar Email">
+                                                <button
+                                                    onClick={() => onEmailUser(user)}
+                                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}
+                                                >
+                                                    <Mail size={18} />
+                                                </button>
+                                            </Tooltip>
                                         )}
-                                        <button
-                                            onClick={() => handleToggleEvents(user)}
-                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: user.canCreateEvents !== false ? '#38a169' : '#e53e3e' }}
-                                            title={user.canCreateEvents !== false ? 'Bloquear Criação de Eventos' : 'Habilitar Criação de Eventos'}
-                                        >
-                                            {user.canCreateEvents !== false ? <Shield size={18} /> : <ShieldOff size={18} />}
-                                        </button>
-                                        <button
-                                            onClick={() => handleToggleStatus(user)}
-                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: user.status === 'active' ? '#e53e3e' : '#38a169' }}
-                                            title={user.status === 'active' ? 'Bloquear Usuário' : 'Desbloquear Usuário'}
-                                        >
-                                            {user.status === 'active' ? <UserX size={18} /> : <UserCheck size={18} />}
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setEditingUser(user);
-                                                setIsEditModalOpen(true);
-                                            }}
-                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce' }}
-                                            title="Editar"
-                                        >
-                                            <Pencil size={18} />
-                                        </button>
-                                        {currentUser?.role === 'SuperAdmin' && (
+                                        <Tooltip content={user.canCreateEvents !== false ? 'Bloquear Criação de Eventos' : 'Habilitar Criação de Eventos'}>
                                             <button
-                                                onClick={() => handleDelete(user.id || user._id || '')}
-                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}
-                                                title="Excluir Usuário Permanentemente"
+                                                onClick={() => handleToggleEvents(user)}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: user.canCreateEvents !== false ? '#38a169' : '#e53e3e' }}
                                             >
-                                                <Trash2 size={18} />
+                                                {user.canCreateEvents !== false ? <Shield size={18} /> : <ShieldOff size={18} />}
                                             </button>
+                                        </Tooltip>
+                                        <Tooltip content={user.status === 'active' ? 'Bloquear Usuário' : 'Desbloquear Usuário'}>
+                                            <button
+                                                onClick={() => handleToggleStatus(user)}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: user.status === 'active' ? '#e53e3e' : '#38a169' }}
+                                            >
+                                                {user.status === 'active' ? <UserX size={18} /> : <UserCheck size={18} />}
+                                            </button>
+                                        </Tooltip>
+                                        <Tooltip content="Editar">
+                                            <button
+                                                onClick={() => {
+                                                    setEditingUser(user);
+                                                    setIsEditModalOpen(true);
+                                                }}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce' }}
+                                            >
+                                                <Pencil size={18} />
+                                            </button>
+                                        </Tooltip>
+                                        {currentUser?.role === 'SuperAdmin' && (
+                                            <Tooltip content="Excluir Usuário Permanentemente">
+                                                <button
+                                                    onClick={() => handleDelete(user.id || user._id || '')}
+                                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </Tooltip>
                                         )}
                                     </div>
                                 </td>
@@ -520,7 +543,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
             {/* Pagination Controls */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #eee', fontSize: '0.9rem', color: '#666' }}>
                 <div>
-                    Mostrando {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredUsers.length)} de {filteredUsers.length} usuários
+                    {t('dashboard.usersList.pagination', { start: indexOfFirstItem + 1, end: Math.min(indexOfLastItem, filteredUsers.length), total: filteredUsers.length })}
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
                     <button
@@ -535,7 +558,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                             cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
                         }}
                     >
-                        Anterior
+                        {t('common.prev')}
                     </button>
                     {Array.from({ length: Math.ceil(filteredUsers.length / itemsPerPage) }, (_, i) => (
                         <button
@@ -570,7 +593,7 @@ export default function UsersList({ onMessageUser, onEmailUser }: UsersListProps
                             cursor: indexOfLastItem >= filteredUsers.length ? 'not-allowed' : 'pointer'
                         }}
                     >
-                        Próximo
+                        {t('common.next')}
                     </button>
                 </div>
             </div>

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const exchangeRateService = require('../services/exchangeRateService');
 const axios = require('axios');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
@@ -386,7 +387,11 @@ const completeOrder = async (session) => {
             // Create transaction for platform revenue (Admin view)
             console.log('💰 Logging transaction for Ad Purchase...');
             try {
-                const rate = expandedSession.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+                const rates = await exchangeRateService.getCurrentRates();
+                const currentCurrency = expandedSession.currency.toUpperCase();
+                const mznRate = rates['MZN'] || 63.8;
+                const sourceCurrencyRate = rates[currentCurrency] || (currentCurrency === 'USD' ? 1 : 0.92);
+                const rate = mznRate / sourceCurrencyRate;
                 const amount = expandedSession.amount_total / 100;
 
                 const transaction = new Transaction({
@@ -431,7 +436,12 @@ const completeOrder = async (session) => {
         console.log('Submission created:', submission._id);
 
         // 5. Create transaction for mentor dashboard
-        const rate = expandedSession.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+        const rates = await exchangeRateService.getCurrentRates();
+        const currentCurrency = expandedSession.currency.toUpperCase();
+        const mznRate = rates['MZN'] || 63.8;
+        const sourceCurrencyRate = rates[currentCurrency] || (currentCurrency === 'USD' ? 1 : 0.92);
+        const rate = mznRate / sourceCurrencyRate;
+
         const amount = expandedSession.amount_total / 100;
 
         let platformFee = (paymentIntent.application_fee_amount || 0) / 100;
@@ -524,16 +534,49 @@ exports.getEarningsDashboard = async (req, res) => {
                     $group: {
                         _id: null,
                         totalRevenue: {
-                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$amount", 0] }
+                            $sum: {
+                                $cond: [
+                                    {
+                                        $or: [
+                                            { $eq: ["$status", "completed"] },
+                                            { $and: [{ $eq: ["$status", "pending"] }, { $eq: ["$paymentMethod", "manual"] }] }
+                                        ]
+                                    },
+                                    "$baseAmount",
+                                    0
+                                ]
+                            }
                         },
                         totalEarnings: {
-                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$mentorEarnings", 0] }
+                            $sum: {
+                                $cond: [
+                                    {
+                                        $or: [
+                                            { $eq: ["$status", "completed"] },
+                                            { $and: [{ $eq: ["$status", "pending"] }, { $eq: ["$paymentMethod", "manual"] }] }
+                                        ]
+                                    },
+                                    "$baseMentorEarnings",
+                                    0
+                                ]
+                            }
                         },
                         totalFees: {
-                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$platformFee", 0] }
+                            $sum: {
+                                $cond: [
+                                    {
+                                        $or: [
+                                            { $eq: ["$status", "completed"] },
+                                            { $and: [{ $eq: ["$status", "pending"] }, { $eq: ["$paymentMethod", "manual"] }] }
+                                        ]
+                                    },
+                                    "$basePlatformFee",
+                                    0
+                                ]
+                            }
                         },
                         pendingFees: {
-                            $sum: { $cond: [{ $eq: ["$status", "pending"] }, "$platformFee", 0] }
+                            $sum: { $cond: [{ $eq: ["$status", "pending"] }, "$basePlatformFee", 0] }
                         }
                     }
                 }
@@ -543,21 +586,30 @@ exports.getEarningsDashboard = async (req, res) => {
                 {
                     $match: {
                         mentor: new mongoose.Types.ObjectId(mentorId),
-                        status: "completed",
+                        $or: [
+                            { status: "completed" },
+                            { $and: [{ status: "pending" }, { paymentMethod: "manual" }] }
+                        ],
                         createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
                     }
                 },
                 {
                     $group: {
                         _id: { $dateToString: { format: "%d/%m", date: "$createdAt" } },
-                        revenue: { $sum: "$amount" },
+                        revenue: { $sum: "$baseAmount" },
                         fullDate: { $min: "$createdAt" }
                     }
                 },
                 { $sort: { fullDate: 1 } }
             ]),
             // 3. Last 10 transactions
-            Transaction.find({ mentor: mentorId, status: 'completed' })
+            Transaction.find({
+                mentor: mentorId,
+                $or: [
+                    { status: 'completed' },
+                    { paymentMethod: 'manual', status: 'pending' }
+                ]
+            })
                 .populate('form', 'title slug')
                 .sort({ createdAt: -1 })
                 .limit(10)
@@ -655,7 +707,11 @@ exports.handleWebhook = async (req, res) => {
                 // Check if transaction already created by invoice.paid
                 const existingTx = await Transaction.findOne({ stripeSessionId: session.id });
                 if (!existingTx) {
-                    const rate = session.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+                    const rates = await exchangeRateService.getCurrentRates();
+                    const currentCurrency = session.currency.toUpperCase();
+                    const mznRate = rates['MZN'] || 63.8;
+                    const sourceCurrencyRate = rates[currentCurrency] || (currentCurrency === 'USD' ? 1 : 0.92);
+                    const rate = mznRate / sourceCurrencyRate;
                     const amount = session.amount_total / 100;
 
                     const tx = new Transaction({
@@ -721,7 +777,11 @@ exports.handleWebhook = async (req, res) => {
 
                 const existingTx = await Transaction.findOne({ subscriptionId: invoice.subscription, amount: invoice.amount_paid / 100 });
                 if (!existingTx) {
-                    const rate = invoice.currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+                    const rates = await exchangeRateService.getCurrentRates();
+                    const currentCurrency = invoice.currency.toUpperCase();
+                    const mznRate = rates['MZN'] || 63.8;
+                    const sourceCurrencyRate = rates[currentCurrency] || (currentCurrency === 'USD' ? 1 : 0.92);
+                    const rate = mznRate / sourceCurrencyRate;
                     const amount = invoice.amount_paid / 100;
 
                     const tx = new Transaction({
@@ -990,10 +1050,14 @@ exports.syncSubscription = async (req, res) => {
             // or if previous sync failed halfway.
             const existingTx = await Transaction.findOne({ subscriptionId: activeSub.id });
             if (!existingTx) {
-                const priceItem = activeSub.items.data[0].price;
-                const amount = priceItem.unit_amount / 100;
-                const currency = activeSub.currency.toUpperCase();
-                const rate = currency === 'USD' ? await getLatestRate() : 1;
+                const rates = await exchangeRateService.getCurrentRates();
+                const activePrice = activeSub.items.data[0].price;
+                const amount = activePrice.unit_amount / 100;
+                const currentCurrency = activeSub.currency.toUpperCase();
+
+                const mznRate = rates['MZN'] || 63.8;
+                const sourceCurrencyRate = rates[currentCurrency] || (currentCurrency === 'USD' ? 1 : 0.92);
+                const rate = mznRate / sourceCurrencyRate;
 
                 const tx = new Transaction({
                     type: 'subscription',
@@ -1215,19 +1279,25 @@ exports.getAdminFinancialSummary = async (req, res) => {
         const allTransactions = await Transaction.find().populate('mentor', 'name businessName');
 
         const summary = allTransactions.reduce((acc, tx) => {
-            if (tx.status === 'completed') {
-                const amount = tx.baseAmount || tx.amount; // Fallback for old transactions
+            const isCompleted = tx.status === 'completed';
+            const isManualPending = tx.status === 'pending' && tx.paymentMethod === 'manual';
+
+            if (isCompleted || isManualPending) {
+                const amount = tx.baseAmount || tx.amount;
                 const platformFee = tx.basePlatformFee || tx.platformFee;
 
                 acc.totalRevenue += amount;
+
                 if (tx.type === 'subscription') {
                     acc.subscriptionRevenue += amount;
-                    acc.collectedFees += amount;
+                    if (isCompleted) acc.collectedFees += amount;
                 } else {
                     acc.eventFeeRevenue += platformFee;
-                    acc.collectedFees += platformFee;
+                    if (isCompleted) acc.collectedFees += platformFee;
                 }
-            } else if (tx.status === 'pending') {
+            }
+
+            if (tx.status === 'pending') {
                 acc.pendingFees += tx.basePlatformFee || tx.platformFee;
             }
             return acc;
@@ -1243,7 +1313,9 @@ exports.getAdminFinancialSummary = async (req, res) => {
 
         allTransactions.forEach(tx => {
             const date = new Date(tx.createdAt);
-            if (date.getFullYear() === currentYear && tx.status === 'completed') {
+            const isValid = tx.status === 'completed' || (tx.status === 'pending' && tx.paymentMethod === 'manual');
+
+            if (date.getFullYear() === currentYear && isValid) {
                 const month = date.getMonth();
                 const amount = tx.baseAmount || tx.amount;
                 const platformFee = tx.basePlatformFee || tx.platformFee;
@@ -1269,7 +1341,8 @@ exports.getAdminFinancialSummary = async (req, res) => {
         // Top Mentors by Revenue (Platform Fee generated)
         const mentorRevenue = {};
         allTransactions.forEach(tx => {
-            if (tx.status === 'completed' && tx.mentor) {
+            const isValid = tx.status === 'completed' || (tx.status === 'pending' && tx.paymentMethod === 'manual');
+            if (isValid && tx.mentor) {
                 const mentorId = tx.mentor._id.toString();
                 const amount = tx.baseAmount || tx.amount;
                 const platformFee = tx.basePlatformFee || tx.platformFee;

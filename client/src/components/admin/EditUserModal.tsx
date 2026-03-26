@@ -8,6 +8,8 @@ import { userService } from '@/lib/userService';
 import { authService, UserData } from '@/lib/authService';
 import { formService } from '@/lib/formService'; // For uploading images if admin wants to change user photo
 import Image from 'next/image';
+import Tooltip from '../common/Tooltip';
+
 
 interface EditUserModalProps {
     isOpen: boolean;
@@ -139,12 +141,15 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                 >
                     {/* Header */}
                     <div style={{ padding: '2rem 2rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexShrink: 0 }}>
-                        <button
-                            onClick={onClose}
-                            style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: '#f8f9fa', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        >
-                            <X size={18} />
-                        </button>
+                        <Tooltip content="Fechar">
+                            <button
+                                onClick={onClose}
+                                style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: '#f8f9fa', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                                <X size={18} />
+                            </button>
+                        </Tooltip>
+
                         <div style={{ textAlign: 'center' }}>
                             <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Editar Usuário</h2>
                             <p style={{ color: '#666', fontSize: '0.9rem' }}>Gerencie as informações de {user.name}</p>
@@ -187,10 +192,13 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                             </div>
                                         )}
                                     </div>
-                                    <label style={{ position: 'absolute', bottom: 0, right: 0, width: '32px', height: '32px', background: '#000', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFD700', cursor: 'pointer', border: '2px solid #fff' }}>
-                                        <Camera size={16} />
-                                        <input type="file" hidden onChange={handleImageUpload} accept="image/*" />
-                                    </label>
+                                    <Tooltip content="Mudar foto de perfil">
+                                        <label style={{ position: 'absolute', bottom: 0, right: 0, width: '32px', height: '32px', background: '#000', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFD700', cursor: 'pointer', border: '2px solid #fff' }}>
+                                            <Camera size={16} />
+                                            <input type="file" hidden onChange={handleImageUpload} accept="image/*" />
+                                        </label>
+                                    </Tooltip>
+
                                 </div>
                             </div>
 

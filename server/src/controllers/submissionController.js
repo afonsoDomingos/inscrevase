@@ -8,7 +8,7 @@ const Notification = require('../models/Notification');
 const NotificationService = require('../services/notificationService');
 const { PLANS } = require('../config/stripe');
 const { getDynamicPlanConfig } = require('../utils/planConfigs');
-const { getLatestRate } = require('../utils/currencyUtils');
+const exchangeRateService = require('../services/exchangeRateService');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
@@ -355,8 +355,11 @@ const updateStatus = async (req, res) => {
                     const amount = submission.form.paymentConfig.price || 0;
                     const platformFee = amount * planConfig.commissionRate;
 
-                    const currency = submission.form.paymentConfig.currency || 'MZN';
-                    const rate = currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+                    const currency = (submission.form.paymentConfig.currency || 'MZN').toUpperCase();
+                    const rates = await exchangeRateService.getCurrentRates();
+                    const usdRate = rates[currency] || 1;
+                    const mznRate = rates['MZN'] || 63.8;
+                    const rate = mznRate / usdRate;
 
                     // Create manual transaction (Status: pending until mentor pays platform)
                     const transaction = new Transaction({
@@ -809,8 +812,11 @@ const bulkUpdateSubmissions = async (req, res) => {
                             const planConfig = dynamicPlans[mentorPlan] || dynamicPlans.free || PLANS.free;
                             const amount = sub.form.paymentConfig.price || 0;
                             const platformFee = amount * planConfig.commissionRate;
-                            const currency = sub.form.paymentConfig.currency || 'MZN';
-                            const rate = currency.toUpperCase() === 'USD' ? await getLatestRate() : 1;
+                            const currency = (sub.form.paymentConfig.currency || 'MZN').toUpperCase();
+                            const rates = await exchangeRateService.getCurrentRates();
+                            const usdRate = rates[currency] || 1;
+                            const mznRate = rates['MZN'] || 63.8;
+                            const rate = mznRate / usdRate;
 
                             const transaction = new Transaction({
                                 user: sub.user || mentor._id,

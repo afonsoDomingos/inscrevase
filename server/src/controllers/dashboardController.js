@@ -3,6 +3,7 @@ const User = require('../models/User');
 const Form = require('../models/Form');
 const Submission = require('../models/Submission');
 const Transaction = require('../models/Transaction');
+const exchangeRateService = require('../services/exchangeRateService');
 
 exports.getAdminStats = async (req, res) => {
     try {
@@ -13,13 +14,18 @@ exports.getAdminStats = async (req, res) => {
         const approvedSubmissions = await Submission.countDocuments({ status: 'approved' });
 
         // Financial Stats
-        const allTx = await Transaction.find({ status: 'completed' });
+        const allTx = await Transaction.find({
+            $or: [
+                { status: 'completed' },
+                { paymentMethod: 'manual', status: 'pending' }
+            ]
+        });
         const summary = allTx.reduce((acc, tx) => {
-            acc.totalRevenue += tx.amount;
+            acc.totalRevenue += tx.baseAmount || tx.amount; // Use baseAmount (MZN) if available
             if (tx.type === 'subscription') {
-                acc.subscriptionRevenue += tx.amount;
+                acc.subscriptionRevenue += tx.baseAmount || tx.amount;
             } else {
-                acc.eventFeeRevenue += tx.platformFee;
+                acc.eventFeeRevenue += tx.basePlatformFee || tx.platformFee;
             }
             return acc;
         }, { totalRevenue: 0, subscriptionRevenue: 0, eventFeeRevenue: 0 });
@@ -86,19 +92,29 @@ exports.getMentorStats = async (req, res) => {
             status: 'approved'
         });
 
-        // 3. Revenue
-        const approvedSubs = await Submission.find({
-            form: { $in: formIds },
-            status: 'approved'
-        });
-
-        let revenue = 0;
-        approvedSubs.forEach(sub => {
-            const form = formsMap[sub.form.toString()];
-            if (form && form.paymentConfig && form.paymentConfig.enabled) {
-                revenue += (form.paymentConfig.price || 0);
+        // 3. Financials from Transactions (more accurate than summing form prices)
+        const financeStats = await Transaction.aggregate([
+            {
+                $match: {
+                    mentor: new mongoose.Types.ObjectId(userId),
+                    $or: [
+                        { status: 'completed' },
+                        { paymentMethod: 'manual', status: 'pending' }
+                    ],
+                    type: 'event_registration'
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: "$baseAmount" },
+                    totalEarnings: { $sum: "$baseMentorEarnings" },
+                    totalFees: { $sum: "$basePlatformFee" }
+                }
             }
-        });
+        ]);
+
+        const summary = financeStats[0] || { totalRevenue: 0, totalEarnings: 0, totalFees: 0 };
 
         const pendingCertificates = await Submission.countDocuments({
             form: { $in: formIds },
@@ -110,7 +126,9 @@ exports.getMentorStats = async (req, res) => {
             submissions: totalSubmissions,
             approved: approvedSubmissions,
             pendingCertificates: pendingCertificates,
-            revenue: revenue
+            revenue: summary.totalRevenue,
+            earnings: summary.totalEarnings,
+            fees: summary.totalFees
         });
     } catch (err) {
         console.error(err);

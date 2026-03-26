@@ -124,6 +124,7 @@
         "back": "Voltar",
         "backToHome": "Voltar ao início",
         "next": "Próximo",
+        "prev": "Anterior",
         "previous": "Anterior",
         "complete": "Concluído",
         "yes": "Sim",
@@ -226,7 +227,18 @@
         "nextEvent": "Próximo Evento",
         "promoteCTA": "Anunciar aqui / Promover Evento",
         "palop": "África (PALOP)",
-        "dataIsPower": "Dados são Poder"
+        "dataIsPower": "Dados são Poder",
+        "you": "Você",
+        "pts": "pts",
+        "days": {
+            "sun": "Dom",
+            "mon": "Seg",
+            "tue": "Ter",
+            "wed": "Qua",
+            "thu": "Qui",
+            "fri": "Sex",
+            "sat": "Sáb"
+        }
     },
     "nav": {
         "home": "Início",
@@ -391,16 +403,44 @@
         "account": "conta",
         "restrictedAccess": "Acesso Restrito",
         "emailUnverified": "E-mail não verificado",
+        "totalUsers": "Total Utilizadores",
+        "totalVisitors": "Total Visitantes",
         "rolesHeader": {
-            "company": "VOCÊ É UMA EMPRESA",
-            "specialist": "VOCÊ É UM ESPECIALISTA",
-            "mentor": "VOCÊ É UM MENTOR",
-            "admin": "ADMINISTRADOR"
+            "company": "Empresa",
+            "specialist": "Especialista",
+            "mentor": "Mentor",
+            "admin": "Admin",
+            "superadmin": "Super Admin",
+            "participant": "Participante"
         },
         "notifications": "Notificações",
         "discoverPlatform": "DESCUBRA NOSSA PLATAFORMA",
         "adminDashboard": "Painel Administrativo",
         "mentorDashboard": "Painel do Mentor",
+        "supportBtn": "Pedir Suporte",
+        "sidebarGroups": {
+            "dashboard": "DASHBOARD",
+            "content": "CONTEÚDO / PRODUTOS",
+            "management": "PARTICIPANTES / GESTÃO",
+            "marketing": "MARKETING / PROMOÇÃO",
+            "finance": "FINANCEIRO",
+            "account": "CONTA / SISTEMA"
+        },
+        "menuItems": {
+            "lessons": "Aulas",
+            "liveboard": "Sala de Eventos (Lab)",
+            "submissions": "Inscrições",
+            "referral": "Indicações & Impacto",
+            "ads": "Anúncios",
+            "smartlinks": "Smartlinks",
+            "boostSales": "Impulsionar Vendas"
+        },
+        "adsPromo": {
+            "badge": "Novidade: Portal de Destaques",
+            "title": "Destaque seu Evento hoje!",
+            "desc": "Aumente sua visibilidade em até 10x aparecendo nas seções patrocinadas de toda a plataforma.",
+            "btn": "Solicitar Destaque"
+        },
         "broadcast": "Comunicado",
         "visitor": "Visitante",
         "activeMentors": "Mentores Ativos",
@@ -527,7 +567,18 @@
             "participantOrigin": "Origem dos Participantes",
             "topProvincesHelp": "Top províncias (baseado nos dados do formulário)",
             "noGeoData": "Ainda não há dados geográficos suficientes.",
-            "geoDataHelp": "Certifique-se de que seus formulários perguntam a \"Província\" ou \"Cidade\"."
+            "geoDataHelp": "Certifique-se de que seus formulários perguntam a \"Província\" ou \"Cidade\".",
+            "totalViews": "Visualizações Totais",
+            "last14Days": "Últimos 14 dias",
+            "conversionRate": "Taxa de Conversão",
+            "visitsVsSubmissions": "Visitas vs Inscrições",
+            "insightOfWeek": "Insight da Semana",
+            "insightGood": "Sua conversão está excelente! Continue impulsionando tráfego.",
+            "insightImprove": "Dica: Melhore a descrição ou imagem de capa para aumentar conversões.",
+            "trafficAndConversions": "Tráfego e Conversões (Últimos 14 dias)",
+            "submissions": "Inscrições",
+            "visits": "Visitas",
+            "geoDistribution": "Distribuição geográfica por província"
         },
         "settings": {
             "title": "Configurações do Perfil",
@@ -742,7 +793,183 @@
                 "experts": "Ver Especialistas",
                 "blog": "Ler Blog"
             }
+        },
+        "navigation": "Navegação",
+        "management": "Gestão",
+        "marketingAndOps": "Marketing & Operações",
+        "system": "Sistema",
+        "usersList": {
+            "title": "Gestão de Usuários",
+            "results": "{count} resultados",
+            "result": "{count} resultado",
+            "searchPlaceholder": "Buscar por nome ou email...",
+            "allOrigins": "Todas Origens",
+            "allRoles": "Todos Cargos",
+            "allStatus": "Todos Status",
+            "verification": "Verificação",
+            "verified": "Verificados",
+            "pending": "Pendentes",
+            "unverified": "Não Verificados",
+            "onlineOffline": "Online/Offline",
+            "onlineNow": "Online Agora",
+            "offline": "Offline",
+            "clearFilters": "Limpar Filtros",
+            "table": {
+                "name": "Nome",
+                "origin": "Origem",
+                "registration": "Cadastro",
+                "role": "Cargo",
+                "plan": "Plano",
+                "visibility": "Visibilidade",
+                "status": "Status",
+                "online": "Online",
+                "accesses": "Acessos",
+                "actions": "Ações"
+            },
+            "status": {
+                "active": "Ativo",
+                "blocked": "Bloqueado",
+                "published": "Publicado",
+                "private": "Privado"
+            },
+            "pagination": "Mostrando {start}-{end} de {total} usuários",
+            "audience": {
+                "participants": "Participantes"
+            }
+        },
+        "impactRankingEmpty": "O ranking de impacto começará a crescer em breve! 🚀",
+        "participateAndEarn": "Participar & Ganhar Recompensas",
+        "platformTutorials": "Tutoriais da Plataforma",
+        "convertedInvites": "convites convertidos",
+        "mentor": {
+            "eventsTable": {
+                "event": "EVENTO",
+                "visibility": "VISIBILIDADE",
+                "profile": "PERFIL",
+                "registrants": "INSCRITOS",
+                "visits": "VISITAS",
+                "actions": "AÇÕES",
+                "visible": "Visível",
+                "hidden": "Oculto",
+                "owner": "Dono",
+                "goal": "Meta",
+                "publicPage": "Página Pública",
+                "participantPage": "Página do Inscrito"
+            }
+        },
+        "admin": {
+            "peakAnalyticsTitle": "Análise de Horários de Pico",
+            "usagePattern": "Padrão de Uso (Últimos 30 dias)",
+            "peakDaysTitle": "Dias da Semana",
+            "peakHoursTitle": "Horas do Dia",
+            "accessEvolutionYear": "Evolução de Acessos (Ano)",
+            "topMentorsElite": "Top Mentores de Elite",
+            "topCountries": "Principais Países",
+            "formsSubCount": "Inscritos",
+            "visitsLabel": "Visitas",
+            "todayPeakInsight": "Insight de Hoje",
+            "todayPeakMessage": "Hoje o momento de pico foi às {hour}h com {count} usuários.",
+            "patternPeakMessage": "Geralmente, o maior volume ocorre aos {day}.",
+            "peakNow": "Pico de Hoje"
         }
+    },
+    "academy": {
+        "title": "Academia",
+        "subtitle": "Aprenda com especialistas ou compartilhe seu conhecimento",
+        "learn": "Aprender",
+        "manage": "Gerir Aulas",
+        "areaTitle": "Área de Aprendizado",
+        "areaDesc": "Domine a plataforma com cursos exclusivos. Configure eventos, gerencie mentorias e potencialize resultados.",
+        "yourProgress": "Seu Progresso",
+        "lessonsCompleted": "{completed} de {total} aulas concluídas",
+        "welcomeMsg": "👋 <b>Bem-vindo!</b> Comece pela primeira aula para entender como usar a plataforma.",
+        "generateCert": "Gerar Certificado de Excelência",
+        "orderUpdated": "Ordem atualizada!",
+        "moveError": "Erro ao mover aula",
+        "certSuccess": "Certificado gerado com sucesso! Você será redirecionado.",
+        "certError": "Erro ao gerar certificado.",
+        "stats": {
+            "total": "Total de Aulas",
+            "published": "Publicadas",
+            "drafts": "Rascunhos",
+            "views": "Visualizações"
+        },
+        "searchPlaceholder": "Buscar aulas...",
+        "newLesson": "Nova Aula",
+        "editLesson": "Editar Aula",
+        "deleteConfirm": "Tem certeza que deseja deletar esta aula?",
+        "table": {
+            "lesson": "Aula",
+            "category": "Categoria",
+            "duration": "Duração",
+            "views": "Viz.",
+            "audience": "Público",
+            "status": "Status",
+            "access": "Acesso",
+            "actions": "Ações"
+        },
+        "categories": {
+            "all": "Todas Categorias",
+            "basico": "Básico",
+            "intermediario": "Intermediário",
+            "avancado": "Avançado"
+        },
+        "audience": {
+            "mentors": "Mentor",
+            "participants": "Participante",
+            "companies": "Empresa",
+            "specialists": "Especialista",
+            "both": "Ambos",
+            "all": "Todos"
+        },
+        "status": {
+            "published": "Publicada",
+            "draft": "Rascunho",
+            "locked": "Bloqueada",
+            "free": "Livre"
+        },
+        "tipsSectionTitle": "Dicas para Mentores de Elite",
+        "tip1Title": "Conteúdo Curto",
+        "tip1Text": "Vídeos de 5-10 min têm 80% mais taxa de conclusão.",
+        "tip2Title": "Engajamento",
+        "tip2Text": "Peça feedback nos primeiros minutos das lives.",
+        "tip3Title": "Visual Premium",
+        "tip3Text": "Use capas atraentes e títulos claros para suas aulas.",
+        "lessonWord": "Aula",
+        "views": "visualizações",
+        "noLessonsFound": "Nenhuma aula encontrada",
+        "noLessonsHint": "Tente ajustar seus filtros ou termos de busca.",
+        "favorites": "Favoritas",
+        "favoritesMobile": "Fav.",
+        "newBadge": "NOVO",
+        "lockedForUsers": "BLOQUEADA PARA USUÁRIOS",
+        "locked": "BLOQUEADA",
+        "completed": "Concluída",
+        "favoriteLabel": "Favorita",
+        "manageStat1": "Aulas",
+        "manageStat2": "Ativas",
+        "manageStat3": "Drafts",
+        "manageStat4": "Views",
+        "firstStepsTitle": "Primeiros Passos",
+        "firstStepsText": "Clique em + Nova Aula • Upload seu vídeo ou cole um link • Defina o Público • Publique para liberar o acesso.",
+        "searchMyLessons": "Buscar minhas aulas...",
+        "tableLesson": "Aula",
+        "tableCategory": "Categoria",
+        "tableAudience": "Público",
+        "tableStatus": "Status",
+        "tableActions": "Ações",
+        "published": "Publicada",
+        "draft": "Rascunho",
+        "audienceBoth": "Ambos",
+        "audienceMentor": "Mentor",
+        "audienceCompany": "Empresa",
+        "audienceSpecialist": "Especialista",
+        "audienceAll": "Todos",
+        "audienceParticipant": "Participante",
+        "errorMoving": "Erro ao mover aula",
+        "errorSaving": "Erro ao salvar aula",
+        "certGenSuccess": "Certificado gerado com sucesso! Você será redirecionado.",
+        "certGenError": "Erro ao gerar certificado."
     },
     "plans": {
         "discountLabel": "DE DESCONTO",
@@ -806,7 +1033,15 @@
             "uploadSuccess": "Comprovativo enviado! Nossa equipe analisará e ativará sua conta em breve.",
             "payWithCard": "Pagar com Cartão",
             "payWithPaypal": "Pagar com PayPal",
-            "mpesaTransfer": "Transferência Manual"
+            "mpesaTransfer": "Transferência Manual",
+            "automaticPayment": "Pagamento Automático (Instantâneo)",
+            "manualTransferTitle": "OU TRANSFERÊNCIA MANUAL (VALIDAÇÃO EM 24H)",
+            "selectRegion": "Selecione o seu País / Região",
+            "allCountries": "🌍 Todos os Países",
+            "noMethods": "Nenhum método de pagamento disponível para este país ainda.",
+            "headerTitleManual": "📋 Enviar Comprovativo de Pagamento",
+            "headerTitlePlans": "🚀 Escolha o seu Plano",
+            "copySuccess": "Copiado para a área de transferência!"
         }
     },
     "blog": {
@@ -1044,6 +1279,10 @@
                 "description": "É a área logada do participante. Após a inscrição, é aqui que eles acessam as aulas, materiais e o certificado do evento."
             }
         },
+        "participant": "Participante",
+        "create": {
+            "manual": "Manual (Nativo)"
+        },
         "createEvent": "Criar Evento",
         "editEvent": "Editar Evento",
         "eventName": "Nome do Evento",
@@ -1127,6 +1366,8 @@
         "instructionsPlaceholder": "Ex: Pagamento via M-Pesa para 841234567 (Nome)...",
         "defaultFieldName": "Nome Completo",
         "defaultFieldEmail": "Email",
+        "defaultFieldPhone": "Telefone / WhatsApp",
+        "titleRequired": "O título do evento é obrigatório",
         "capacityPlaceholder": "Ex: 50",
         "noIdentification": "Sem identificação",
         "loading": "Carregando inscrições...",
@@ -1207,39 +1448,39 @@
             "title": "Tipo de Evento",
             "palestra": {
                 "title": "Palestra",
-                "description": "Focada em inspiração e partilha de conhecimento."
+                "description": "1 a 2 horas, focado em inspirar e transmitir conhecimento geral sobre um tema."
             },
             "workshop": {
                 "title": "Workshop",
-                "description": "Prático, onde os participantes aprendem fazendo."
+                "description": "Focado na prática. Os participantes executam e aplicam a teoria em tempo real."
             },
             "mentoria": {
                 "title": "Mentoria",
-                "description": "Acompanhamento personalizado em grupos pequenos."
+                "description": "Encontros focados num grupo seleto para orientação passo a passo e direcionamento."
             },
             "curso": {
-                "title": "Curso",
-                "description": "Formação estruturada com várias aulas ou módulos."
+                "title": "Curso Prático",
+                "description": "Formação completa com vários módulos, aulas e material de apoio focado no aprendizado profundo."
             },
             "treinamento": {
-                "title": "Treinamento",
-                "description": "Desenvolvimento de habilidades específicas."
+                "title": "Treinamento Corporativo",
+                "description": "Focado em melhorar as habilidades técnicas de equipas de empresas."
             },
             "seminario": {
                 "title": "Seminário",
-                "description": "Discussão técnica ou académica com especialistas."
+                "description": "Apresentação e debate avançado sobre temas técnicos com especialistas."
             },
             "masterclass": {
                 "title": "Masterclass",
-                "description": "Aula avançada conduzida por um especialista."
+                "description": "Aula aprofundada dada por um especialista sobre um tema específico de grande valor."
             },
             "aulaaberta": {
-                "title": "Aula Aberta",
-                "description": "Aula única rápida para atrair novos alunos e compartilhar valor."
+                "title": "Aula Aberta (Ao Vivo)",
+                "description": "Aula de amostra grátis ou lançamentos de produtos."
             },
             "conferencia": {
                 "title": "Conferência",
-                "description": "Grande evento com múltiplos palestrantes e sessões complexas."
+                "description": "Evento de grande porte com vários painéis, palestras e oportunidades de networking."
             }
         },
         "steps": {
@@ -1580,41 +1821,93 @@
             "rejected": "Inscrição Rejeitada",
             "waitingApproval": "Aguardando aprovação do {role}"
         },
-        "liveBoard": {
-            "activateBoard": "Ativar Board Ao Vivo",
-            "exclusiveMentor": "Exclusivo para Mentor: Inicie uma mentoria interativa agora.",
-            "liveNow": "AO VIVO",
-            "endSession": "Encerrar",
-            "raiseHand": "Levantar a Mão",
-            "questions": "Perguntas",
-            "muteAudio": "Mutar Áudio",
-            "unmuteAudio": "Ativar Áudio",
-            "eraser": "Borracha",
+        "salaDeEventos": {
+            "callStudents": "Chamar Inscritos",
+            "eventRoom": "SALA DE EVENTOS",
+            "endSession": "Encerramento",
+            "minimize": "Minimizar",
+            "maximize": "Maximizar",
+            "connected": "conetado",
+            "connected_plural": "conectados",
+            "setFocus": "ESTABELECER FOCO",
+            "minute": "minuto",
+            "minutes": "minutos",
+            "stopTimer": "Parar Timer",
+            "freehandBrush": "Pincel Livre",
+            "moveShapes": "Mover Sólidos",
             "undo": "Desfazer",
-            "save": "Salvar Board",
-            "chatTitle": "Chat da Sessão",
-            "chatPlaceholder": "Sua pergunta...",
-            "handRaisedToast": "{name} levantou a mão!",
-            "audioEnabled": "Áudio ativado! Eles estão te ouvindo.",
-            "saveSuccess": "Board salvo com sucesso!",
-            "handRaisedSuccess": "Mão levantada! Aguarde o mentor.",
-            "countdownTitle": "A preparar início...",
-            "countdownMessage": "O Live Board vai iniciar em {seconds} segundos",
-            "selectCountdown": "Tempo de preparação",
-            "startingIn": "Iniciando em {seconds}s",
-            "seconds_5": "5 Segundos",
-            "seconds_10": "10 Segundos",
-            "seconds_30": "30 Segundos",
-            "minute_1": "1 Minuto",
-            "minutes_5": "5 Minutos",
-            "startNow": "Iniciar Agora",
-            "quizRevealedToast": "A resposta correta foi revelada!",
-            "quizVotedToast": "Voto computado com sucesso!",
-            "announcementTitle": "Aviso do Mentor",
-            "announcementSent": "Anúncio enviado!",
-            "responses": "Respostas",
-            "participant": "Participante",
-            "answer": "Resposta"
+            "clearBoard": "Apagar Tudo",
+            "bgImage": "Background Image",
+            "toggleTheme": "Toggle Theme",
+            "saveBoard": "Guardar Quadro",
+            "drawingPermissions": "Permissões de Desenho",
+            "chalkboard": "Giz (Permissões)",
+            "all": "Tudo",
+            "clear": "Limpar",
+            "noParticipants": "Nenhum participante conectado.",
+            "speaking": "a falar",
+            "raiseHand": "Levantar a Mão",
+            "lowerHand": "Baixar a Mão",
+            "mentor": "Mentor",
+            "testMode": "(MODO TESTE)",
+            "undo_title": "Desfazer (Undo)",
+            "clear_title": "Apagar Tudo",
+            "maximize_label": "Maximizar",
+            "announcements": {
+                "welcome": {
+                    "label": "Boas-vindas",
+                    "message": "Bem-vindo à nossa aula em direto! Prepare o seu material, começamos em instantes. 🚀"
+                },
+                "break": {
+                    "label": "Pausa Rápida",
+                    "message": "Pausa rápida para hidratar o conhecimento. Volto em 2 minutos! ☕💧"
+                },
+                "exercise": {
+                    "label": "Mão na Massa",
+                    "message": "Momento de Exercício! Use este tempo para resolver o desafio desenhado no ecrã. ✍️"
+                },
+                "qa": {
+                    "label": "Dúvidas (Q&A)",
+                    "message": "Momento de Dúvidas! Se tiver questões, levante a mão (✋) ou escreva no chat!"
+                },
+                "focus": {
+                    "label": "Foco Total",
+                    "message": "Foco Absoluto! Desligue as notificações e mergulhe no conteúdo agora. 🛡️"
+                }
+            },
+            "mute": "Mutar",
+            "speak": "Falar",
+            "audioSettings": "Testar Som e Microfone",
+            "audioTestTitle": "Teste de Áudio",
+            "micLabel": "Microfone:",
+            "testSpeakers": "Testar Saída (Som)",
+            "close": "Fechar",
+            "mutingAllToast": "🔇 Todos os microfones foram mutados.",
+            "muteAllTitle": "Mutar todos os participantes",
+            "muting": "A Mutar...",
+            "muteAll": "Mutar Todos",
+            "announcementsTitle": "Enviar avisos e alertas para os alunos",
+            "announcementsBtn": "Avisos",
+            "createQuizTitle": "Criar Quiz",
+            "yes": "SIM",
+            "no": "NÃO",
+            "chat": "Chat",
+            "revokeDrawing": "Revogar",
+            "giveDrawing": "Dar Giz",
+            "closeMic": "Fechar Mic",
+            "openMic": "Abrir Mic",
+            "callStudentsTooltip": "Enviar e-mail para inscritos que ainda não entraram",
+            "activateBoard": "Ativar Live Board",
+            "exclusiveMentor": "Funcionalidade exclusiva para mentores",
+            "selectCountdown": "Selecionar Contagem",
+            "seconds_5": "5 segundos",
+            "seconds_10": "10 segundos",
+            "seconds_30": "30 segundos",
+            "minutes_1": "1 minuto",
+            "minutes_5": "5 minutos",
+            "startNow": "Começar Agora",
+            "countdownTitle": "Contagem Decrescente",
+            "countdownMessage": "Prepare o seu material, começamos em {seconds} segundos! 🚀"
         },
         "communityTitle": "Comunidade",
         "chatSubscribersOnly": "Apenas participantes inscritos podem interagir no chat.",
@@ -1627,7 +1920,9 @@
         "pendingStatus": "Não iniciada",
         "markAsComplete": "Concluir Aula",
         "lessonCompleted": "Aula Concluída!",
-        "lessonLockedError": "Complete a aula anterior para desbloquear esta!"
+        "lessonLockedError": "Complete a aula anterior para desbloquear esta!",
+        "professionalTip": "Dica Profissional",
+        "guestIncentiveText": "Sabias que podes guardar todos os teus materiais, submissões e futuros certificados num só lugar? Cria já a tua conta gratuita de Participante com o mesmo email usado nesta inscrição."
     },
     "cookies": {
         "title": "Ajude-nos a melhorar o nosso website com cookies",
@@ -1840,6 +2135,61 @@
             "education": "O conhecimento é a única riqueza que cresce quando é partilhada.",
             "networking": "A sua rede é o seu património líquido. Traga os melhores para perto.",
             "value": "Crie valor real para a sua comunidade através da Inscreva.se."
+        },
+        "networkSubtitle": "Sua rede de influência e impacto na comunidade",
+        "myPoints": "Meus Pontos",
+        "convertedInvites": "Convites Convertidos",
+        "myPosition": "Minha Posição",
+        "impactLeaders": "Líderes de Impacto",
+        "rankingEmpty": "O ranking de impacto começará a crescer em breve! 🚀",
+        "youImpactMaster": "Você (Mestre de Impacto)",
+        "mentorsInvited": "mentores convidados",
+        "foundingPartner": "Sócio Fundador",
+        "ctaTitle": "Sua influência gera recompensas reais",
+        "ctaDesc": "Ao convidar novos mentores de elite para a Inscreva-se, você acumula pontos que podem ser trocados por meses de Plano Pro, destaque em anúncios e benefícios exclusivos.",
+        "inviteBtn": "Convidar & Expandir minha Rede"
+    },
+    "marketing": {
+        "accelerator": {
+            "title": "Acelerador de",
+            "highlight": "Vendas",
+            "description": "O seu conhecimento merece ser visto. Nós cuidamos de toda a estratégia para converter os seus cursos, workshops, palestras ou serviços em um sucesso de vendas.",
+            "upgrade": "Fazer Upgrade de Plano"
         }
+    },
+    "liveRoom": {
+        "testEnv": "Ambiente de Testes",
+        "labTitle": "Laboratório",
+        "labSubtitle": "Sala de Eventos",
+        "labDesc": "Este é o seu espaço privado para praticar. Teste todos os recursos da Sala de Eventos — pincéis, cronómetros, quizzes e sincronização — para garantir que a sua próxima aula em direto seja impecável.",
+        "enterLab": "ENTRAR NO LABORATÓRIO",
+        "feature1Title": "Dominar Ferramentas",
+        "feature1Desc": "Pratique o uso de formas, textos e desenhos à mão livre para tornar a sua explicação visualmente rica.",
+        "feature2Title": "Testar Quizzes",
+        "feature2Desc": "Crie e visualize como os alunos interagem com as perguntas em tempo real para maximizar a retenção.",
+        "feature3Title": "Gestão de Tempo",
+        "feature3Desc": "Habitue-se a usar o temporizador de foco para gerir os exercícios práticos da sua aula.",
+        "labEventTitle": "LABORATÓRIO DE TESTES",
+        "labMentorTitle": "MENTOR (MODO TESTE)"
+    },
+    "ads": {
+        "myAds": "Meus",
+        "myAdsHighlight": "Anúncios",
+        "subtitle": "Gestão de publicidade premium para escalar seu alcance",
+        "createNew": "Criar Novo Anúncio",
+        "totalCampaigns": "Total de Campanhas",
+        "activeNow": "Ativos Agora",
+        "awaitingVerification": "Aguardando Verificação",
+        "emptyTitle": "Comece a Escalar Hoje",
+        "emptyDesc": "Posicione sua marca na frente de milhares de potenciais clientes com nossa publicidade premium segmentada.",
+        "createFirst": "Criar Meu Primeiro Anúncio",
+        "statusApproved": "Aprovado",
+        "statusPending": "Pendente",
+        "statusSuspended": "Suspenso",
+        "statusRejected": "Rejeitado",
+        "active": "Ativo",
+        "paused": "Pausado",
+        "pause": "Pausar",
+        "activate": "Ativar"
     }
 }

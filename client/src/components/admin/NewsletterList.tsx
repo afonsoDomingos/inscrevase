@@ -6,6 +6,7 @@ import { Mail, Calendar, UserCheck, UserMinus, ShieldCheck, Download, Search, Lo
 import { toast } from 'sonner';
 import Cookies from 'js-cookie';
 import TableScrollWrapper from '../common/TableScrollWrapper';
+import Tooltip from '../common/Tooltip';
 
 interface Subscriber {
     _id: string;
@@ -148,13 +149,14 @@ export default function NewsletterList() {
                                         </span>
                                     </td>
                                     <td style={{ padding: '15px 20px' }}>
-                                        <button
-                                            onClick={() => toast.info('Funcionalidade de envio manual em breve')}
-                                            style={{ background: 'none', border: 'none', color: '#000', cursor: 'pointer', padding: '5px', borderRadius: '5px' }}
-                                            title="Enviar E-mail Individual"
-                                        >
-                                            <ShieldCheck size={18} />
-                                        </button>
+                                        <Tooltip content="Enviar E-mail Individual">
+                                            <button
+                                                onClick={() => toast.info('Funcionalidade de envio manual em breve')}
+                                                style={{ background: 'none', border: 'none', color: '#000', cursor: 'pointer', padding: '5px', borderRadius: '5px' }}
+                                            >
+                                                <ShieldCheck size={18} />
+                                            </button>
+                                        </Tooltip>
                                     </td>
                                 </tr>
                             )) : (

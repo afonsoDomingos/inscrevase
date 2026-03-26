@@ -11,6 +11,8 @@ export interface AdminStats {
     approved: number;
     pendingCertificates?: number;
     revenue?: number;
+    earnings?: number;
+    fees?: number;
     subscriptionRevenue?: number;
     eventFeeRevenue?: number;
     authStats?: {
@@ -56,6 +58,8 @@ export interface TrafficStats {
     topCountries: { country: string; count: number }[];
     trafficByHour: { hour: number; count: number }[];
     trafficByMonth: { month: number; count: number }[];
+    peakHours?: { hour: number; count: number }[];
+    peakDays?: { day: number; count: number }[];
 }
 
 export const dashboardService = {

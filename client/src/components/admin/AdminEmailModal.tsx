@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import { useTranslate } from '@/context/LanguageContext';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
+import Tooltip from '../common/Tooltip';
+
 
 interface AdminEmailModalProps {
     isOpen: boolean;
@@ -383,21 +385,26 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                                 <h2 style={{ fontSize: window.innerWidth < 480 ? '1.1rem' : '1.4rem', fontWeight: 900, margin: 0 }}>Comunicação</h2>
                             </div>
                             <div style={{ display: 'flex', gap: '8px' }}>
-                                <button
-                                    onClick={() => {
-                                        setLeftTab(leftTab === 'history' ? 'recipients' : 'history');
-                                        if (leftTab !== 'history') loadLogs();
-                                    }}
-                                    style={{ background: leftTab === 'history' ? '#000' : '#f5f5f5', color: leftTab === 'history' ? '#FFD700' : '#666', border: 'none', padding: '8px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
-                                >
-                                    <History size={14} /> Histórico
-                                </button>
-                                <button
-                                    onClick={() => setLeftTab(leftTab === 'templates' ? 'recipients' : 'templates')}
-                                    style={{ background: leftTab === 'templates' ? '#000' : '#f5f5f5', color: leftTab === 'templates' ? '#FFD700' : '#666', border: 'none', padding: '8px 12px', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
-                                >
-                                    <LayoutIcon size={13} /> {window.innerWidth < 480 ? '' : 'Modelos'}
-                                </button>
+                                <Tooltip content="Ver histórico de emails enviados">
+                                    <button
+                                        onClick={() => {
+                                            setLeftTab(leftTab === 'history' ? 'recipients' : 'history');
+                                            if (leftTab !== 'history') loadLogs();
+                                        }}
+                                        style={{ background: leftTab === 'history' ? '#000' : '#f5f5f5', color: leftTab === 'history' ? '#FFD700' : '#666', border: 'none', padding: '8px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                    >
+                                        <History size={14} /> Histórico
+                                    </button>
+                                </Tooltip>
+                                <Tooltip content="Usar modelos pré-definidos">
+                                    <button
+                                        onClick={() => setLeftTab(leftTab === 'templates' ? 'recipients' : 'templates')}
+                                        style={{ background: leftTab === 'templates' ? '#000' : '#f5f5f5', color: leftTab === 'templates' ? '#FFD700' : '#666', border: 'none', padding: '8px 12px', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                    >
+                                        <LayoutIcon size={13} /> {window.innerWidth < 480 ? '' : 'Modelos'}
+                                    </button>
+                                </Tooltip>
+
                             </div>
                         </div>
 
@@ -563,9 +570,12 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                         borderTop: window.innerWidth < 768 ? '1px solid #eee' : 'none'
                     }}>
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-                            <button onClick={onClose} style={{ background: '#eee', border: 'none', color: '#666', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <X size={18} />
-                            </button>
+                            <Tooltip content="Fechar">
+                                <button onClick={onClose} style={{ background: '#eee', border: 'none', color: '#666', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <X size={18} />
+                                </button>
+                            </Tooltip>
+
                         </div>
 
                         <form onSubmit={handleSubmit} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -584,15 +594,18 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                                     <label style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', color: '#999', letterSpacing: '1px' }}>Mensagem (Corpo)</label>
-                                    <button
-                                        type="button"
-                                        onClick={handleAiGenerate}
-                                        disabled={aiLoading}
-                                        style={{ background: 'rgba(184,134,11,0.1)', border: 'none', borderRadius: '20px', padding: '6px 12px', fontSize: '0.75rem', fontWeight: 800, color: '#B8860B', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
-                                    >
-                                        {aiLoading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
-                                        Gerar com IA
-                                    </button>
+                                    <Tooltip content="Gerar conteúdo profissional com Inteligência Artificial">
+                                        <button
+                                            type="button"
+                                            onClick={handleAiGenerate}
+                                            disabled={aiLoading}
+                                            style={{ background: 'rgba(184,134,11,0.1)', border: 'none', borderRadius: '20px', padding: '6px 12px', fontSize: '0.75rem', fontWeight: 800, color: '#B8860B', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                        >
+                                            {aiLoading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                                            Gerar com IA
+                                        </button>
+                                    </Tooltip>
+
                                 </div>
                                 <textarea
                                     value={content}

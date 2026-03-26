@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import TableScrollWrapper from '../common/TableScrollWrapper';
+import Tooltip from '../common/Tooltip';
+import { useTranslate } from '@/context/LanguageContext';
 
 interface Lesson {
     _id: string;
@@ -49,7 +51,7 @@ interface Stats {
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function LessonsManager() {
-    // const { t } = useTranslate(); // Unused
+    const { t } = useTranslate();
     const [lessons, setLessons] = useState<Lesson[]>([]);
     const [stats, setStats] = useState<Stats>({ total: 0, published: 0, unpublished: 0, totalViews: 0 });
     const [loading, setLoading] = useState(true);
@@ -325,18 +327,18 @@ export default function LessonsManager() {
             {/* Header */}
             <div style={{ marginBottom: '2rem' }}>
                 <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a1a1a' }}>
-                    🎓 Gerenciar Aulas
+                    🎓 {t('academy.manage')}
                 </h1>
-                <p style={{ color: '#666' }}>Crie e gerencie vídeos educativos para seus usuários</p>
+                <p style={{ color: '#666' }}>{t('academy.areaDesc')}</p>
             </div>
 
             {/* Stats Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
                 {[
-                    { icon: Video, label: 'Total de Aulas', value: stats.total, color: '#D4AF37' },
-                    { icon: CheckCircle, label: 'Publicadas', value: stats.published, color: '#10b981' },
-                    { icon: Clock, label: 'Rascunhos', value: stats.unpublished, color: '#f59e0b' },
-                    { icon: TrendingUp, label: 'Visualizações', value: stats.totalViews, color: '#3b82f6' }
+                    { icon: Video, label: t('academy.stats.total'), value: stats.total, color: '#D4AF37' },
+                    { icon: CheckCircle, label: t('academy.stats.published'), value: stats.published, color: '#10b981' },
+                    { icon: Clock, label: t('academy.stats.drafts'), value: stats.unpublished, color: '#f59e0b' },
+                    { icon: TrendingUp, label: t('academy.stats.views'), value: stats.totalViews, color: '#3b82f6' }
                 ].map((stat, idx) => (
                     <motion.div
                         key={idx}
@@ -376,7 +378,7 @@ export default function LessonsManager() {
                         <Search size={20} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
                         <input
                             type="text"
-                            placeholder="Buscar aulas..."
+                            placeholder={t('academy.searchPlaceholder')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             style={{
@@ -399,10 +401,10 @@ export default function LessonsManager() {
                             cursor: 'pointer'
                         }}
                     >
-                        <option value="all">Todas Categorias</option>
-                        <option value="basico">Básico</option>
-                        <option value="intermediario">Intermediário</option>
-                        <option value="avancado">Avançado</option>
+                        <option value="all">{t('academy.categories.all')}</option>
+                        <option value="basico">{t('academy.categories.basico')}</option>
+                        <option value="intermediario">{t('academy.categories.intermediario')}</option>
+                        <option value="avancado">{t('academy.categories.avancado')}</option>
                     </select>
                 </div>
                 <button
@@ -422,7 +424,7 @@ export default function LessonsManager() {
                     }}
                 >
                     <Plus size={20} />
-                    Nova Aula
+                    {t('academy.newLesson')}
                 </button>
             </div>
 
@@ -431,14 +433,14 @@ export default function LessonsManager() {
                 <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '900px' }}>
                     <thead>
                         <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Aula</th>
-                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Categoria</th>
-                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Duração</th>
-                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Viz.</th>
-                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Público</th>
-                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Status</th>
-                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>Acesso</th>
-                            <th style={{ padding: '1rem', textAlign: 'right', fontWeight: '600', color: '#374151' }}>Ações</th>
+                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>{t('academy.table.lesson')}</th>
+                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>{t('academy.table.category')}</th>
+                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>{t('academy.table.duration')}</th>
+                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>{t('academy.table.views')}</th>
+                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>{t('academy.table.audience')}</th>
+                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>{t('academy.table.status')}</th>
+                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#374151' }}>{t('academy.table.access')}</th>
+                            <th style={{ padding: '1rem', textAlign: 'right', fontWeight: '600', color: '#374151' }}>{t('academy.table.actions')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -550,62 +552,66 @@ export default function LessonsManager() {
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                                        <button
-                                            onClick={() => togglePublish(lesson._id)}
-                                            style={{
-                                                padding: '8px',
-                                                background: 'transparent',
-                                                border: 'none',
-                                                borderRadius: '8px',
-                                                cursor: 'pointer',
-                                                color: '#666'
-                                            }}
-                                            title={lesson.isPublished ? 'Despublicar' : 'Publicar'}
-                                        >
-                                            {lesson.isPublished ? <EyeOff size={18} /> : <Eye size={18} />}
-                                        </button>
-                                        <button
-                                            onClick={() => toggleLock(lesson._id)}
-                                            style={{
-                                                padding: '8px',
-                                                background: 'transparent',
-                                                border: 'none',
-                                                borderRadius: '8px',
-                                                cursor: 'pointer',
-                                                color: lesson.isLocked ? '#ef4444' : '#666'
-                                            }}
-                                            title={lesson.isLocked ? 'Desbloquear' : 'Bloquear'}
-                                        >
-                                            {lesson.isLocked ? <Lock size={18} /> : <Unlock size={18} />}
-                                        </button>
-                                        <button
-                                            onClick={() => openModal(lesson)}
-                                            style={{
-                                                padding: '8px',
-                                                background: 'transparent',
-                                                border: 'none',
-                                                borderRadius: '8px',
-                                                cursor: 'pointer',
-                                                color: '#666'
-                                            }}
-                                            title="Editar"
-                                        >
-                                            <Edit size={18} />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(lesson._id)}
-                                            style={{
-                                                padding: '8px',
-                                                background: 'transparent',
-                                                border: 'none',
-                                                borderRadius: '8px',
-                                                cursor: 'pointer',
-                                                color: '#ef4444'
-                                            }}
-                                            title="Deletar"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
+                                        <Tooltip content={lesson.isPublished ? 'Despublicar' : 'Publicar'}>
+                                            <button
+                                                onClick={() => togglePublish(lesson._id)}
+                                                style={{
+                                                    padding: '8px',
+                                                    background: 'transparent',
+                                                    border: 'none',
+                                                    borderRadius: '8px',
+                                                    cursor: 'pointer',
+                                                    color: '#666'
+                                                }}
+                                            >
+                                                {lesson.isPublished ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                        </Tooltip>
+                                        <Tooltip content={lesson.isLocked ? 'Desbloquear' : 'Bloquear'}>
+                                            <button
+                                                onClick={() => toggleLock(lesson._id)}
+                                                style={{
+                                                    padding: '8px',
+                                                    background: 'transparent',
+                                                    border: 'none',
+                                                    borderRadius: '8px',
+                                                    cursor: 'pointer',
+                                                    color: lesson.isLocked ? '#ef4444' : '#666'
+                                                }}
+                                            >
+                                                {lesson.isLocked ? <Lock size={18} /> : <Unlock size={18} />}
+                                            </button>
+                                        </Tooltip>
+                                        <Tooltip content="Editar">
+                                            <button
+                                                onClick={() => openModal(lesson)}
+                                                style={{
+                                                    padding: '8px',
+                                                    background: 'transparent',
+                                                    border: 'none',
+                                                    borderRadius: '8px',
+                                                    cursor: 'pointer',
+                                                    color: '#666'
+                                                }}
+                                            >
+                                                <Edit size={18} />
+                                            </button>
+                                        </Tooltip>
+                                        <Tooltip content="Deletar">
+                                            <button
+                                                onClick={() => handleDelete(lesson._id)}
+                                                style={{
+                                                    padding: '8px',
+                                                    background: 'transparent',
+                                                    border: 'none',
+                                                    borderRadius: '8px',
+                                                    cursor: 'pointer',
+                                                    color: '#ef4444'
+                                                }}
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </Tooltip>
                                     </div>
                                 </td>
                             </motion.tr>

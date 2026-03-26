@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { authService, UserData } from '@/lib/authService';
 import { dashboardService, AdminStats, TrafficStats, TopMentor } from '@/lib/dashboardService';
@@ -19,7 +19,8 @@ import MarketingRequestList from '@/components/admin/MarketingRequestList';
 import PaypalPayouts from '@/components/admin/PaypalPayouts';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Plus } from 'lucide-react';
+
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
@@ -30,7 +31,9 @@ import { useCurrency } from '@/context/CurrencyContext';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
 import AdminEmailModal from '@/components/admin/AdminEmailModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
-import { Bar, XAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
+
+
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { useSocket } from '@/context/SocketContext';
 import { useSpotlight } from '@/hooks/useSpotlight';
@@ -41,6 +44,9 @@ import { formService } from '@/lib/formService';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import ThemeToggle from '@/components/common/ThemeToggle';
 import Image from 'next/image';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import CurrencySwitcher from '@/components/CurrencySwitcher';
+import Tooltip from '@/components/common/Tooltip';
 
 type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts';
 
@@ -68,6 +74,8 @@ export default function AdminDashboard() {
         t('common.months.jul'), t('common.months.aug'), t('common.months.sep'),
         t('common.months.oct'), t('common.months.nov'), t('common.months.dec')
     ];
+
+
 
     const adminSteps: Step[] = [
         {
@@ -112,6 +120,22 @@ export default function AdminDashboard() {
     const [user, setUser] = useState<UserData | null>(null);
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [trafficStats, setTrafficStats] = useState<TrafficStats | null>(null);
+
+    const peakHourToday = trafficStats?.trafficByHour?.length 
+        ? [...trafficStats.trafficByHour].sort((a,b) => b.count - a.count)[0] 
+        : null;
+        
+    const peakDayPatternData = trafficStats?.peakDays?.length 
+        ? [...trafficStats.peakDays].sort((a,b) => b.count - a.count)[0] 
+        : null;
+        
+    const peakDayPatternName = peakDayPatternData 
+        ? [
+            t('common.days.sun'), t('common.days.mon'), t('common.days.tue'),
+            t('common.days.wed'), t('common.days.thu'), t('common.days.fri'),
+            t('common.days.sat')
+          ][peakDayPatternData.day - 1] 
+        : null;
     const [topMentors, setTopMentors] = useState<TopMentor[]>([]);
     const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [loading, setLoading] = useState(true);
@@ -337,12 +361,12 @@ export default function AdminDashboard() {
     const totalUsers = (stats?.mentors || 0) + (stats?.participants || 0);
 
     const vitalCards = [
-        { label: 'Total Utilizadores', value: showValues ? (stats?.totalUsers || totalUsers) : '••', icon: <Users size={24} />, color: '#6366f1', tab: 'users' },
+        { label: t('dashboard.totalUsers') || 'Total Utilizadores', value: showValues ? (stats?.totalUsers || totalUsers) : '••', icon: <Users size={24} />, color: '#6366f1', tab: 'users' },
         { label: 'Experts / Mentors', value: showValues ? stats?.mentors || 0 : '••', icon: <Trophy size={24} />, color: '#D4AF37', tab: 'users' },
-        { label: 'Participantes', value: showValues ? stats?.participants || 0 : '••', icon: <Users size={24} />, color: '#10b981', tab: 'users' },
+        { label: t('dashboard.usersList.audience.participants') || 'Participantes', value: showValues ? stats?.participants || 0 : '••', icon: <Users size={24} />, color: '#10b981', tab: 'users' },
         { label: t('dashboard.onlineNow'), value: onlineUsers.length, icon: <Wifi size={24} />, color: '#38a169', tab: 'users' },
         { label: t('dashboard.visitsToday'), value: trafficStats?.visitsToday || 0, icon: <Eye size={24} />, color: '#ed8936', tab: 'overview' },
-        { label: 'Total Visitantes', value: trafficStats?.totalVisits || 0, icon: <Globe size={24} />, color: '#3182ce', tab: 'overview' },
+        { label: t('dashboard.totalVisitors') || 'Total Visitantes', value: trafficStats?.totalVisits || 0, icon: <Globe size={24} />, color: '#3182ce', tab: 'overview' },
         { label: t('dashboard.finance.totalRevenue'), value: showValues ? formatPrice(stats?.revenue || 0, 'MZN', currency) : '••••', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
         { label: t('dashboard.submissions'), value: showValues ? stats?.submissions || 0 : '••', icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
     ];
@@ -356,32 +380,61 @@ export default function AdminDashboard() {
         { label: t('dashboard.approvedSubscriptions'), value: showValues ? stats?.approved || 0 : '••', icon: <CheckCircle size={24} />, color: '#10b981', tab: 'submissions' },
     ];
 
-    const menuItems = [
-        { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
-        { id: 'lessons', label: 'Aulas', icon: <Video size={20} /> },
-        { id: 'users', label: t('dashboard.users'), icon: <Users size={20} /> },
-        { id: 'forms', label: t('dashboard.forms'), icon: <FileText size={20} /> },
-        { id: 'submissions', label: t('dashboard.submissions'), icon: <Database size={20} /> },
-        { id: 'finance', label: t('dashboard.finance.title'), icon: <Wallet size={20} /> },
-        { id: 'newsletter', label: t('dashboard.newsletter'), icon: <Mail size={20} /> },
-        { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={20} /> },
-        { id: 'smartlinks', label: 'SmartLinks', icon: <LinkIcon size={20} /> },
-        { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} /> },
-        { id: 'referrals', label: 'Referenciações', icon: <Trophy size={20} /> },
-        { id: 'marketing', label: 'Marketing & Vendas', icon: <Zap size={20} /> },
-        { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={20} /> },
-        { id: 'payouts', label: 'Repasses PayPal', icon: <DollarSign size={20} /> },
-        { id: 'settings', label: t('dashboard.settings.title') || 'Definições', icon: <Settings size={20} /> },
-    ].filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing') || user?.role === 'SuperAdmin');
+    const menuGroups = [
+        {
+            title: t('dashboard.navigation') || 'Geral',
+            items: [
+                { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={18} /> },
+                { id: 'lessons', label: t('academy.title') || 'Aulas', icon: <Video size={18} /> },
+                { id: 'users', label: t('dashboard.users'), icon: <Users size={18} /> },
+            ]
+        },
+        {
+            title: t('dashboard.management') || 'Gestão',
+            items: [
+                { id: 'forms', label: t('dashboard.forms'), icon: <FileText size={18} /> },
+                { id: 'submissions', label: t('dashboard.submissions') || 'Inscrições', icon: <Database size={18} /> },
+                { id: 'smartlinks', label: 'SmartLinks', icon: <LinkIcon size={18} /> },
+                { id: 'ads', label: t('dashboard.menuItems.ads') || 'Anúncios', icon: <Megaphone size={18} /> },
+                { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={18} /> },
+            ]
+        },
+        {
+            title: t('dashboard.marketingAndOps') || 'Marketing & Operações',
+            items: [
+                { id: 'marketing', label: 'Marketing', icon: <Zap size={18} /> },
+                { id: 'referrals', label: t('referral.title') || 'Referenciações', icon: <Trophy size={18} /> },
+                { id: 'newsletter', label: t('dashboard.newsletter'), icon: <Mail size={18} /> },
+            ]
+        },
+        {
+            title: t('dashboard.finance.title') || 'Financeiro',
+            items: [
+                { id: 'finance', label: t('dashboard.finance.title') || 'Financeiro', icon: <Wallet size={18} /> },
+                { id: 'payouts', label: 'PayPal', icon: <DollarSign size={18} /> },
+            ]
+        },
+        {
+            title: t('dashboard.system') || 'Sistema',
+            items: [
+                { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={18} /> },
+                { id: 'settings', label: t('dashboard.settings.title') || 'Definições', icon: <Settings size={18} /> },
+            ]
+        }
+
+    ].map(group => ({
+        ...group,
+        items: group.items.filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing' && item.id !== 'payouts') || user?.role === 'SuperAdmin')
+    }));
 
     return (
-        <div className="admin-container" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div className="admin-container" style={{ position: 'relative' }}>
             <div className="bg-mesh" />
             <button
                 className="admin-mobile-toggle"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             >
-                {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+                {isSidebarOpen ? <Plus style={{ transform: 'rotate(45deg)' }} size={24} /> : <Menu size={24} />}
             </button>
 
             <div
@@ -394,7 +447,7 @@ export default function AdminDashboard() {
                 <div style={{ padding: '1.5rem', textAlign: 'center', borderBottom: '1px solid #333' }}>
                     {!isDesktopSidebarCollapsed ? (
                         <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>
-                            Inscreva<span className="gold-text">.se</span>
+                            INSCREVA<span className="gold-text">.SE</span>
                         </h2>
                     ) : (
                         <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#FFD700' }}>
@@ -403,70 +456,74 @@ export default function AdminDashboard() {
                     )}
                 </div>
 
-                <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
-                    {menuItems.map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => setActiveTab(item.id as Tab)}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                padding: '0.75rem 1rem',
-                                width: '100%',
-                                borderRadius: '12px',
-                                border: 'none',
-                                background: activeTab === item.id ? 'var(--gold-gradient)' : 'transparent',
-                                color: activeTab === item.id ? '#000' : '#888',
-                                fontWeight: activeTab === item.id ? 700 : 500,
-                                cursor: 'pointer',
-                                transition: 'all 0.3s ease',
-                                textAlign: 'left',
-                                fontSize: '0.95rem',
-                                position: 'relative'
-                            }}
-                            id={'admin-nav-' + item.id}
-                        >
-                            {activeTab === item.id && (
-                                <motion.div
-                                    layoutId="active-indicator"
-                                    style={{
-                                        position: 'absolute',
-                                        left: 0,
-                                        width: '4px',
-                                        height: '24px',
-                                        background: '#FFD700',
-                                        borderTopRightRadius: '4px',
-                                        borderBottomRightRadius: '4px'
-                                    }}
-                                />
-                            )}
-                            <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
+                <nav className="luxury-scrollbar" style={{ padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '1.25rem', overflowY: 'auto' }}>
+                    {menuGroups.map((group, gIdx) => (
+                        <div key={gIdx} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                             {!isDesktopSidebarCollapsed && (
-                                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                    {item.label}
-                                </span>
-                            )}
-                            {!isDesktopSidebarCollapsed && item.id === 'support' && unreadCount > 0 && (
-                                <span style={{
-                                    marginLeft: 'auto',
-                                    background: '#ef4444',
-                                    color: '#fff',
-                                    borderRadius: '50%',
-                                    width: '20px',
-                                    height: '20px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '0.7rem',
-                                    fontWeight: 700
+                                <div style={{
+                                    padding: '0 1rem',
+                                    fontSize: '0.65rem',
+                                    fontWeight: 800,
+                                    textTransform: 'uppercase',
+                                    color: '#888',
+                                    letterSpacing: '1px',
+                                    marginBottom: '0.5rem',
+                                    opacity: 0.6
                                 }}>
-                                    {unreadCount > 9 ? '9+' : unreadCount}
-                                </span>
+                                    {group.title}
+                                </div>
                             )}
-                        </button>
+                            {group.items.map((item) => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => setActiveTab(item.id as Tab)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        padding: '10px 14px',
+                                        width: '100%',
+                                        borderRadius: '10px',
+                                        border: 'none',
+                                        background: activeTab === item.id ? 'var(--gold-gradient)' : 'transparent',
+                                        color: activeTab === item.id ? '#000' : '#888',
+                                        fontWeight: activeTab === item.id ? 800 : 500,
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s ease',
+                                        textAlign: 'left',
+                                        fontSize: '0.85rem',
+                                        position: 'relative',
+                                        overflow: 'hidden'
+                                    }}
+                                    id={'admin-nav-' + item.id}
+                                >
+                                    <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '20px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
+                                    {!isDesktopSidebarCollapsed && (
+                                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            {item.label}
+                                        </span>
+                                    )}
+                                    {!isDesktopSidebarCollapsed && item.id === 'support' && unreadCount > 0 && (
+                                        <span style={{
+                                            marginLeft: 'auto',
+                                            background: '#ef4444',
+                                            color: '#fff',
+                                            borderRadius: '50%',
+                                            width: '20px',
+                                            height: '20px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '0.7rem',
+                                            fontWeight: 700
+                                        }}>
+                                            {unreadCount > 9 ? '9+' : unreadCount}
+                                        </span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
                     ))}
-
                 </nav>
 
                 <button
@@ -516,27 +573,27 @@ export default function AdminDashboard() {
                     >
                         <Settings size={18} /> {!isDesktopSidebarCollapsed && t('events.profile.title')}
                     </button>
-                    <button
-                        onClick={() => authService.logout()}
-                        style={{
-                            width: '100%',
-                            padding: '1rem',
-                            background: '#2a2a2a',
-                            border: '1px solid #333',
-                            borderRadius: '12px',
-                            color: '#e53e3e',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            fontWeight: 600,
-                            transition: 'all 0.2s'
-                        }}
-                    >
-                        <LogOut size={18} /> {!isDesktopSidebarCollapsed && t('common.logout')}
-                    </button>
                 </div>
+                <button
+                    onClick={() => authService.logout()}
+                    style={{
+                        width: '100%',
+                        padding: '1rem',
+                        background: '#2a2a2a',
+                        border: '1px solid #333',
+                        borderRadius: '12px',
+                        color: '#e53e3e',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '10px',
+                        fontWeight: 600,
+                        transition: 'all 0.2s'
+                    }}
+                >
+                    <LogOut size={18} /> {!isDesktopSidebarCollapsed && t('common.logout')}
+                </button>
             </aside>
 
             {/* Main Content */}
@@ -551,13 +608,14 @@ export default function AdminDashboard() {
                     flexWrap: 'wrap'
                 }}>
                     <div style={{ flex: '1 1 300px', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                        <button
-                            className="desktop-sidebar-toggle"
-                            onClick={() => setIsDesktopSidebarCollapsed(!isDesktopSidebarCollapsed)}
-                            title={isDesktopSidebarCollapsed ? "Mostrar Menu" : "Ocultar Menu"}
-                        >
-                            <Menu size={24} />
-                        </button>
+                        <Tooltip content={isDesktopSidebarCollapsed ? "Mostrar Menu" : "Ocultar Menu"}>
+                            <button
+                                className="desktop-sidebar-toggle"
+                                onClick={() => setIsDesktopSidebarCollapsed(!isDesktopSidebarCollapsed)}
+                            >
+                                <Menu size={24} />
+                            </button>
+                        </Tooltip>
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', marginBottom: '0.4rem' }}>
                                 <ShieldAlert size={16} />
@@ -571,7 +629,7 @@ export default function AdminDashboard() {
                                     fontWeight: 800,
                                     fontFamily: 'var(--font-playfair)',
                                     lineHeight: 1.1,
-                                    color: '#1a1a1a',
+                                    color: 'var(--foreground)',
                                     overflowWrap: 'break-word',
                                     wordWrap: 'break-word',
                                     display: 'flex',
@@ -592,48 +650,51 @@ export default function AdminDashboard() {
                         flexWrap: 'wrap',
                         alignItems: 'center'
                     }}>
+                        <LanguageSwitcher />
+                        <CurrencySwitcher />
                         <ThemeToggle />
                         <div style={{ position: 'relative' }}>
-                            <button
-                                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                                title="Notificações"
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    width: '40px',
-                                    height: '40px',
-                                    background: '#fff',
-                                    border: '1px solid #FFD700',
-                                    borderRadius: '12px',
-                                    color: '#000',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s',
-                                    position: 'relative'
-                                }}
-                            >
-                                <Bell size={20} />
-                                {unreadNotifications > 0 && (
-                                    <span style={{
-                                        position: 'absolute',
-                                        top: '-5px',
-                                        right: '-5px',
-                                        background: 'var(--gold-gradient)',
-                                        color: '#000',
-                                        width: '20px',
-                                        height: '20px',
-                                        borderRadius: '50%',
-                                        fontSize: '0.7rem',
-                                        fontWeight: 900,
+                            <Tooltip content="Notificações">
+                                <button
+                                    onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                                    style={{
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        border: '2px solid #fff'
-                                    }}>
-                                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                                    </span>
-                                )}
-                            </button>
+                                        width: '40px',
+                                        height: '40px',
+                                        background: '#fff',
+                                        border: '1px solid #FFD700',
+                                        borderRadius: '12px',
+                                        color: '#000',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s',
+                                        position: 'relative'
+                                    }}
+                                >
+                                    <Bell size={20} />
+                                    {unreadNotifications > 0 && (
+                                        <span style={{
+                                            position: 'absolute',
+                                            top: '-5px',
+                                            right: '-5px',
+                                            background: 'var(--gold-gradient)',
+                                            color: '#000',
+                                            width: '20px',
+                                            height: '20px',
+                                            borderRadius: '50%',
+                                            fontSize: '0.7rem',
+                                            fontWeight: 900,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            border: '2px solid #fff'
+                                        }}>
+                                            {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                        </span>
+                                    )}
+                                </button>
+                            </Tooltip>
 
                             <AnimatePresence>
                                 {isNotificationsOpen && (
@@ -751,34 +812,37 @@ export default function AdminDashboard() {
                         >
                             <Eye size={16} /> {t('dashboard.visitor')}
                         </Link>
-                        <button
-                            onClick={() => authService.logout()}
-                            title={t('common.logout')}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '40px',
-                                height: '40px',
-                                background: '#fff',
-                                border: '1px solid #fed7d7',
-                                borderRadius: '50%',
-                                color: '#e53e3e',
-                                cursor: 'pointer',
-                                transition: 'all 0.3s'
-                            }}
-                        >
-                            <LogOut size={18} />
-                        </button>
+                        <Tooltip content={t('common.logout')}>
+                            <button
+                                onClick={() => authService.logout()}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '40px',
+                                    height: '40px',
+                                    background: '#fff',
+                                    border: '1px solid #fed7d7',
+                                    borderRadius: '50%',
+                                    color: '#e53e3e',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s'
+                                }}
+                            >
+                                <LogOut size={18} />
+                            </button>
+                        </Tooltip>
                     </div>
-                </header>
+                </header >
 
                 {/* Sponsored Ads Section */}
-                {sponsoredItems.length > 0 && (
-                    <div style={{ marginBottom: '2.5rem' }}>
-                        <SponsoredAdCard events={sponsoredItems} />
-                    </div>
-                )}
+                {
+                    sponsoredItems.length > 0 && (
+                        <div style={{ marginBottom: '2.5rem' }}>
+                            <SponsoredAdCard events={sponsoredItems} />
+                        </div>
+                    )
+                }
 
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (
@@ -790,27 +854,16 @@ export default function AdminDashboard() {
                             exit={{ opacity: 0, y: -20 }}
                         >
                             {/* Vital Stats Grid */}
-                            <div className="stats-grid" style={{ marginBottom: '1.5rem' }}>
+                            <div id="admin-stats-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" style={{ marginBottom: '2.5rem' }}>
                                 {vitalCards.map((card, index) => (
-                                    <motion.div
+                                    <StatCard
                                         key={index}
-                                        variants={itemVariants}
-                                        whileHover={{ y: -5, scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onMouseMove={handleMouseMove}
+                                        icon={card.icon}
+                                        label={card.label}
+                                        value={card.value}
+                                        color={card.color}
                                         onClick={() => setActiveTab(card.tab as Tab)}
-                                        className="luxury-card"
-                                        style={{ background: 'rgba(255,255,255,0.7)', padding: '1.5rem', border: 'none', cursor: 'pointer' }}
-                                    >
-                                        <div className="spotlight" />
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '1rem', position: 'relative' }}>
-                                            <div style={{ background: `${card.color}15`, color: card.color, padding: '0.6rem', borderRadius: '10px' }}>
-                                                {card.icon}
-                                            </div>
-                                            <span style={{ color: '#1a1a1a', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{card.label}</span>
-                                        </div>
-                                        <h2 style={{ fontSize: '2.2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', position: 'relative' }}>{card.value}</h2>
-                                    </motion.div>
+                                    />
                                 ))}
                             </div>
 
@@ -859,6 +912,7 @@ export default function AdminDashboard() {
                                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem' }}>
                                                     <motion.div variants={itemVariants} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e0e0e0' }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
+
                                                             <div style={{ background: 'rgba(212, 175, 55, 0.1)', padding: '10px', borderRadius: '12px' }}>
                                                                 <Clock size={22} className="gold-text" />
                                                             </div>
@@ -978,12 +1032,12 @@ export default function AdminDashboard() {
                                         >
                                             <div className="stats-grid" style={{ padding: '1.5rem 0.5rem' }}>
                                                 {activityCards.map((card, idx) => (
-                                                    <div key={idx} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #f0f0f0', borderRadius: '20px' }}>
+                                                    <div key={idx} className="luxury-card" style={{ background: '#fff', padding: '1.25rem', border: '1px solid #f0f0f0', borderRadius: '16px' }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
                                                             <div style={{ background: `${card.color}15`, color: card.color, padding: '8px', borderRadius: '10px' }}>{card.icon}</div>
                                                             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#444', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{card.label}</span>
                                                         </div>
-                                                        <div style={{ fontSize: '2rem', fontWeight: 800, color: '#000', fontFamily: 'var(--font-inter)' }}>{card.value}</div>
+                                                        <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#000', fontFamily: 'var(--font-inter)' }}>{card.value}</div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -1114,7 +1168,8 @@ export default function AdminDashboard() {
                                                                 <Cell fill="#db4437" />
                                                                 <Cell fill="#0077b5" />
                                                             </Pie>
-                                                            <Tooltip contentStyle={{ borderRadius: '12px' }} />
+                                                            <RechartsTooltip contentStyle={{ borderRadius: '12px' }} />
+
                                                         </PieChart>
                                                     </ResponsiveContainer>
                                                 </div>
@@ -1172,7 +1227,8 @@ export default function AdminDashboard() {
                                                         <PolarAngleAxis dataKey="subject" tick={{ fill: '#999', fontSize: 10 }} />
                                                         <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
                                                         <Radar name="Performance" dataKey="A" stroke="#D4AF37" fill="#D4AF37" fillOpacity={0.6} />
-                                                        <Tooltip contentStyle={{ borderRadius: '12px' }} />
+                                                        <RechartsTooltip contentStyle={{ borderRadius: '12px' }} />
+
                                                     </RadarChart>
                                                 </ResponsiveContainer>
                                             </div>
@@ -1197,7 +1253,7 @@ export default function AdminDashboard() {
                                                 <div style={{ background: '#FFD700', padding: '6px', borderRadius: '50%', color: '#000' }}>
                                                     <TrendingUp size={16} />
                                                 </div>
-                                                Top Mentores de Elite
+                                                {t('dashboard.admin.topMentorsElite')}
                                             </h3>
 
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', position: 'relative', zIndex: 1 }}>
@@ -1240,11 +1296,11 @@ export default function AdminDashboard() {
                                                         <div style={{ display: 'flex', gap: '15px', textAlign: 'right' }}>
                                                             <div>
                                                                 <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>{mentor.submissions}</div>
-                                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.7 }}>Inscritos</div>
+                                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.7 }}>{t('dashboard.admin.formsSubCount')}</div>
                                                             </div>
                                                             <div>
                                                                 <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>{mentor.visits}</div>
-                                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.7 }}>Visitas</div>
+                                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.7 }}>{t('dashboard.admin.visitsLabel')}</div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1304,9 +1360,10 @@ export default function AdminDashboard() {
                                                             align="center"
                                                             wrapperStyle={{ paddingTop: '20px', fontWeight: 600, fontSize: '0.85rem' }}
                                                         />
-                                                        <Tooltip
+                                                        <RechartsTooltip
                                                             contentStyle={{ borderRadius: '15px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
                                                         />
+
                                                     </RadialBarChart>
                                                 </ResponsiveContainer>
                                             </div>
@@ -1338,7 +1395,8 @@ export default function AdminDashboard() {
                                                     <ComposedChart key={`composed-${expandedSections.performance}`} data={trafficStats?.trafficByHour || []}>
                                                         <XAxis dataKey="hour" tickFormatter={(h) => `${h}h`} stroke="#888" fontSize={11} tickLine={false} axisLine={false} />
                                                         <YAxis stroke="#888" fontSize={11} tickLine={false} axisLine={false} />
-                                                        <Tooltip cursor={{ fill: '#f4f4f4' }} contentStyle={{ borderRadius: '15px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
+                                                        <RechartsTooltip cursor={{ fill: '#f4f4f4' }} contentStyle={{ borderRadius: '15px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
+
                                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                                                         <Bar dataKey="count" fill="#FFD700" radius={[4, 4, 0, 0]} name={t('dashboard.visitsToday')} />
                                                         <Line type="monotone" dataKey="count" stroke="#1a1a1a" strokeWidth={3} dot={{ r: 4 }} name={t('dashboard.trend')} />
@@ -1347,7 +1405,7 @@ export default function AdminDashboard() {
                                             </div>
                                         </motion.div>
 
-                                        {/* Monthly Growth Chart */}
+                                        {/* Monthly Growth Chart (Access Evolution) */}
                                         <motion.div
                                             variants={itemVariants}
                                             onMouseMove={handleMouseMove}
@@ -1364,7 +1422,7 @@ export default function AdminDashboard() {
                                                 <div style={{ background: 'rgba(212, 175, 55, 0.15)', padding: '8px', borderRadius: '12px' }}>
                                                     <BarChart3 className="gold-text" size={24} />
                                                 </div>
-                                                Evolução de Acessos (Ano)
+                                                {t('dashboard.admin.accessEvolutionYear')}
                                             </h3>
                                             <div style={{ height: '300px', width: '100%' }}>
                                                 <ResponsiveContainer width="100%" height="100%">
@@ -1378,13 +1436,155 @@ export default function AdminDashboard() {
                                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
                                                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#666' }} />
                                                         <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#666' }} />
-                                                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                                                        <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+
                                                         <Area type="monotone" dataKey="count" stroke="#D4AF37" fillOpacity={1} fill="url(#colorVisits)" strokeWidth={3} />
                                                     </AreaChart>
                                                 </ResponsiveContainer>
                                             </div>
                                         </motion.div>
                                     </div>
+
+                                    {/* NEW: Peak Time Analysis */}
+                                    <motion.div
+                                        variants={itemVariants}
+                                        onMouseMove={handleMouseMove}
+                                        className="luxury-card"
+                                        style={{
+                                            padding: '2.5rem',
+                                            background: '#fff',
+                                            marginBottom: '2.5rem',
+                                            border: '1px solid rgba(212, 175, 55, 0.1)',
+                                            boxShadow: '0 10px 40px rgba(0,0,0,0.03)',
+                                            borderRadius: '24px'
+                                        }}
+                                    >
+                                        <div className="spotlight" />
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '15px' }}>
+                                            <h3 style={{ fontSize: '1.4rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '12px', color: '#1a1a1a', fontFamily: 'var(--font-playfair)', margin: 0 }}>
+                                                <div style={{ background: 'rgba(212, 175, 55, 0.12)', padding: '8px', borderRadius: '12px' }}>
+                                                    <Clock className="gold-text" size={24} />
+                                                </div>
+                                                {t('dashboard.admin.peakAnalyticsTitle')}
+                                            </h3>
+                                            <div style={{ fontSize: '0.8rem', color: '#888', fontWeight: 700, background: '#f8f8f8', padding: '6px 12px', borderRadius: '50px' }}>
+                                                {t('dashboard.admin.usagePattern')}
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '40px' }}>
+                                            {/* Days of Week Chart */}
+                                            <div>
+                                                <div style={{ marginBottom: '1.5rem', fontSize: '0.95rem', fontWeight: 800, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <div style={{ width: '4px', height: '16px', background: '#D4AF37', borderRadius: '2px' }} />
+                                                    {t('dashboard.admin.peakDaysTitle')}
+                                                </div>
+                                                <div style={{ height: '280px' }}>
+                                                    <ResponsiveContainer width="100%" height="100%">
+                                                        <BarChart data={[1, 2, 3, 4, 5, 6, 7].map(d => {
+                                                            const dayMatch = trafficStats?.peakDays?.find(p => p.day === d);
+                                                            const daysList = [
+                                                                t('common.days.sun'), t('common.days.mon'), t('common.days.tue'),
+                                                                t('common.days.wed'), t('common.days.thu'), t('common.days.fri'),
+                                                                t('common.days.sat')
+                                                            ];
+                                                            return { name: daysList[d - 1], count: dayMatch ? dayMatch.count : 0 };
+                                                        })}>
+                                                            <XAxis dataKey="name" fontSize={11} axisLine={false} tickLine={false} tick={{ fill: '#888' }} />
+                                                            <RechartsTooltip cursor={{ fill: '#f8f8f8' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
+                                                            <Bar dataKey="count" fill="#D4AF37" radius={[6, 6, 0, 0]} barSize={24} />
+                                                        </BarChart>
+                                                    </ResponsiveContainer>
+                                                </div>
+                                            </div>
+
+                                            {/* Hours of Day Pattern */}
+                                            <div>
+                                                <div style={{ marginBottom: '1.5rem', fontSize: '0.95rem', fontWeight: 800, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <div style={{ width: '4px', height: '16px', background: '#1a1a1a', borderRadius: '2px' }} />
+                                                    {t('dashboard.admin.peakHoursTitle')}
+                                                </div>
+                                                <div style={{ height: '280px' }}>
+                                                    <ResponsiveContainer width="100%" height="100%">
+                                                        <AreaChart data={Array.from({ length: 24 }, (_, i) => {
+                                                            const hourMatch = trafficStats?.peakHours?.find(p => p.hour === i);
+                                                            return { hour: i, count: hourMatch ? hourMatch.count : 0 };
+                                                        })}>
+                                                            <defs>
+                                                                <linearGradient id="colorHourPeak" x1="0" y1="0" x2="0" y2="1">
+                                                                    <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.4}/>
+                                                                    <stop offset="95%" stopColor="#D4AF37" stopOpacity={0}/>
+                                                                </linearGradient>
+                                                            </defs>
+                                                            <XAxis dataKey="hour" tickFormatter={(h) => `${h}h`} fontSize={10} axisLine={false} tickLine={false} tick={{ fill: '#888' }} />
+                                                            <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
+                                                            <Area type="monotone" dataKey="count" stroke="#1a1a1a" fillOpacity={1} fill="url(#colorHourPeak)" strokeWidth={3} dot={false} />
+                                                        </AreaChart>
+                                                    </ResponsiveContainer>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Intelligent Insight Message */}
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            style={{
+                                                marginTop: '2.5rem',
+                                                padding: '1.5rem 2rem',
+                                                background: 'linear-gradient(90deg, rgba(212, 175, 55, 0.08) 0%, rgba(212, 175, 55, 0.02) 100%)',
+                                                border: '1px solid rgba(212, 175, 55, 0.2)',
+                                                borderRadius: '20px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '24px'
+                                            }}
+                                        >
+                                            <div style={{ 
+                                                background: 'var(--gold-gradient)', 
+                                                color: '#000', 
+                                                padding: '12px', 
+                                                borderRadius: '14px',
+                                                boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
+                                            }}>
+                                                <Zap size={24} fill="#000" />
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ 
+                                                    fontSize: '0.75rem', 
+                                                    textTransform: 'uppercase', 
+                                                    fontWeight: 900, 
+                                                    color: '#B8860B', 
+                                                    letterSpacing: '1px',
+                                                    marginBottom: '4px' 
+                                                }}>
+                                                    {t('dashboard.admin.todayPeakInsight')}
+                                                </div>
+                                                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1a1a1a', lineHeight: 1.4 }}>
+                                                    {peakHourToday 
+                                                        ? t('dashboard.admin.todayPeakMessage')
+                                                            .replace('{hour}', peakHourToday.hour.toString())
+                                                            .replace('{count}', peakHourToday.count.toString())
+                                                        : t('common.loading') + '...'}
+                                                </div>
+                                                {peakDayPatternName && (
+                                                    <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '4px', fontWeight: 500 }}>
+                                                        {t('dashboard.admin.patternPeakMessage').replace('{day}', peakDayPatternName)}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            <div style={{ 
+                                                background: 'rgba(0,0,0,0.03)', 
+                                                padding: '10px 18px', 
+                                                borderRadius: '12px',
+                                                textAlign: 'center'
+                                            }}>
+                                                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#999', fontWeight: 700 }}>{t('dashboard.admin.peakNow')}</div>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1a1a1a' }}>{peakHourToday?.hour || 0}h</div>
+                                            </div>
+                                        </motion.div>
+                                    </motion.div>
 
                                     {/* Pages and Geography */}
                                     <div className="split-grid" style={{ marginTop: '2rem' }}>
@@ -1398,7 +1598,7 @@ export default function AdminDashboard() {
                                                 <div style={{ background: 'rgba(212, 175, 55, 0.15)', padding: '8px', borderRadius: '12px' }}>
                                                     <Globe className="gold-text" size={24} />
                                                 </div>
-                                                Top Países
+                                                {t('dashboard.admin.topCountries')}
                                             </h3>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                                 {(trafficStats?.topCountries || []).slice(0, 5).map((item, idx) => {
@@ -1496,7 +1696,7 @@ export default function AdminDashboard() {
                                             marginBottom: '2rem'
                                         }}>
                                             <ShieldAlert size={18} className="gold-text" />
-                                            <span style={{ color: '#FFD700', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '2px', textTransform: 'uppercase' }}>Sistema Elite</span>
+                                            <span style={{ color: '#FFD700', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '2px', textTransform: 'uppercase' }}>INSCREVA<span style={{ color: '#FFD700' }}>.SE</span></span>
                                         </div>
 
                                         <h2 style={{
@@ -1975,5 +2175,52 @@ export default function AdminDashboard() {
                 `}</style>
             </main >
         </div >
+    );
+}
+
+function StatCard({ icon, label, value, color, onClick }: { icon: React.ReactNode, label: string, value: string | number, color: string, onClick?: () => void }) {
+    return (
+        <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            onClick={onClick}
+            className="luxury-card"
+            style={{
+                background: '#fff',
+                padding: '1.5rem',
+                border: '1px solid #eee',
+                borderRadius: '24px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.04)',
+                position: 'relative',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.8rem',
+                cursor: onClick ? 'pointer' : 'default'
+            }}
+        >
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: 'var(--gold-gradient)' }}></div>
+
+            <div style={{
+                background: `${color}15`,
+                color: color,
+                width: '44px',
+                height: '44px',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
+                {React.cloneElement(icon as React.ReactElement, { size: 22 })}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <span style={{ color: '#64748b', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
+                <h2 style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#1a1a1a', margin: 0, letterSpacing: '-0.5px' }}>{value}</h2>
+            </div>
+
+            {/* Subtle background element */}
+            <div style={{ position: 'absolute', bottom: '-15px', right: '-15px', width: '70px', height: '70px', background: `radial-gradient(circle, ${color}08 0%, transparent 70%)`, borderRadius: '50%' }} />
+        </motion.div>
     );
 }

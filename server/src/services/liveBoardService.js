@@ -243,6 +243,7 @@ class LiveBoardService {
                 const mentorTarget = session.mentorSocketId || `live_board_${formId}`;
                 this.io.to(mentorTarget).emit('live_board:hand_raised', {
                     userId,
+                    socketId: socket.id,
                     userData,
                     timestamp: new Date()
                 });
@@ -250,6 +251,19 @@ class LiveBoardService {
                 this.io.to(`live_board_${formId}`).emit('live_board:hand_raised_broadcast', {
                     userId,
                     name: userData.name
+                });
+            }
+        });
+
+        // Lower Hand (Participant or Mentor dismissing)
+        socket.on('live_board:lower_hand', ({ formId, socketId }) => {
+            const session = this.activeSessions.get(formId);
+            if (session && session.mentorId) {
+                // socketId can be the participant's socketId or provided by mentor to dismiss
+                const targetSocketId = socketId || socket.id;
+                this.io.to(`live_board_${formId}`).emit('live_board:hand_lowered', {
+                    socketId: targetSocketId,
+                    userId
                 });
             }
         });
@@ -382,6 +396,35 @@ class LiveBoardService {
             console.log(`[LiveBoard] Drawing permission ${granted ? 'granted' : 'revoked'} for socket ${socketId} in form ${formId}`);
         });
 
+        // Microphone Permission (Mentor Only)
+        socket.on('live_board:mic_permission', ({ formId, socketId, granted }) => {
+            const session = this.activeSessions.get(formId);
+            if (!session || session.mentorId !== userId) return;
+
+            if (!session.micPermissions) {
+                session.micPermissions = new Set();
+            }
+
+            if (granted) {
+                session.micPermissions.add(socketId);
+            } else {
+                session.micPermissions.delete(socketId);
+            }
+
+            this.io.to(`live_board_${formId}`).emit('live_board:mic_permission', { socketId, granted });
+            console.log(`[LiveBoard] Mic permission ${granted ? 'granted' : 'revoked'} for socket ${socketId}`);
+        });
+
+        // Mute All Participants (Mentor Only)
+        socket.on('live_board:mute_all', (formId) => {
+            const session = this.activeSessions.get(formId);
+            if (!session || session.mentorId !== userId) return;
+
+            // Broadcast to entire room — clients will self-mute on receiving this
+            socket.to(`live_board_${formId}`).emit('live_board:mute_all');
+            console.log(`[LiveBoard] Mentor muted all participants in form ${formId}`);
+        });
+
         // Mentor Cursor Event
         socket.on('live_board:cursor:move', ({ formId, x, y }) => {
             const session = this.activeSessions.get(formId);
@@ -481,11 +524,25 @@ class LiveBoardService {
         });
 
         // Binary Audio Stream (Fallback/Simple)
-        socket.on('live_board:audio_stream', ({ formId, data }) => {
+        socket.on('live_board:audio_stream', (payload) => {
+            const { formId } = payload;
             const session = this.activeSessions.get(formId);
-            if (session && session.mentorId === userId) {
-                socket.to(`live_board_${formId}`).emit('live_board:audio_data', data);
-            }
+            if (!session) return;
+            // All participants can broadcast audio (mentor or any participant)
+            socket.to(`live_board_${formId}`).emit('live_board:audio_data', payload);
+        });
+
+        // Audio Status (Speaking Indicator)
+        socket.on('live_board:mentor_audio_status', ({ formId, isActive }) => {
+            socket.to(`live_board_${formId}`).emit('live_board:mentor_audio_status', { isActive });
+        });
+
+        socket.on('live_board:audio_status', ({ formId, isActive }) => {
+            this.io.to(`live_board_${formId}`).emit('live_board:audio_status', {
+                socketId: socket.id,
+                userId,
+                isActive
+            });
         });
 
         // Handle disconnect for presence

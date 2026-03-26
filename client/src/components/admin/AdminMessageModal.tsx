@@ -9,6 +9,7 @@ import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import { Search, Check, Paperclip, File, Trash2 } from 'lucide-react';
 import { formService } from '@/lib/formService';
+import Tooltip from '../common/Tooltip';
 
 interface AdminMessageModalProps {
     isOpen: boolean;
@@ -479,24 +480,25 @@ export default function AdminMessageModal({ isOpen, onClose, recipientId, recipi
                                             </a>
                                         </div>
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => setAttachmentUrl(null)}
-                                        style={{
-                                            background: '#fff',
-                                            border: '1px solid #fed7d7',
-                                            color: '#e53e3e',
-                                            padding: '8px',
-                                            borderRadius: '8px',
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center'
-                                        }}
-                                        title="Remover anexo"
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
+                                    <Tooltip content="Remover anexo">
+                                        <button
+                                            type="button"
+                                            onClick={() => setAttachmentUrl(null)}
+                                            style={{
+                                                background: '#fff',
+                                                border: '1px solid #fed7d7',
+                                                color: '#e53e3e',
+                                                padding: '8px',
+                                                borderRadius: '8px',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </Tooltip>
                                 </div>
                             )}
                         </div>

@@ -6,6 +6,7 @@ import { CheckCircle, XCircle, Clock, Search, Image as ImageIcon, X, MessageCirc
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import TableScrollWrapper from '../common/TableScrollWrapper';
+import Tooltip from '../common/Tooltip';
 
 export default function SubmissionList() {
     const [submissions, setSubmissions] = useState<SubmissionModel[]>([]);
@@ -122,21 +123,22 @@ export default function SubmissionList() {
                     <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
                             <th style={{ padding: '1rem', width: '40px' }}>
-                                <button
-                                    onClick={handleSelectAll}
-                                    style={{
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        color: '#FFD700',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}
-                                    title={isAllSelected ? 'Desmarcar todos' : 'Selecionar todos'}
-                                >
-                                    {isAllSelected ? <CheckSquare size={20} /> : <Square size={20} />}
-                                </button>
+                                <Tooltip content={isAllSelected ? 'Desmarcar todos' : 'Selecionar todos'}>
+                                    <button
+                                        onClick={handleSelectAll}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            color: '#FFD700',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}
+                                    >
+                                        {isAllSelected ? <CheckSquare size={20} /> : <Square size={20} />}
+                                    </button>
+                                </Tooltip>
                             </th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Inscrito / Dados</th>
                             <th style={{ padding: '1rem', color: '#1a1a1a', fontWeight: 800 }}>Evento</th>
@@ -163,24 +165,25 @@ export default function SubmissionList() {
                                 animate={{ opacity: 1 }}
                             >
                                 <td style={{ padding: '1rem', width: '40px' }}>
-                                    <button
-                                        onClick={() => handleSelectSubmission(sub._id)}
-                                        style={{
-                                            background: 'none',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                            color: selectedSubmissions.has(sub._id) ? '#FFD700' : '#ddd',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            transition: 'color 0.2s'
-                                        }}
-                                        title={selectedSubmissions.has(sub._id) ? 'Desmarcar' : 'Selecionar'}
-                                    >
-                                        {selectedSubmissions.has(sub._id)
-                                            ? <CheckSquare size={20} />
-                                            : <Square size={20} />}
-                                    </button>
+                                    <Tooltip content={selectedSubmissions.has(sub._id) ? 'Desmarcar' : 'Selecionar'}>
+                                        <button
+                                            onClick={() => handleSelectSubmission(sub._id)}
+                                            style={{
+                                                background: 'none',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                color: selectedSubmissions.has(sub._id) ? '#FFD700' : '#ddd',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                transition: 'color 0.2s'
+                                            }}
+                                        >
+                                            {selectedSubmissions.has(sub._id)
+                                                ? <CheckSquare size={20} />
+                                                : <Square size={20} />}
+                                        </button>
+                                    </Tooltip>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ fontWeight: 600 }}>
@@ -264,22 +267,24 @@ export default function SubmissionList() {
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                                         {sub.status !== 'approved' && (
-                                            <button
-                                                onClick={() => handleUpdateStatus(sub._id, 'approved')}
-                                                style={{ background: '#38a169', color: '#fff', border: 'none', padding: '0.4rem', borderRadius: '4px', cursor: 'pointer' }}
-                                                title="Aprovar"
-                                            >
-                                                <CheckCircle size={16} />
-                                            </button>
+                                            <Tooltip content="Aprovar">
+                                                <button
+                                                    onClick={() => handleUpdateStatus(sub._id, 'approved')}
+                                                    style={{ background: '#38a169', color: '#fff', border: 'none', padding: '0.4rem', borderRadius: '4px', cursor: 'pointer' }}
+                                                >
+                                                    <CheckCircle size={16} />
+                                                </button>
+                                            </Tooltip>
                                         )}
                                         {sub.status !== 'rejected' && (
-                                            <button
-                                                onClick={() => handleUpdateStatus(sub._id, 'rejected')}
-                                                style={{ background: '#e53e3e', color: '#fff', border: 'none', padding: '0.4rem', borderRadius: '4px', cursor: 'pointer' }}
-                                                title="Rejeitar"
-                                            >
-                                                <XCircle size={16} />
-                                            </button>
+                                            <Tooltip content="Rejeitar">
+                                                <button
+                                                    onClick={() => handleUpdateStatus(sub._id, 'rejected')}
+                                                    style={{ background: '#e53e3e', color: '#fff', border: 'none', padding: '0.4rem', borderRadius: '4px', cursor: 'pointer' }}
+                                                >
+                                                    <XCircle size={16} />
+                                                </button>
+                                            </Tooltip>
                                         )}
                                     </div>
                                 </td>
@@ -402,15 +407,16 @@ export default function SubmissionList() {
                                                 </div>
 
                                                 {(key.toLowerCase().includes('tel') || key.toLowerCase().includes('cel') || key.toLowerCase().includes('phone') || key.toLowerCase().includes('zap') || key.toLowerCase().includes('contato')) && (
-                                                    <a
-                                                        href={`https://wa.me/${String(value).replace(/\D/g, '')}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        style={{ background: '#25D366', color: '#fff', padding: '0.5rem', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                        title="Chamar no WhatsApp"
-                                                    >
-                                                        <MessageCircle size={18} />
-                                                    </a>
+                                                    <Tooltip content="Chamar no WhatsApp">
+                                                        <a
+                                                            href={`https://wa.me/${String(value).replace(/\D/g, '')}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            style={{ background: '#25D366', color: '#fff', padding: '0.5rem', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                        >
+                                                            <MessageCircle size={18} />
+                                                        </a>
+                                                    </Tooltip>
                                                 )}
                                             </div>
                                         </div>

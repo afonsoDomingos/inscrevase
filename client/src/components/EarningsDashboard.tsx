@@ -46,7 +46,7 @@ export default function EarningsDashboard() {
     const [user, setUser] = useState<UserData | null>(null);
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
     const { t } = useTranslate();
-    const { currency, formatPrice, getPlanConfig } = useCurrency();
+    const { currency, formatPrice, convertAmount, getPlanConfig } = useCurrency();
 
     useEffect(() => {
         const loadEarnings = async () => {
@@ -76,25 +76,30 @@ export default function EarningsDashboard() {
     const summary = data?.summary || { totalRevenue: 0, totalEarnings: 0, totalFees: 0, pendingFees: 0 };
     const transactions = data?.transactions || [];
 
+    const processedChartData = data?.chartData?.map(item => ({
+        ...item,
+        revenue: convertAmount(item.revenue, 'MZN', currency)
+    })) || [];
+
     return (
         <div style={{ display: 'grid', gap: '2rem' }}>
             <StripeConnect />
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
                 <FinanceCard
                     title={t('dashboard.finance.totalRevenue')}
-                    value={formatPrice(summary.totalRevenue, 'USD', currency)}
+                    value={formatPrice(summary.totalRevenue, 'MZN', currency)}
                     icon={<TrendingUp size={24} />}
                     color="#D4AF37"
                 />
                 <FinanceCard
                     title={t('dashboard.finance.yourEarnings')}
-                    value={formatPrice(summary.totalEarnings, 'USD', currency)}
+                    value={formatPrice(summary.totalEarnings, 'MZN', currency)}
                     icon={<Wallet size={24} />}
                     color="#10b981"
                 />
                 <FinanceCard
                     title={t('dashboard.finance.paidFees')}
-                    value={formatPrice(summary.totalFees, 'USD', currency)}
+                    value={formatPrice(summary.totalFees, 'MZN', currency)}
                     icon={<DollarSign size={24} />}
                     color="#666"
                 />
@@ -115,7 +120,7 @@ export default function EarningsDashboard() {
 
                 <div style={{ width: '100%', height: 300 }}>
                     <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={data?.chartData || []}>
+                        <AreaChart data={processedChartData}>
                             <defs>
                                 <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.3} />

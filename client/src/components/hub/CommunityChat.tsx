@@ -210,34 +210,67 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                         style={{
                             position: 'fixed',
-                            top: 0,
-                            right: 0,
-                            bottom: 0,
-                            width: '400px',
-                            maxWidth: '100vw',
+                            top: '100px',
+                            right: '20px',
+                            width: '260px',
+                            height: 'calc(100% - 240px)',
                             background: '#fff',
-                            boxShadow: '-10px 0 50px rgba(0,0,0,0.1)',
+                            boxShadow: '0 10px 50px rgba(0,0,0,0.1)',
                             zIndex: 1001,
                             display: 'flex',
-                            flexDirection: 'column'
+                            flexDirection: 'column',
+                            borderRadius: '24px',
+                            overflow: 'hidden',
+                            border: '1px solid rgba(0,0,0,0.05)'
                         }}
                     >
                         {/* Header */}
-                        <div style={{ padding: '25px', background: '#fff', borderBottom: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '45px', height: '45px', borderRadius: '14px', background: `${primaryColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: primaryColor }}>
-                                    <MessageCircle size={22} />
+                        <div style={{
+                            padding: '12px 16px',
+                            background: '#fff',
+                            borderBottom: '1px solid #f0f0f0',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '10px',
+                                    background: `${primaryColor}15`,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: primaryColor
+                                }}>
+                                    <MessageCircle size={18} />
                                 </div>
-                                <div>
-                                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{t('hub.communityTitle')}</h3>
-                                    <div style={{ fontSize: '0.75rem', color: '#888', fontWeight: 600 }}>{eventTitle}</div>
+                                <div style={{ overflow: 'hidden' }}>
+                                    <h3 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 900, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {t('hub.communityTitle')}
+                                    </h3>
+                                    <div style={{ fontSize: '0.65rem', color: '#888', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {eventTitle}
+                                    </div>
                                 </div>
                             </div>
                             <button
                                 onClick={() => setIsOpen(false)}
-                                style={{ background: '#f5f5f5', border: 'none', width: '35px', height: '35px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#666' }}
+                                style={{
+                                    background: '#f5f5f5',
+                                    border: 'none',
+                                    width: '30px',
+                                    height: '30px',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    color: '#666'
+                                }}
                             >
-                                <X size={18} />
+                                <X size={16} />
                             </button>
                         </div>
 
@@ -274,33 +307,52 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
                                             {!isMe && !showHeader && <div style={{ width: '35px' }} />}
 
                                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: isMe ? 'flex-end' : 'flex-start' }}>
-                                                {showHeader && !isMe && (
-                                                    <div style={{ fontSize: '0.75rem', fontWeight: 800, marginBottom: '4px', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                        {msg.sender.name} {msg.sender.businessName && <span style={{ fontWeight: 400, opacity: 0.7 }}>| {msg.sender.businessName}</span>}
+                                                {showHeader && (
+                                                    <div style={{
+                                                        fontSize: '0.7rem',
+                                                        fontWeight: 900,
+                                                        marginBottom: '3px',
+                                                        color: isMe ? primaryColor : (msg.sender._id === creatorId ? primaryColor : '#666'),
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px',
+                                                        marginLeft: isMe ? '0' : '4px',
+                                                        marginRight: isMe ? '4px' : '0'
+                                                    }}>
+                                                        {isMe ? (t('hub.salaDeEventos.me') || 'Eu') : msg.sender.name}
                                                         {msg.sender.isVerified && <PremiumBadge type="verified" size="sm" showLabel={false} />}
-                                                        {msg.sender._id === creatorId && <span style={{ fontSize: '0.6rem', background: 'var(--gold-gradient)', color: '#000', padding: '1px 5px', borderRadius: '4px', fontWeight: 900 }}>MENTOR</span>}
-                                                        {msg.sender.role === 'admin' && msg.sender._id !== creatorId && <span style={{ fontSize: '0.6rem', background: '#000', color: '#fff', padding: '1px 5px', borderRadius: '4px' }}>{t('common.badges.admin').toUpperCase()}</span>}
-                                                    </div>
-                                                )}
-                                                {showHeader && isMe && msg.sender._id === creatorId && (
-                                                    <div style={{ fontSize: '0.75rem', fontWeight: 800, marginBottom: '4px', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                        <span style={{ fontSize: '0.6rem', background: 'var(--gold-gradient)', color: '#000', padding: '1px 5px', borderRadius: '4px', fontWeight: 900 }}>MENTOR</span>
+                                                        {(msg.sender._id === creatorId || msg.sender.role === 'admin') && (
+                                                            <span style={{
+                                                                fontSize: '0.6rem',
+                                                                background: primaryColor,
+                                                                color: '#fff',
+                                                                padding: '0px 4px',
+                                                                borderRadius: '3px',
+                                                                fontWeight: 900,
+                                                                height: '14px',
+                                                                display: 'flex',
+                                                                alignItems: 'center'
+                                                            }}>
+                                                                {msg.sender._id === creatorId ? 'MENTOR' : 'ADMIN'}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 )}
                                                 <div style={{
-                                                    padding: '12px 16px',
-                                                    borderRadius: isMe ? '18px 18px 2px 18px' : '18px 18px 18px 2px',
+                                                    padding: '8px 12px',
+                                                    borderRadius: isMe ? '16px 16px 2px 16px' : '16px 16px 16px 2px',
                                                     background: isMe ? primaryColor : '#fff',
                                                     color: isMe ? '#fff' : '#111',
-                                                    boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
+                                                    boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
                                                     border: isMe ? 'none' : '1px solid #f0f0f0',
-                                                    fontSize: '0.95rem',
-                                                    lineHeight: '1.5',
-                                                    wordBreak: 'break-word'
+                                                    fontSize: '0.85rem',
+                                                    lineHeight: '1.4',
+                                                    wordBreak: 'break-word',
+                                                    fontWeight: 600
                                                 }}>
                                                     {msg.text}
                                                 </div>
-                                                <div style={{ fontSize: '0.65rem', color: '#bbb', marginTop: '4px', fontWeight: 600 }}>
+                                                <div style={{ fontSize: '0.6rem', color: '#bbb', marginTop: '2px', fontWeight: 600 }}>
                                                     {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </div>
                                             </div>
@@ -312,44 +364,33 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
                         </div>
 
                         {/* Input Area */}
-                        <div style={{ padding: '20px', background: '#fff', borderTop: '1px solid #f0f0f0' }}>
+                        <div style={{ padding: '12px 16px', background: '#fff', borderTop: '1px solid #f0f0f0' }}>
                             {(!isApproved && currentUser?.role?.toLowerCase() !== 'admin' && currentUser?.role?.toLowerCase() !== 'superadmin') ? (
-                                <div style={{ padding: '20px', background: '#fff8f0', border: '1px solid #ffe8cc', borderRadius: '16px', textAlign: 'center' }}>
-                                    <div style={{ color: '#f59e0b', marginBottom: '8px' }}><Lock size={20} style={{ margin: '0 auto' }} /></div>
-                                    <h4 style={{ margin: '0 0 5px', fontSize: '0.9rem', fontWeight: 800 }}>{t('hub.chatLockedTitle')}</h4>
-                                    <p style={{ margin: 0, fontSize: '0.8rem', color: '#666', lineHeight: 1.4 }}>
-                                        {!currentUser ? (
-                                            <>
-                                                {t('hub.chatLoginRequired')}
-                                                <div style={{ marginTop: '12px' }}>
-                                                    <button
-                                                        onClick={() => window.location.href = `/register?role=participant&redirect=${encodeURIComponent(window.location.pathname)}`}
-                                                        style={{ background: primaryColor, color: '#fff', border: 'none', padding: '10px 24px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', boxShadow: `0 4px 15px ${primaryColor}40` }}
-                                                    >
-                                                        {t('auth.registerNow')}
-                                                    </button>
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <>
-                                                {t('hub.chatSubscribersOnly')}
-                                                <div style={{ marginTop: '12px' }}>
-                                                    <p style={{ fontSize: '0.75rem', color: '#888' }}>
-                                                        {t('hub.chatEnrollPrompt')}
-                                                    </p>
-                                                </div>
-                                            </>
-                                        )}
+                                <div style={{ padding: '15px', background: '#fff8f0', border: '1px solid #ffe8cc', borderRadius: '16px', textAlign: 'center' }}>
+                                    <div style={{ color: '#f59e0b', marginBottom: '5px' }}><Lock size={16} style={{ margin: '0 auto' }} /></div>
+                                    <h4 style={{ margin: '0 0 3px', fontSize: '0.8rem', fontWeight: 800 }}>{t('hub.chatLockedTitle')}</h4>
+                                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#666', lineHeight: 1.3 }}>
+                                        {!currentUser ? t('hub.chatLoginRequired') : t('hub.chatSubscribersOnly')}
                                     </p>
                                 </div>
                             ) : (
-                                <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: '10px' }}>
+                                <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: '8px' }}>
                                     <input
                                         type="text"
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         placeholder={t('hub.chatPlaceholder')}
-                                        style={{ flex: 1, padding: '14px 20px', borderRadius: '14px', border: '1px solid #eee', background: '#f9f9f9', fontSize: '0.9rem', outline: 'none', transition: '0.2s' }}
+                                        style={{
+                                            flex: 1,
+                                            padding: '10px 14px',
+                                            borderRadius: '12px',
+                                            border: '1px solid #eee',
+                                            background: '#f9f9f9',
+                                            fontSize: '0.85rem',
+                                            outline: 'none',
+                                            transition: '0.2s',
+                                            fontWeight: 600
+                                        }}
                                         onFocus={(e) => e.target.style.borderColor = primaryColor}
                                         onBlur={(e) => e.target.style.borderColor = '#eee'}
                                     />
@@ -359,9 +400,9 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
                                         disabled={!newMessage.trim()}
                                         type="submit"
                                         style={{
-                                            width: '50px',
-                                            height: '50px',
-                                            borderRadius: '14px',
+                                            width: '40px',
+                                            height: '40px',
+                                            borderRadius: '12px',
                                             background: newMessage.trim() ? primaryColor : '#f5f5f5',
                                             color: newMessage.trim() ? '#fff' : '#ccc',
                                             border: 'none',
@@ -371,7 +412,7 @@ export default function CommunityChat({ formId, isApproved, primaryColor, eventT
                                             cursor: newMessage.trim() ? 'pointer' : 'default'
                                         }}
                                     >
-                                        <Send size={20} />
+                                        <Send size={16} />
                                     </motion.button>
                                 </form>
                             )}

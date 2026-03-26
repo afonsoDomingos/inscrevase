@@ -29,6 +29,7 @@ import { stripeService } from '@/lib/stripeService';
 import { lessonService } from '@/lib/lessonService';
 import { motion, AnimatePresence } from 'framer-motion';
 import TableScrollWrapper from '../common/TableScrollWrapper';
+import Tooltip from '../common/Tooltip';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import { toast } from 'sonner';
@@ -305,19 +306,20 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                         exit={{ y: 100, opacity: 0 }}
                         style={{
                             position: 'fixed',
-                            bottom: '2rem',
+                            bottom: '1.5rem',
                             left: '50%',
                             transform: 'translateX(-50%)',
-                            background: '#000',
-                            padding: '1rem 2rem',
-                            borderRadius: '16px',
+                            background: '#0a0a0a',
+                            padding: '0.75rem 1.5rem',
+                            borderRadius: '20px',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '2rem',
+                            gap: '1.5rem',
                             zIndex: 2500,
-                            boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-                            border: '1px solid #FFD700',
-                            color: '#fff'
+                            boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+                            border: '1px solid rgba(212,175,55,0.4)',
+                            color: '#fff',
+                            backdropFilter: 'blur(10px)'
                         }}
                     >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -333,25 +335,25 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                             <button
                                 onClick={() => handleBulkAction('approved')}
                                 disabled={isBulkLoading}
-                                style={{ background: '#38a169', color: '#fff', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}
+                                style={{ background: '#10b981', color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '10px', cursor: 'pointer', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', transition: 'all 0.2s' }}
                             >
-                                {isBulkLoading ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle size={16} />}
+                                {isBulkLoading ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle size={14} />}
                                 {t('events.submissions.approve') || 'Aprovar'}
                             </button>
                             <button
                                 onClick={() => handleBulkAction('rejected')}
                                 disabled={isBulkLoading}
-                                style={{ background: '#e53e3e', color: '#fff', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}
+                                style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '10px', cursor: 'pointer', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', transition: 'all 0.2s' }}
                             >
-                                <XCircle size={16} />
+                                <XCircle size={14} />
                                 {t('events.submissions.reject') || 'Rejeitar'}
                             </button>
                             <button
                                 onClick={() => handleBulkAction('delete')}
                                 disabled={isBulkLoading}
-                                style={{ background: 'transparent', color: '#ffcccb', border: '1px solid #ffcccb', padding: '0.6rem 1.2rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}
+                                style={{ background: 'transparent', color: '#ffcccb', border: '1px solid rgba(255,204,203,0.3)', padding: '0.5rem 1rem', borderRadius: '10px', cursor: 'pointer', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', transition: 'all 0.2s' }}
                             >
-                                <Trash2 size={16} />
+                                <Trash2 size={14} />
                                 {t('common.delete') || 'Excluir'}
                             </button>
                         </div>
@@ -368,30 +370,33 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
             {/* Filters */}
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: '200px', position: 'relative' }}>
-                    <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
+                    <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
                     <input
                         type="text"
                         placeholder={t('events.submissions.searchPlaceholder')}
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                         className="input-luxury"
-                        style={{ paddingLeft: '2.5rem' }}
+                        style={{ paddingLeft: '2.5rem', height: '42px', fontSize: '0.9rem' }}
                     />
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '2px', background: 'var(--paper)', padding: '3px', borderRadius: '14px', border: '1px solid var(--border)' }}>
                     {(['all', 'pending', 'approved', 'rejected'] as const).map(status => (
                         <button
                             key={status}
                             onClick={() => setFilterStatus(status)}
                             style={{
-                                padding: '0.6rem 1.2rem',
-                                borderRadius: '8px',
-                                border: '1px solid #eee',
-                                background: filterStatus === status ? '#000' : '#fff',
-                                color: filterStatus === status ? '#FFD700' : '#666',
+                                padding: '0.5rem 1rem',
+                                borderRadius: '11px',
+                                background: filterStatus === status ? 'var(--gold-gradient)' : 'transparent',
+                                color: filterStatus === status ? '#000' : '#888',
+                                border: 'none',
                                 cursor: 'pointer',
-                                fontWeight: 600,
-                                textTransform: 'capitalize'
+                                fontWeight: filterStatus === status ? 800 : 600,
+                                fontSize: '0.8rem',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                transition: 'all 0.2s'
                             }}
                         >
                             {status === 'all' ? t('events.submissions.all') : status === 'pending' ? t('events.submissions.pending') : status === 'approved' ? t('events.submissions.approved') : t('events.submissions.rejected')}
@@ -409,10 +414,10 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                 ) : (
                     <>
                         <TableScrollWrapper>
-                            <table style={{ minWidth: '1200px', width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                            <table style={{ minWidth: '1200px', width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.85rem' }}>
                                 <thead>
-                                    <tr style={{ background: '#f8f9fa', textAlign: 'left', fontSize: '0.75rem', color: '#666' }}>
-                                        <th style={{ padding: '0.6rem 0.8rem', width: '40px' }}>
+                                    <tr style={{ background: 'rgba(0,0,0,0.02)', textAlign: 'left', fontSize: '0.7rem', color: '#666' }}>
+                                        <th style={{ padding: '0.75rem 1rem', width: '40px', borderBottom: '1px solid var(--border)' }}>
                                             <input
                                                 type="checkbox"
                                                 checked={selectedIds.length === paginatedSubmissions.length && paginatedSubmissions.length > 0}
@@ -420,21 +425,29 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                                 style={{ cursor: 'pointer' }}
                                             />
                                         </th>
-                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '150px' }}>{t('events.submissions.registrant')}</th>
-                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '110px' }}>{t('events.submissions.contact')}</th>
-                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '130px' }}>{t('events.submissions.event')}</th>
-                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '100px' }}>{t('events.submissions.date')}</th>
-                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '100px' }}>{t('events.submissions.proof')}</th>
-                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '90px' }}>{t('events.submissions.status')}</th>
-                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '100px' }}>{t('events.submissions.progress') || 'Progresso'}</th>
-                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '120px', textAlign: 'center' }}>{t('events.submissions.registration')}</th>
-                                        <th style={{ padding: '0.6rem 0.8rem', minWidth: '160px', textAlign: 'right' }}>{t('events.submissions.actions')}</th>
+                                        <th style={{ padding: '0.75rem 1rem', minWidth: '150px', borderBottom: '1px solid var(--border)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 800 }}>{t('events.submissions.registrant')}</th>
+                                        <th style={{ padding: '0.75rem 1rem', minWidth: '110px', borderBottom: '1px solid var(--border)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 800 }}>{t('events.submissions.contact')}</th>
+                                        <th style={{ padding: '0.75rem 1rem', minWidth: '130px', borderBottom: '1px solid var(--border)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 800 }}>{t('events.submissions.event')}</th>
+                                        <th style={{ padding: '0.75rem 1rem', minWidth: '100px', borderBottom: '1px solid var(--border)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 800 }}>{t('events.submissions.date')}</th>
+                                        <th style={{ padding: '0.75rem 1rem', minWidth: '100px', borderBottom: '1px solid var(--border)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 800 }}>
+                                            <Tooltip content="Documento que comprova o pagamento">
+                                                {t('events.submissions.proof')}
+                                            </Tooltip>
+                                        </th>
+                                        <th style={{ padding: '0.75rem 1rem', minWidth: '90px', borderBottom: '1px solid var(--border)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 800 }}>{t('events.submissions.status')}</th>
+                                        <th style={{ padding: '0.75rem 1rem', minWidth: '100px', borderBottom: '1px solid var(--border)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 800 }}>{t('events.submissions.progress') || 'Progresso'}</th>
+                                        <th style={{ padding: '0.75rem 1rem', minWidth: '100px', borderBottom: '1px solid var(--border)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 800, textAlign: 'center' }}>{t('events.submissions.registration')}</th>
+                                        <th style={{ padding: '0.75rem 1rem', minWidth: '160px', borderBottom: '1px solid var(--border)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 800, textAlign: 'right' }}>
+                                            <Tooltip content="Gerenciar inscrições">
+                                                {t('events.submissions.actions')}
+                                            </Tooltip>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {paginatedSubmissions.map(submission => (
-                                        <tr key={submission._id} style={{ borderBottom: '1px solid #eee', background: selectedIds.includes(submission._id) ? '#fffdf0' : 'transparent' }}>
-                                            <td style={{ padding: '0.6rem 0.8rem' }}>
+                                        <tr key={submission._id} style={{ borderBottom: '1px solid var(--border)', background: selectedIds.includes(submission._id) ? 'rgba(212,175,55,0.05)' : 'transparent', transition: 'background 0.2s' }}>
+                                            <td style={{ padding: '0.6rem 1rem' }}>
                                                 <input
                                                     type="checkbox"
                                                     checked={selectedIds.includes(submission._id)}
@@ -442,11 +455,11 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                                     style={{ cursor: 'pointer' }}
                                                 />
                                             </td>
-                                            <td style={{ padding: '0.6rem 0.8rem' }}>
-                                                <div style={{ fontWeight: 700, color: '#000', fontSize: '0.9rem' }}>{getMainIdentifier(submission.data)}</div>
-                                                <div style={{ fontSize: '0.7rem', color: '#666' }}>{getEmailIdentifier(submission.data) || '---'}</div>
+                                            <td style={{ padding: '0.6rem 1rem' }}>
+                                                <div style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.85rem' }}>{getMainIdentifier(submission.data)}</div>
+                                                <div style={{ fontSize: '0.7rem', color: '#666', opacity: 0.8 }}>{getEmailIdentifier(submission.data) || '---'}</div>
                                             </td>
-                                            <td style={{ padding: '0.6rem 0.8rem' }}>
+                                            <td style={{ padding: '0.6rem 1rem' }}>
                                                 <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#333' }}>
                                                     {getPhoneIdentifier(submission.data) || '---'}
                                                 </div>
@@ -455,46 +468,60 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                                 <div style={{ fontSize: '0.8rem', fontWeight: 600 }}>{submission.form.title}</div>
                                                 <div style={{ fontSize: '0.65rem', color: '#999' }}>/{submission.form.slug}</div>
                                             </td>
-                                            <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.8rem', color: '#666' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                    <Calendar size={12} /> {formatDate(submission.submittedAt)}
+                                            <td style={{ padding: '0.6rem 1rem', fontSize: '0.8rem', color: '#666' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                                                    <Calendar size={14} style={{ color: '#999' }} /> {formatDate(submission.submittedAt)}
                                                 </div>
                                             </td>
-                                            <td style={{ padding: '0.6rem 0.8rem' }}>
+                                            <td style={{ padding: '0.6rem 1rem' }}>
                                                 {submission.paymentProof ? (
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                                         <button
                                                             onClick={() => setSelectedProof(submission.paymentProof!)}
-                                                            style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '0.4rem 0.8rem', borderRadius: '6px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontSize: '0.8rem' }}
+                                                            className="luxury-card"
+                                                            style={{
+                                                                display: 'flex', alignItems: 'center', gap: '6px',
+                                                                padding: '0.35rem 0.75rem', borderRadius: '8px',
+                                                                border: '1px solid var(--border)', background: 'var(--paper)',
+                                                                cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700,
+                                                                color: 'var(--foreground)'
+                                                            }}
                                                         >
-                                                            <Eye size={14} /> {t('events.submissions.view')}
+                                                            <Eye size={14} style={{ color: '#D4AF37' }} /> {t('events.submissions.view')}
                                                         </button>
                                                         {submission.aiAnalysis ? (
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.65rem', fontWeight: 800, color: submission.aiAnalysis.isValid ? '#10b981' : '#ef4444' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.65rem', fontWeight: 800, color: submission.aiAnalysis.isValid ? '#10b981' : '#ef4444', paddingLeft: '4px' }}>
                                                                 <Sparkles size={10} /> IA: {submission.aiAnalysis.isValid ? t('events.submissions.aiStatusValid') : t('events.submissions.aiStatusSuspect')}
                                                             </div>
                                                         ) : (
                                                             <button
                                                                 disabled={analyzingId === submission._id}
                                                                 onClick={() => handleAnalyzeReceipt(submission._id)}
-                                                                style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.65rem', fontWeight: 800, color: '#D4AF37', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                                                style={{
+                                                                    display: 'flex', alignItems: 'center', gap: '6px',
+                                                                    fontSize: '0.65rem', fontWeight: 800, color: '#D4AF37',
+                                                                    background: 'none', border: 'none', cursor: 'pointer',
+                                                                    padding: '0 4px', opacity: analyzingId === submission._id ? 0.6 : 1
+                                                                }}
                                                             >
-                                                                {analyzingId === submission._id ? <Loader2 size={10} className="animate-spin" /> : <Sparkles size={10} />} {t('events.submissions.analyzeAi')}
+                                                                {analyzingId === submission._id ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />} {t('events.submissions.analyzeAi')}
                                                             </button>
                                                         )}
                                                     </div>
                                                 ) : (
-                                                    <span style={{ color: '#999', fontSize: '0.8rem' }}>{t('events.submissions.noAttachment')}</span>
+                                                    <span style={{ color: '#bbb', fontSize: '0.75rem', fontStyle: 'italic' }}>{t('events.submissions.noAttachment')}</span>
                                                 )}
                                             </td>
-                                            <td style={{ padding: '1rem' }}>
+                                            <td style={{ padding: '0.6rem 1rem' }}>
                                                 <span style={{
-                                                    padding: '0.3rem 0.6rem',
-                                                    borderRadius: '20px',
-                                                    fontSize: '0.7rem',
-                                                    fontWeight: 700,
-                                                    background: submission.paymentStatus === 'refunded' ? '#71809615' : submission.status === 'approved' ? '#38a16915' : submission.status === 'rejected' ? '#e53e3e15' : '#d69e2e15',
-                                                    color: submission.paymentStatus === 'refunded' ? '#718096' : submission.status === 'approved' ? '#38a169' : submission.status === 'rejected' ? '#e53e3e' : '#d69e2e'
+                                                    padding: '0.25rem 0.6rem',
+                                                    borderRadius: '10px',
+                                                    fontSize: '0.65rem',
+                                                    fontWeight: 800,
+                                                    textTransform: 'uppercase',
+                                                    letterSpacing: '0.5px',
+                                                    background: submission.paymentStatus === 'refunded' ? 'rgba(113, 128, 150, 0.1)' : submission.status === 'approved' ? 'rgba(16, 185, 129, 0.1)' : submission.status === 'rejected' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(212, 175, 55, 0.1)',
+                                                    color: submission.paymentStatus === 'refunded' ? '#718096' : submission.status === 'approved' ? '#10b981' : submission.status === 'rejected' ? '#ef4444' : '#D4AF37'
                                                 }}>
                                                     {submission.paymentStatus === 'refunded' ? t('events.submissions.refundedLabel') : submission.status === 'approved' ? t('events.submissions.approvedLabel') : submission.status === 'rejected' ? t('events.submissions.rejectedLabel') : t('events.submissions.pendingLabel')}
                                                 </span>
@@ -537,120 +564,140 @@ export default function SubmissionManagement({ formId, onAction }: SubmissionMan
                                                     <span style={{ fontSize: '0.7rem', color: '#ccc' }}>---</span>
                                                 )}
                                             </td>
-                                            <td style={{ padding: '1rem', textAlign: 'center' }}>
-                                                <div style={{ display: 'flex', gap: '5px', justifyContent: 'center' }}>
-                                                    <button
-                                                        onClick={() => setSelectedSubmission(submission)}
-                                                        style={{
-                                                            display: 'inline-flex', alignItems: 'center', gap: '5px',
-                                                            padding: '0.5rem 1rem', borderRadius: '8px',
-                                                            border: 'none', background: '#f4f4f4',
-                                                            color: '#000', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 800
-                                                        }}
-                                                    >
-                                                        <Eye size={14} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleViewProgress(submission._id)}
-                                                        disabled={submission.status !== 'approved'}
-                                                        title={submission.status !== 'approved' ? t('events.submissions.approveToViewProgress') : t('events.submissions.viewProgress')}
-                                                        style={{
-                                                            display: 'inline-flex', alignItems: 'center', gap: '5px',
-                                                            padding: '0.5rem 1rem', borderRadius: '8px',
-                                                            border: '1px solid var(--gold-active)', background: 'transparent',
-                                                            color: '#D4AF37', cursor: submission.status !== 'approved' ? 'not-allowed' : 'pointer', fontSize: '0.75rem', fontWeight: 800,
-                                                            opacity: submission.status !== 'approved' ? 0.3 : 1
-                                                        }}
-                                                    >
-                                                        {loadingProgress ? <Loader2 size={14} className="animate-spin" /> : <BarChart3 size={14} />} {t('events.submissions.progress')}
-                                                    </button>
-                                                    <a
-                                                        href={`/hub/${submission._id}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        style={{
-                                                            display: 'inline-flex', alignItems: 'center', gap: '5px',
-                                                            padding: '0.5rem 1rem', borderRadius: '8px',
-                                                            border: 'none', background: '#000',
-                                                            color: '#FFD700', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 800,
-                                                            boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-                                                            textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                            textDecoration: 'none'
-                                                        }}
-                                                    >
-                                                        <ExternalLink size={14} /> HUB
-                                                    </a>
+                                            <td style={{ padding: '0.6rem 1rem', textAlign: 'center' }}>
+                                                <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
+                                                    <Tooltip content={t('events.submissions.viewDetails')}>
+                                                        <button
+                                                            onClick={() => setSelectedSubmission(submission)}
+                                                            className="luxury-card"
+                                                            style={{
+                                                                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                                                width: '32px', height: '32px', borderRadius: '8px',
+                                                                border: '1px solid var(--border)', background: 'var(--paper)',
+                                                                color: 'var(--foreground)', cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            <Eye size={14} />
+                                                        </button>
+                                                    </Tooltip>
+                                                    <Tooltip content={t('events.submissions.viewProgress')}>
+                                                        <button
+                                                            onClick={() => handleViewProgress(submission._id)}
+                                                            disabled={submission.status !== 'approved'}
+                                                            className="luxury-card"
+                                                            style={{
+                                                                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                                                width: '32px', height: '32px', borderRadius: '8px',
+                                                                border: '1px solid var(--border)', background: submission.status === 'approved' ? 'rgba(212,175,55,0.05)' : 'var(--paper)',
+                                                                color: '#D4AF37', cursor: submission.status !== 'approved' ? 'not-allowed' : 'pointer',
+                                                                opacity: submission.status !== 'approved' ? 0.3 : 1
+                                                            }}
+                                                        >
+                                                            {loadingProgress ? <Loader2 size={14} className="animate-spin" /> : <BarChart3 size={14} />}
+                                                        </button>
+                                                    </Tooltip>
+                                                    <Tooltip content={t('common.viewEventHub')}>
+                                                        <a
+                                                            href={`/hub/${submission._id}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="luxury-card"
+                                                            style={{
+                                                                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                                                width: '32px', height: '32px', borderRadius: '8px',
+                                                                border: '1px solid var(--border)', background: 'var(--foreground)',
+                                                                color: 'var(--font-gold)', cursor: 'pointer',
+                                                                textDecoration: 'none'
+                                                            }}
+                                                        >
+                                                            <ExternalLink size={14} />
+                                                        </a>
+                                                    </Tooltip>
                                                 </div>
                                             </td>
-                                            <td style={{ padding: '1rem', textAlign: 'right' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', flexWrap: 'wrap' }}>
-                                                    <button
-                                                        onClick={() => handleUpdateStatus(submission._id, 'approved')}
-                                                        title={t('events.submissions.approveTooltip')}
-                                                        disabled={submission.status === 'approved'}
-                                                        style={{ padding: '0.4rem', borderRadius: '6px', border: 'none', background: submission.status === 'approved' ? '#eee' : '#38a169', color: '#fff', cursor: submission.status === 'approved' ? 'default' : 'pointer' }}
-                                                    >
-                                                        <CheckCircle size={16} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleUpdateStatus(submission._id, 'rejected')}
-                                                        title={t('events.submissions.rejectTooltip')}
-                                                        disabled={submission.status === 'rejected'}
-                                                        style={{ padding: '0.4rem', borderRadius: '6px', border: 'none', background: submission.status === 'rejected' ? '#eee' : '#e53e3e', color: '#fff', cursor: submission.status === 'rejected' ? 'default' : 'pointer' }}
-                                                    >
-                                                        <XCircle size={16} />
-                                                    </button>
-                                                    {submission.status === 'approved' && (
+                                            <td style={{ padding: '0.6rem 1rem', textAlign: 'right' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '4px' }}>
+                                                    {submission.paymentStatus === 'paid' && submission.status !== 'approved' && (
+                                                        <Tooltip content={t('events.submissions.approve')}>
+                                                            <button
+                                                                onClick={() => handleUpdateStatus(submission._id, 'approved')}
+                                                                style={{ padding: '6px', borderRadius: '8px', border: 'none', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', cursor: 'pointer' }}
+                                                            >
+                                                                <CheckCircle size={16} />
+                                                            </button>
+                                                        </Tooltip>
+                                                    )}
+                                                    <Tooltip content={t('events.submissions.rejectTooltip')}>
                                                         <button
-                                                            onClick={() => {
-                                                                generateCertificate({
-                                                                    participantName: String(getMainIdentifier(submission.data)),
-                                                                    eventTitle: submission.form.title,
-                                                                    date: new Date(submission.submittedAt).toLocaleDateString(),
-                                                                    mentorName: 'Mentor Oficial',
-                                                                    id: submission._id
-                                                                });
+                                                            onClick={() => handleUpdateStatus(submission._id, 'rejected')}
+                                                            style={{
+                                                                padding: '6px',
+                                                                borderRadius: '8px',
+                                                                border: 'none',
+                                                                background: submission.status === 'rejected' ? 'rgba(0,0,0,0.03)' : 'rgba(239, 68, 68, 0.1)',
+                                                                color: submission.status === 'rejected' ? '#ccc' : '#ef4444',
+                                                                cursor: submission.status === 'rejected' ? 'default' : 'pointer'
                                                             }}
-                                                            title={t('events.submissions.downloadCertificate')}
-                                                            style={{ padding: '0.4rem', borderRadius: '6px', border: 'none', background: '#D4AF37', color: '#000', cursor: 'pointer' }}
                                                         >
-                                                            <Award size={16} />
+                                                            <XCircle size={16} />
                                                         </button>
+                                                    </Tooltip>
+                                                    {submission.status === 'approved' && (
+                                                        <Tooltip content={t('events.submissions.downloadCertificate')}>
+                                                            <button
+                                                                onClick={() => {
+                                                                    generateCertificate({
+                                                                        participantName: String(getMainIdentifier(submission.data)),
+                                                                        eventTitle: submission.form.title,
+                                                                        date: new Date(submission.submittedAt).toLocaleDateString(),
+                                                                        mentorName: 'Mentor Oficial',
+                                                                        id: submission._id
+                                                                    });
+                                                                }}
+                                                                style={{ padding: '6px', borderRadius: '8px', border: 'none', background: 'rgba(212, 175, 55, 0.1)', color: '#D4AF37', cursor: 'pointer' }}
+                                                            >
+                                                                <Download size={16} />
+                                                            </button>
+                                                        </Tooltip>
                                                     )}
                                                     {submission.paymentMethod === 'stripe' && submission.paymentStatus !== 'refunded' && (
-                                                        <button
-                                                            onClick={() => handleRefund(submission._id)}
-                                                            title={t('events.submissions.refunding')}
-                                                            style={{ padding: '0.4rem', borderRadius: '6px', border: '1px solid #718096', background: '#fff', color: '#718096', cursor: 'pointer' }}
-                                                        >
-                                                            <RotateCcw size={16} />
-                                                        </button>
+                                                        <Tooltip content={t('events.submissions.refunding')}>
+                                                            <button
+                                                                onClick={() => handleRefund(submission._id)}
+                                                                style={{ padding: '6px', borderRadius: '8px', border: 'none', background: 'rgba(113, 128, 150, 0.1)', color: '#718096', cursor: 'pointer' }}
+                                                            >
+                                                                <RotateCcw size={16} />
+                                                            </button>
+                                                        </Tooltip>
                                                     )}
                                                     {submission.certificateStatus === 'requested' && (
-                                                        <div style={{ display: 'flex', gap: '5px' }}>
-                                                            <button
-                                                                onClick={() => handleUpdateCertificateStatus(submission._id, 'approved')}
-                                                                title="Aprovar Certificado"
-                                                                style={{ padding: '0.4rem', borderRadius: '6px', border: 'none', background: '#CFB53B', color: '#fff', cursor: 'pointer' }}
-                                                            >
-                                                                <Award size={16} />
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleUpdateCertificateStatus(submission._id, 'none')}
-                                                                title="Rejeitar Certificado"
-                                                                style={{ padding: '0.4rem', borderRadius: '6px', border: '1px solid #eee', background: '#fff', color: '#666', cursor: 'pointer' }}
-                                                            >
-                                                                <XCircle size={16} />
-                                                            </button>
+                                                        <div style={{ display: 'flex', gap: '4px' }}>
+                                                            <Tooltip content="Aprovar Certificado">
+                                                                <button
+                                                                    onClick={() => handleUpdateCertificateStatus(submission._id, 'approved')}
+                                                                    style={{ padding: '6px', borderRadius: '8px', border: 'none', background: 'rgba(207, 181, 59, 0.1)', color: '#CFB53B', cursor: 'pointer' }}
+                                                                >
+                                                                    <Award size={16} />
+                                                                </button>
+                                                            </Tooltip>
+                                                            <Tooltip content="Rejeitar Certificado">
+                                                                <button
+                                                                    onClick={() => handleUpdateCertificateStatus(submission._id, 'none')}
+                                                                    style={{ padding: '6px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.03)', color: '#666', cursor: 'pointer' }}
+                                                                >
+                                                                    <XCircle size={16} />
+                                                                </button>
+                                                            </Tooltip>
                                                         </div>
                                                     )}
-                                                    <button
-                                                        onClick={() => handleDelete(submission._id)}
-                                                        title={t('events.submissions.deleteSubmission')}
-                                                        style={{ padding: '0.4rem', borderRadius: '6px', border: '1px solid #ffcccb', background: '#fff', color: '#e53e3e', cursor: 'pointer' }}
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
+                                                    <Tooltip content={t('events.submissions.deleteSubmission')}>
+                                                        <button
+                                                            onClick={() => handleDelete(submission._id)}
+                                                            style={{ padding: '6px', borderRadius: '8px', border: 'none', background: 'rgba(239, 68, 68, 0.05)', color: '#ef4444', cursor: 'pointer' }}
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </Tooltip>
                                                 </div>
                                             </td>
                                         </tr>

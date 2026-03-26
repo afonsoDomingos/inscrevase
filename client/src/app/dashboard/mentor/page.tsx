@@ -23,7 +23,7 @@ import SmartInsights from '@/components/mentor/SmartInsights';
 import { SmartLinksManager } from '@/components/mentor/SmartLinksManager';
 import { useTranslate } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
-import LiveBoardContainer from '@/components/hub/liveboard/LiveBoardContainer';
+import SalaDeEventosContainer from '@/components/hub/liveboard/SalaDeEventosContainer';
 import { adService } from '@/lib/adService';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import { Pencil } from 'lucide-react';
@@ -40,6 +40,7 @@ import { marketingService, MarketingRequest } from '@/lib/marketingService';
 import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
 import AcademyView from '@/components/mentor/AcademyView';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
+import Tooltip from '@/components/common/Tooltip';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Plus,
@@ -61,18 +62,12 @@ import {
     Eye,
     Crown,
     Lock,
-    AlertCircle,
     Bell,
     Map,
     ChevronLeft,
     Menu,
     Newspaper,
     Video,
-    Award,
-    Briefcase,
-    Package,
-    Megaphone,
-    AlertTriangle,
     Trophy,
     ExternalLink,
     Monitor,
@@ -81,7 +76,13 @@ import {
     Share2,
     Clock,
     Info,
-    Play
+    Play,
+    Shield,
+    Package,
+    Megaphone,
+    ChevronDown,
+    TrendingUp,
+    Wallet
 } from 'lucide-react';
 import Image from 'next/image';
 import StripeConnect from '../../../components/StripeConnect';
@@ -92,8 +93,10 @@ import PlansSection from '@/components/common/PlansSection';
 import PremiumBadge from '@/components/common/PremiumBadge';
 import InternalBlogView from '@/components/common/InternalBlogView';
 import ThemeToggle from '@/components/common/ThemeToggle';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import CurrencySwitcher from '@/components/CurrencySwitcher';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard';
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard' | 'referral';
 
 import { Suspense } from 'react';
 
@@ -135,6 +138,21 @@ function MentorDashboardContent() {
     const [platformTutorials, setPlatformTutorials] = useState<Lesson[]>([]);
     const [selectedTutorial, setSelectedTutorial] = useState<Lesson | null>(null);
     const [isLabActive, setIsLabActive] = useState(false);
+    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+        "DASHBOARD": true,
+        "CONTEÚDO / PRODUTOS": true,
+        "PARTICIPANTES / GESTÃO": true,
+        "MARKETING / PROMOÇÃO": true,
+        "FINANCEIRO": true,
+        "CONTA / SISTEMA": true
+    });
+
+    const toggleSection = (title: string) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [title]: !prev[title]
+        }));
+    };
 
     const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'superadmin';
 
@@ -525,272 +543,258 @@ function MentorDashboardContent() {
             </AnimatePresence>
 
             {/* Sidebar */}
-            {/* Sidebar */}
             <aside style={{
-                width: isMobile ? '280px' : (isSidebarCollapsed ? '80px' : '280px'),
-                transform: isMobile ? (isMobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)') : 'none',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                background: 'var(--paper)',
-                color: 'var(--foreground)',
+                width: isSidebarCollapsed ? '80px' : '280px',
+                height: '100vh',
+                background: '#121212',
+                borderRight: '1px solid rgba(255, 215, 0, 0.1)',
+                position: 'fixed',
+                left: isMobile ? (isMobileSidebarOpen ? '0' : '-100%') : '0',
+                top: 0,
+                zIndex: 1000,
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                 display: 'flex',
                 flexDirection: 'column',
-                position: 'fixed',
-                height: '100vh',
-                left: 0,
-                top: 0,
-                zIndex: 2000,
-                boxShadow: isMobile && !isMobileSidebarOpen ? 'none' : '4px 0 20px rgba(0,0,0,0.2)',
-                overflowX: 'hidden'
+                boxShadow: '10px 0 30px rgba(0,0,0,0.5)',
+                overflow: 'hidden'
             }}>
-                <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid #333' }}>
+                <div style={{ padding: '2rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid rgba(255, 215, 0, 0.1)' }}>
                     {!isSidebarCollapsed && (
-                        <motion.h2
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: 'var(--foreground)', margin: 0 }}
-                        >
-                            Inscreva<span className="gold-text">.se</span>
-                        </motion.h2>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{
+                                fontWeight: 900,
+                                fontSize: '1.6rem',
+                                color: '#fff',
+                                letterSpacing: '-0.5px',
+                                fontFamily: 'var(--font-playfair)' // Using serif for the logo as in image
+                            }}>
+                                INSCREVA<span style={{ color: '#FFD700' }}>.SE</span>
+                            </span>
+                        </div>
                     )}
                     {!isMobile && (
                         <button
                             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                color: isSidebarCollapsed ? '#FFD700' : '#666',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                padding: '4px',
-                                transition: 'color 0.2s'
-                            }}
+                            style={{ background: 'rgba(255,215,0,0.1)', border: 'none', borderRadius: '8px', color: '#FFD700', padding: '6px', cursor: 'pointer', transition: 'all 0.3s' }}
+                            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,215,0,0.2)'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,215,0,0.1)'}
                         >
                             {isSidebarCollapsed ? <Menu size={24} /> : <ChevronLeft size={20} />}
                         </button>
                     )}
                 </div>
 
-                <nav style={{ padding: '1rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', scrollbarWidth: 'none' }}>
+                <nav
+                    className="luxury-scrollbar"
+                    style={{
+                        padding: '1rem 1.5rem',
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.5rem',
+                        overflowY: 'auto'
+                    }}>
                     {[
-                        { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
-                        { id: 'lessons', label: 'Aulas', icon: <Video size={20} /> },
-                        { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
-                        { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
-                        { id: 'services', label: t('dashboard.services'), icon: <Package size={20} /> },
-                        { id: 'submissions', label: t('dashboard.submissions'), icon: <Users size={20} /> },
-                        { id: 'ads', label: 'Anúncios', icon: <Megaphone size={20} /> },
-                        { id: 'smartlinks', label: 'Smartlinks', icon: <LinkIcon size={20} /> },
-                        { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
-                        { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
-                        { id: 'referral', label: 'Indicações & Impacto', icon: <Trophy size={20} /> },
-                        { id: 'marketing', label: 'Impulsionar Vendas', icon: <Zap size={20} /> },
-                        { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
-                        { id: 'liveboard', label: 'Live Board (Lab)', icon: <Monitor size={20} /> },
-                        { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
-                    ].map((item: { id: string; label: string; icon: React.ReactNode; link?: string }) => (
-                        <button
-                            key={item.id}
-                            id={`mentor-nav-${item.id}`}
-                            onClick={() => {
-                                if (item.link) {
-                                    router.push(item.link);
-                                } else if (item.id === 'referral') {
-                                    setIsReferralModalOpen(true);
-                                } else {
-                                    setActiveTab(item.id as Tab);
-                                    const params = new URLSearchParams(searchParams.toString());
-                                    params.set('tab', item.id);
-                                    router.push(`?${params.toString()}`, { scroll: false });
-                                }
-                            }}
-                            title={isSidebarCollapsed ? item.label : ''}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
-                                width: '100%',
-                                padding: '12px 16px',
-                                background: activeTab === item.id ? 'var(--gold-gradient)' : 'transparent',
-                                color: activeTab === item.id ? '#000' : '#aaa',
-                                border: 'none',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                                fontWeight: activeTab === item.id ? 700 : 500,
-                                position: 'relative', // Added for the active indicator
-                                overflow: 'hidden' // Added for the active indicator
-                            }}
-                        >
-                            {activeTab === item.id && (
-                                <motion.div
-                                    layoutId="active-indicator"
-                                    style={{
-                                        position: 'absolute',
-                                        left: 0,
-                                        width: '4px',
-                                        height: '24px',
-                                        background: '#FFD700',
-                                        borderTopRightRadius: '4px',
-                                        borderBottomRightRadius: '4px'
-                                    }}
-                                />
+                        {
+                            title: t('dashboard.sidebarGroups.dashboard') || "DASHBOARD",
+                            items: [{ id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> }]
+                        },
+                        {
+                            title: t('dashboard.sidebarGroups.content') || "CONTEÚDO / PRODUTOS",
+                            items: [
+                                { id: 'lessons', label: t('dashboard.menuItems.lessons') || 'Aulas', icon: <Video size={20} /> },
+                                { id: 'forms', label: t('dashboard.myEvents'), icon: <FileText size={20} /> },
+                                { id: 'blog', label: t('dashboard.blogArticles'), icon: <Newspaper size={20} /> },
+                                { id: 'services', label: t('dashboard.services'), icon: <Package size={20} /> },
+                                { id: 'liveboard', label: t('dashboard.menuItems.liveboard') || 'Sala de Eventos (Lab)', icon: <Monitor size={20} /> },
+                            ]
+                        },
+                        {
+                            title: t('dashboard.sidebarGroups.management') || "PARTICIPANTES / GESTÃO",
+                            items: [
+                                { id: 'submissions', label: t('dashboard.menuItems.submissions') || 'Inscrições', icon: <Users size={20} /> },
+                                { id: 'referral', label: t('dashboard.menuItems.referral') || 'Indicações & Impacto', icon: <Trophy size={20} /> },
+                            ]
+                        },
+                        {
+                            title: t('dashboard.sidebarGroups.marketing') || "MARKETING / PROMOÇÃO",
+                            items: [
+                                { id: 'ads', label: t('dashboard.menuItems.ads') || 'Anúncios', icon: <Megaphone size={20} /> },
+                                { id: 'smartlinks', label: t('dashboard.menuItems.smartlinks') || 'Smartlinks', icon: <LinkIcon size={20} /> },
+                                { id: 'marketing', label: t('dashboard.menuItems.boostSales') || 'Impulsionar Vendas', icon: <Zap size={20} /> },
+                            ]
+                        },
+                        {
+                            title: t('dashboard.sidebarGroups.finance') || "FINANCEIRO",
+                            items: [
+                                { id: 'earnings', label: t('dashboard.settings.earnings'), icon: <DollarSign size={20} /> },
+                                { id: 'reports', label: t('dashboard.reports'), icon: <PieChart size={20} /> },
+                            ]
+                        },
+                        {
+                            title: t('dashboard.sidebarGroups.account') || "CONTA / SISTEMA",
+                            items: [
+                                { id: 'plans', label: t('dashboard.finance.viewPlans'), icon: <Crown size={20} /> },
+                                { id: 'settings', label: t('dashboard.myAccount'), icon: <Settings size={20} /> },
+                            ]
+                        }
+                    ].map((section, idx) => (
+                        <div key={section.title} style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
+                            {idx > 0 && (
+                                <div style={{ height: '1px', background: 'rgba(255,215,0,0.15)', margin: '4px 16px 12px', width: 'auto' }} />
                             )}
-                            <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
                             {!isSidebarCollapsed && (
-                                <motion.span
-                                    initial={{ opacity: 0, width: 0 }}
-                                    animate={{ opacity: 1, width: 'auto' }}
-                                    style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}
+                                <div
+                                    onClick={() => toggleSection(section.title)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        padding: '0.5rem 0.75rem',
+                                        marginBottom: '0.5rem',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: 'rgba(255,255,255,0.3)',
+                                        fontWeight: 700,
+                                        fontSize: '0.75rem',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '1px',
+                                        cursor: 'pointer'
+                                    }}
                                 >
-                                    {item.label}
-                                </motion.span>
+                                    {section.title}
+                                    <motion.div
+                                        animate={{ rotate: expandedSections[section.title] ? 0 : -90 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <ChevronDown size={14} />
+                                    </motion.div>
+                                </div>
                             )}
-                            {!isSidebarCollapsed && (item.id === 'submissions' || item.id === 'certificates') && stats?.pendingCertificates && stats.pendingCertificates > 0 ? (
-                                <span style={{
-                                    marginLeft: 'auto',
-                                    background: activeTab === item.id ? '#000' : 'var(--gold-gradient)',
-                                    color: activeTab === item.id ? '#FFD700' : '#000',
-                                    fontSize: '0.65rem',
-                                    fontWeight: 900,
-                                    padding: '2px 6px',
-                                    borderRadius: '10px',
-                                    minWidth: '18px',
-                                    textAlign: 'center',
-                                    boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
-                                }}>
-                                    {stats.pendingCertificates}
-                                </span>
-                            ) : null}
-                            {isSidebarCollapsed && (item.id === 'submissions' || item.id === 'certificates') && stats?.pendingCertificates && stats.pendingCertificates > 0 && (
-                                <span style={{
-                                    position: 'absolute',
-                                    top: '8px',
-                                    right: '8px',
-                                    background: 'var(--gold-gradient)',
-                                    width: '8px',
-                                    height: '8px',
-                                    borderRadius: '50%',
-                                    border: '1.5px solid var(--paper)'
-                                }} />
-                            )}
-                        </button>
+
+                            <AnimatePresence initial={false}>
+                                {(isSidebarCollapsed || expandedSections[section.title]) && (
+                                    <motion.div
+                                        initial={isSidebarCollapsed ? false : { height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                                        style={{ overflow: 'hidden' }}
+                                    >
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                                            {section.items.map((item) => (
+                                                <Tooltip key={item.id} content={isSidebarCollapsed ? item.label : ""} position="right">
+                                                    <button
+                                                        id={`mentor-nav-${item.id}`}
+                                                        onClick={() => {
+                                                            setActiveTab(item.id as Tab);
+                                                            if (isMobile) setIsMobileSidebarOpen(false);
+                                                            const params = new URLSearchParams(searchParams.toString());
+                                                            params.set('tab', item.id);
+                                                            router.push(`?${params.toString()}`, { scroll: false });
+                                                        }}
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                                                            gap: '12px',
+                                                            padding: '0.75rem 1rem',
+                                                            width: isSidebarCollapsed ? 'auto' : 'calc(100% - 1rem)',
+                                                            margin: isSidebarCollapsed ? '0' : '0 0.5rem',
+                                                            borderRadius: '12px',
+                                                            border: 'none',
+                                                            background: activeTab === item.id ? '#FFD700' : 'transparent',
+                                                            color: activeTab === item.id ? '#000' : 'rgba(255,255,255,0.6)',
+                                                            fontWeight: activeTab === item.id ? 800 : 500,
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s ease',
+                                                            textAlign: 'left',
+                                                            fontSize: '0.9rem'
+                                                        }}
+                                                    >
+                                                        <div style={{ opacity: activeTab === item.id ? 1 : 0.7, minWidth: '24px', display: 'flex', justifyContent: 'center' }}>
+                                                            {item.icon}
+                                                        </div>
+                                                        {!isSidebarCollapsed && <span>{item.label}</span>}
+                                                    </button>
+                                                </Tooltip>
+                                            ))}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     ))}
 
-                    <button
-                        onClick={() => window.dispatchEvent(new Event('start-onboarding'))}
-                        title={isSidebarCollapsed ? t('dashboard.settings.guidedTour') : ""}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
-                            gap: '12px',
-                            padding: '0.75rem 1rem',
-                            width: '100%',
-                            borderRadius: '12px',
-                            border: 'none',
-                            background: 'transparent',
-                            color: '#FFD700',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            transition: 'all 0.3s ease',
-                            textAlign: 'left',
-                            fontSize: '0.95rem'
-                        }}
-                        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 215, 0, 0.1)'}
-                        onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
-                    >
-                        <Map size={20} />
-                        {!isSidebarCollapsed && t('dashboard.settings.guidedTour')}
-                    </button>
-
-                    {!isSidebarCollapsed && (
-                        <div style={{ marginTop: 'auto', padding: '1rem', background: 'rgba(255,215,0,0.05)', borderRadius: '15px', border: '1px solid rgba(255,215,0,0.1)' }}>
-                            <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{t('dashboard.settings.currentPlan')}</div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <Crown size={16} color={user.plan === 'enterprise' ? '#000' : '#FFD700'} />
-                                <span style={{ fontWeight: 800, fontSize: '0.9rem', color: '#fff', textTransform: 'capitalize' }}>
-                                    {user.plan || 'Free'}
-                                </span>
+                    <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {!isSidebarCollapsed && (
+                            <div style={{ padding: '1rem', background: 'rgba(255,215,0,0.05)', borderRadius: '15px', border: '1px solid rgba(255,215,0,0.1)', marginBottom: '8px' }}>
+                                <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{t('dashboard.settings.currentPlan')}</div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Crown size={16} color={user.plan === 'enterprise' ? '#000' : '#FFD700'} />
+                                    <span style={{ fontWeight: 800, fontSize: '0.9rem', color: '#fff' }}>{user.plan || 'Free'}</span>
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+
+                        <Tooltip content={isSidebarCollapsed ? t('dashboard.settings.guidedTour') : ""} position="right">
+                            <button
+                                onClick={() => window.dispatchEvent(new Event('start-onboarding'))}
+                                style={{ display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', padding: '0.75rem 1rem', width: '100%', borderRadius: '12px', border: 'none', background: 'transparent', color: '#FFD700', fontWeight: 600, cursor: 'pointer', transition: 'all 0.3s ease', fontSize: '0.9rem' }}
+                            >
+                                <Map size={20} />
+                                {!isSidebarCollapsed && t('dashboard.settings.guidedTour')}
+                            </button>
+                        </Tooltip>
+
+                        <Tooltip content={isSidebarCollapsed ? t('dashboard.support') : ""} position="right">
+                            <button
+                                onClick={() => setIsSupportOpen(true)}
+                                style={{ width: '100%', padding: '0.75rem 1rem', background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.2)', borderRadius: '12px', color: '#FFD700', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', position: 'relative', fontSize: '0.9rem' }}
+                            >
+                                <LifeBuoy size={20} />
+                                {!isSidebarCollapsed && t('dashboard.support')}
+                                {unreadCount > 0 && (
+                                    <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#ef4444', color: '#fff', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 700, border: '2px solid var(--paper)' }}>
+                                        {unreadCount > 9 ? '9+' : unreadCount}
+                                    </span>
+                                )}
+                            </button>
+                        </Tooltip>
+
+
+
+                        <Tooltip content={isSidebarCollapsed ? t('common.logout') : ""} position="right">
+                            <button
+                                onClick={() => authService.logout()}
+                                style={{ width: '100%', padding: '0.75rem 1rem', background: 'transparent', border: '1px solid rgba(229, 62, 62, 0.2)', borderRadius: '12px', color: '#e53e3e', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', fontSize: '0.9rem' }}
+                            >
+                                <LogOut size={20} />
+                                {!isSidebarCollapsed && t('common.logout')}
+                            </button>
+                        </Tooltip>
+                    </div>
                 </nav>
 
-                <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <button
-                        id="mentor-support-btn"
-                        onClick={() => setIsSupportOpen(true)}
-                        title={isSidebarCollapsed ? t('dashboard.support') : ""}
-                        style={{
-                            width: '100%',
-                            padding: '0.8rem',
-                            background: '#2a2a2a',
-                            border: '1px solid #FFD700',
-                            borderRadius: '12px',
-                            color: '#FFD700',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            fontWeight: 600,
-                            transition: 'all 0.2s',
-                            position: 'relative'
-                        }}
-                        onMouseOver={(e) => e.currentTarget.style.background = '#333'}
-                        onMouseOut={(e) => e.currentTarget.style.background = '#2a2a2a'}
-                    >
-                        <LifeBuoy size={18} />
-                        {!isSidebarCollapsed && t('dashboard.support')}
-                        {unreadCount > 0 && (
-                            <span style={{
-                                position: 'absolute',
-                                top: '-5px',
-                                right: '-5px',
-                                background: '#ef4444',
-                                color: '#fff',
-                                borderRadius: '50%',
-                                width: '20px',
-                                height: '20px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '0.7rem',
-                                fontWeight: 700,
-                                border: '2px solid #1a1a1a'
-                            }}>
-                                {unreadCount > 9 ? '9+' : unreadCount}
-                            </span>
-                        )}
-                    </button>
-
-
-                    <button
-                        onClick={() => authService.logout()}
-                        title={isSidebarCollapsed ? t('common.logout') : ""}
-                        style={{
-                            width: '100%',
-                            padding: '0.8rem',
-                            background: '#2a2a2a',
-                            border: '1px solid #333',
-                            borderRadius: '12px',
-                            color: '#e53e3e',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            fontWeight: 600,
-                            transition: 'all 0.2s'
-                        }}
-                    >
-                        <LogOut size={18} />
-                        {!isSidebarCollapsed && t('common.logout')}
-                    </button>
-                </div>
+                <style jsx>{`
+                    .custom-sidebar-scroll::-webkit-scrollbar {
+                        width: 4px;
+                    }
+                    .custom-sidebar-scroll::-webkit-scrollbar-track {
+                        background: transparent;
+                    }
+                    .custom-sidebar-scroll::-webkit-scrollbar-thumb {
+                        background: rgba(255, 215, 0, 0.2);
+                        border-radius: 10px;
+                    }
+                    .custom-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+                        background: rgba(255, 215, 0, 0.4);
+                    }
+                    .custom-sidebar-scroll {
+                        scrollbar-width: thin;
+                        scrollbar-color: rgba(255, 215, 0, 0.2) transparent;
+                    }
+                `}</style>
             </aside>
 
             {/* Main Content */}
@@ -811,54 +815,22 @@ function MentorDashboardContent() {
                         style={{
                             background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
                             border: '1px solid rgba(255, 215, 0, 0.3)',
-                            borderRadius: isMobile ? '12px' : '24px',
-                            padding: isMobile ? '12px' : '30px',
-                            marginBottom: isMobile ? '16px' : '40px',
+                            padding: '1.25rem 1.5rem',
+                            borderRadius: '16px',
+                            marginBottom: '2rem',
                             display: 'flex',
-                            flexDirection: isMobile ? 'column' : 'row',
-                            alignItems: isMobile ? 'flex-start' : 'center',
+                            alignItems: 'center',
                             justifyContent: 'space-between',
-                            gap: isMobile ? '10px' : '24px',
-                            boxShadow: '0 20px 50px rgba(0,0,0,0.5), 0 0 20px rgba(255, 215, 0, 0.05)',
-                            position: 'relative',
-                            overflow: 'hidden'
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
                         }}
                     >
-                        {/* Shimmer Effect */}
-                        <motion.div
-                            animate={{ x: ['-200%', '200%'] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                            style={{
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                width: '50%',
-                                height: '100%',
-                                background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.05), transparent)',
-                                pointerEvents: 'none'
-                            }}
-                        />
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '24px', zIndex: 1 }}>
-                            <div style={{
-                                background: 'var(--gold-gradient)',
-                                padding: isMobile ? '8px' : '14px',
-                                borderRadius: isMobile ? '10px' : '18px',
-                                boxShadow: '0 0 20px rgba(212,175,55,0.4)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                flexShrink: 0
-                            }}>
-                                <AlertTriangle color="#000" size={isMobile ? 18 : 32} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ background: 'rgba(255, 215, 0, 0.1)', padding: '10px', borderRadius: '12px' }}>
+                                <Info size={20} color="#FFD700" />
                             </div>
                             <div>
-                                <h4 style={{ color: '#FFD700', margin: 0, fontWeight: 900, fontSize: isMobile ? '0.9rem' : '1.4rem', fontFamily: 'var(--font-playfair)', letterSpacing: '0.5px' }}>
-                                    {t('auth.verifyEmailTitle')}
-                                </h4>
-                                <p style={{ color: 'rgba(255,255,255,0.8)', margin: isMobile ? '4px 0 0 0' : '10px 0 0 0', fontSize: isMobile ? '0.75rem' : '1.05rem', maxWidth: '700px', lineHeight: 1.6, fontWeight: 500 }}>
-                                    {t('auth.unverifiedNotice')}
-                                </p>
+                                <h4 style={{ color: '#fff', fontWeight: 800, fontSize: '0.95rem', marginBottom: '2px' }}>{t('dashboard.verifyEmailTitle')}</h4>
+                                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>{t('dashboard.verifyEmailMessage')}</p>
                             </div>
                         </div>
                         <button
@@ -866,48 +838,36 @@ function MentorDashboardContent() {
                             disabled={isResending}
                             style={{
                                 background: 'var(--gold-gradient)',
-                                border: 'none',
                                 color: '#000',
-                                padding: isMobile ? '8px 16px' : '14px 32px',
-                                borderRadius: isMobile ? '10px' : '16px',
-                                fontWeight: 900,
-                                fontSize: isMobile ? '0.75rem' : '0.95rem',
-                                cursor: 'pointer',
-                                whiteSpace: 'nowrap',
-                                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                                zIndex: 1,
+                                border: 'none',
+                                padding: '0.6rem 1.2rem',
+                                borderRadius: '10px',
+                                fontWeight: 800,
+                                fontSize: '0.85rem',
+                                cursor: isResending ? 'not-allowed' : 'pointer',
+                                transition: 'all 0.2s',
+                                opacity: isResending ? 0.7 : 1,
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '10px',
-                                boxShadow: '0 10px 20px rgba(212,175,55,0.2)',
-                                textTransform: 'uppercase',
-                                letterSpacing: '1px'
+                                gap: '8px'
                             }}
-                            onMouseOver={(e) => {
-                                if (!isResending) {
-                                    e.currentTarget.style.transform = 'translateY(-3px)';
-                                    e.currentTarget.style.boxShadow = '0 15px 30px rgba(212,175,55,0.4)';
-                                }
-                            }}
-                            onMouseOut={(e) => {
-                                if (!isResending) {
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = '0 10px 20px rgba(212,175,55,0.2)';
-                                }
-                            }}
+                            onMouseOver={(e) => !isResending && (e.currentTarget.style.transform = 'scale(1.02)')}
+                            onMouseOut={(e) => !isResending && (e.currentTarget.style.transform = 'scale(1)')}
                         >
-                            {isResending ? <Loader2 className="animate-spin" size={20} /> : t('auth.resendVerification')}
+                            {isResending ? <Loader2 className="animate-spin" size={16} /> : null}
+                            {t('dashboard.resendEmail')}
                         </button>
                     </motion.div>
                 )}
-                {/* Header */}
+
+                {/* Header Section */}
                 <header style={{
                     display: 'flex',
                     flexDirection: isMobile ? 'column' : 'row',
                     justifyContent: 'space-between',
                     alignItems: isMobile ? 'flex-start' : 'center',
                     gap: isMobile ? '1.5rem' : '3rem',
-                    marginBottom: '3rem'
+                    marginBottom: '2rem'
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                         <div
@@ -934,167 +894,91 @@ function MentorDashboardContent() {
                                 </div>
                             )}
                         </div>
-                        <div>
-                            <motion.h1
-                                initial={{ x: -20, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                style={{
-                                    fontSize: isMobile ? '1.5rem' : '2rem',
-                                    fontWeight: 800,
-                                    fontFamily: 'var(--font-playfair)',
-                                    lineHeight: 1.2,
-                                    color: 'var(--foreground)',
-                                    display: 'flex',
-                                    flexWrap: 'wrap',
-                                    alignItems: 'center',
-                                    gap: '8px'
-                                }}
-                            >
-                                <span className="gold-text" style={{ wordBreak: 'break-word' }}>
-                                    {(user.businessName || user.name).split(' ')[0]}
-                                </span>
-                                {user.isVerified && <PremiumBadge type="verified" size="md" showLabel={false} />}
-                            </motion.h1>
-                            {/* Role Identifier Badge */}
-                            <div style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                marginTop: '0.5rem',
-                                marginBottom: '0.5rem',
-                                padding: '6px 14px',
-                                borderRadius: '20px',
-                                background: '#1a1a1a', // Sóbrio e premium
-                                color: '#FFD700', // Destaque em ouro
-                                fontSize: '0.75rem',
-                                fontWeight: 800,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.5px',
-                                border: '1px solid rgba(255, 215, 0, 0.3)',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-                            }}>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gold-gradient)', borderRadius: '50%', padding: '4px', color: '#000' }}>
-                                    {user.role === 'company' && <Briefcase size={12} />}
-                                    {user.role === 'specialist' && <Award size={12} />}
-                                    {user.role === 'mentor' && <UserIcon size={12} />}
-                                </div>
-                                <span style={{ textShadow: '0 0 10px rgba(255,215,0,0.2)' }}>
-                                    {user.role === 'company' ? t('dashboard.rolesHeader.company') :
-                                        user.role === 'specialist' ? t('dashboard.rolesHeader.specialist') :
-                                            user.role === 'mentor' ? t('dashboard.rolesHeader.mentor') :
-                                                t('dashboard.rolesHeader.admin')}
-                                </span>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <p style={{
-                                    color: '#666',
-                                    marginTop: '0.4rem',
-                                    fontSize: isMobile ? '0.9rem' : '1.05rem',
-                                    fontWeight: 500,
-                                    maxWidth: isMobile ? '280px' : 'none',
-                                    lineHeight: 1.4
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                <Shield size={14} color="#3182ce" />
+                                <span style={{
+                                    fontSize: '0.7rem',
+                                    fontWeight: 900,
+                                    color: '#3182ce',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '1px'
                                 }}>
-                                    {t('dashboard.readyToManage')}
-                                </p>
-                                {!isMobile && (
-                                    <span style={{
-                                        marginTop: '4px',
-                                        background: user.plan === 'enterprise' ? '#000' : user.plan === 'pro' ? 'var(--gold-gradient)' : 'var(--muted)',
-                                        color: user.plan === 'enterprise' ? '#FFD700' : (user.plan === 'pro' ? '#000' : 'var(--foreground)'),
-                                        padding: '2px 10px',
-                                        borderRadius: '20px',
-                                        fontSize: '0.65rem',
-                                        fontWeight: 900,
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.5px'
-                                    }}>
-                                        {user.plan} {t('dashboard.account')}
-                                    </span>
-                                )}
+                                    {t('dashboard.mentorDashboard').toUpperCase() || 'PAINEL DO MENTOR'}
+                                </span>
                             </div>
+                            <h1 style={{
+                                fontSize: isMobile ? '1.8rem' : '2.8rem',
+                                fontWeight: 800,
+                                fontFamily: 'var(--font-playfair)',
+                                color: '#FFD700',
+                                lineHeight: 1.1,
+                                margin: 0
+                            }}>
+                                {t('common.hello')}, <span style={{ color: 'var(--foreground)' }}>{user.name.split(' ')[0]}</span>
+                            </h1>
                         </div>
                     </div>
 
-                    {
-                        user.canCreateEvents === false && (
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                style={{
-                                    background: 'linear-gradient(90deg, #fff5f5 0%, #fff 100%)',
-                                    borderLeft: '4px solid #c53030',
-                                    padding: '1.2rem 1.5rem',
-                                    borderRadius: '12px',
-                                    marginBottom: '2rem',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '15px',
-                                    boxShadow: '0 4px 12px rgba(197, 48, 48, 0.08)'
-                                }}
-                            >
-                                <div style={{ background: '#c53030', color: '#fff', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <AlertCircle size={20} />
-                                </div>
-                                <div>
-                                    <h4 style={{ color: '#c53030', fontWeight: 800, fontSize: '0.95rem', marginBottom: '2px' }}>{t('dashboard.settings.creationBlockedTitle')}</h4>
-                                    <p style={{ color: '#666', fontSize: '0.85rem' }}>
-                                        {t('dashboard.settings.creationBlockedDesc')}
-                                    </p>
-                                </div>
-                            </motion.div>
-                        )
-                    }
-
-                    <div style={{ display: 'flex', gap: isMobile ? '0.35rem' : '0.5rem', width: isMobile ? '100.5%' : 'auto', overflowX: 'auto', paddingBottom: isMobile ? '5px' : '0', alignItems: 'center' }} className="no-scrollbar">
+                    <div style={{
+                        display: 'flex',
+                        gap: isMobile ? '0.35rem' : '0.5rem',
+                        width: isMobile ? '100%' : 'auto',
+                        flexWrap: isMobile ? 'wrap' : 'nowrap',
+                        justifyContent: isMobile ? 'flex-start' : 'flex-end',
+                        overflowX: 'visible',
+                        paddingBottom: isMobile ? '5px' : '0',
+                        alignItems: 'center'
+                    }}>
                         <Link
                             href="/"
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                padding: '0.5rem 1rem',
-                                background: 'var(--paper)',
-                                border: '1px solid #FFD700',
-                                borderRadius: '10px',
+                                padding: '0.75rem 1.25rem',
+                                borderRadius: '12px',
+                                background: 'rgba(0,0,0,0.03)',
+                                border: '1px solid rgba(0,0,0,0.05)',
                                 color: 'var(--foreground)',
                                 fontWeight: 700,
+                                fontSize: '0.85rem',
                                 textDecoration: 'none',
-                                transition: 'all 0.3s',
-                                fontSize: isMobile ? '0.75rem' : '0.9rem',
-                                whiteSpace: 'nowrap',
-                                height: isMobile ? '36px' : '40px'
+                                transition: 'all 0.3s'
                             }}
-                            onMouseOver={(e) => e.currentTarget.style.background = 'var(--paper-hover)'}
-                            onMouseOut={(e) => e.currentTarget.style.background = 'var(--paper)'}
+                            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                            onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                         >
                             <ArrowRight size={18} /> {!isMobile && t('nav.home')}
                         </Link>
+
                         {user.canCreateEvents !== false && (user.isEmailVerified || user.role === 'admin' || user.role === 'SuperAdmin') ? (
-                            <button
-                                id="mentor-create-btn"
-                                onClick={() => setIsEventModalOpen(true)}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    padding: '0.5rem 1rem',
-                                    background: 'var(--gold-gradient)',
-                                    border: 'none',
-                                    borderRadius: '10px',
-                                    color: '#000',
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                    boxShadow: '0 4px 15px rgba(212,175,55,0.3)',
-                                    transition: 'all 0.3s',
-                                    fontSize: isMobile ? '0.75rem' : '0.9rem',
-                                    whiteSpace: 'nowrap',
-                                    height: isMobile ? '36px' : '40px'
-                                }}
-                                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                            >
-                                <Plus size={18} /> {t('common.createEvent')}
-                            </button>
+                            <Tooltip content={t('common.createEvent')}>
+                                <button
+                                    onClick={() => setIsEventModalOpen(true)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        padding: '0.5rem 1rem',
+                                        background: 'var(--gold-gradient)',
+                                        border: 'none',
+                                        borderRadius: '10px',
+                                        color: '#000',
+                                        fontWeight: 700,
+                                        cursor: 'pointer',
+                                        boxShadow: '0 4px 15px rgba(212,175,55,0.3)',
+                                        transition: 'all 0.3s',
+                                        fontSize: isMobile ? '0.75rem' : '0.9rem',
+                                        whiteSpace: 'nowrap',
+                                        height: isMobile ? '36px' : '40px'
+                                    }}
+                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                >
+                                    <Plus size={18} /> {t('common.createEvent')}
+                                </button>
+                            </Tooltip>
                         ) : (
                             <div style={{
                                 display: 'flex',
@@ -1114,68 +998,71 @@ function MentorDashboardContent() {
                             </div>
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.5rem' }}>
+                            <LanguageSwitcher />
+                            <CurrencySwitcher />
                             <ThemeToggle />
                             <div ref={notificationBellRef} style={{ position: 'relative' }}>
-                                <button
-                                    ref={bellButtonRef}
-                                    onClick={(e) => {
-                                        try {
-                                            console.log('🔔 [Bell-Page] click fired, isOpen =', isNotificationsOpen);
-                                            e.stopPropagation();
-                                            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-                                            console.log('🔔 [Bell-Page] rect =', JSON.stringify({ top: rect.top, bottom: rect.bottom, right: rect.right, left: rect.left }));
-                                            const newPos = {
-                                                top: rect.bottom + 8,
-                                                right: window.innerWidth - rect.right
-                                            };
-                                            console.log('🔔 [Bell-Page] dropdownPos =', newPos);
-                                            setDropdownPos(newPos);
-                                            setIsNotificationsOpen(prev => {
-                                                console.log('🔔 [Bell-Page] state toggle:', prev, '->', !prev);
-                                                return !prev;
-                                            });
-                                        } catch (err) {
-                                            console.error('🔴 [Bell-Page] onClick error:', err);
-                                        }
-                                    }}
-                                    title={t('dashboard.notifications')}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        width: isMobile ? '36px' : '40px',
-                                        height: isMobile ? '36px' : '40px',
-                                        background: isNotificationsOpen ? '#FFD700' : 'var(--paper)',
-                                        border: '1px solid #FFD700',
-                                        borderRadius: '12px',
-                                        color: isNotificationsOpen ? '#000' : 'var(--foreground)',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.3s',
-                                        position: 'relative'
-                                    }}
-                                >
-                                    <Bell size={20} />
-                                    {unreadNotifications > 0 && (
-                                        <span style={{
-                                            position: 'absolute',
-                                            top: '-5px',
-                                            right: '-5px',
-                                            background: '#ef4444',
-                                            color: '#fff',
-                                            width: '20px',
-                                            height: '20px',
-                                            borderRadius: '50%',
-                                            fontSize: '0.7rem',
-                                            fontWeight: 900,
+                                <Tooltip content={t('dashboard.notifications')}>
+                                    <button
+                                        ref={bellButtonRef}
+                                        onClick={(e) => {
+                                            try {
+                                                console.log('🔔 [Bell-Page] click fired, isOpen =', isNotificationsOpen);
+                                                e.stopPropagation();
+                                                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                                                console.log('🔔 [Bell-Page] rect =', JSON.stringify({ top: rect.top, bottom: rect.bottom, right: rect.right, left: rect.left }));
+                                                const newPos = {
+                                                    top: rect.bottom + 8,
+                                                    right: window.innerWidth - rect.right
+                                                };
+                                                console.log('🔔 [Bell-Page] dropdownPos =', newPos);
+                                                setDropdownPos(newPos);
+                                                setIsNotificationsOpen(prev => {
+                                                    console.log('🔔 [Bell-Page] state toggle:', prev, '->', !prev);
+                                                    return !prev;
+                                                });
+                                            } catch (err) {
+                                                console.error('🔴 [Bell-Page] onClick error:', err);
+                                            }
+                                        }}
+                                        style={{
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            border: '2px solid #fff'
-                                        }}>
-                                            {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                                        </span>
-                                    )}
-                                </button>
+                                            width: isMobile ? '36px' : '40px',
+                                            height: isMobile ? '36px' : '40px',
+                                            background: isNotificationsOpen ? '#FFD700' : 'var(--paper)',
+                                            border: '1px solid #FFD700',
+                                            borderRadius: '12px',
+                                            color: isNotificationsOpen ? '#000' : 'var(--foreground)',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.3s',
+                                            position: 'relative'
+                                        }}
+                                    >
+                                        <Bell size={20} />
+                                        {unreadNotifications > 0 && (
+                                            <span style={{
+                                                position: 'absolute',
+                                                top: '-5px',
+                                                right: '-5px',
+                                                background: '#ef4444',
+                                                color: '#fff',
+                                                borderRadius: '50%',
+                                                width: '18px',
+                                                height: '18px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                fontSize: '0.65rem',
+                                                fontWeight: 800,
+                                                border: '2px solid var(--paper)'
+                                            }}>
+                                                {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                            </span>
+                                        )}
+                                    </button>
+                                </Tooltip>
                             </div>
 
                             {/* Notification dropdown rendered at fixed position, immune to parent overflow */}
@@ -1199,28 +1086,29 @@ function MentorDashboardContent() {
                                 )}
                             </AnimatePresence>
 
-                            <button
-                                onClick={() => authService.logout()}
-                                title={t('common.logout')}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    width: isMobile ? '36px' : '40px',
-                                    height: isMobile ? '36px' : '40px',
-                                    background: '#fff',
-                                    border: '1px solid #fed7d7',
-                                    borderRadius: '12px',
-                                    color: '#e53e3e',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s',
-                                    boxShadow: '0 2px 8px rgba(229, 62, 62, 0.05)'
-                                }}
-                                onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff5f5'; }}
-                                onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff'; }}
-                            >
-                                <LogOut size={20} />
-                            </button>
+                            <Tooltip content={t('common.logout')}>
+                                <button
+                                    onClick={() => authService.logout()}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        width: isMobile ? '36px' : '40px',
+                                        height: isMobile ? '36px' : '40px',
+                                        background: '#fff',
+                                        border: '1px solid #fed7d7',
+                                        borderRadius: '12px',
+                                        color: '#e53e3e',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s',
+                                        boxShadow: '0 2px 8px rgba(229, 62, 62, 0.05)'
+                                    }}
+                                    onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff5f5'; }}
+                                    onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.background = '#fff'; }}
+                                >
+                                    <LogOut size={20} />
+                                </button>
+                            </Tooltip>
                         </div>
                     </div>
                 </header >
@@ -1235,7 +1123,7 @@ function MentorDashboardContent() {
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (
                         <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                            <div id="mentor-stats-grid" className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'} mb-8`}>
+                            <div id="mentor-stats-grid" className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'} mb-8`}>
                                 <StatCard
                                     icon={<Users className="gold-text" />}
                                     label={t('dashboard.totalSubscribers')}
@@ -1243,10 +1131,16 @@ function MentorDashboardContent() {
                                     trend="+12%"
                                 />
                                 <StatCard
-                                    icon={<FileText className="gold-text" />}
-                                    label={t('dashboard.activeEvents')}
-                                    value={forms.filter(f => f.active).length}
-                                    trend="0"
+                                    icon={<TrendingUp className="gold-text" />}
+                                    label={t('dashboard.estimatedRevenue')}
+                                    value={formatPrice(stats?.revenue || 0, 'MZN', currency)}
+                                    trend="+18%"
+                                />
+                                <StatCard
+                                    icon={<Wallet className="gold-text" />}
+                                    label={t('dashboard.finance.yourEarnings')}
+                                    value={formatPrice(stats?.earnings || 0, 'MZN', currency)}
+                                    trend="+15%"
                                 />
                                 <StatCard
                                     icon={<CheckCircle className="gold-text" />}
@@ -1254,12 +1148,36 @@ function MentorDashboardContent() {
                                     value={stats?.approved || 0}
                                     trend="+5%"
                                 />
-                                <StatCard
-                                    icon={<DollarSign className="gold-text" />}
-                                    label={t('dashboard.estimatedRevenue')}
-                                    value={formatPrice(stats?.revenue || 0, 'USD', currency)}
-                                    trend="+18%"
-                                />
+                                
+                                {/* Botão de Suporte WhatsApp */}
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'center' : 'flex-start', gridColumn: isMobile ? 'auto' : 'span 2' }}>
+                                    <a
+                                        href={`https://wa.me/258847877405?text=${encodeURIComponent('Saudacoes Afonso!')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '8px',
+                                            background: '#1a1a1a',
+                                            color: '#fff',
+                                            padding: '0.6rem 1.2rem',
+                                            borderRadius: '10px',
+                                            textDecoration: 'none',
+                                            fontWeight: 700,
+                                            fontSize: '0.85rem',
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                            border: '1px solid rgba(255,215,0,0.2)',
+                                            transition: 'all 0.3s'
+                                        }}
+                                        onMouseOver={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = '#FFD700'; }}
+                                        onMouseOut={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(255,215,0,0.2)'; }}
+                                    >
+                                        <LifeBuoy size={18} color="#FFD700" />
+                                        {t('dashboard.supportBtn') || 'Pedir Suporte'}
+                                    </a>
+                                </div>
                             </div>
 
                             {/* Smart AI Insights */}
@@ -1321,11 +1239,11 @@ function MentorDashboardContent() {
 
                                         <div style={{ flex: 1, position: 'relative', zIndex: 2 }}>
                                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'var(--gold-gradient)', borderRadius: '100px', fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', color: '#000', marginBottom: '1rem' }}>
-                                                <Zap size={12} fill="#000" /> Novidade: Portal de Destaques
+                                                <Zap size={12} fill="#000" /> {t('dashboard.adsPromo.badge') || 'Novidade: Portal de Destaques'}
                                             </div>
-                                            <h4 style={{ color: '#fff', fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>Destaque seu Evento hoje!</h4>
+                                            <h4 style={{ color: '#fff', fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>{t('dashboard.adsPromo.title') || 'Destaque seu Evento hoje!'}</h4>
                                             <p style={{ color: '#aaa', fontSize: '0.9rem', lineHeight: 1.5 }}>
-                                                Aumente sua visibilidade em até 10x aparecendo nas seções patrocinadas de toda a plataforma.
+                                                {t('dashboard.adsPromo.desc') || 'Aumente sua visibilidade em até 10x aparecendo nas seções patrocinadas de toda a plataforma.'}
                                             </p>
                                         </div>
 
@@ -1350,7 +1268,7 @@ function MentorDashboardContent() {
                                             onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.transform = 'translateY(-3px)'}
                                             onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.transform = 'translateY(0)'}
                                         >
-                                            Solicitar Destaque <Megaphone size={18} />
+                                            {t('dashboard.adsPromo.btn') || 'Solicitar Destaque'} <Megaphone size={18} />
                                         </button>
                                     </motion.div>
 
@@ -1408,30 +1326,31 @@ function MentorDashboardContent() {
                                                         )}
 
                                                         <div style={{ display: 'flex', gap: '0.75rem', flexDirection: isMobile ? 'row' : 'row' }}>
-                                                            <button
-                                                                onClick={() => copyToClipboard(form.slug)}
-                                                                title={t('common.copyLink')}
-                                                                style={{
-                                                                    flex: 1,
-                                                                    padding: isMobile ? '0.8rem' : '1rem',
-                                                                    background: 'var(--paper)',
-                                                                    border: '1.5px solid var(--border)',
-                                                                    borderRadius: '12px',
-                                                                    cursor: 'pointer',
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    justifyContent: 'center',
-                                                                    gap: '8px',
-                                                                    fontSize: '0.85rem',
-                                                                    fontWeight: 700,
-                                                                    color: 'var(--text-muted)',
-                                                                    transition: 'all 0.2s'
-                                                                }}
-                                                                onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.color = '#000'; }}
-                                                                onMouseOut={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                                                            >
-                                                                <Copy size={16} /> {isMobile ? '' : t('common.link')}
-                                                            </button>
+                                                            <Tooltip content={t('common.copyLink')}>
+                                                                <button
+                                                                    onClick={() => copyToClipboard(form.slug)}
+                                                                    style={{
+                                                                        flex: 1,
+                                                                        padding: isMobile ? '0.8rem' : '1rem',
+                                                                        background: 'var(--paper)',
+                                                                        border: '1.1px solid var(--border)',
+                                                                        borderRadius: '12px',
+                                                                        cursor: 'pointer',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        gap: '8px',
+                                                                        fontSize: '0.85rem',
+                                                                        fontWeight: 700,
+                                                                        color: 'var(--text-muted)',
+                                                                        transition: 'all 0.2s'
+                                                                    }}
+                                                                    onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.color = '#000'; }}
+                                                                    onMouseOut={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                                                                >
+                                                                    <Copy size={16} /> {isMobile ? '' : t('common.link')}
+                                                                </button>
+                                                            </Tooltip>
                                                             <button
                                                                 onClick={() => window.open(`/f/${form.slug}`, '_blank')}
                                                                 style={{
@@ -1441,6 +1360,7 @@ function MentorDashboardContent() {
                                                                     border: 'none',
                                                                     display: 'flex',
                                                                     height: isMobile ? '45px' : '52px',
+
                                                                     cursor: 'pointer',
                                                                     transition: 'transform 0.2s'
                                                                 }}
@@ -1522,17 +1442,17 @@ function MentorDashboardContent() {
                                                         {i + 1}
                                                     </div>
                                                     <div>
-                                                        <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{r.name === user.name ? 'Você' : r.name}</div>
-                                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{r.referralCount} convites convertidos</div>
+                                                        <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{r.name === user.name ? (t('common.you') || 'Você') : r.name}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{r.referralCount} {t('dashboard.convertedInvites') || 'convites convertidos'}</div>
                                                     </div>
                                                 </div>
-                                                <div style={{ fontWeight: 900, color: '#FFD700' }}>{r.referralPoints} pts</div>
+                                                <div style={{ fontWeight: 900, color: '#FFD700' }}>{r.referralPoints} {t('common.pts') || 'pts'}</div>
                                             </div>
                                         ))}
 
                                         {referralRanking.length === 0 && (
                                             <div style={{ textAlign: 'center', padding: '2rem', color: '#666', fontSize: '0.9rem' }}>
-                                                O ranking de impacto começará a crescer em breve! 🚀
+                                                {t('dashboard.impactRankingEmpty') || 'O ranking de impacto começará a crescer em breve! 🚀'}
                                             </div>
                                         )}
 
@@ -1551,7 +1471,7 @@ function MentorDashboardContent() {
                                                 fontSize: '0.9rem'
                                             }}
                                         >
-                                            Participar & Ganhar Recompensas
+                                            {t('dashboard.participateAndEarn') || 'Participar & Ganhar Recompensas'}
                                         </button>
                                     </div>
                                 </div>
@@ -1567,7 +1487,7 @@ function MentorDashboardContent() {
                                         border: '1px solid rgba(255, 215, 0, 0.1)'
                                     }}>
                                         <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1.5rem', fontFamily: 'var(--font-playfair)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <Video size={20} color="#FFD700" /> Tutoriais da Plataforma
+                                            <Video size={20} color="#FFD700" /> {t('dashboard.platformTutorials') || 'Tutoriais da Plataforma'}
                                         </h3>
 
                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
@@ -1629,34 +1549,64 @@ function MentorDashboardContent() {
                     {activeTab === 'forms' && (
                         <motion.div key="forms" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <div className="luxury-card" style={{ background: 'var(--paper)', border: 'none' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+                                    <colgroup>
+                                        <col style={{ width: '25%' }} />
+                                        <col style={{ width: '10%' }} />
+                                        <col style={{ width: '10%' }} />
+                                        <col style={{ width: '10%' }} />
+                                        <col style={{ width: '10%' }} />
+                                        <col style={{ width: '35%' }} />
+                                    </colgroup>
                                     <thead>
                                         <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Evento</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>{t('common.visibility')}</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Perfil</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Inscritos</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', textAlign: 'center' }}>Visitas</th>
-                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', textAlign: 'right' }}>Ações</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('dashboard.mentor.eventsTable.event')}</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('dashboard.mentor.eventsTable.visibility')}</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('dashboard.mentor.eventsTable.profile')}</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('dashboard.mentor.eventsTable.registrants')}</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>{t('dashboard.mentor.eventsTable.visits')}</th>
+                                            <th style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>{t('dashboard.mentor.eventsTable.actions')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {forms.map((form) => (
                                             <tr key={form._id} style={{ borderBottom: '1px solid #f9f9f9' }}>
-                                                <td style={{ padding: '1rem' }}>
-                                                    <div style={{ fontWeight: 700 }}>{form.title}</div>
-                                                    <div style={{ fontSize: '0.75rem', color: '#999' }}>/{form.slug}</div>
+                                                <td style={{ padding: '0.85rem 1rem', maxWidth: 0 }}>
+                                                    <Tooltip content={form.title}>
+                                                        <div
+                                                            style={{
+                                                                fontWeight: 700,
+                                                                fontSize: '0.9rem',
+                                                                overflow: 'hidden',
+                                                                whiteSpace: 'nowrap',
+                                                                textOverflow: 'ellipsis'
+                                                            }}
+                                                        >{form.title}</div>
+                                                    </Tooltip>
+                                                    <Tooltip content={`/ ${form.slug}`}>
+                                                        <div
+                                                            style={{
+                                                                fontSize: '0.7rem',
+                                                                color: '#999',
+                                                                overflow: 'hidden',
+                                                                whiteSpace: 'nowrap',
+                                                                textOverflow: 'ellipsis',
+                                                                marginTop: '2px'
+                                                            }}
+                                                        >/{form.slug}</div>
+                                                    </Tooltip>
                                                 </td>
-                                                <td style={{ padding: '1rem' }}>
+                                                <td style={{ padding: '0.85rem 1rem' }}>
                                                     <button
                                                         onClick={() => handleToggleStatus(form)}
                                                         style={{
-                                                            padding: '0.3rem 0.6rem',
+                                                            padding: '0.25rem 0.6rem',
                                                             borderRadius: '20px',
                                                             fontSize: '0.7rem',
                                                             fontWeight: 700,
                                                             border: 'none',
                                                             cursor: 'pointer',
+                                                            whiteSpace: 'nowrap',
                                                             background: form.active ? '#38a16915' : '#e53e3e15',
                                                             color: form.active ? '#38a169' : '#e53e3e'
                                                         }}
@@ -1664,47 +1614,99 @@ function MentorDashboardContent() {
                                                         {form.active ? t('common.public') : t('common.private')}
                                                     </button>
                                                 </td>
-                                                <td style={{ padding: '1rem' }}>
+                                                <td style={{ padding: '0.85rem 1rem' }}>
                                                     {user && form.creator._id !== user.id ? (
                                                         <button
                                                             onClick={() => handleToggleProfileVisibility(form)}
                                                             style={{
-                                                                padding: '0.3rem 0.6rem',
+                                                                padding: '0.25rem 0.6rem',
                                                                 borderRadius: '20px',
                                                                 fontSize: '0.7rem',
                                                                 fontWeight: 700,
                                                                 border: '1px solid currentColor',
                                                                 cursor: 'pointer',
                                                                 background: 'transparent',
+                                                                whiteSpace: 'nowrap',
                                                                 color: form.partnersPublic?.includes(user.id) ? '#38a169' : '#e53e3e'
                                                             }}
                                                         >
-                                                            {form.partnersPublic?.includes(user.id) ? 'Visível' : 'Oculto'}
+                                                            {form.partnersPublic?.includes(user.id) ? t('dashboard.mentor.eventsTable.visible') : t('dashboard.mentor.eventsTable.hidden')}
                                                         </button>
                                                     ) : (
-                                                        <span style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600 }}>Dono</span>
+                                                        <span style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600 }}>{t('dashboard.mentor.eventsTable.owner')}</span>
                                                     )}
                                                 </td>
-                                                <td style={{ padding: '1rem' }}>
-                                                    <div style={{ fontWeight: 600, fontSize: '1rem' }}>{form.submissionCount || 0}</div>
+                                                <td style={{ padding: '0.85rem 1rem' }}>
+                                                    <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{form.submissionCount || 0}</div>
                                                     {form.capacity && (
-                                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>{t('dashboard.goal')}: {form.capacity}</div>
+                                                        <div style={{ fontSize: '0.7rem', color: '#999', marginTop: '1px' }}>{t('dashboard.mentor.eventsTable.goal')}: {form.capacity}</div>
                                                     )}
                                                 </td>
-                                                <td style={{ padding: '1rem', textAlign: 'center' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '1rem', fontWeight: 600, color: 'var(--foreground)' }}>
+                                                <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: 800, color: 'var(--foreground)', fontSize: '1rem' }}>
                                                         <Eye size={16} color="#B8860B" /> {form.visits || 0}
                                                     </div>
                                                 </td>
-                                                <td style={{ padding: '1rem', textAlign: 'right' }}>
-                                                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                                                        <button onClick={() => window.open(`/f/${form.slug}`, '_blank')} title={t('common.viewPublicForm')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B' }}><ExternalLink size={18} /></button>
-                                                        <button onClick={() => window.open(`/hub/${form.slug}`, '_blank')} title={t('common.viewEventHub')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1a1a1a' }}><Monitor size={18} /></button>
-                                                        <button onClick={() => setEditModalData({ isOpen: true, form })} title={t('common.editEvent')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce' }}><Pencil size={18} /></button>
-                                                        <button onClick={() => setThemeModalData({ isOpen: true, form })} title={t('common.customizeTheme')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Palette size={18} /></button>
-                                                        <button onClick={() => copyToClipboard(form.slug)} title={t('common.copyLink')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Copy size={18} /></button>
-                                                        <button onClick={() => { setSelectedSubmissionFormId(form._id); setActiveTab('submissions'); }} title={t('common.viewSubmissions')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><Users size={18} /></button>
-                                                        <button onClick={() => handleDeleteForm(form._id)} title={t('common.delete')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e' }}><Trash2 size={18} /></button>
+                                                <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+                                                        {/* Row 1: Primary Actions */}
+                                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                            <Tooltip content={t('common.viewPublicForm')}>
+                                                                <button
+                                                                    onClick={() => window.open(`/f/${form.slug}`, '_blank')}
+                                                                    style={{
+                                                                        display: 'flex', alignItems: 'center', gap: '5px',
+                                                                        padding: '6px 12px', borderRadius: '8px',
+                                                                        background: 'rgba(184,134,11,0.1)', color: '#B8860B',
+                                                                        border: '1.5px solid rgba(184,134,11,0.3)',
+                                                                        cursor: 'pointer', fontWeight: 700, fontSize: '0.7rem',
+                                                                        whiteSpace: 'nowrap', transition: 'all 0.2s'
+                                                                    }}
+                                                                    onMouseOver={e => { e.currentTarget.style.background = 'rgba(184,134,11,0.2)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                                                                    onMouseOut={e => { e.currentTarget.style.background = 'rgba(184,134,11,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                                                                >
+                                                                    <ExternalLink size={14} /> {t('dashboard.mentor.eventsTable.publicPage')}
+                                                                </button>
+                                                            </Tooltip>
+                                                            <Tooltip content={t('common.viewEventHub')}>
+                                                                <button
+                                                                    onClick={() => window.open(`/hub/${form.slug}`, '_blank')}
+                                                                    style={{
+                                                                        display: 'flex', alignItems: 'center', gap: '5px',
+                                                                        padding: '6px 12px', borderRadius: '8px',
+                                                                        background: 'var(--gold-gradient)', color: '#000',
+                                                                        border: 'none',
+                                                                        cursor: 'pointer', fontWeight: 800, fontSize: '0.7rem',
+                                                                        whiteSpace: 'nowrap', transition: 'all 0.2s',
+                                                                        boxShadow: '0 2px 8px rgba(212,175,55,0.25)'
+                                                                    }}
+                                                                    onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(212,175,55,0.4)'; }}
+                                                                    onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(212,175,55,0.25)'; }}
+                                                                >
+                                                                    <Monitor size={14} /> {t('dashboard.mentor.eventsTable.participantPage')}
+                                                                </button>
+                                                            </Tooltip>
+                                                        </div>
+
+                                                        {/* Row 2: Secondary icon-only actions */}
+                                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: 'rgba(0,0,0,0.02)', padding: '4px 8px', borderRadius: '10px' }}>
+                                                            <Tooltip content={t('common.editEvent')}>
+                                                                <button onClick={() => setEditModalData({ isOpen: true, form })} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3182ce', padding: '4px', borderRadius: '6px' }}><Pencil size={18} /></button>
+                                                            </Tooltip>
+                                                            <Tooltip content={t('common.customizeTheme')}>
+                                                                <button onClick={() => setThemeModalData({ isOpen: true, form })} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px' }}><Palette size={18} /></button>
+                                                            </Tooltip>
+                                                            <Tooltip content={t('common.copyLink')}>
+                                                                <button onClick={() => copyToClipboard(form.slug)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px' }}><Copy size={18} /></button>
+                                                            </Tooltip>
+                                                            <Tooltip content={t('common.viewSubmissions')}>
+                                                                <button onClick={() => { setSelectedSubmissionFormId(form._id); setActiveTab('submissions'); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px', borderRadius: '6px' }}><Users size={18} /></button>
+                                                            </Tooltip>
+                                                            <div style={{ width: '1px', height: '14px', background: '#ddd', margin: '0 2px' }} />
+                                                            <Tooltip content={t('common.delete')}>
+                                                                <button onClick={() => handleDeleteForm(form._id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53e3e', padding: '4px', borderRadius: '6px' }}><Trash2 size={18} /></button>
+                                                            </Tooltip>
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -1754,6 +1756,138 @@ function MentorDashboardContent() {
                             exit={{ opacity: 0, y: -10 }}
                         >
                             <SmartLinksManager />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'referral' && (
+                        <motion.div
+                            key="referral"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                        >
+                            <div style={{
+                                background: 'var(--paper)',
+                                borderRadius: '24px',
+                                padding: '2.5rem',
+                                border: '1px solid rgba(255, 215, 0, 0.2)',
+                                boxShadow: '0 10px 40px rgba(0,0,0,0.05)'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '2.5rem' }}>
+                                    <div style={{ background: 'var(--gold-gradient)', padding: '15px', borderRadius: '20px', color: '#000', boxShadow: '0 8px 20px rgba(212, 175, 55, 0.3)' }}>
+                                        <Trophy size={32} />
+                                    </div>
+                                    <div>
+                                        <h2 style={{ fontSize: '2rem', fontWeight: 900, margin: 0, fontFamily: 'var(--font-playfair)' }}>{t('referral.ranking')}</h2>
+                                        <p style={{ color: '#666', margin: '5px 0 0' }}>{t('referral.networkSubtitle')}</p>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '3rem' }}>
+                                    <div style={{ background: 'rgba(255, 215, 0, 0.05)', padding: '1.5rem', borderRadius: '20px', border: '1px solid rgba(255, 215, 0, 0.1)' }}>
+                                        <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>{t('referral.myPoints')}</div>
+                                        <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#FFD700' }}>
+                                            {(referralRanking.find(r => r.name === user?.name)?.referralPoints || 0)} pts
+                                        </div>
+                                    </div>
+                                    <div style={{ background: 'rgba(0,0,0,0.02)', padding: '1.5rem', borderRadius: '20px', border: '1px solid #eee' }}>
+                                        <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>{t('referral.convertedInvites')}</div>
+                                        <div style={{ fontSize: '1.8rem', fontWeight: 900 }}>
+                                            {(referralRanking.find(r => r.name === user?.name)?.referralCount || 0)}
+                                        </div>
+                                    </div>
+                                    <div style={{ background: 'var(--gold-gradient)', padding: '1.5rem', borderRadius: '20px', color: '#000' }}>
+                                        <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem', opacity: 0.8 }}>{t('referral.myPosition')}</div>
+                                        <div style={{ fontSize: '1.8rem', fontWeight: 900 }}>
+                                            #{referralRanking.findIndex(r => r.name === user?.name) + 1 || '-'}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem' }}>{t('referral.impactLeaders')}</h3>
+                                    {referralRanking.map((r, i) => (
+                                        <div key={r._id} style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            padding: '1.2rem',
+                                            background: i === 0 ? 'rgba(255, 215, 0, 0.08)' : (r.name === user?.name ? 'rgba(0,0,0,0.05)' : '#fcfcfc'),
+                                            borderRadius: '18px',
+                                            border: i === 0 ? '1px solid rgba(255, 215, 0, 0.3)' : '1px solid #eee',
+                                            transition: 'transform 0.2s'
+                                        }} className="hover:scale-[1.01]">
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
+                                                <div style={{
+                                                    width: '40px',
+                                                    height: '40px',
+                                                    borderRadius: '12px',
+                                                    background: i === 0 ? 'var(--gold-gradient)' : (i === 1 ? '#e2e8f0' : (i === 2 ? '#fff7ed' : '#f1f5f9')),
+                                                    color: i === 0 ? '#000' : '#475569',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontWeight: 900,
+                                                    fontSize: '1rem'
+                                                }}>
+                                                    {i + 1}
+                                                </div>
+                                                <div style={{ width: '45px', height: '45px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #fff', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+                                                    <Image
+                                                        src={r.profilePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=random`}
+                                                        alt={r.name}
+                                                        width={45}
+                                                        height={45}
+                                                        unoptimized
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <div style={{ fontWeight: 800, fontSize: '1rem', color: '#1a1a1a' }}>
+                                                        {r.name === user?.name ? t('referral.youImpactMaster') : r.name}
+                                                    </div>
+                                                    <div style={{ fontSize: '0.8rem', color: '#666', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                        <Users size={12} /> {r.referralCount} {t('referral.mentorsInvited')}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style={{ textAlign: 'right' }}>
+                                                <div style={{ fontWeight: 900, color: '#FFD700', fontSize: '1.2rem' }}>{r.referralPoints} pts</div>
+                                                <div style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#999' }}>{t('referral.foundingPartner')}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    {referralRanking.length === 0 && (
+                                        <div style={{ textAlign: 'center', padding: '4rem', color: '#999' }}>
+                                            <Trophy size={48} style={{ opacity: 0.2, marginBottom: '1rem' }} />
+                                            <p>{t('referral.rankingEmpty')}</p>
+                                        </div>
+                                    )}
+
+                                    <div style={{ marginTop: '2rem', padding: '2rem', borderRadius: '24px', background: 'linear-gradient(135deg, #111 0%, #333 100%)', color: '#fff', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+                                        <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '150px', height: '150px', background: 'rgba(255,215,0,0.1)', borderRadius: '50%', filter: 'blur(30px)' }} />
+                                        <h4 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '1rem' }}>{t('referral.ctaTitle')}</h4>
+                                        <p style={{ color: '#aaa', fontSize: '0.9rem', maxWidth: '500px', margin: '0 auto 1.5rem' }}>{t('referral.ctaDesc')}</p>
+                                        <button
+                                            onClick={() => setIsReferralModalOpen(true)}
+                                            style={{
+                                                background: 'var(--gold-gradient)',
+                                                color: '#000',
+                                                border: 'none',
+                                                padding: '1rem 2.5rem',
+                                                borderRadius: '15px',
+                                                fontWeight: 900,
+                                                cursor: 'pointer',
+                                                fontSize: '1rem',
+                                                boxShadow: '0 10px 25px rgba(212, 175, 55, 0.3)'
+                                            }}
+                                            className="hover:scale-105 transition-transform"
+                                        >
+                                            {t('referral.inviteBtn')}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </motion.div>
                     )}
 
@@ -1815,10 +1949,10 @@ function MentorDashboardContent() {
                         <motion.div key="marketing" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             <div style={{ marginBottom: '2.5rem' }}>
                                 <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', color: '#1a1a1a', marginBottom: '0.5rem' }}>
-                                    Acelerador de <span className="gold-text">Vendas</span>
+                                    {t('marketing.accelerator.title')} <span className="gold-text">{t('marketing.accelerator.highlight')}</span>
                                 </h2>
                                 <p style={{ color: '#888', fontSize: '1.1rem', maxWidth: '600px' }}>
-                                    O seu conhecimento merece ser visto. Nós cuidamos de toda a estratégia para converter os seus <strong>cursos, workshops, palestras ou serviços</strong> em um sucesso de vendas.
+                                    {t('marketing.accelerator.description')}
                                 </p>
                             </div>
 
@@ -1829,7 +1963,7 @@ function MentorDashboardContent() {
                                     <div style={{ position: 'absolute', inset: 0, opacity: 0.4 }}>
                                         <Image
                                             src="/marketing/hero.png"
-                                            alt="Aceleração de Vendas"
+                                            alt={t('marketing.accelerator.title') + " " + t('marketing.accelerator.highlight')}
                                             fill
                                             style={{ objectFit: 'cover' }}
                                         />
@@ -1874,7 +2008,7 @@ function MentorDashboardContent() {
                                             <button
                                                 onClick={() => {
                                                     const message = encodeURIComponent("Olá! Estou no dashboard e tenho dúvidas sobre como funciona o Programa de Aceleração 360º. Podem ajudar?");
-                                                    window.open(`https://wa.me/244923456789?text=${message}`, '_blank');
+                                                    window.open(`https://wa.me/258856079576?text=${message}`, '_blank');
                                                 }}
                                                 style={{
                                                     padding: '1.2rem 2rem',
@@ -2023,7 +2157,7 @@ function MentorDashboardContent() {
                                 <button
                                     onClick={() => {
                                         const message = encodeURIComponent("Olá! Tenho algumas dúvidas sobre o Acelerador de Vendas da Inscreva-se. Podem me explicar melhor?");
-                                        window.open(`https://wa.me/244923456789?text=${message}`, '_blank');
+                                        window.open(`https://wa.me/258856079576?text=${message}`, '_blank');
                                     }}
                                     style={{ padding: '0.8rem 2rem', background: 'var(--paper)', border: '1px solid #D4AF37', color: '#D4AF37', borderRadius: '12px', fontWeight: 900, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '10px' }}
                                 >
@@ -2050,13 +2184,13 @@ function MentorDashboardContent() {
 
                                     <div style={{ position: 'relative', zIndex: 1, maxWidth: '700px' }}>
                                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', background: 'rgba(255, 215, 0, 0.15)', border: '1px solid rgba(255, 215, 0, 0.3)', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#FFD700', marginBottom: '1.5rem' }}>
-                                            🛸 Ambiente de Testes
+                                            🛸 {t('liveRoom.testEnv')}
                                         </div>
-                                        <h2 style={{ fontSize: isMobile ? '2rem' : '3.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, marginBottom: '1.5rem' }}>
-                                            Laboratório <span className="gold-text">Live Board</span>
+                                        <h2 style={{ fontSize: isMobile ? '2rem' : '3.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', lineHeight: 1.1, marginBottom: '1.5rem', color: '#fff' }}>
+                                            {t('liveRoom.labTitle')} <span className="gold-text">{t('liveRoom.labSubtitle')}</span>
                                         </h2>
                                         <p style={{ fontSize: '1.1rem', color: '#888', lineHeight: 1.6, marginBottom: '2.5rem' }}>
-                                            Este é o seu espaço privado para praticar. Teste todos os recursos da Live Board — pincéis, cronómetros, quizzes e sincronização — para garantir que a sua próxima aula em direto seja impecável.
+                                            {t('liveRoom.labDesc')}
                                         </p>
 
                                         <button
@@ -2079,16 +2213,16 @@ function MentorDashboardContent() {
                                             onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)'}
                                             onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.transform = 'translateY(0) scale(1)'}
                                         >
-                                            ENTRAR NO LABORATÓRIO <Monitor size={22} />
+                                            {t('liveRoom.enterLab')} <Monitor size={22} />
                                         </button>
                                     </div>
                                 </div>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '2rem' }}>
                                     {[
-                                        { title: "Dominar Ferramentas", desc: "Pratique o uso de formas, textos e desenhos à mão livre para tornar a sua explicação visualmente rica.", icon: <Palette size={24} /> },
-                                        { title: "Testar Quizzes", desc: "Crie e visualize como os alunos interagem com as perguntas em tempo real para maximizar a retenção.", icon: <CheckCircle size={24} /> },
-                                        { title: "Gestão de Tempo", desc: "Habitue-se a usar o temporizador de foco para gerir os exercícios práticos da sua aula.", icon: <Clock size={24} /> }
+                                        { title: t('liveRoom.feature1Title'), desc: t('liveRoom.feature1Desc'), icon: <Palette size={24} /> },
+                                        { title: t('liveRoom.feature2Title'), desc: t('liveRoom.feature2Desc'), icon: <CheckCircle size={24} /> },
+                                        { title: t('liveRoom.feature3Title'), desc: t('liveRoom.feature3Desc'), icon: <Clock size={24} /> }
                                     ].map((feature, i) => (
                                         <div key={i} style={{ padding: '2.5rem', borderRadius: '32px', background: 'var(--paper)', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
                                             <div style={{ color: '#D4AF37', marginBottom: '1.5rem', background: 'rgba(212, 175, 55, 0.05)', width: '60px', height: '60px', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -2113,14 +2247,14 @@ function MentorDashboardContent() {
                 {/* Lab Interface Overlay */}
                 <AnimatePresence>
                     {isLabActive && (
-                        <LiveBoardContainer
+                        <SalaDeEventosContainer
                             formId={`lab-${user._id}`}
                             isMentor={true}
-                            eventTitle="LABORATÓRIO DE TESTES"
+                            eventTitle={t('liveRoom.labEventTitle')}
                             mentorData={{
                                 name: user.name,
                                 photo: user.profilePhoto || "",
-                                title: "MENTOR (MODO TESTE)",
+                                title: t('liveRoom.labMentorTitle'),
                                 socialLinks: {},
                                 whatsapp: ""
                             }}
@@ -2277,8 +2411,8 @@ function MentorDashboardContent() {
                         onSuccess={refreshData}
                     />
                 )}
-            </main >
-        </div >
+            </main>
+        </div>
     );
 }
 
@@ -2297,60 +2431,59 @@ export default function MentorDashboard() {
 function StatCard({ icon, label, value, trend }: { icon: React.ReactNode, label: string, value: string | number, trend: string }) {
     return (
         <motion.div
-            whileHover={{ y: -8, scale: 1.02 }}
+            whileHover={{ y: -4, scale: 1.01 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             className="luxury-card"
             style={{
-                background: 'rgba(255, 255, 255, 0.8)',
+                background: 'var(--paper)',
                 backdropFilter: 'blur(10px)',
-                padding: '2rem 1.5rem',
-                border: '1px solid rgba(255, 255, 255, 0.5)',
-                borderRadius: '24px',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.03)',
+                padding: '1rem',
+                border: '1px solid var(--border)',
+                borderRadius: '20px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.04)',
                 position: 'relative',
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'space-between'
+                gap: '0.5rem'
             }}
         >
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: 'var(--gold-gradient)' }}></div>
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', background: 'var(--gold-gradient)' }}></div>
 
-            <div style={{ marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                    <div style={{
-                        background: 'linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.02))',
-                        color: '#D4AF37',
-                        padding: '12px',
-                        borderRadius: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 10px rgba(212,175,55,0.1)'
-                    }}>
-                        {icon}
-                    </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{
+                    background: 'rgba(212,175,55,0.08)',
+                    color: '#D4AF37',
+                    padding: '6px',
+                    borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    {React.cloneElement(icon as React.ReactElement, { size: 18 })}
+                </div>
+                {trend !== '0' && (
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: '4px',
                         background: trend.startsWith('+') ? '#f0fdf4' : '#fef2f2',
-                        padding: '4px 10px',
-                        borderRadius: '30px',
+                        padding: '1px 6px',
+                        borderRadius: '20px',
                         border: `1px solid ${trend.startsWith('+') ? '#dcfce7' : '#fee2e2'}`
                     }}>
-                        <span style={{ fontSize: '0.7rem', color: trend.startsWith('+') ? '#16a34a' : '#ef4444', fontWeight: 900 }}>{trend}</span>
+                        <span style={{ fontSize: '0.6rem', color: trend.startsWith('+') ? '#16a34a' : '#ef4444', fontWeight: 800 }}>{trend}</span>
                     </div>
-                </div>
-                <span style={{ color: '#64748b', fontWeight: 600, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</span>
+                )}
             </div>
 
-            <div>
-                <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', color: '#1a1a1a', letterSpacing: '-0.5px' }}>{value}</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
+                <span style={{ color: '#64748b', fontWeight: 600, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
+                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: 'var(--foreground)', margin: 0, letterSpacing: '-0.5px' }}>{value}</h2>
             </div>
 
-            {/* Subtle Sparkle/Light effect */}
-            <div style={{ position: 'absolute', bottom: '-20px', right: '-20px', width: '80px', height: '80px', background: 'radial-gradient(circle, rgba(212,175,55,0.05) 0%, transparent 70%)', borderRadius: '50%' }} />
+            {/* Subtle background element */}
+            <div style={{ position: 'absolute', bottom: '-15px', right: '-15px', width: '60px', height: '60px', background: 'radial-gradient(circle, rgba(212,175,55,0.03) 0%, transparent 70%)', borderRadius: '50%' }} />
         </motion.div>
     );
 }

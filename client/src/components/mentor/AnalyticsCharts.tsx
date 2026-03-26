@@ -62,25 +62,25 @@ export default function AnalyticsCharts() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
                 <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #f0f0f0', position: 'relative', overflow: 'hidden' }}>
                     <div style={{ color: '#FFD700', marginBottom: '0.5rem' }}><Eye size={20} /></div>
-                    <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 600, textTransform: 'uppercase' }}>Visualizações Totais</div>
+                    <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 600, textTransform: 'uppercase' }}>{t('dashboard.analytics.totalViews')}</div>
                     <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{totalVisits}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#38a169', marginTop: '0.5rem' }}>Últimos 14 dias</div>
+                    <div style={{ fontSize: '0.7rem', color: '#38a169', marginTop: '0.5rem' }}>{t('dashboard.analytics.last14Days')}</div>
                 </div>
 
                 <div className="luxury-card" style={{ background: '#fff', padding: '1.5rem', border: '1px solid #f0f0f0' }}>
                     <div style={{ color: '#805ad5', marginBottom: '0.5rem' }}><TrendingUp size={20} /></div>
-                    <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 600, textTransform: 'uppercase' }}>Taxa de Conversão</div>
+                    <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 600, textTransform: 'uppercase' }}>{t('dashboard.analytics.conversionRate')}</div>
                     <div style={{ fontSize: '1.8rem', fontWeight: 800 }}>{conversionRate}%</div>
-                    <p style={{ fontSize: '0.7rem', color: '#666', marginTop: '0.5rem' }}>Visitas vs Inscrições</p>
+                    <p style={{ fontSize: '0.7rem', color: '#666', marginTop: '0.5rem' }}>{t('dashboard.analytics.visitsVsSubmissions')}</p>
                 </div>
 
                 <div className="luxury-card" style={{ background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)', padding: '1.5rem', border: 'none', color: '#fff' }}>
                     <div style={{ color: '#FFD700', marginBottom: '0.5rem' }}><Zap size={20} /></div>
-                    <div style={{ fontSize: '0.8rem', opacity: 0.7, fontWeight: 600, textTransform: 'uppercase' }}>Insight da Semana</div>
+                    <div style={{ fontSize: '0.8rem', opacity: 0.7, fontWeight: 600, textTransform: 'uppercase' }}>{t('dashboard.analytics.insightOfWeek')}</div>
                     <div style={{ fontSize: '0.9rem', fontWeight: 500, marginTop: '0.5rem', lineHeight: 1.4 }}>
                         {parseFloat(conversionRate.toString()) > 10
-                            ? "Sua conversão está excelente! Continue impulsionando tráfego."
-                            : "Dica: Melhore a descrição ou imagem de capa para aumentar conversões."}
+                            ? t('dashboard.analytics.insightGood')
+                            : t('dashboard.analytics.insightImprove')}
                     </div>
                 </div>
             </div>
@@ -92,14 +92,14 @@ export default function AnalyticsCharts() {
                         <h3 style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <TrendingUp size={20} className="gold-text" /> {t('dashboard.analytics.evolution')}
                         </h3>
-                        <p style={{ color: '#666', fontSize: '0.85rem' }}>Tráfego e Conversões (Últimos 14 dias)</p>
+                        <p style={{ color: '#666', fontSize: '0.85rem' }}>{t('dashboard.analytics.trafficAndConversions')}</p>
                     </div>
                     <div style={{ display: 'flex', gap: '15px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.75rem', fontWeight: 600 }}>
-                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#FFD700' }} /> Inscrições
+                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#FFD700' }} /> {t('dashboard.analytics.submissions')}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.75rem', fontWeight: 600 }}>
-                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ddd' }} /> Visitas
+                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ddd' }} /> {t('dashboard.analytics.visits')}
                         </div>
                     </div>
                 </div>
@@ -123,7 +123,7 @@ export default function AnalyticsCharts() {
                             <Line
                                 type="monotone"
                                 dataKey="visits"
-                                name="Visitas"
+                                name={t('dashboard.analytics.visits')}
                                 stroke="#ddd"
                                 strokeWidth={2}
                                 dot={false}
@@ -131,7 +131,7 @@ export default function AnalyticsCharts() {
                             <Line
                                 type="monotone"
                                 dataKey="count"
-                                name="Inscrições"
+                                name={t('dashboard.analytics.submissions')}
                                 stroke="#FFD700"
                                 strokeWidth={4}
                                 dot={{ fill: '#FFD700', strokeWidth: 0, r: 4 }}
@@ -150,7 +150,7 @@ export default function AnalyticsCharts() {
                     </div>
                     <div>
                         <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>{t('dashboard.analytics.participantOrigin')}</h3>
-                        <p style={{ color: '#666', fontSize: '0.85rem' }}>Distribuição geográfica por província</p>
+                        <p style={{ color: '#666', fontSize: '0.85rem' }}>{t('dashboard.analytics.geoDistribution')}</p>
                     </div>
                 </div>
 

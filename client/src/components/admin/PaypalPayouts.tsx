@@ -5,6 +5,7 @@ import { dashboardService } from '@/lib/dashboardService';
 import { toast } from 'sonner';
 import { Loader2, DollarSign, ExternalLink, Mail, CheckCircle2, AlertCircle, CreditCard } from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
+import Tooltip from '../common/Tooltip';
 
 interface Payout {
     _id: string;
@@ -93,9 +94,13 @@ export default function PaypalPayouts() {
                                     <td style={{ padding: '1rem', borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             {tx.paymentMethod === 'paypal' ? (
-                                                <div title="PayPal" style={{ color: '#003087' }}><DollarSign size={20} /></div>
+                                                <Tooltip content="PayPal">
+                                                    <div style={{ color: '#003087' }}><DollarSign size={20} /></div>
+                                                </Tooltip>
                                             ) : (
-                                                <div title="Stripe" style={{ color: '#635bff' }}><CreditCard size={20} /></div>
+                                                <Tooltip content="Stripe">
+                                                    <div style={{ color: '#635bff' }}><CreditCard size={20} /></div>
+                                                </Tooltip>
                                             )}
                                             <div style={{ display: 'flex', flexDirection: 'column', fontSize: '0.8rem' }}>
                                                 <span style={{ fontWeight: 700 }}>{tx.paymentMethod.toUpperCase()}</span>

@@ -41,7 +41,7 @@ import MetaPixel from '@/components/MetaPixel';
 import AdBanner from '@/components/common/AdBanner';
 import PremiumBadge from '@/components/common/PremiumBadge';
 import CommunityChat from '@/components/hub/CommunityChat';
-import LiveBoardContainer from '@/components/hub/liveboard/LiveBoardContainer';
+import SalaDeEventosContainer from '@/components/hub/liveboard/SalaDeEventosContainer';
 import { Sparkles as SparklesIcon } from 'lucide-react';
 import { io } from 'socket.io-client';
 import { getSocketUrl, getSocketOptions } from '@/lib/socketConfig';
@@ -186,6 +186,7 @@ function HubContent() {
     const [boardStartCountdown, setBoardStartCountdown] = useState(0);
     const [showBoardActivationOptions, setShowBoardActivationOptions] = useState(false);
     const [isBoardMinimized, setIsBoardMinimized] = useState(false);
+    const [showGuestBanner, setShowGuestBanner] = useState(false);
     const statusSocketRef = useRef<any>(null);
 
     useEffect(() => {
@@ -286,13 +287,15 @@ function HubContent() {
 
         s.on('live_board:status', (status: any) => {
             console.log('[Hub] Live Board Status received:', status);
-            setIsBoardActive(status.active);
+            setIsBoardActive((prevActive) => {
+                if (!prevActive && status.active) {
+                    setIsBoardMinimized(false); // Only maximize when it originally starts
+                }
+                return status.active;
+            });
             if (status.active) {
                 setBoardMentorData(status.mentorData);
-                setIsBoardStarting(false); // Cancel countdown if board is already active
-                if (!isBoardMinimized) {
-                    setIsBoardMinimized(false); // Explicitly ensure it is maximized for new joins, but respect if user already minimized it voluntarily? For simplicity let's maximize on start
-                }
+                setIsBoardStarting(false);
             } else {
                 setIsBoardMinimized(false);
             }
@@ -313,7 +316,7 @@ function HubContent() {
                 statusSocketRef.current = null;
             }
         };
-    }, [submission, isBoardMinimized]);
+    }, [submission]);
 
     // Live Board Countdown Timer Logic
     useEffect(() => {
@@ -347,6 +350,16 @@ function HubContent() {
         }
         return () => clearInterval(timer);
     }, [isBoardStarting, boardStartCountdown, currentUser?._id, submission, currentUser?.role]);
+
+    // Guest Banner Logic
+    useEffect(() => {
+        if (!loading && submission && !currentUser) {
+            const timer = setTimeout(() => {
+                setShowGuestBanner(true);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [loading, submission, currentUser]);
 
     const markLessonComplete = async (lessonId: string) => {
         try {
@@ -590,7 +603,34 @@ function HubContent() {
                         {isApproved ? <CheckCircle2 size={16} /> : <Clock size={16} />}
                         {isApproved ? t('events.confirmedStatus') : t('events.processingStatus')}
                     </motion.div>
-                    <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 800, letterSpacing: '-2px', marginBottom: '15px', color: textColor, lineHeight: 1.1, textShadow: isDark ? '0 10px 30px rgba(0,0,0,0.5)' : 'none' }}>{form.title}</h1>
+                    <motion.h1
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                        style={{
+                            fontSize: 'clamp(2.5rem, 6vw, 4rem)',
+                            fontWeight: 800,
+                            letterSpacing: '-2px',
+                            marginBottom: '15px',
+                            color: textColor,
+                            lineHeight: 1.1,
+                            textShadow: isDark ? '0 10px 30px rgba(0,0,0,0.5)' : 'none'
+                        }}
+                    >
+                        {form.title.split('').map((char, index) => (
+                            <motion.span
+                                key={index}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{
+                                    duration: 0.05,
+                                    delay: index * 0.03
+                                }}
+                            >
+                                {char}
+                            </motion.span>
+                        ))}
+                    </motion.h1>
                     <p style={{ color: secondaryTextColor, fontSize: '1.2rem', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, textShadow: isDark ? '0 2px 10px rgba(0,0,0,0.3)' : 'none' }}>{t('hub.exclusiveAccess')}</p>
                 </div>
 
@@ -727,30 +767,28 @@ function HubContent() {
                             >
                                 {boardStartCountdown}
                             </motion.div>
-                            <motion.h2
+                            <motion.h3
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ delay: 0.2 }}
                                 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '10px' }}
                             >
-                                {t('hub.liveBoard.countdownTitle')}
-                            </motion.h2>
+                                {t('hub.salaDeEventos.countdownTitle')}
+                            </motion.h3>
                             <motion.p
-                                initial={{ y: 20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: 0.3 }}
-                                style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}
+                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                                style={{ fontSize: '1rem', color: '#666', fontWeight: 600 }}
                             >
-                                {t('hub.liveBoard.countdownMessage', { seconds: boardStartCountdown })}
+                                {t('hub.salaDeEventos.countdownMessage', { seconds: boardStartCountdown })}
                             </motion.p>
                         </motion.div>
                     )}
                 </AnimatePresence>
 
-                {/* --- LIVE BOARD SECTION --- */}
+                {/* --- SALA DE EVENTOS --- */}
                 <AnimatePresence>
-                    {isBoardActive && !isBoardMinimized && (
-                        <LiveBoardContainer
+                    {isBoardActive && (
+                        <SalaDeEventosContainer
                             formId={String(submission.form._id)}
                             isMentor={currentUser?._id === submission.form.creator?._id || currentUser?.role === 'admin'}
                             mentorData={boardMentorData || {
@@ -762,6 +800,8 @@ function HubContent() {
                             }}
                             eventTitle={submission.form.title}
                             primaryColor={primaryColor}
+                            isMinimized={isBoardMinimized}
+                            onRestore={() => setIsBoardMinimized(false)}
                             onClose={() => {
                                 // If mentor, actually end the session
                                 if (currentUser?._id === submission.form.creator?._id || currentUser?.role === 'admin') {
@@ -777,37 +817,6 @@ function HubContent() {
                     )}
                 </AnimatePresence>
 
-                {/* Floating Restore Board Button for Participants */}
-                <AnimatePresence>
-                    {isBoardActive && isBoardMinimized && (
-                        <motion.button
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0, opacity: 0 }}
-                            onClick={() => setIsBoardMinimized(false)}
-                            style={{
-                                position: 'fixed',
-                                bottom: '30px',
-                                right: '30px',
-                                background: primaryColor,
-                                color: '#fff',
-                                width: '60px',
-                                height: '60px',
-                                borderRadius: '50%',
-                                border: 'none',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-                                zIndex: 9000
-                            }}
-                        >
-                            <SparklesIcon size={24} />
-                            <span style={{ position: 'absolute', top: '-5px', right: '-5px', width: '15px', height: '15px', background: '#e11d48', borderRadius: '50%', border: '2px solid #fff' }} className="animate-pulse" />
-                        </motion.button>
-                    )}
-                </AnimatePresence>
 
                 {!isBoardActive && (currentUser?._id === submission?.form?.creator?._id || currentUser?.role === 'admin') && (
                     <div style={{ textAlign: 'center', marginBottom: '40px', position: 'relative' }}>
@@ -819,17 +828,19 @@ function HubContent() {
                                     background: '#fff',
                                     padding: '24px',
                                     borderRadius: '24px',
-                                    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                                    boxShadow: '0 20px 50px rgba(0,0,0,0.15)',
                                     display: 'inline-block',
                                     border: '1px solid #f0f0f0',
-                                    textAlign: 'left',
-                                    width: '320px'
+                                    textAlign: 'center',
+                                    width: '420px',
+                                    maxWidth: '90vw',
+                                    transform: 'translateY(-50px)'
                                 }}
                             >
-                                <h4 style={{ margin: '0 0 15px', fontSize: '0.9rem', fontWeight: 800, color: '#111' }}>
-                                    {t('hub.liveBoard.selectCountdown')}
+                                <h4 style={{ margin: '0 0 20px', fontSize: '1rem', fontWeight: 900, color: '#111' }}>
+                                    {t('hub.salaDeEventos.selectCountdown')}
                                 </h4>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px' }}>
                                     {[5, 10, 30, 60, 300].map(seconds => (
                                         <button
                                             key={seconds}
@@ -850,21 +861,31 @@ function HubContent() {
                                                 }
                                             }}
                                             style={{
-                                                padding: '10px',
+                                                padding: '10px 16px',
                                                 borderRadius: '12px',
-                                                border: '1px solid #f0f0f0',
-                                                background: '#f8f8f8',
+                                                border: '1px solid #eee',
+                                                background: '#f9f9f9',
                                                 fontSize: '0.8rem',
-                                                fontWeight: 700,
+                                                fontWeight: 800,
                                                 cursor: 'pointer',
-                                                transition: 'all 0.2s'
+                                                transition: 'all 0.2s',
+                                                whiteSpace: 'nowrap'
                                             }}
-                                            onMouseEnter={(e) => (e.currentTarget.style.background = '#eee')}
-                                            onMouseLeave={(e) => (e.currentTarget.style.background = '#f8f8f8')}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.background = '#111';
+                                                e.currentTarget.style.color = '#fff';
+                                                e.currentTarget.style.borderColor = '#111';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.background = '#f9f9f9';
+                                                e.currentTarget.style.color = '#111';
+                                                e.currentTarget.style.borderColor = '#eee';
+                                            }}
                                         >
-                                            {seconds < 60 ? t(`hub.liveBoard.seconds_${seconds}`) : t(`hub.liveBoard.minute_${seconds / 60}`)}
+                                            {seconds < 60 ? t(`hub.salaDeEventos.seconds_${seconds}`) : t(`hub.salaDeEventos.minutes_${seconds / 60}`)}
                                         </button>
                                     ))}
+                                    <div style={{ width: '100%', height: '12px' }} />
                                     <button
                                         onClick={() => {
                                             setShowBoardActivationOptions(false);
@@ -880,19 +901,19 @@ function HubContent() {
                                             }
                                         }}
                                         style={{
-                                            gridColumn: 'span 2',
-                                            padding: '10px',
-                                            borderRadius: '12px',
+                                            width: '100%',
+                                            padding: '14px',
+                                            borderRadius: '16px',
                                             border: 'none',
                                             background: '#111',
                                             color: '#fff',
-                                            fontSize: '0.8rem',
-                                            fontWeight: 800,
+                                            fontSize: '0.9rem',
+                                            fontWeight: 900,
                                             cursor: 'pointer',
-                                            marginTop: '8px'
+                                            boxShadow: '0 8px 20px rgba(0,0,0,0.1)'
                                         }}
                                     >
-                                        {t('hub.liveBoard.startNow')}
+                                        🚀 {t('hub.salaDeEventos.startNow')}
                                     </button>
                                 </div>
                                 <button
@@ -900,17 +921,18 @@ function HubContent() {
                                     style={{
                                         display: 'block',
                                         width: '100%',
-                                        marginTop: '15px',
+                                        marginTop: '12px',
                                         background: 'none',
                                         border: 'none',
-                                        fontSize: '0.7rem',
-                                        color: '#888',
+                                        fontSize: '0.65rem',
+                                        color: '#aaa',
                                         cursor: 'pointer',
-                                        fontWeight: 600
+                                        fontWeight: 700
                                     }}
                                 >
                                     Cancelar
                                 </button>
+
                             </motion.div>
                         ) : (
                             <>
@@ -936,9 +958,9 @@ function HubContent() {
                                         boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
                                     }}
                                 >
-                                    <SparklesIcon size={18} color={primaryColor} /> {t('hub.liveBoard.activateBoard')}
+                                    <SparklesIcon size={18} color={primaryColor} /> {t('hub.salaDeEventos.activateBoard')}
                                 </motion.button>
-                                <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '10px', fontWeight: 600 }}>{t('hub.liveBoard.exclusiveMentor')}</p>
+                                <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '10px', fontWeight: 600 }}>{t('hub.salaDeEventos.exclusiveMentor')}</p>
                             </>
                         )}
                     </div>
@@ -948,42 +970,26 @@ function HubContent() {
 
                     {/* Left Column: Details */}
                     <div style={{ display: 'grid', gap: '35px' }}>
-
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            style={{ background: cardBg, borderRadius: '32px', overflow: 'hidden', boxShadow: isDark ? '0 20px 40px -10px rgba(0,0,0,0.5)' : '0 20px 40px -10px rgba(0,0,0,0.08)', border: cardBorder, position: 'relative' }}
-                        >
-                            <div style={{ position: 'relative', width: '100%', height: '300px' }}>
-                                <Image
-                                    src={form.coverImage || 'https://res.cloudinary.com/demo/image/upload/sample.jpg'}
-                                    alt={form.title}
-                                    fill
-                                    style={{ objectFit: 'cover' }}
-                                    unoptimized={!form.coverImage}
-                                />
-                                <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', padding: '30px', background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%)', color: '#fff' }}>
-                                    <div style={{ display: 'flex', gap: '40px' }}>
-                                        <div>
-                                            <div style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.8, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('submissions.date')}</div>
-                                            <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{form.eventDate ? new Date(form.eventDate).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long' }) : t('common.toBeDefined')}</div>
-                                        </div>
-                                        <div>
-                                            <div style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.8, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('events.eventTimeLabel') || 'Horário'}</div>
-                                            <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>
-                                                {form.eventTime || (form.eventDate ? new Date(form.eventDate).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : t('common.toBeDefined'))}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.8, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('events.eventModeLabel') || 'Modelo'}</div>
-                                            <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>
-                                                {form.eventType ? t(`events.${form.eventType}`) : (form.location ? t('events.modePresencial') : t('events.modeOnline'))}
-                                            </div>
-                                        </div>
+                        <div style={{ background: cardBg, borderRadius: '24px', padding: '30px', border: cardBorder, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.3)' : '0 10px 30px rgba(0,0,0,0.02)' }}>
+                            <div style={{ display: 'flex', gap: '40px', justifyContent: 'space-between' }}>
+                                <div>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.6, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('events.submissions.date')}</div>
+                                    <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>{form.eventDate ? new Date(form.eventDate).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long' }) : t('common.toBeDefined')}</div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.6, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('events.eventTimeLabel') || 'Horário'}</div>
+                                    <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>
+                                        {form.eventTime || (form.eventDate ? new Date(form.eventDate).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : t('common.toBeDefined'))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.6, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('events.eventModeLabel') || 'Acesso / Canal'}</div>
+                                    <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>
+                                        {form.eventType ? t(`events.${form.eventType}`) : (form.location ? t('events.modePresencial') : t('events.modeOnline'))}
                                     </div>
                                 </div>
                             </div>
-                        </motion.div>
+                        </div>
 
                         {/* Location & Links */}
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px' }}>
@@ -1054,7 +1060,7 @@ function HubContent() {
                                     background: 'rgba(255, 255, 255, 0.03)',
                                     backdropFilter: 'blur(20px)',
                                     borderRadius: '48px',
-                                    padding: '60px',
+                                    padding: '30px 40px',
                                     color: textColor,
                                     position: 'relative',
                                     overflow: 'hidden',
@@ -1067,8 +1073,8 @@ function HubContent() {
 
                                 <div style={{ position: 'relative', zIndex: 1 }}>
                                     <h2 style={{
-                                        margin: '0 0 30px 0',
-                                        fontSize: '2.5rem',
+                                        margin: '0 0 15px 0',
+                                        fontSize: '2rem',
                                         fontWeight: 800,
                                         fontFamily: 'var(--font-playfair), serif',
                                         background: `linear-gradient(to right, ${textColor}, ${primaryColor}80)`,
@@ -1079,24 +1085,25 @@ function HubContent() {
                                     </h2>
 
                                     <p style={{
-                                        fontSize: '1.25rem',
-                                        lineHeight: '1.8',
+                                        fontSize: '1.1rem',
+                                        lineHeight: '1.6',
                                         whiteSpace: 'pre-wrap',
                                         opacity: 0.9,
                                         fontWeight: 500,
-                                        color: isDark ? '#f4f4f5' : '#333'
+                                        color: isDark ? '#f4f4f5' : '#333',
+                                        marginBottom: '25px'
                                     }}>
                                         {form.welcomeMessage}
                                     </p>
 
                                     <div style={{
-                                        marginTop: '45px',
+                                        marginTop: '0px',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '16px',
-                                        padding: '16px 24px',
+                                        gap: '12px',
+                                        padding: '12px 16px',
                                         background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
-                                        borderRadius: '24px',
+                                        borderRadius: '20px',
                                         width: 'fit-content',
                                         border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)'
                                     }}>
@@ -1639,19 +1646,20 @@ function HubContent() {
                                     marginTop: '60px',
                                     background: cardBg,
                                     color: textColor,
-                                    padding: '50px',
-                                    borderRadius: '32px',
+                                    padding: '24px',
+                                    borderRadius: '24px',
                                     border: cardBorder,
-                                    boxShadow: isDark ? '0 20px 40px rgba(0,0,0,0.5)' : '0 20px 40px rgba(0,0,0,0.05)',
+                                    boxShadow: isDark ? '0 15px 35px rgba(0,0,0,0.3)' : '0 15px 35px rgba(0,0,0,0.03)',
                                     textAlign: 'center'
                                 }}
                             >
-                                <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '10px', color: '#111' }}>
+                                <h2 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '6px', color: '#111' }}>
                                     {t('feedback.eventRating.title')}
                                 </h2>
-                                <p style={{ color: '#666', fontSize: '1.1rem', marginBottom: '30px', maxWidth: '500px', margin: '0 auto 30px' }}>
+                                <p style={{ color: '#666', fontSize: '0.85rem', marginBottom: '15px', maxWidth: '300px', margin: '0 auto 15px', lineHeight: 1.4 }}>
                                     {t('feedback.eventRating.subtitle')}
                                 </p>
+
 
                                 {!isRatingSubmitted ? (
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
@@ -1667,11 +1675,12 @@ function HubContent() {
                                                     style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
                                                 >
                                                     <Star
-                                                        size={36}
+                                                        size={28}
                                                         fill={(hoverRating || userRating) >= star ? (form.theme?.primaryColor || '#CFB53B') : 'none'}
                                                         color={(hoverRating || userRating) >= star ? (form.theme?.primaryColor || '#CFB53B') : '#ddd'}
                                                         style={{ transition: 'all 0.2s ease' }}
                                                     />
+
                                                 </motion.button>
                                             ))}
                                         </div>
@@ -1702,11 +1711,11 @@ function HubContent() {
                                                 style={{
                                                     background: '#111',
                                                     color: '#fff',
-                                                    padding: '16px 40px',
+                                                    padding: '12px 30px',
                                                     borderRadius: '100px',
                                                     border: 'none',
                                                     fontWeight: 800,
-                                                    fontSize: '1rem',
+                                                    fontSize: '0.9rem',
                                                     cursor: 'pointer',
                                                     marginTop: '10px',
                                                     boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
@@ -1753,6 +1762,71 @@ function HubContent() {
                 eventTitle={form.title}
                 creatorId={form.creator?._id}
             />
+
+            {/* Guest Incentive Banner */}
+            <AnimatePresence>
+                {showGuestBanner && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50, x: -20, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 50, scale: 0.95 }}
+                        style={{
+                            position: 'fixed',
+                            bottom: '24px',
+                            left: '24px',
+                            zIndex: 9999,
+                            background: isDark ? 'linear-gradient(135deg, #111, #000)' : '#fff',
+                            border: isDark ? `1px solid ${primaryColor}40` : `1px solid rgba(0,0,0,0.08)`,
+                            boxShadow: isDark ? `0 20px 40px rgba(0,0,0,0.8), 0 0 20px ${primaryColor}10` : '0 20px 40px rgba(0,0,0,0.1)',
+                            borderRadius: '16px',
+                            padding: '24px',
+                            maxWidth: '340px',
+                            color: textColor,
+                            backdropFilter: 'blur(12px)'
+                        }}
+                    >
+                        <button 
+                            onClick={() => setShowGuestBanner(false)}
+                            style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: 'none', color: secondaryTextColor, cursor: 'pointer', padding: '4px' }}
+                        >
+                            <X size={16} />
+                        </button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                            <div style={{ background: `${primaryColor}15`, color: primaryColor, padding: '10px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <SparklesIcon size={20} />
+                            </div>
+                            <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>{t('hub.professionalTip') || 'Dica Profissional'}</h4>
+                        </div>
+                        <p style={{ margin: '0 0 20px', fontSize: '0.85rem', color: secondaryTextColor, lineHeight: 1.6 }}>
+                            {t('hub.guestIncentiveText') || 'Sabias que podes guardar todos os teus materiais, submissões e futuros certificados num só lugar? Cria já a tua conta gratuita de Participante.'}
+                        </p>
+                        <button
+                            onClick={() => router.push(`/cadastro?redirect=/hub/${id}&role=participant`)}
+                            style={{
+                                width: '100%',
+                                background: primaryColor,
+                                color: '#fff',
+                                border: 'none',
+                                padding: '14px',
+                                borderRadius: '12px',
+                                fontWeight: 800,
+                                fontSize: '0.9rem',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                boxShadow: `0 4px 15px ${primaryColor}40`,
+                                transition: 'all 0.2s ease'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                        >
+                            <UserCircle size={18} /> {t('common.createAccount') || 'Criar Conta Gratuita'}
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <style jsx>{`
                 @media (max-width: 1024px) {
