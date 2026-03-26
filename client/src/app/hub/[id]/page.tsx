@@ -771,7 +771,7 @@ function HubContent() {
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ delay: 0.2 }}
-                                style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '10px' }}
+                                style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '10px', color: '#ffffff' }}
                             >
                                 {t('hub.salaDeEventos.countdownTitle')}
                             </motion.h3>
@@ -1785,7 +1785,7 @@ function HubContent() {
                             backdropFilter: 'blur(12px)'
                         }}
                     >
-                        <button 
+                        <button
                             onClick={() => setShowGuestBanner(false)}
                             style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: 'none', color: secondaryTextColor, cursor: 'pointer', padding: '4px' }}
                         >
