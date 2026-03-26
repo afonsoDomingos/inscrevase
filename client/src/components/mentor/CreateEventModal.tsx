@@ -1214,13 +1214,13 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
     return (
         <AnimatePresence>
-            <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+            <div style={{ position: 'fixed', inset: 0, zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={onClose}
-                    style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)' }}
+                    style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)' }}
                 />
 
                 <motion.div
@@ -3608,11 +3608,11 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                     value={whatsappConfig.phoneNumber}
                                                     onChange={(e) => setWhatsappConfig({ ...whatsappConfig, phoneNumber: e.target.value })}
                                                     placeholder="Ex: +258 84 000 0000"
-                                                    style={{ 
-                                                        width: '100%', 
-                                                        padding: '1.1rem', 
-                                                        borderRadius: '12px', 
-                                                        border: !whatsappConfig.phoneNumber ? '2px solid #FEF2F2' : '1px solid #ddd', 
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '1.1rem',
+                                                        borderRadius: '12px',
+                                                        border: !whatsappConfig.phoneNumber ? '2px solid #FEF2F2' : '1px solid #ddd',
                                                         background: !whatsappConfig.phoneNumber ? '#FFFAF9' : '#fff',
                                                         outline: 'none',
                                                         fontSize: '1rem',
@@ -3878,7 +3878,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                         {/* Unified Sticky Footer Action */}
                         {step !== 0 && (
                             <div style={{
-                                padding: isMobile ? '1rem 1.5rem calc(1rem + env(safe-area-inset-bottom))' : '1rem 2rem', 
+                                padding: isMobile ? '1rem 1.5rem calc(1rem + env(safe-area-inset-bottom))' : '1rem 2rem',
                                 background: '#fff',
                                 borderTop: '2px solid #FFD700',
                                 display: 'flex',
@@ -3917,10 +3917,10 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                         <button
                                             type="button"
                                             onClick={
-                                                step === 9 
-                                                    ? handleSubmit 
-                                                    : (step === 6 && !whatsappConfig.phoneNumber?.trim()) 
-                                                        ? () => toast.error(t('events.whatsappNumberRequiredToast')) 
+                                                step === 9
+                                                    ? handleSubmit
+                                                    : (step === 6 && !whatsappConfig.phoneNumber?.trim())
+                                                        ? () => toast.error(t('events.whatsappNumberRequiredToast'))
                                                         : () => setStep(step + 1)
                                             }
                                             disabled={loading}

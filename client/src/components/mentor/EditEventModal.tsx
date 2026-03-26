@@ -628,7 +628,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={onClose}
-                    style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)' }}
+                    style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)' }}
                 />
 
                 <motion.div
