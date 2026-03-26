@@ -1195,7 +1195,6 @@ export default function SalaDeEventosContainer({
                                         {mentorData.whatsapp && (
                                             <a href={`https://wa.me/${mentorData.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ color: isDark ? '#fff' : '#111', opacity: 0.5, display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}>
                                                 <Phone size={14} />
-                                                <span style={{ fontSize: '0.7rem' }}>{mentorData.whatsapp}</span>
                                             </a>
                                         )}
                                     </div>
