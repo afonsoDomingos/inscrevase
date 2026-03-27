@@ -71,14 +71,14 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
   background-clip: content-box;
 }
 
@@ -91,12 +91,12 @@ body {
 }
 
 .luxury-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(212,175,55,0.2);
+  background: rgba(212, 175, 55, 0.2);
   border-radius: 10px;
 }
 
 .luxury-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(212,175,55,0.4);
+  background: rgba(212, 175, 55, 0.4);
 }
 
 h1,
@@ -767,10 +767,8 @@ h6 {
     margin-left: 0;
     width: 100%;
     padding: 1.25rem;
-    /* Padding mais confortável */
-    padding-top: 7rem;
+    padding-top: 4.8rem;
     overflow-x: hidden;
-    /* Evita scroll horizontal indesejado na página */
   }
 
   .admin-mobile-toggle {
