@@ -24,7 +24,7 @@ export default function PayPalProviderWrapper({ children }: { children: React.Re
                 clientId: clientId,
                 currency: 'USD',
                 intent: 'capture',
-                'disable-funding': 'card,credit',
+                // Removido disable-funding para permitir botões de cartão
             }}
             deferLoading={false}
         >
