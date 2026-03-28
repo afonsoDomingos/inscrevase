@@ -36,7 +36,7 @@ import PaypalButton from '@/components/common/PaypalButton';
 import { toast } from 'sonner';
 import MetaPixel from '@/components/MetaPixel';
 import { useMetaPixelEvents } from '@/hooks/useMetaPixelEvents';
-import AdBanner from '@/components/common/AdBanner';
+/* import AdBanner removed */
 import { useCurrency } from '@/context/CurrencyContext';
 import EventNotFound from './not-found';
 
@@ -911,8 +911,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     </motion.div>
                                 )}
 
-                                {/* Middle Ad Slot */}
-                                <AdBanner slot="3569850277" format="horizontal" />
+{/* Middle Ad Slot Hidden */}
 
                                 {form.paymentConfig?.enabled && (
                                     <motion.div
@@ -1518,10 +1517,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                             </motion.div>
                         </div>
 
-                        {/* Bottom Ad Slot */}
-                        <div style={{ marginTop: '3rem' }}>
-                            <AdBanner slot="3569850277" format="fluid" />
-                        </div>
+                        {/* Bottom Ad Slot Hidden */}
 
                         {/* Mini Footer for AdSense Compliance */}
                         <div style={{ marginTop: '3rem', textAlign: 'center', opacity: 0.5, fontSize: '0.75rem' }}>
