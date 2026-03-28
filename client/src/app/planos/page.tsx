@@ -37,7 +37,7 @@ export default function PlansPage() {
         trackPlan(plan, price);
 
         if (!user) {
-            router.push(`/cadastro?plan=${plan.toLowerCase()}`);
+            router.push(`/entrar?redirect=${encodeURIComponent(window.location.pathname)}&plan=${plan.toLowerCase()}`);
             return;
         }
 
@@ -299,7 +299,7 @@ export default function PlansPage() {
                                     )}
                                 </button>
                                 <button
-                                    onClick={() => user ? setIsUpgradeModalOpen(true) : router.push('/cadastro?plan=pro')}
+                                    onClick={() => user ? setIsUpgradeModalOpen(true) : router.push(`/entrar?redirect=${encodeURIComponent(window.location.pathname)}&plan=pro`)}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -380,7 +380,7 @@ export default function PlansPage() {
                                     )}
                                 </button>
                                 <button
-                                    onClick={() => user ? setIsUpgradeModalOpen(true) : router.push('/cadastro?plan=enterprise')}
+                                    onClick={() => user ? setIsUpgradeModalOpen(true) : router.push(`/entrar?redirect=${encodeURIComponent(window.location.pathname)}&plan=enterprise`)}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',

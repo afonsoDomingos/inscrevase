@@ -251,7 +251,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                                             currency={currency}
                                             onSuccess={() => {
                                                 if (!user) {
-                                                    window.location.href = "/cadastro?plan=pro&success=true";
+                                                    window.location.href = `/entrar?redirect=${encodeURIComponent(window.location.pathname)}&plan=pro&success=true`;
                                                 } else {
                                                     window.location.reload();
                                                 }
@@ -262,7 +262,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                                 <button
                                     onClick={() => {
                                         if (!user) {
-                                            window.location.href = "/cadastro?plan=pro&method=manual";
+                                            window.location.href = `/entrar?redirect=${encodeURIComponent(window.location.pathname)}&plan=pro&method=manual`;
                                         } else {
                                             setSelectedManualPlan({ id: 'pro', amount: getPlanPrice('pro') });
                                             setIsUpgradeModalOpen(true);
@@ -350,7 +350,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                                             currency={currency}
                                             onSuccess={() => {
                                                 if (!user) {
-                                                    window.location.href = "/cadastro?plan=enterprise&success=true";
+                                                    window.location.href = `/entrar?redirect=${encodeURIComponent(window.location.pathname)}&plan=enterprise&success=true`;
                                                 } else {
                                                     window.location.reload();
                                                 }
@@ -361,7 +361,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                                 <button
                                     onClick={() => {
                                         if (!user) {
-                                            window.location.href = "/cadastro?plan=enterprise&method=manual";
+                                            window.location.href = `/entrar?redirect=${encodeURIComponent(window.location.pathname)}&plan=enterprise&method=manual`;
                                         } else {
                                             setSelectedManualPlan({ id: 'enterprise', amount: getPlanPrice('enterprise') });
                                             setIsUpgradeModalOpen(true);

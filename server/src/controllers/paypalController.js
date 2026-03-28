@@ -33,22 +33,20 @@ exports.createSubscriptionOrder = async (req, res) => {
         let finalAmount;
         let finalCurrency = currency;
 
-        if (currency === 'MZN') {
-            // Se o plano tiver preço fixo em USD (ex: 299 -> 2.99), usamos esse para evitar flutuação cambial no checkout
-            if (planConfig.prices && planConfig.prices.USD) {
-                finalAmount = planConfig.prices.USD / 100;
-                finalCurrency = 'USD';
-                console.log(`💱 PayPal Sub: Using fixed USD price for MZN selection: ${finalAmount} USD`);
-            } else {
-                // Caso contrário, convertemos o preço MZN para USD
-                const mznPrice = planConfig.prices ? (planConfig.prices.MZN / 100) : (planConfig.price || 0);
-                const conversion = await exchangeRateService.convert(mznPrice, 'MZN', 'USD');
-                finalAmount = conversion.amount;
-                finalCurrency = 'USD';
-                console.log(`💱 PayPal Sub: Converted ${mznPrice} MZN to ${finalAmount} USD`);
-            }
+        if (currency === 'MZN' || currency === 'MT') {
+            const mznPrice = planConfig.prices?.MZN ? (planConfig.prices.MZN / 100) : (planConfig.price || 0);
+            const mznRate = await getLatestRate();
+            
+            // Convert to USD because PayPal doesn't support MZN
+            finalAmount = mznPrice / mznRate;
+            finalCurrency = 'USD';
+            console.log(`💱 PayPal Sub: Dynamically converted ${mznPrice} MZN to ${finalAmount.toFixed(2)} USD (at rate ${mznRate})`);
         } else {
             finalAmount = planConfig.prices ? (planConfig.prices[currency] / 100) : (planConfig.price || 0);
+            if (!finalAmount && planConfig.prices?.USD) {
+                finalAmount = planConfig.prices.USD / 100;
+                finalCurrency = 'USD';
+            }
         }
 
         const orderData = {

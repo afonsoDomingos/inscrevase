@@ -9,8 +9,8 @@ const PLANS = {
         name: 'Profissional',
         commissionRate: 0.10, // 10%
         prices: {
-            MZN: 17500, // 175.00 MT
-            USD: 299    // 2.99 USD
+            MZN: 125000, // 1.250.00 MT
+            USD: 1950    // ~19.50 USD
         },
         interval: 'month'
     },
@@ -18,8 +18,8 @@ const PLANS = {
         name: 'Enterprise',
         commissionRate: 0.00, // 0% - Estratégia Taxa Zero
         prices: {
-            MZN: 175000, // 1.750.00 MT
-            USD: 2799    // 27.99 USD
+            MZN: 1250000, // 12.500.00 MT
+            USD: 19500    // ~195.00 USD
         },
         interval: 'month'
     }

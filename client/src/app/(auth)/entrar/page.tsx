@@ -65,6 +65,14 @@ function LoginContent() {
         try {
             const data = await authService.login(email, password);
             toast.success(t('auth.loginSuccess'));
+
+            // Smart Redirect
+            const redirectTo = searchParams.get('redirect');
+            if (redirectTo) {
+                router.push(redirectTo);
+                return;
+            }
+
             if (data.user.role === 'SuperAdmin' || data.user.role === 'admin') {
                 router.push('/dashboard/admin');
             } else if (data.user.role === 'participant') {
