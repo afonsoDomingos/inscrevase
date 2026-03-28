@@ -14,6 +14,7 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import WhatsAppFloat from '@/components/common/WhatsAppFloat';
 import HealthCheck from '@/components/common/HealthCheck';
 import PWAInstallPrompt from '@/components/common/PWAInstallPrompt';
+import PayPalProviderWrapper from '@/components/common/PayPalProviderWrapper';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -421,17 +422,19 @@ export default function RootLayout({
           <LanguageProvider>
             <CurrencyProvider>
               <SocketProvider>
-                <LoadingScreen />
-                <HealthCheck />
-                <ClientLayoutWrapper>
-                  <Suspense fallback={null}>
-                    <AnalyticsTracker />
-                    <MetaPixel pixelId="1313928660767780" />
-                  </Suspense>
-                  {children}
-                  <WhatsAppFloat />
-                  <PWAInstallPrompt />
-                </ClientLayoutWrapper>
+                <PayPalProviderWrapper>
+                  <LoadingScreen />
+                  <HealthCheck />
+                  <ClientLayoutWrapper>
+                    <Suspense fallback={null}>
+                      <AnalyticsTracker />
+                      <MetaPixel pixelId="1313928660767780" />
+                    </Suspense>
+                    {children}
+                    <WhatsAppFloat />
+                    <PWAInstallPrompt />
+                  </ClientLayoutWrapper>
+                </PayPalProviderWrapper>
               </SocketProvider>
             </CurrencyProvider>
           </LanguageProvider>

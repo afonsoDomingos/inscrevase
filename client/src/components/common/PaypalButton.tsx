@@ -1,6 +1,6 @@
 'use client';
 
-import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { toast } from "sonner";
 import Cookies from 'js-cookie';
 import { logService } from '@/lib/logService';
@@ -26,13 +26,8 @@ interface PaypalButtonProps {
 }
 
 export default function PaypalButton({ type, planId, formId, submissionData, adData, currency, onSuccess }: PaypalButtonProps) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const initialOptions: any = {
-        clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test",
-        currency: ['USD', 'EUR', 'BRL', 'GBP'].includes(currency) ? currency : 'USD',
-        intent: "capture",
-        "disable-funding": "card,credit",
-    };
+    // O SDK já está carregado via PayPalProviderWrapper no layout global
+    const [{ isPending, isRejected }] = usePayPalScriptReducer();
 
     const createOrder = async () => {
         const loadingToast = toast.loading("Preparando ambiente seguro PayPal...", { duration: 25000 });
@@ -141,13 +136,51 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
         }
     };
 
+    // SDK ainda a carregar
+    if (isPending) {
+        return (
+            <div style={{
+                height: '45px',
+                background: 'rgba(255,196,57,0.3)',
+                borderRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.8rem',
+                color: '#5a3e00',
+                fontWeight: 700,
+                gap: '8px'
+            }}>
+                <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite', fontSize: '1rem' }}>⏳</span>
+                A carregar PayPal...
+            </div>
+        );
+    }
+
+    // SDK falhou a carregar
+    if (isRejected) {
+        return (
+            <div style={{
+                height: '45px',
+                background: 'rgba(239,68,68,0.1)',
+                borderRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.8rem',
+                color: '#dc2626',
+                fontWeight: 700
+            }}>
+                ⚠️ PayPal indisponível
+            </div>
+        );
+    }
+
     return (
-        <PayPalScriptProvider options={initialOptions}>
-            <PayPalButtons
-                style={{ layout: "vertical", shape: "rect", height: 45 }}
-                createOrder={createOrder}
-                onApprove={onApprove}
-            />
-        </PayPalScriptProvider>
+        <PayPalButtons
+            style={{ layout: "vertical", shape: "rect", height: 45 }}
+            createOrder={createOrder}
+            onApprove={onApprove}
+        />
     );
 }
