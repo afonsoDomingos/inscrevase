@@ -20,4 +20,10 @@ router.get('/all', authMiddleware, adminMiddleware, settingsController.getAllSet
 router.post('/log-attempt', authMiddleware, settingsController.logPaymentAttempt);
 router.get('/payment-attempts', authMiddleware, adminMiddleware, settingsController.getPaymentAttempts);
 
+/**
+ * GLOBAL PIXEL
+ */
+router.get('/meta-pixel', settingsController.getGlobalPixel);
+router.put('/meta-pixel', authMiddleware, adminMiddleware, settingsController.updateGlobalPixel);
+
 module.exports = router;

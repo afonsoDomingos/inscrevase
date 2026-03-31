@@ -2072,6 +2072,7 @@
             "bio": "Bio Curta",
             "bioPlaceholder": "Uma pequena descrição sobre si...",
             "saveChanges": "Salvar Alterações",
+            "updateSuccess": "Perfil atualizado com sucesso!",
             "uploadError": "Erro no upload da foto",
             "updateError": "Erro ao carregar o arquivo"
         }

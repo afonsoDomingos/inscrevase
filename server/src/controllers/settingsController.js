@@ -143,3 +143,43 @@ exports.getPaymentAttempts = async (req, res) => {
         res.status(500).json({ message: 'Error fetching payment attempts' });
     }
 };
+/**
+ * Get the global Meta Pixel ID
+ */
+exports.getGlobalPixel = async (req, res) => {
+    try {
+        const settings = await GlobalSettings.findOne({ key: 'global_meta_pixel_id' });
+        res.status(200).json({ pixelId: settings ? settings.value : '1624084229040413' }); // Fallback to current production ID
+    } catch (error) {
+        console.error('[SETTINGS] Error fetching global pixel:', error.message);
+        res.status(500).json({ message: 'Error fetching global pixel' });
+    }
+};
+
+/**
+ * Update the global Meta Pixel ID (Admin only)
+ */
+exports.updateGlobalPixel = async (req, res) => {
+    try {
+        const { pixelId } = req.body;
+
+        if (!pixelId) {
+            return res.status(400).json({ message: 'Pixel ID is required' });
+        }
+
+        const settings = await GlobalSettings.findOneAndUpdate(
+            { key: 'global_meta_pixel_id' },
+            {
+                key: 'global_meta_pixel_id',
+                value: pixelId,
+                lastUpdated: Date.now()
+            },
+            { upsert: true, new: true }
+        );
+
+        res.status(200).json({ message: 'Global Pixel updated successfully', settings });
+    } catch (error) {
+        console.error('[SETTINGS] Error updating global pixel:', error.message);
+        res.status(500).json({ message: 'Error updating global pixel' });
+    }
+};

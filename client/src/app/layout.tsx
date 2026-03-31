@@ -8,7 +8,7 @@ import { SocketProvider } from '@/context/SocketContext';
 import ClientLayoutWrapper from '@/components/ClientLayoutWrapper';
 import AnalyticsTracker from '@/components/common/AnalyticsTracker';
 import { Suspense } from "react";
-import MetaPixel from '@/components/MetaPixel';
+import GlobalMetaPixel from '@/components/GlobalMetaPixel';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { ThemeProvider } from '@/context/ThemeContext';
 import WhatsAppFloat from '@/components/common/WhatsAppFloat';
@@ -428,7 +428,7 @@ export default function RootLayout({
                   <ClientLayoutWrapper>
                     <Suspense fallback={null}>
                       <AnalyticsTracker />
-                      <MetaPixel pixelId="1624084229040413" />
+                      <GlobalMetaPixel />
                     </Suspense>
                     {children}
                     <WhatsAppFloat />
