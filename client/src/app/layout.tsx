@@ -428,7 +428,7 @@ export default function RootLayout({
                   <ClientLayoutWrapper>
                     <Suspense fallback={null}>
                       <AnalyticsTracker />
-                      <MetaPixel pixelId="1313928660767780" />
+                      <MetaPixel pixelId="1624084229040413" />
                     </Suspense>
                     {children}
                     <WhatsAppFloat />
