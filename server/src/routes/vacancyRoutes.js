@@ -14,6 +14,7 @@ router.post('/apply', vacancyController.submitApplication);
  * ADMIN
  */
 router.post('/', authMiddleware, adminMiddleware, vacancyController.createVacancy);
+router.put('/:id', authMiddleware, adminMiddleware, vacancyController.updateVacancy);
 router.get('/admin/all', authMiddleware, adminMiddleware, vacancyController.getAdminVacancies);
 router.delete('/:id', authMiddleware, adminMiddleware, vacancyController.deleteVacancy);
 router.get('/admin/applications', authMiddleware, adminMiddleware, vacancyController.getApplications);

@@ -85,6 +85,20 @@ exports.createVacancy = async (req, res) => {
 };
 
 /**
+ * Admin - Update Vacancy
+ */
+exports.updateVacancy = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const vacancy = await Vacancy.findByIdAndUpdate(id, req.body, { new: true });
+        if (!vacancy) return res.status(404).json({ message: 'Vaga não encontrada' });
+        res.status(200).json(vacancy);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao atualizar vaga', error: error.message });
+    }
+};
+
+/**
  * Admin - Get all vacancies (active and inactive)
  */
 exports.getAdminVacancies = async (req, res) => {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { vacancyService, Vacancy, JobApplication } from '@/lib/vacancyService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Users, Eye, Search, FileDown, Loader2, MapPin, Briefcase, X, Layout, HelpCircle, Save, FileText } from 'lucide-react';
+import { Plus, Trash2, Users, Eye, Search, FileDown, Loader2, MapPin, Briefcase, X, Layout, HelpCircle, Save, FileText, Upload, ImageIcon, Edit } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function VacanciesAdmin() {
@@ -12,8 +12,10 @@ export default function VacanciesAdmin() {
     const [applications, setApplications] = useState<JobApplication[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedVacancy, setSelectedVacancy] = useState<Vacancy | null>(null);
     const [selectedApplication, setSelectedApplication] = useState<JobApplication | null>(null);
     const [isAppModalOpen, setIsAppModalOpen] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [appSearchTerm, setAppSearchTerm] = useState('');
 
@@ -61,9 +63,15 @@ export default function VacanciesAdmin() {
         }
 
         try {
-            await vacancyService.createVacancy(formData);
-            toast.success('Vaga guardada com sucesso!');
+            if (selectedVacancy) {
+                await vacancyService.updateVacancy(selectedVacancy._id, formData);
+                toast.success('Vaga atualizada com sucesso!');
+            } else {
+                await vacancyService.createVacancy(formData);
+                toast.success('Vaga guardada com sucesso!');
+            }
             setIsModalOpen(false);
+            setSelectedVacancy(null);
             loadData();
             setFormData({
                 title: '',
@@ -73,6 +81,7 @@ export default function VacanciesAdmin() {
                 type: 'Full-time',
                 category: 'Tecnologia',
                 active: true,
+                image: '',
                 questions: [
                     { label: 'Por que deseja trabalhar connosco?', required: true, type: 'textarea' },
                     { label: 'Quais são as suas principais competências para esta vaga?', required: true, type: 'textarea' },
@@ -82,6 +91,20 @@ export default function VacanciesAdmin() {
         } catch (error) {
             console.error(error);
             toast.error('Erro ao guardar vaga');
+        }
+    };
+
+    const handleImageUpload = async (file: File) => {
+        try {
+            setUploading(true);
+            const url = await vacancyService.uploadCV(file); // vacancyService.uploadCV handles generic file upload
+            setFormData({ ...formData, image: url });
+            toast.success('Imagem carregada!');
+        } catch (error) {
+            console.error(error);
+            toast.error('Erro ao carregar imagem');
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -124,7 +147,25 @@ export default function VacanciesAdmin() {
                         {view === 'list' ? <><Users size={18} /> Ver Candidatos</> : <><Layout size={18} /> Ver Vagas</>}
                     </button>
                     <button 
-                        onClick={() => { setFormData({ ...formData, questions: formData.questions || [] }); setIsModalOpen(true); }}
+                        onClick={() => { 
+                            setSelectedVacancy(null);
+                            setFormData({
+                                title: '',
+                                description: '',
+                                requirements: [],
+                                location: 'Remoto',
+                                type: 'Full-time',
+                                category: 'Tecnologia',
+                                active: true,
+                                image: '',
+                                questions: [
+                                    { label: 'Por que deseja trabalhar connosco?', required: true, type: 'textarea' },
+                                    { label: 'Quais são as suas principais competências para esta vaga?', required: true, type: 'textarea' },
+                                    { label: 'Qual é a sua disponibilidade?', required: true, type: 'text' }
+                                ]
+                            });
+                            setIsModalOpen(true); 
+                        }}
                         style={{ padding: '12px 24px', borderRadius: '12px', border: 'none', background: 'var(--gold-gradient)', color: '#000', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 15px rgba(212,175,55,0.2)' }}
                     >
                         <Plus size={20} /> Nova Vaga
@@ -177,6 +218,26 @@ export default function VacanciesAdmin() {
                                     <td style={{ padding: '1.2rem' }}>
                                         <div style={{ display: 'flex', gap: '10px' }}>
                                             <button onClick={() => handleDelete(v._id)} style={{ padding: '8px', borderRadius: '8px', border: '1px solid #fee2e2', color: '#ef4444', background: '#fff', cursor: 'pointer' }}><Trash2 size={16} /></button>
+                                            <button 
+                                                onClick={() => {
+                                                    setSelectedVacancy(v);
+                                                    setFormData({
+                                                        title: v.title,
+                                                        description: v.description,
+                                                        requirements: v.requirements,
+                                                        location: v.location,
+                                                        type: v.type,
+                                                        category: v.category,
+                                                        active: v.active,
+                                                        image: v.image,
+                                                        questions: v.questions
+                                                    });
+                                                    setIsModalOpen(true);
+                                                }}
+                                                style={{ padding: '8px', borderRadius: '8px', border: '1px solid #eee', color: '#3182ce', background: '#fff', cursor: 'pointer' }}
+                                            >
+                                                <Edit size={16} />
+                                            </button>
                                             <button 
                                                 onClick={() => {
                                                     const url = `${window.location.origin}/vagas/${v.slug}`;
@@ -257,8 +318,8 @@ export default function VacanciesAdmin() {
                             style={{ background: '#fff', width: '100%', maxWidth: '800px', borderRadius: '32px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: '90vh' }}
                         >
                             <div style={{ padding: '1.5rem 2.5rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <h3 style={{ fontSize: '1.5rem', fontWeight: 900, margin: 0 }}>Configurar <span className="gold-text">Vaga</span></h3>
-                                <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><X size={24} /></button>
+                                <h3 style={{ fontSize: '1.5rem', fontWeight: 900, margin: 0 }}>{selectedVacancy ? 'Editar' : 'Configurar'} <span className="gold-text">Vaga</span></h3>
+                                <button onClick={() => { setIsModalOpen(false); setSelectedVacancy(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><X size={24} /></button>
                             </div>
 
                             <div style={{ padding: '2.5rem', overflowY: 'auto', flex: 1, display: 'grid', gap: '1.5rem' }}>
@@ -286,6 +347,40 @@ export default function VacanciesAdmin() {
                                             <option value="Remote">Remote</option>
                                             <option value="Freelance">Freelance</option>
                                         </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#888', marginBottom: '8px' }}>Imagem da Vaga (Opcional)</label>
+                                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                        <div style={{ width: '100px', height: '60px', borderRadius: '12px', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid #eee' }}>
+                                            {formData.image ? <img src={formData.image} alt="Vaga" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <ImageIcon size={24} color="#ccc" />}
+                                        </div>
+                                        <div style={{ position: 'relative', flex: 1 }}>
+                                            <input 
+                                                type="file" 
+                                                accept="image/*" 
+                                                onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0])} 
+                                                style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }}
+                                            />
+                                            <div style={{ padding: '10px 15px', borderRadius: '10px', border: '1px dashed #000', textAlign: 'center', fontSize: '0.8rem', fontWeight: 700, color: '#666', background: '#fcfcfc' }}>
+                                                {uploading ? <Loader2 size={16} className="animate-spin" /> : 'Alterar Imagem da Vaga'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#888', marginBottom: '8px' }}>Estado da Vaga</label>
+                                    <div style={{ display: 'flex', gap: '15px' }}>
+                                        <button 
+                                            onClick={() => setFormData({...formData, active: true})}
+                                            style={{ flex: 1, padding: '10px', borderRadius: '10px', border: formData.active ? '2px solid #22c55e' : '1px solid #eee', background: formData.active ? '#f0fdf4' : '#fff', color: formData.active ? '#10b981' : '#666', fontWeight: 700, cursor: 'pointer' }}
+                                        >Ativa</button>
+                                        <button 
+                                            onClick={() => setFormData({...formData, active: false})}
+                                            style={{ flex: 1, padding: '10px', borderRadius: '10px', border: !formData.active ? '2px solid #ef4444' : '1px solid #eee', background: !formData.active ? '#fef2f2' : '#fff', color: !formData.active ? '#ef4444' : '#666', fontWeight: 700, cursor: 'pointer' }}
+                                        >Pausada</button>
                                     </div>
                                 </div>
 
@@ -347,10 +442,10 @@ export default function VacanciesAdmin() {
                                 </div>
                             </div>
 
-                            <div style={{ padding: '1.5rem 2.5rem', background: '#fcfcfc', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-                                <button onClick={() => setIsModalOpen(false)} style={{ padding: '12px 25px', borderRadius: '12px', border: '1px solid #eee', background: '#fff', fontWeight: 700, cursor: 'pointer' }}>Cancelar</button>
-                                <button onClick={handleCreateOrUpdate} style={{ padding: '12px 35px', borderRadius: '12px', border: 'none', background: '#000', color: '#fff', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <Save size={18} /> Publicar Vaga
+                             <div style={{ padding: '1.5rem 2.5rem', background: '#fcfcfc', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                                <button onClick={() => { setIsModalOpen(false); setSelectedVacancy(null); }} style={{ padding: '12px 25px', borderRadius: '12px', border: '1px solid #eee', background: '#fff', fontWeight: 700, cursor: 'pointer' }}>Cancelar</button>
+                                <button onClick={handleCreateOrUpdate} disabled={uploading} style={{ padding: '12px 35px', borderRadius: '12px', border: 'none', background: '#000', color: '#fff', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', opacity: uploading ? 0.6 : 1 }}>
+                                    <Save size={18} /> {selectedVacancy ? 'Guardar Alterações' : 'Publicar Vaga'}
                                 </button>
                             </div>
                         </motion.div>

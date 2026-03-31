@@ -82,6 +82,19 @@ export const vacancyService = {
         return res.json();
     },
 
+    updateVacancy: async (id: string, data: Partial<Vacancy>): Promise<Vacancy> => {
+        const token = Cookies.get('token');
+        const res = await fetch(`${API_URL}/vacancies/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        return res.json();
+    },
+
     deleteVacancy: async (id: string): Promise<{ success: boolean }> => {
         const token = Cookies.get('token');
         const res = await fetch(`${API_URL}/vacancies/${id}`, {
