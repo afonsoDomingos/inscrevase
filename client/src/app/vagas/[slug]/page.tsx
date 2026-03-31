@@ -421,9 +421,6 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                                                         })
                                                     ) : (
                                                         <div style={{ textAlign: 'center', padding: '40px' }}>
-                                                            <div style={{ width: '100px', height: '100px', background: '#D4AF3715', color: '#D4AF37', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem' }}>
-                                                                <CheckCircle size={50} />
-                                                            </div>
                                                             <h3 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '1rem' }}>Resumo da sua candidatura</h3>
                                                             <div style={{ display: 'grid', gap: '15px', color: '#666', fontSize: '1.1rem' }}>
                                                                 <p>Candidato: <strong>{formData.fullName}</strong></p>
