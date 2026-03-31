@@ -6,7 +6,7 @@ const jobApplicationSchema = new mongoose.Schema({
     email: { type: String, required: true },
     phone: { type: String, required: true },
     city: { type: String, required: true },
-    cvUrl: { type: String, required: true },
+    cvUrl: { type: String },
     motivationLetter: { type: String },
     status: { type: String, enum: ['Pendente', 'Em Revisão', 'Entrevista', 'Contratado', 'Rejeitado'], default: 'Pendente' },
     answers: [{
