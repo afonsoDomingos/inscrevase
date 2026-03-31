@@ -19,6 +19,7 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
     const [isApplying, setIsApplying] = useState(false);
     const [success, setSuccess] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
+    const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
     
     const [formData, setFormData] = useState({
         fullName: '',
@@ -209,9 +210,19 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) 350px', gap: '4rem' }}>
                             <div>
                                 <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#000', marginBottom: '2rem', letterSpacing: '-0.5px' }}>Sobre a Oportunidade</h2>
-                                <div style={{ color: '#444', lineHeight: 1.8, fontSize: '1.1rem', whiteSpace: 'pre-wrap', marginBottom: '3rem' }}>
-                                    {vacancy?.description}
+                                <div style={{ color: '#444', lineHeight: 1.8, fontSize: '1.1rem', whiteSpace: 'pre-wrap', marginBottom: '1.5rem' }}>
+                                    {vacancy?.description && !isDescriptionExpanded && vacancy.description.length > 500
+                                        ? `${vacancy.description.substring(0, 500)}...`
+                                        : vacancy?.description}
                                 </div>
+                                {vacancy?.description && vacancy.description.length > 500 && (
+                                    <button 
+                                        onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                                        style={{ background: 'none', border: 'none', color: '#D4AF37', fontWeight: 800, fontSize: '1rem', cursor: 'pointer', padding: 0, marginBottom: '3rem', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                    >
+                                        {isDescriptionExpanded ? 'Ler menos' : 'Ler descrição completa'}
+                                    </button>
+                                )}
 
                                 {vacancy?.requirements && vacancy.requirements.length > 0 && (
                                     <>
