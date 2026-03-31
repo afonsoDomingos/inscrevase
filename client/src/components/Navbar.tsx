@@ -612,13 +612,17 @@ export default function Navbar() {
 
         /* Hover State - Golden Backdrop Shape focus */
         :global(.nav-item):hover {
+          background: rgba(255, 255, 255, 0.08) !important;
           color: #FFD700 !important;
           transform: translateY(-5px);
-          text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+          text-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+          border-radius: 12px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
         
         .navbar.scrolled :global(.nav-item):hover {
-            color: #FFD700 !important;
+          background: rgba(255, 215, 0, 0.1) !important;
+          color: #FFD700 !important;
         }
 
         /* Creative Floating Line (The Golden Underline) */
