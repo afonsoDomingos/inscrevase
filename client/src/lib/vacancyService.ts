@@ -28,10 +28,12 @@ export interface JobApplication {
     _id: string;
     vacancyId: string | { _id: string, title: string };
     fullName: string;
+    age?: number;
     email: string;
     phone: string;
     city: string;
     cvUrl: string;
+    photoUrl?: string;
     motivationLetter?: string;
     status: string;
     answers: { question: string, answer: string }[];

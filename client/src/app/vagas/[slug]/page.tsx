@@ -22,11 +22,14 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
     
     const [formData, setFormData] = useState({
         fullName: '',
+        age: '',
         email: '',
         phone: '',
         city: '',
         cvFile: null as File | null,
+        photoFile: null as File | null,
         cvUrl: '',
+        photoUrl: '',
         motivationLetter: '',
     });
     
@@ -66,18 +69,28 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
 
         setSubmitting(true);
         try {
+            // 1. Upload CV (if provided)
             let cvUrl = '';
             if (formData.cvFile) {
                 cvUrl = await vacancyService.uploadCV(formData.cvFile);
             }
 
+            // 1b. Upload Photo (if provided)
+            let photoUrl = '';
+            if (formData.photoFile) {
+                photoUrl = await vacancyService.uploadCV(formData.photoFile);
+            }
+
+            // 2. Submit all application data
             const submissionData = {
                 vacancyId: vacancy._id,
                 fullName: formData.fullName,
+                age: formData.age ? parseInt(formData.age) : undefined,
                 email: formData.email,
                 phone: formData.phone,
                 city: formData.city,
                 cvUrl,
+                photoUrl,
                 motivationLetter: formData.motivationLetter,
                 answers: Object.entries(answers).map(([question, answer]) => ({ question, answer }))
             };
@@ -99,7 +112,8 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
 
     const getFormGroups = () => {
         const groups = [
-            { title: 'Qual é o seu nome?', fields: ['fullName'] },
+            { title: 'Diga-nos quem você é', fields: ['fullName', 'age'] },
+            { title: 'A sua fotografia', fields: ['photoFile'] },
             { title: 'Como podemos contactá-lo?', fields: ['email', 'phone'] },
             { title: 'Onde reside?', fields: ['city'] },
             { title: 'O seu currículo', fields: ['cvFile'] },
@@ -299,6 +313,36 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                                                                 <div key={field}>
                                                                     <label style={{ fontSize: '0.8rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '12px', display: 'block' }}>Nome Completo</label>
                                                                     <input autoFocus required type="text" value={formData.fullName} onChange={(e) => handleInputChange('fullName', e.target.value)} style={{ ...immersiveInputStyle }} placeholder="Digite o seu nome..." />
+                                                                </div>
+                                                            );
+                                                            if (field === 'age') return (
+                                                                <div key={field}>
+                                                                    <label style={{ fontSize: '0.8rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '12px', display: 'block' }}>Sua Idade</label>
+                                                                    <input type="number" value={formData.age} onChange={(e) => handleInputChange('age', e.target.value)} style={{ ...immersiveInputStyle }} placeholder="Ex: 25" />
+                                                                </div>
+                                                            );
+                                                            if (field === 'photoFile') return (
+                                                                <div key={field}>
+                                                                    <label style={{ fontSize: '0.8rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '12px', display: 'block' }}>Fotografia de Perfil</label>
+                                                                    <div style={{ position: 'relative', width: '200px', height: '200px', margin: '0 auto' }}>
+                                                                        <input type="file" accept="image/*" onChange={(e) => handleInputChange('photoFile', e.target.files?.[0] || null)} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: 1 }} />
+                                                                        <div style={{ width: '100%', height: '100%', borderRadius: '50%', border: '3px solid #eee', background: '#f8fafc', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                            {formData.photoFile ? (
+                                                                                <img src={URL.createObjectURL(formData.photoFile)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Preview" />
+                                                                            ) : (
+                                                                                <div style={{ textAlign: 'center', color: '#ccc' }}>
+                                                                                    <Upload size={40} />
+                                                                                    <p style={{ margin: '5px 0 0', fontSize: '0.7rem', fontWeight: 700 }}>ADICIONAR FOTO</p>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                        {formData.photoFile && (
+                                                                            <div style={{ position: 'absolute', bottom: '10px', right: '10px', background: '#10b981', color: '#fff', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid #fff' }}>
+                                                                                <CheckCircle size={16} />
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                    <p style={{ textAlign: 'center', color: '#888', fontSize: '0.85rem', marginTop: '20px' }}>Carregue uma foto profissional para o seu perfil.</p>
                                                                 </div>
                                                             );
                                                             if (field === 'email') return (

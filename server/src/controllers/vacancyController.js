@@ -32,15 +32,17 @@ exports.getVacancyBySlug = async (req, res) => {
  */
 exports.submitApplication = async (req, res) => {
     try {
-        const { vacancyId, fullName, email, phone, city, cvUrl, motivationLetter, answers } = req.body;
+        const { vacancyId, fullName, age, email, phone, city, cvUrl, photoUrl, motivationLetter, answers } = req.body;
         
         const application = new JobApplication({
             vacancyId,
             fullName,
+            age,
             email,
             phone,
             city,
             cvUrl,
+            photoUrl,
             motivationLetter,
             answers,
             metadata: {
