@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { vacancyService, Vacancy, Question } from '@/lib/vacancyService';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Loader2, Upload, Send, CheckCircle, FileText, MapPin, Briefcase } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Loader2, Upload, Send, CheckCircle, MapPin, Briefcase } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function VacancyDetailsPage({ params }: { params: { slug: string } }) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { vacancyService, Vacancy, JobApplication, Question } from '@/lib/vacancyService';
+import { vacancyService, Vacancy, JobApplication } from '@/lib/vacancyService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Users, Eye, Search, FileDown, Loader2, MapPin, Briefcase, X, Layout, HelpCircle, Save, FileText } from 'lucide-react';
 import { toast } from 'sonner';
