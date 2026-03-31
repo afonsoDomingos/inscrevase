@@ -329,7 +329,7 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                                                     );
                                                     if (field.startsWith('q_')) {
                                                         const label = field.replace('q_', '');
-                                                        const q = vacancy.questions?.find((q: any) => q.label === label);
+                                                        const q = vacancy.questions?.find((q: Question) => q.label === label);
                                                         if (!q) return null;
                                                         return (
                                                             <div key={label} className="input-group">
