@@ -177,7 +177,7 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                         style={{ position: 'relative', zIndex: 1, maxWidth: '900px', padding: '0 20px' }}
                     >
                         <span style={{ color: '#D4AF37', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '4px', fontSize: '0.8rem', display: 'block', marginBottom: '1rem' }}>Recrutamento Ativo</span>
-                        <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 4.5rem)', fontWeight: 900, marginBottom: '1rem', letterSpacing: '-2px', fontFamily: 'var(--font-playfair)' }}>
+                        <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 4.5rem)', fontWeight: 900, marginBottom: '1rem', letterSpacing: '-2px', fontFamily: 'var(--font-playfair)', color: '#fff' }}>
                             {vacancy?.title}
                         </h1>
                         <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', fontSize: '0.9rem', fontWeight: 600, opacity: 0.8 }}>
