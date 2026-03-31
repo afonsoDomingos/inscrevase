@@ -155,7 +155,7 @@ export default function VacanciesPage() {
                                             }}
                                             className="vacancy-btn"
                                         >
-                                            Ver Detalhes <ArrowRight size={18} />
+                                            Candidatar-se <ArrowRight size={18} />
                                         </Link>
                                     </div>
                                 </div>
