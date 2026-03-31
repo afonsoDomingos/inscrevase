@@ -309,13 +309,13 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                                                             if (field === 'phone') return (
                                                                 <div key={field}>
                                                                     <label style={{ fontSize: '0.8rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '12px', display: 'block' }}>Telemóvel</label>
-                                                                    <input required type="tel" value={formData.phone} onChange={(e) => handleInputChange('phone', e.target.value)} style={{ ...immersiveInputStyle }} placeholder="+244..." />
+                                                                    <input required type="tel" value={formData.phone} onChange={(e) => handleInputChange('phone', e.target.value)} style={{ ...immersiveInputStyle }} placeholder="+258..." />
                                                                 </div>
                                                             );
                                                             if (field === 'city') return (
                                                                 <div key={field}>
                                                                     <label style={{ fontSize: '0.8rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '12px', display: 'block' }}>Localização</label>
-                                                                    <input required type="text" value={formData.city} onChange={(e) => handleInputChange('city', e.target.value)} style={{ ...immersiveInputStyle }} placeholder="Ex: Luanda, Talatona" />
+                                                                    <input required type="text" value={formData.city} onChange={(e) => handleInputChange('city', e.target.value)} style={{ ...immersiveInputStyle }} placeholder="Ex: Maputo, Matola ou Nampula" />
                                                                 </div>
                                                             );
                                                             if (field === 'cvFile') return (
