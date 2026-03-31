@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const vacancyController = require('../controllers/vacancyController');
-const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
+const { authMiddleware, adminMiddleware, recruiterMiddleware } = require('../middleware/authMiddleware');
 
 /**
  * PUBLIC
