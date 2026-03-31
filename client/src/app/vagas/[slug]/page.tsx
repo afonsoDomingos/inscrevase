@@ -102,7 +102,8 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
             { title: 'Qual é o seu nome?', fields: ['fullName'] },
             { title: 'Como podemos contactá-lo?', fields: ['email', 'phone'] },
             { title: 'Onde reside?', fields: ['city'] },
-            { title: 'Fale-nos um pouco sobre si', fields: ['cvFile', 'motivationLetter'] }
+            { title: 'O seu currículo', fields: ['cvFile'] },
+            { title: 'A sua motivação', fields: ['motivationLetter'] }
         ];
 
         const questions = vacancy?.questions || [];
@@ -378,9 +379,9 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                                                     )}
                                                 </div>
 
-                                                <div style={{ marginTop: '5rem', display: 'flex', gap: '20px' }}>
+                                                <div style={{ marginTop: '4rem', display: 'flex', gap: '20px', position: 'sticky', bottom: '-20px', background: 'linear-gradient(to top, #fff 80%, transparent)', padding: '20px 0' }}>
                                                     {currentStep > 0 && (
-                                                        <button type="button" onClick={prevStep} style={{ padding: '20px 40px', borderRadius: '20px', border: '2px solid #eee', background: 'none', fontWeight: 800, cursor: 'pointer' }}>Anterior</button>
+                                                        <button type="button" onClick={prevStep} style={{ padding: '20px 40px', borderRadius: '20px', border: '2px solid #eee', background: '#fff', fontWeight: 800, cursor: 'pointer' }}>Anterior</button>
                                                     )}
                                                     {currentStep < totalSteps ? (
                                                         <button 
@@ -396,7 +397,7 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                                                             type="submit" 
                                                             style={{ ...primaryButtonStyle, flex: 1, padding: '20px', borderRadius: '20px' }}
                                                         >
-                                                            {submitting ? <Loader2 className="animate-spin" /> : 'Submeter Candidatura'}
+                                                            {submitting ? <Loader2 className="animate-spin" /> : 'Finalizar e Submeter'}
                                                         </button>
                                                     )}
                                                 </div>
