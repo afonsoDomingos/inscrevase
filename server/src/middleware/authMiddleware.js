@@ -20,6 +20,14 @@ const adminMiddleware = (req, res, next) => {
     next();
 };
 
+const recruiterMiddleware = (req, res, next) => {
+    const allowedRoles = ['admin', 'SuperAdmin', 'mentor', 'company', 'specialist'];
+    if (!allowedRoles.includes(req.user.role)) {
+        return res.status(403).json({ message: 'Acesso negado. Apenas recrutadores, especialistas ou empresas podem realizar esta ação.' });
+    }
+    next();
+};
+
 const superAdminMiddleware = (req, res, next) => {
     if (req.user.role !== 'SuperAdmin') {
         return res.status(403).json({ message: 'Acesso negado, apenas SuperAdmin.' });
@@ -43,9 +51,11 @@ const optionalAuthMiddleware = (req, res, next) => {
 module.exports = {
     authMiddleware,
     adminMiddleware,
+    recruiterMiddleware,
     superAdminMiddleware,
     optionalAuthMiddleware,
     protect: authMiddleware,
     adminOnly: adminMiddleware,
-    superAdminOnly: superAdminMiddleware
+    superAdminOnly: superAdminMiddleware,
+    recruiterOnly: recruiterMiddleware
 };

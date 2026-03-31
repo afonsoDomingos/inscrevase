@@ -13,10 +13,10 @@ router.post('/apply', vacancyController.submitApplication);
 /**
  * ADMIN
  */
-router.post('/', authMiddleware, adminMiddleware, vacancyController.createVacancy);
-router.put('/:id', authMiddleware, adminMiddleware, vacancyController.updateVacancy);
-router.get('/admin/all', authMiddleware, adminMiddleware, vacancyController.getAdminVacancies);
-router.delete('/:id', authMiddleware, adminMiddleware, vacancyController.deleteVacancy);
-router.get('/admin/applications', authMiddleware, adminMiddleware, vacancyController.getApplications);
+router.post('/', authMiddleware, recruiterMiddleware, vacancyController.createVacancy);
+router.put('/:id', authMiddleware, recruiterMiddleware, vacancyController.updateVacancy);
+router.get('/admin/all', authMiddleware, recruiterMiddleware, vacancyController.getAdminVacancies);
+router.delete('/:id', authMiddleware, recruiterMiddleware, vacancyController.deleteVacancy);
+router.get('/admin/applications', authMiddleware, recruiterMiddleware, vacancyController.getApplications);
 
 module.exports = router;

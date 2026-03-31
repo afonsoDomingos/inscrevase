@@ -136,9 +136,17 @@ exports.createVacancy = async (req, res) => {
 exports.updateVacancy = async (req, res) => {
     try {
         const { id } = req.params;
-        const vacancy = await Vacancy.findByIdAndUpdate(id, req.body, { new: true });
+        const vacancy = await Vacancy.findById(id);
+        
         if (!vacancy) return res.status(404).json({ message: 'Vaga não encontrada' });
-        res.status(200).json(vacancy);
+
+        // Check ownership
+        if (req.user.role !== 'admin' && req.user.role !== 'SuperAdmin' && vacancy.createdBy?.toString() !== req.user.id) {
+            return res.status(403).json({ message: 'Não tem permissão para editar esta vaga.' });
+        }
+
+        const updatedVacancy = await Vacancy.findByIdAndUpdate(id, req.body, { new: true });
+        res.status(200).json(updatedVacancy);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao atualizar vaga', error: error.message });
     }
@@ -149,7 +157,11 @@ exports.updateVacancy = async (req, res) => {
  */
 exports.getAdminVacancies = async (req, res) => {
     try {
-        const vacancies = await Vacancy.find().sort({ createdAt: -1 });
+        let filter = {};
+        if (req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+            filter = { createdBy: req.user.id };
+        }
+        const vacancies = await Vacancy.find(filter).sort({ createdAt: -1 });
         res.status(200).json(vacancies);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -161,7 +173,17 @@ exports.getAdminVacancies = async (req, res) => {
  */
 exports.deleteVacancy = async (req, res) => {
     try {
-        await Vacancy.findByIdAndDelete(req.params.id);
+        const { id } = req.params;
+        const vacancy = await Vacancy.findById(id);
+
+        if (!vacancy) return res.status(404).json({ message: 'Vaga não encontrada' });
+
+        // Check ownership
+        if (req.user.role !== 'admin' && req.user.role !== 'SuperAdmin' && vacancy.createdBy?.toString() !== req.user.id) {
+            return res.status(403).json({ message: 'Não tem permissão para remover esta vaga.' });
+        }
+
+        await Vacancy.findByIdAndDelete(id);
         res.status(200).json({ message: 'Vaga removida' });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -174,7 +196,25 @@ exports.deleteVacancy = async (req, res) => {
 exports.getApplications = async (req, res) => {
     try {
         const { vacancyId } = req.query;
-        const filter = vacancyId ? { vacancyId } : {};
+        let filter = {};
+        
+        // If not admin, we must ONLY show applications for vacancies CREATED BY the user
+        if (req.user.role !== 'admin' && req.user.role !== 'SuperAdmin') {
+            const userVacancies = await Vacancy.find({ createdBy: req.user.id }).select('_id');
+            const userVacancyIds = userVacancies.map(v => v._id);
+            
+            if (vacancyId) {
+                if (!userVacancyIds.some(id => id.toString() === vacancyId)) {
+                    return res.status(403).json({ message: 'Acesso negado a estas candidaturas.' });
+                }
+                filter = { vacancyId };
+            } else {
+                filter = { vacancyId: { $in: userVacancyIds } };
+            }
+        } else {
+            if (vacancyId) filter = { vacancyId };
+        }
+
         const applications = await JobApplication.find(filter)
             .populate('vacancyId', 'title')
             .sort({ createdAt: -1 });
