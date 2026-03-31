@@ -73,7 +73,7 @@ export default function Navbar() {
           <div className="nav-ticker-wrapper">
             <div className="nav-ticker-track">
               <Link href="/experts" className="nav-item">
-                {t('nav.mentors') || 'Conexões'}
+                {t('nav.mentors')}
               </Link>
               <Link href="/calendario" className="nav-item">
                 {t('nav.calendar')}
@@ -96,19 +96,10 @@ export default function Navbar() {
               <Link href="/suporte" className="nav-item">
                 {t('dashboard.support')}
               </Link>
-              <Link href="/hub" className="nav-item">
-                Hub
-              </Link>
-              <Link href="/comunidade" className="nav-item">
-                Comunidade
-              </Link>
-              <Link href="/eventos" className="nav-item">
-                Eventos
-              </Link>
               
               {/* Duplicate links for seamless loop */}
               <Link href="/experts" className="nav-item" aria-hidden="true">
-                {t('nav.mentors') || 'Conexões'}
+                {t('nav.mentors')}
               </Link>
               <Link href="/calendario" className="nav-item" aria-hidden="true">
                 {t('nav.calendar')}
@@ -127,6 +118,9 @@ export default function Navbar() {
               </Link>
               <Link href="/vagas" className="nav-item" aria-hidden="true">
                 Vagas
+              </Link>
+              <Link href="/suporte" className="nav-item" aria-hidden="true">
+                {t('dashboard.support')}
               </Link>
             </div>
           </div>
@@ -237,24 +231,6 @@ export default function Navbar() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
               <LifeBuoy size={20} color="#000" />
               <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>{t('dashboard.support')}</span>
-            </div>
-          </Link>
-          <Link href="/hub" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
-              <Zap size={20} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>Hub</span>
-            </div>
-          </Link>
-          <Link href="/comunidade" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
-              <Users size={20} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>Comunidade</span>
-            </div>
-          </Link>
-          <Link href="/eventos" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
-              <CalendarIcon size={20} color="#000" />
-              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>Eventos</span>
             </div>
           </Link>
 
