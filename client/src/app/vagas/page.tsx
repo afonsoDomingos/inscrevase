@@ -54,7 +54,7 @@ export default function VacanciesPage() {
                     animate={{ y: 0, opacity: 1 }}
                     style={{ position: 'relative', zIndex: 1, maxWidth: '800px', margin: '0 auto' }}
                 >
-                    <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 4rem)', fontWeight: 900, marginBottom: '1.5rem', fontFamily: 'var(--font-playfair)' }}>
+                    <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 4rem)', fontWeight: 900, marginBottom: '1.5rem', fontFamily: 'var(--font-playfair)', color: '#fff' }}>
                         Trabalhe no <span style={{ color: '#FFD700' }}>Inscreva-se</span>
                     </h1>
                     <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
