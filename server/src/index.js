@@ -232,6 +232,7 @@ app.use('/api/feedback', require('./routes/feedbackRoutes'));
 app.use('/api/smartlinks', require('./routes/smartLinkRoutes'));
 app.use('/api/marketing', require('./routes/marketingRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
+app.use('/api/vacancies', require('./routes/vacancyRoutes'));
 app.use('/api/push', require('./routes/pushRoutes'));
 app.use('/api/admin/whatsapp', require('./routes/whatsappRoutes'));
 

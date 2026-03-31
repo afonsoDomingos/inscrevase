@@ -19,9 +19,10 @@ import MarketingRequestList from '@/components/admin/MarketingRequestList';
 import PaypalPayouts from '@/components/admin/PaypalPayouts';
 import BooksManager from '@/components/admin/BooksManager';
 import WhatsAppLogs from '@/components/dashboard/WhatsAppLogs';
+import VacanciesAdmin from '@/components/admin/VacanciesAdmin';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Plus, Book, MessageCircle, Smartphone } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Plus, Book, MessageCircle, Smartphone, Briefcase } from 'lucide-react';
 
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter } from 'next/navigation';
@@ -50,7 +51,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
 import Tooltip from '@/components/common/Tooltip';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts' | 'books' | 'whatsapp';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts' | 'books' | 'whatsapp' | 'vacancies';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -400,6 +401,7 @@ export default function AdminDashboard() {
                 { id: 'ads', label: t('dashboard.ads') || 'Anúncios', icon: <Megaphone size={18} /> },
                 { id: 'blog', label: t('dashboard.manageBlog'), icon: <Newspaper size={18} /> },
                 { id: 'books', label: t('nav.books') || 'Livros', icon: <Book size={18} /> },
+                { id: 'vacancies', label: 'Gestão de Vagas', icon: <Briefcase size={18} /> },
             ]
         },
         {
@@ -428,7 +430,7 @@ export default function AdminDashboard() {
 
     ].map(group => ({
         ...group,
-        items: group.items.filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing' && item.id !== 'payouts' && item.id !== 'whatsapp') || user?.role === 'SuperAdmin')
+        items: group.items.filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing' && item.id !== 'payouts' && item.id !== 'whatsapp' && item.id !== 'vacancies') || user?.role === 'SuperAdmin')
     }));
 
     return (
@@ -1859,6 +1861,12 @@ export default function AdminDashboard() {
                             {/* Tabela de Relatórios e Auditoria de Disparos */}
                             <WhatsAppLogs />
                         </div>
+                    )}
+
+                    {activeTab === 'vacancies' && (
+                        <ErrorBoundary>
+                            <VacanciesAdmin />
+                        </ErrorBoundary>
                     )}
 
                     {activeTab === 'settings' && user.role === 'SuperAdmin' && (
