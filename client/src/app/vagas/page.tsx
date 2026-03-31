@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Navbar from '@/components/Navbar';
 import { vacancyService, Vacancy } from '@/lib/vacancyService';
 import { motion } from 'framer-motion';
 import { Briefcase, MapPin, Clock, ArrowRight, Loader2 } from 'lucide-react';
@@ -45,7 +46,9 @@ export default function VacanciesPage() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: '#f8fafc', paddingBottom: '100px' }}>
+        <>
+            <Navbar />
+            <div style={{ minHeight: '100vh', background: '#f8fafc', paddingBottom: '100px' }}>
             {/* Header */}
             <div style={{ background: '#000', color: '#fff', padding: '100px 20px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 70% 30%, rgba(212, 175, 55, 0.15) 0%, transparent 70%)', zIndex: 0 }} />
@@ -181,5 +184,6 @@ export default function VacanciesPage() {
                 }
             `}</style>
         </div>
+        </>
     );
 }

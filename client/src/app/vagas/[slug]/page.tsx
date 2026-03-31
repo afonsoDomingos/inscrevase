@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { vacancyService, Vacancy, Question } from '@/lib/vacancyService';
+import Navbar from '@/components/Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Loader2, Upload, Send, CheckCircle, MapPin, Briefcase, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
@@ -96,15 +97,50 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
         }
     };
 
+    const getFormGroups = () => {
+        const groups = [
+            { title: 'Identificação', fields: ['fullName', 'email'] },
+            { title: 'Contacto e Localização', fields: ['phone', 'city'] },
+            { title: 'Currículo e Motivação', fields: ['cvFile', 'motivationLetter'] }
+        ];
+
+        // Group custom questions by 2
+        const questions = vacancy?.questions || [];
+        for (let i = 0; i < questions.length; i += 2) {
+            const qSet = questions.slice(i, i + 2);
+            groups.push({
+                title: 'Questões Adicionais',
+                fields: qSet.map(q => `q_${q.label}`)
+            });
+        }
+        
+        return groups;
+    };
+
+    const formGroups = getFormGroups();
+    const totalSteps = formGroups.length; // Steps from 0 to totalSteps - 1 + Review Step
+    const progress = ((currentStep) / totalSteps) * 100;
+
     const nextStep = () => {
-        // Validation before next step
-        if (currentStep === 0) {
-            if (!formData.fullName || !formData.email || !formData.phone || !formData.city) {
-                toast.error('Preencha todos os campos obrigatórios');
-                return;
+        // Validation for the current group
+        if (currentStep < formGroups.length) {
+            const group = formGroups[currentStep];
+            for (const field of group.fields) {
+                if (field === 'fullName' && !formData.fullName) { toast.error('O nome é obrigatório'); return; }
+                if (field === 'email' && !formData.email) { toast.error('O email é obrigatório'); return; }
+                if (field === 'phone' && !formData.phone) { toast.error('O telefone é obrigatório'); return; }
+                if (field === 'city' && !formData.city) { toast.error('A localização é obrigatória'); return; }
+                
+                if (field.startsWith('q_')) {
+                    const label = field.replace('q_', '');
+                    const q = vacancy?.questions?.find(q => q.label === label);
+                    if (q?.required && !answers[label]) {
+                        toast.error(`A pergunta "${label}" é obrigatória`);
+                        return;
+                    }
+                }
             }
         }
-        // No mandatory validation for CV anymore
         
         setCurrentStep(prev => prev + 1);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -112,10 +148,8 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
 
     const prevStep = () => {
         setCurrentStep(prev => prev - 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-
-    const totalSteps = 2 + (vacancy?.questions?.length || 0);
-    const progress = ((currentStep) / totalSteps) * 100;
 
     if (loading) {
         return (
@@ -156,7 +190,9 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
     }
 
     return (
-        <div style={{ minHeight: '100vh', background: '#f8fafc', paddingBottom: '100px' }}>
+        <>
+            <Navbar />
+            <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#1e293b', overflowX: 'hidden' }}>
             {/* Header / Banner */}
             <div style={{ background: '#000', color: '#fff', padding: '60px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                 <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 20px' }}>
@@ -197,7 +233,7 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                             <>
                                 <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1.5rem', color: '#1e293b', borderLeft: '4px solid #10b981', paddingLeft: '15px' }}>Requisitos</h2>
                                 <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gap: '12px' }}>
-                                    {vacancy.requirements.map((req, i) => (
+                                    {vacancy.requirements.map((req: string, i: number) => (
                                         <li key={i} style={{ display: 'flex', gap: '12px', color: '#475569', fontSize: '1.05rem' }}>
                                             <div style={{ width: '20px', height: '20px', background: '#10b98115', color: '#10b981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '2px', flexShrink: 0 }}>
                                                 <div style={{ width: '6px', height: '6px', background: 'currentColor', borderRadius: '50%' }} />
@@ -228,9 +264,7 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                                         Passo {currentStep + 1} de {totalSteps + 1}
                                     </span>
                                     <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#000', margin: '5px 0 0' }}>
-                                        {currentStep === 0 ? 'Informação Pessoal' : 
-                                         currentStep === 1 ? 'Currículo e Motivação' : 
-                                         currentStep === totalSteps ? 'Revisão Final' : 'Questões Adicionais'}
+                                        {currentStep < totalSteps ? formGroups[currentStep].title : 'Revisão Final'}
                                     </h3>
                                 </div>
                                 {currentStep > 0 && (
@@ -249,69 +283,72 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                                         exit={{ opacity: 0, x: -20 }}
                                         transition={{ duration: 0.3 }}
                                     >
-                                        {currentStep === 0 && (
+                                        {currentStep < totalSteps && (
                                             <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                                <div className="input-group">
-                                                    <label style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '8px', display: 'block' }}>Nome Completo *</label>
-                                                    <input required type="text" value={formData.fullName} onChange={(e) => handleInputChange('fullName', e.target.value)} style={inputStyle} placeholder="Nome e apelido" />
-                                                </div>
-                                                <div className="input-group">
-                                                    <label style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '8px', display: 'block' }}>Email de Contacto *</label>
-                                                    <input required type="email" value={formData.email} onChange={(e) => handleInputChange('email', e.target.value)} style={inputStyle} placeholder="exemplo@email.com" />
-                                                </div>
-                                                <div className="grid-2">
-                                                    <div className="input-group">
-                                                        <label style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '8px', display: 'block' }}>Telefone *</label>
-                                                        <input required type="tel" value={formData.phone} onChange={(e) => handleInputChange('phone', e.target.value)} style={inputStyle} placeholder="9XX XXX XXX" />
-                                                    </div>
-                                                    <div className="input-group">
-                                                        <label style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '8px', display: 'block' }}>Cidade / Localização *</label>
-                                                        <input required type="text" value={formData.city} onChange={(e) => handleInputChange('city', e.target.value)} style={inputStyle} placeholder="Ex: Luanda" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {currentStep === 1 && (
-                                            <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                                <div className="input-group">
-                                                    <label style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '8px', display: 'block' }}>Carregar Currículo (PDF/Doc) - Opcional</label>
-                                                    <div style={{ position: 'relative' }}>
-                                                        <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => handleInputChange('cvFile', e.target.files?.[0] || null)} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: 1 }} />
-                                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '15px', padding: '40px 20px', borderRadius: '24px', border: '2px dashed #D4AF37', background: formData.cvFile ? '#f0fdf4' : '#fff', color: formData.cvFile ? '#10b981' : '#64748b', transition: 'all 0.3s ease' }}>
-                                                            {formData.cvFile ? <><CheckCircle size={48} /> <span style={{ fontWeight: 800 }}>{formData.cvFile.name}</span></> : <><Upload size={48} color="#D4AF37" /> <span style={{ fontWeight: 700 }}>Clique para adicionar (Opcional)</span><span style={{ fontSize: '0.8rem' }}>PDF ou Word até 5MB</span></>}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="input-group">
-                                                    <label style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '8px', display: 'block' }}>Carta de Motivação (Opcional)</label>
-                                                    <textarea value={formData.motivationLetter} onChange={(e) => handleInputChange('motivationLetter', e.target.value)} style={{ ...inputStyle, minHeight: '150px' }} placeholder="Conte-nos os seus objetivos..." />
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {currentStep >= 2 && currentStep < totalSteps && (
-                                            <div style={{ display: 'grid', gap: '1.5rem' }}>
-                                                {(() => {
-                                                    const qIndex = currentStep - 2;
-                                                    const q = vacancy.questions?.[qIndex];
-                                                    if (!q) return null;
-                                                    return (
-                                                        <div className="input-group">
-                                                            <label style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1e293b', marginBottom: '20px', display: 'block', lineHeight: 1.4 }}>{q.label} {q.required ? '*' : ''}</label>
-                                                            {q.type === 'textarea' ? (
-                                                                <textarea required={q.required} value={answers[q.label] || ''} onChange={(e) => handleAnswerChange(q.label, e.target.value)} style={{ ...inputStyle, minHeight: '180px' }} placeholder="A sua resposta..." />
-                                                            ) : q.type === 'select' ? (
-                                                                <select required={q.required} value={answers[q.label] || ''} onChange={(e) => handleAnswerChange(q.label, e.target.value)} style={inputStyle}>
-                                                                    <option value="">Selecione uma opção...</option>
-                                                                    {q.options?.map((opt, j) => <option key={j} value={opt}>{opt}</option>)}
-                                                                </select>
-                                                            ) : (
-                                                                <input required={q.required} type="text" value={answers[q.label] || ''} onChange={(e) => handleAnswerChange(q.label, e.target.value)} style={inputStyle} placeholder="..." />
-                                                            )}
+                                                {formGroups[currentStep].fields.map((field) => {
+                                                    if (field === 'fullName') return (
+                                                        <div key={field} className="input-group">
+                                                            <label style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '8px', display: 'block' }}>Nome Completo *</label>
+                                                            <input required type="text" value={formData.fullName} onChange={(e) => handleInputChange('fullName', e.target.value)} style={inputStyle} placeholder="Nome e apelido" />
                                                         </div>
                                                     );
-                                                })()}
+                                                    if (field === 'email') return (
+                                                        <div key={field} className="input-group">
+                                                            <label style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '8px', display: 'block' }}>Email de Contacto *</label>
+                                                            <input required type="email" value={formData.email} onChange={(e) => handleInputChange('email', e.target.value)} style={inputStyle} placeholder="exemplo@email.com" />
+                                                        </div>
+                                                    );
+                                                    if (field === 'phone') return (
+                                                        <div key={field} className="input-group">
+                                                            <label style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '8px', display: 'block' }}>Telefone *</label>
+                                                            <input required type="tel" value={formData.phone} onChange={(e) => handleInputChange('phone', e.target.value)} style={inputStyle} placeholder="9XX XXX XXX" />
+                                                        </div>
+                                                    );
+                                                    if (field === 'city') return (
+                                                        <div key={field} className="input-group">
+                                                            <label style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '8px', display: 'block' }}>Cidade / Localização *</label>
+                                                            <input required type="text" value={formData.city} onChange={(e) => handleInputChange('city', e.target.value)} style={inputStyle} placeholder="Ex: Luanda" />
+                                                        </div>
+                                                    );
+                                                    if (field === 'cvFile') return (
+                                                        <div key={field} className="input-group">
+                                                            <label style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '8px', display: 'block' }}>Carregar Currículo (Opcional)</label>
+                                                            <div style={{ position: 'relative' }}>
+                                                                <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => handleInputChange('cvFile', e.target.files?.[0] || null)} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: 1 }} />
+                                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '15px', padding: '30px 20px', borderRadius: '24px', border: '2px dashed #D4AF37', background: formData.cvFile ? '#f0fdf4' : '#fff', color: formData.cvFile ? '#10b981' : '#64748b', transition: 'all 0.3s ease' }}>
+                                                                    {formData.cvFile ? <><CheckCircle size={40} /> <span style={{ fontWeight: 800 }}>{formData.cvFile.name}</span></> : <><Upload size={40} color="#D4AF37" /> <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Adicionar CV</span></>}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                    if (field === 'motivationLetter') return (
+                                                        <div key={field} className="input-group">
+                                                            <label style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '8px', display: 'block' }}>Carta de Motivação (Opcional)</label>
+                                                            <textarea value={formData.motivationLetter} onChange={(e) => handleInputChange('motivationLetter', e.target.value)} style={{ ...inputStyle, minHeight: '120px' }} placeholder="Conte-nos os seus objetivos..." />
+                                                        </div>
+                                                    );
+                                                    if (field.startsWith('q_')) {
+                                                        const label = field.replace('q_', '');
+                                                        const q = vacancy.questions?.find((q: any) => q.label === label);
+                                                        if (!q) return null;
+                                                        return (
+                                                            <div key={label} className="input-group">
+                                                                <label style={{ fontSize: '1rem', fontWeight: 800, color: '#1e293b', marginBottom: '12px', display: 'block', lineHeight: 1.4 }}>{q.label} {q.required ? '*' : ''}</label>
+                                                                {q.type === 'textarea' ? (
+                                                                    <textarea required={q.required} value={answers[q.label] || ''} onChange={(e) => handleAnswerChange(q.label, e.target.value)} style={{ ...inputStyle, minHeight: '140px' }} placeholder="A sua resposta..." />
+                                                                ) : q.type === 'select' ? (
+                                                                    <select required={q.required} value={answers[q.label] || ''} onChange={(e) => handleAnswerChange(q.label, e.target.value)} style={inputStyle}>
+                                                                        <option value="">Selecione uma opção...</option>
+                                                                        {q.options?.map((opt: string, j: number) => <option key={j} value={opt}>{opt}</option>)}
+                                                                    </select>
+                                                                ) : (
+                                                                    <input required={q.required} type="text" value={answers[q.label] || ''} onChange={(e) => handleAnswerChange(q.label, e.target.value)} style={inputStyle} placeholder="..." />
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    }
+                                                    return null;
+                                                })}
                                             </div>
                                         )}
 
@@ -322,7 +359,7 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                                                     <div style={{ display: 'grid', gap: '10px', fontSize: '0.95rem' }}>
                                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}><strong>Nome:</strong> {formData.fullName}</div>
                                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}><strong>Email:</strong> {formData.email}</div>
-                                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><strong>CV:</strong> {formData.cvFile?.name}</div>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><strong>CV:</strong> {formData.cvFile?.name || 'Não enviado'}</div>
                                                     </div>
                                                 </div>
                                                 <p style={{ fontSize: '0.85rem', color: '#64748b', textAlign: 'center', lineHeight: 1.6 }}>
@@ -369,7 +406,8 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                     #apply-form { position: static !important; margin-top: 2rem; }
                 }
             `}</style>
-        </div>
+            </div>
+        </>
     );
 }
 
