@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { vacancyService, Vacancy, JobApplication } from '@/lib/vacancyService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Users, Eye, Search, FileDown, Loader2, MapPin, Briefcase, X, Layout, HelpCircle, Save, FileText, Upload, ImageIcon, Edit } from 'lucide-react';
+import { Plus, Trash2, Users, Eye, Search, FileDown, Loader2, MapPin, Briefcase, X, Layout, HelpCircle, Save, FileText, ImageIcon, Edit } from 'lucide-react';
 import { toast } from 'sonner';
+import Image from 'next/image';
 
 export default function VacanciesAdmin() {
     const [view, setView] = useState<'list' | 'applications'>('list');
@@ -353,8 +354,8 @@ export default function VacanciesAdmin() {
                                 <div>
                                     <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#888', marginBottom: '8px' }}>Imagem da Vaga (Opcional)</label>
                                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                                        <div style={{ width: '100px', height: '60px', borderRadius: '12px', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid #eee' }}>
-                                            {formData.image ? <img src={formData.image} alt="Vaga" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <ImageIcon size={24} color="#ccc" />}
+                                        <div style={{ width: '100px', height: '60px', borderRadius: '12px', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid #eee', position: 'relative' }}>
+                                            {formData.image ? <Image src={formData.image} alt="Vaga" fill style={{ objectFit: 'cover' }} /> : <ImageIcon size={24} color="#ccc" />}
                                         </div>
                                         <div style={{ position: 'relative', flex: 1 }}>
                                             <input 
