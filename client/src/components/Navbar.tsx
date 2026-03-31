@@ -575,22 +575,21 @@ export default function Navbar() {
           text-transform: uppercase;
           letter-spacing: 1px;
           transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-          padding: 0.8rem 1.4rem;
+          padding: 0.8rem 1.6rem;
           position: relative;
           display: flex;
           align-items: center;
           justify-content: center;
           white-space: nowrap;
-          min-width: 120px;
-          border-radius: 12px;
+          min-width: 130px;
           cursor: pointer;
-          overflow: hidden; /* For shine effect */
+          overflow: visible; /* To allow floating line to be visible outside */
         }
         .navbar.scrolled :global(.nav-item) {
           color: #FFF !important;
         }
 
-        /* Shine Effect */
+        /* The "Golden Shape" Background Effect */
         :global(.nav-item):before {
           content: '';
           position: absolute;
@@ -601,21 +600,32 @@ export default function Navbar() {
           background: linear-gradient(
             90deg,
             transparent,
-            rgba(255, 215, 0, 0.2),
+            rgba(255, 215, 0, 0.15),
             transparent
           );
-          transition: all 0.6s ease;
-          z-index: 1;
+          transition: all 0.5s ease;
+          z-index: -1;
         }
         :global(.nav-item):hover::before {
           left: 100%;
         }
 
-        /* Floating Line Effect */
+        /* Hover State - Golden Backdrop Shape focus */
+        :global(.nav-item):hover {
+          color: #FFD700 !important;
+          transform: translateY(-5px);
+          text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+        
+        .navbar.scrolled :global(.nav-item):hover {
+            color: #FFD700 !important;
+        }
+
+        /* Creative Floating Line (The Golden Underline) */
         :global(.nav-item):after {
           content: '';
           position: absolute;
-          bottom: 8px;
+          bottom: 2px;
           left: 50%;
           width: 0;
           height: 2px;
@@ -623,24 +633,11 @@ export default function Navbar() {
           transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
           transform: translateX(-50%);
           box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-          z-index: 2;
+          opacity: 0;
         }
         :global(.nav-item):hover::after {
-          width: 40%;
-        }
-
-        /* Hover State - High Contrast + Effects */
-        :global(.nav-item):hover {
-          background: #FFFFFF !important;
-          color: #000000 !important;
-          transform: translateY(-4px) scale(1.05);
-          box-shadow: 0 15px 35px rgba(255, 215, 0, 0.4);
-          text-shadow: none;
-        }
-        .navbar.scrolled :global(.nav-item):hover {
-          background: #FFD700 !important;
-          color: #000000 !important;
-          box-shadow: 0 15px 35px rgba(255, 215, 0, 0.3);
+          width: 50%;
+          opacity: 1;
         }
         
         .nav-right-section {
