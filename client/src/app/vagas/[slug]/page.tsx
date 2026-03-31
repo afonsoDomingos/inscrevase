@@ -339,7 +339,14 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                                                                         <input type="file" accept="image/*" onChange={(e) => handleInputChange('photoFile', e.target.files?.[0] || null)} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: 1 }} />
                                                                         <div style={{ width: '100%', height: '100%', borderRadius: '50%', border: '3px solid #eee', background: '#f8fafc', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                                             {formData.photoFile ? (
-                                                                                <img src={URL.createObjectURL(formData.photoFile)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Preview" />
+                                                                                <Image 
+                                                                                    src={URL.createObjectURL(formData.photoFile)} 
+                                                                                    alt="Preview" 
+                                                                                    width={200}
+                                                                                    height={200}
+                                                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                                                                    unoptimized
+                                                                                />
                                                                             ) : (
                                                                                 <div style={{ textAlign: 'center', color: '#ccc' }}>
                                                                                     <Upload size={40} />

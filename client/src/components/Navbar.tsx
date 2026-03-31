@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle, Home, Users, Info, LifeBuoy, Newspaper, Sparkles, MessageSquare, Calendar as CalendarIcon, Library, Briefcase, Zap } from 'lucide-react';
+import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle, Home, Users, Info, LifeBuoy, Newspaper, Sparkles, MessageSquare, Calendar as CalendarIcon, Library, Briefcase } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { authService, UserData } from '@/lib/authService';
