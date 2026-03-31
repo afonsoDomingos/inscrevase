@@ -283,8 +283,19 @@ export default function VacanciesAdmin() {
                             {filteredApplications.map(app => (
                                 <tr key={app._id} style={{ borderBottom: '1px solid #f9f9f9', transition: 'all 0.2s' }}>
                                     <td style={{ padding: '1.2rem' }}>
-                                        <div style={{ fontWeight: 800 }}>{app.fullName}</div>
-                                        <div style={{ fontSize: '0.75rem', color: '#888' }}>{app.email} | {app.phone}</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                            <div style={{ width: '45px', height: '45px', borderRadius: '50%', background: '#f0f0f0', overflow: 'hidden', border: '2px solid #eee', flexShrink: 0, position: 'relative' }}>
+                                                {app.photoUrl ? (
+                                                    <Image src={app.photoUrl} alt={app.fullName} fill style={{ objectFit: 'cover' }} />
+                                                ) : (
+                                                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc' }}><Users size={20} /></div>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <div style={{ fontWeight: 800 }}>{app.fullName}</div>
+                                                <div style={{ fontSize: '0.75rem', color: '#888' }}>{app.email} | {app.phone}</div>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td style={{ padding: '1.2rem', fontSize: '0.9rem', fontWeight: 600 }}>{typeof app.vacancyId === 'object' ? app.vacancyId.title : '---'}</td>
                                     <td style={{ padding: '1.2rem', fontSize: '0.85rem' }}>{new Date(app.createdAt).toLocaleDateString()}</td>
@@ -462,13 +473,22 @@ export default function VacanciesAdmin() {
                             exit={{ opacity: 0, scale: 0.95, y: 30 }}
                             style={{ background: '#fff', width: '100%', maxWidth: '700px', borderRadius: '40px', boxShadow: '0 30px 60px -15px rgba(0,0,0,0.3)', overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: '90vh' }}
                         >
-                            <div style={{ padding: '2rem 3rem', background: 'linear-gradient(135deg, #000 0%, #333 100%)', color: '#fff', position: 'relative' }}>
-                                <button onClick={() => setIsAppModalOpen(false)} style={{ position: 'absolute', top: '2rem', right: '2rem', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={20} /></button>
-                                <div style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', color: '#FFD700', marginBottom: '0.5rem' }}>Perfil do Candidato</div>
-                                <h3 style={{ fontSize: '2rem', fontWeight: 900, margin: 0, fontFamily: 'var(--font-playfair)' }}>{selectedApplication.fullName}</h3>
-                                <div style={{ fontSize: '1rem', opacity: 0.8, marginTop: '5px' }}>
-                                    Candidatura para: <strong style={{color: '#FFD700'}}>{typeof selectedApplication.vacancyId === 'object' ? selectedApplication.vacancyId.title : 'Vaga'}</strong>
+                            <div style={{ padding: '2rem 3rem', background: 'linear-gradient(135deg, #000 0%, #333 100%)', color: '#fff', position: 'relative', display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                                <div style={{ width: '120px', height: '120px', borderRadius: '30px', background: '#fff', border: '4px solid rgba(255,255,255,0.2)', overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
+                                    {selectedApplication.photoUrl ? (
+                                        <Image src={selectedApplication.photoUrl} alt={selectedApplication.fullName} fill style={{ objectFit: 'cover' }} />
+                                    ) : (
+                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc' }}><Users size={50} /></div>
+                                    )}
                                 </div>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', color: '#FFD700', marginBottom: '0.5rem' }}>Perfil do Candidato</div>
+                                    <h3 style={{ fontSize: '2rem', fontWeight: 900, margin: 0, fontFamily: 'var(--font-playfair)' }}>{selectedApplication.fullName}</h3>
+                                    <div style={{ fontSize: '1rem', opacity: 0.8, marginTop: '5px' }}>
+                                        Candidatura para: <strong style={{color: '#FFD700'}}>{typeof selectedApplication.vacancyId === 'object' ? selectedApplication.vacancyId.title : 'Vaga'}</strong>
+                                    </div>
+                                </div>
+                                <button onClick={() => setIsAppModalOpen(false)} style={{ position: 'absolute', top: '2rem', right: '2rem', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={20} /></button>
                             </div>
 
                             <div style={{ padding: '3rem', overflowY: 'auto' }}>
@@ -480,6 +500,10 @@ export default function VacanciesAdmin() {
                                     <div>
                                         <div style={{ fontSize: '0.7rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '4px' }}>Telefone</div>
                                         <div style={{ fontWeight: 700 }}>{selectedApplication.phone}</div>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: '0.7rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '4px' }}>Idade</div>
+                                        <div style={{ fontWeight: 700 }}>{selectedApplication.age || '---'} anos</div>
                                     </div>
                                     <div>
                                         <div style={{ fontSize: '0.7rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '4px' }}>Localização</div>

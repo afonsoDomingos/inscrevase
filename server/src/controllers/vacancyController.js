@@ -78,6 +78,21 @@ exports.submitApplication = async (req, res) => {
                     );
                     await sendEmail(vacancy.createdBy.email, `📩 Nova Candidatura: ${fullName} - ${vacancy.title}`, recruiterEmailHtml);
                 }
+
+                // 3. Email to SuperAdmins
+                const superAdmins = await User.find({ role: 'SuperAdmin' });
+                for (const admin of superAdmins) {
+                    if (admin.email) {
+                        const adminEmailHtml = generateBasicEmail(
+                            '🚀 Alerta: Nova Candidatura na Plataforma',
+                            admin.name || 'Admin',
+                            `Uma nova candidatura foi submetida na plataforma para a vaga <strong>${vacancy.title}</strong>.<br><br>Candidato: <strong>${fullName}</strong><br>Recrutador Responsável: ${vacancy.createdBy?.name || '---'}<br><br>Status: Aguardando revisão.`,
+                            'Ir para o Painel',
+                            `${process.env.FRONTEND_URL || 'https://inscreva-se.com'}/dashboard/admin`
+                        );
+                        await sendEmail(admin.email, `🚀 [ADMIN] Nova Candidatura: ${fullName} - ${vacancy.title}`, adminEmailHtml);
+                    }
+                }
             } catch (emailErr) {
                 console.error('Error in vacancy application background emails:', emailErr);
             }
