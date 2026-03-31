@@ -1253,6 +1253,42 @@ const generateMilestoneEmail = (
 // ─────────────────────────────────────────────────────────────────────────────
 
 
+const generateApplicationConfirmationEmail = (candidateName, vacancyTitle) => {
+    const accentColor = "#D4AF37";
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, ${accentColor} 0%, #000000 100%); padding: 50px 20px; text-align: center; position: relative;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1;">
+                <h1 style="color: #ffffff; font-size: 24px; font-weight: 900; margin-top: 20px; letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 1;">Candidatura <span style="color: ${accentColor};">Recebida</span> ✅</h1>
+            </div>
+            
+            <div style="padding: 45px;">
+                <div style="background-color: #fcfcfc; padding: 35px; border-radius: 20px; border: 1px solid #f0f0f0; border-left: 5px solid ${accentColor};">
+                    <p style="font-size: 18px; color: #111; margin-top: 0; font-weight: 800;">Olá, ${candidateName}! 👋</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.7; margin-bottom: 25px;">
+                        Confirmamos a recepção da sua candidatura para a vaga: <br>
+                        <strong style="color: #000; font-size: 18px; display: block; margin-top: 8px;">${vacancyTitle}</strong>
+                    </p>
+
+                    <div style="background: #ffffff; padding: 25px; border-radius: 16px; margin: 30px 0; border: 1px solid #f5f5f5;">
+                        <p style="margin: 0 0 10px 0; color: #111; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Próximos Passos:</p>
+                        <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.6;">
+                            A nossa equipa de recrutamento irá analisar o seu perfil detalhadamente. Se o seu perfil for selecionado, entraremos em contacto por e-mail ou telefone para agendar uma entrevista.
+                        </p>
+                    </div>
+
+                    <p style="font-size: 14px; color: #888; font-style: italic;">
+                        Garanta que mantém o seu telemóvel e email ativos. Boa sorte!
+                    </p>
+                </div>
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
 module.exports = {
     generateWelcomeEmail,
     generateBasicEmail,
@@ -1273,6 +1309,7 @@ module.exports = {
     generateMaintenanceNoticeEmail,
     generatePromotionalCampaignEmail,
     generateMilestoneEmail,
+    generateApplicationConfirmationEmail,
     getSocialFooter,
     socialLinks
 };

@@ -1,5 +1,8 @@
 const Vacancy = require('../models/Vacancy');
 const JobApplication = require('../models/JobApplication');
+const sendEmail = require('../utils/emailService');
+const { generateApplicationConfirmationEmail, generateBasicEmail } = require('../utils/emailTemplates');
+const User = require('../models/User');
 
 /**
  * Public - Get all active vacancies
@@ -53,6 +56,32 @@ exports.submitApplication = async (req, res) => {
         
         await application.save();
         res.status(201).json({ success: true, message: 'Candidatura enviada com sucesso!' });
+
+        // Background Tasks: Send Confirmation Emails
+        (async () => {
+            try {
+                const vacancy = await Vacancy.findById(vacancyId).populate('createdBy');
+                if (!vacancy) return;
+
+                // 1. Email to Candidate
+                const candidateEmailHtml = generateApplicationConfirmationEmail(fullName, vacancy.title);
+                await sendEmail(email, `✅ Candidatura Recebida: ${vacancy.title} - Inscreva-se`, candidateEmailHtml);
+
+                // 2. Email to Recruiter
+                if (vacancy.createdBy && vacancy.createdBy.email) {
+                    const recruiterEmailHtml = generateBasicEmail(
+                        '📩 Nova Candidatura Recebida!',
+                        vacancy.createdBy.name || 'Recrutador',
+                        `Recebeu uma nova candidatura para a vaga <strong>${vacancy.title}</strong>.<br><br>Candidato: <strong>${fullName}</strong><br>Cidade: ${city}<br><br>Aceda ao painel administrativo para rever o currículo e os detalhes do perfil.`,
+                        'Ver Candidaturas',
+                        `${process.env.FRONTEND_URL || 'https://inscreva-se.com'}/dashboard/mentor`
+                    );
+                    await sendEmail(vacancy.createdBy.email, `📩 Nova Candidatura: ${fullName} - ${vacancy.title}`, recruiterEmailHtml);
+                }
+            } catch (emailErr) {
+                console.error('Error in vacancy application background emails:', emailErr);
+            }
+        })();
     } catch (error) {
         res.status(500).json({ message: 'Erro ao submeter candidatura', error: error.message });
     }
