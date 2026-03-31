@@ -38,6 +38,7 @@ import MarketingRequestModal from '@/components/mentor/MarketingRequestModal';
 import { marketingService, MarketingRequest } from '@/lib/marketingService';
 
 import EditEventThemeModal from '@/components/mentor/EditEventThemeModal';
+import VacanciesAdmin from '@/components/admin/VacanciesAdmin';
 import AcademyView from '@/components/mentor/AcademyView';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
 import Tooltip from '@/components/common/Tooltip';
@@ -84,7 +85,8 @@ import {
     TrendingUp,
     Wallet,
     BookOpen,
-    Download
+    Download,
+    Briefcase
 } from 'lucide-react';
 import { bookService, BookModel } from '@/lib/bookService';
 import Image from 'next/image';
@@ -101,7 +103,7 @@ import CurrencySwitcher from '@/components/CurrencySwitcher';
 import MySalesPanel from '@/components/books/MySalesPanel';
 import { pushService } from '@/lib/pushService';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard' | 'referral' | 'library' | 'mysales';
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard' | 'referral' | 'library' | 'mysales' | 'vacancies';
 
 import { Suspense } from 'react';
 
@@ -648,6 +650,7 @@ function MentorDashboardContent() {
                             items: [
                                 { id: 'submissions', label: t('dashboard.menuItems.submissions') || 'Inscrições', icon: <Users size={20} /> },
                                 { id: 'referral', label: t('dashboard.menuItems.referral') || 'Indicações & Impacto', icon: <Trophy size={20} /> },
+                                { id: 'vacancies', label: 'Gestão de Vagas', icon: <Briefcase size={20} /> },
                             ]
                         },
                         {
@@ -2331,6 +2334,12 @@ function MentorDashboardContent() {
                                 <TrendingUp color="#22c55e" /> Minhas Vendas de Livros
                             </h2>
                             <MySalesPanel />
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'vacancies' && (
+                        <motion.div key="vacancies" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <VacanciesAdmin />
                         </motion.div>
                     )}
                 </AnimatePresence>

@@ -430,7 +430,7 @@ export default function AdminDashboard() {
 
     ].map(group => ({
         ...group,
-        items: group.items.filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing' && item.id !== 'payouts' && item.id !== 'whatsapp' && item.id !== 'vacancies') || user?.role === 'SuperAdmin')
+        items: group.items.filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing' && item.id !== 'payouts' && item.id !== 'whatsapp' && item.id !== 'vacancies') || user?.role === 'SuperAdmin' || (user?.role === 'admin' && item.id === 'vacancies'))
     }));
 
     return (
