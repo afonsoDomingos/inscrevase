@@ -574,8 +574,8 @@ export default function Navbar() {
           font-weight: 800 !important;
           text-transform: uppercase;
           letter-spacing: 1px;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          padding: 0.8rem 1.2rem;
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          padding: 0.8rem 1.4rem;
           position: relative;
           display: flex;
           align-items: center;
@@ -584,28 +584,63 @@ export default function Navbar() {
           min-width: 120px;
           border-radius: 12px;
           cursor: pointer;
-          z-index: 10;
+          overflow: hidden; /* For shine effect */
         }
         .navbar.scrolled :global(.nav-item) {
           color: #FFF !important;
         }
 
-        /* Hover State - High Contrast */
+        /* Shine Effect */
+        :global(.nav-item):before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 215, 0, 0.2),
+            transparent
+          );
+          transition: all 0.6s ease;
+          z-index: 1;
+        }
+        :global(.nav-item):hover::before {
+          left: 100%;
+        }
+
+        /* Floating Line Effect */
+        :global(.nav-item):after {
+          content: '';
+          position: absolute;
+          bottom: 8px;
+          left: 50%;
+          width: 0;
+          height: 2px;
+          background: #FFD700;
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          transform: translateX(-50%);
+          box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+          z-index: 2;
+        }
+        :global(.nav-item):hover::after {
+          width: 40%;
+        }
+
+        /* Hover State - High Contrast + Effects */
         :global(.nav-item):hover {
           background: #FFFFFF !important;
           color: #000000 !important;
-          transform: translateY(-2px) scale(1.05);
-          box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+          transform: translateY(-4px) scale(1.05);
+          box-shadow: 0 15px 35px rgba(255, 215, 0, 0.4);
+          text-shadow: none;
         }
         .navbar.scrolled :global(.nav-item):hover {
           background: #FFD700 !important;
           color: #000000 !important;
-          box-shadow: 0 10px 25px rgba(255, 215, 0, 0.2);
-        }
-
-        /* Removal of old floating line for cleaner look on solid hover */
-        :global(.nav-item):after {
-          display: none;
+          box-shadow: 0 15px 35px rgba(255, 215, 0, 0.3);
         }
         
         .nav-right-section {
