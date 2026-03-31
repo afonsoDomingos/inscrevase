@@ -51,7 +51,7 @@ export const vacancyService = {
         return res.json();
     },
 
-    submitApplication: async (data: any): Promise<any> => {
+    submitApplication: async (data: Partial<JobApplication> & { answers: { question: string, answer: string }[] }): Promise<{ success: boolean, message?: string }> => {
         const res = await fetch(`${API_URL}/vacancies/apply`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -69,7 +69,7 @@ export const vacancyService = {
         return res.json();
     },
 
-    createVacancy: async (data: any): Promise<Vacancy> => {
+    createVacancy: async (data: Partial<Vacancy>): Promise<Vacancy> => {
         const token = Cookies.get('token');
         const res = await fetch(`${API_URL}/vacancies`, {
             method: 'POST',
@@ -82,7 +82,7 @@ export const vacancyService = {
         return res.json();
     },
 
-    deleteVacancy: async (id: string): Promise<any> => {
+    deleteVacancy: async (id: string): Promise<{ success: boolean }> => {
         const token = Cookies.get('token');
         const res = await fetch(`${API_URL}/vacancies/${id}`, {
             method: 'DELETE',
@@ -109,7 +109,7 @@ export const vacancyService = {
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData
         });
-        const data = await res.json();
+        const data = await res.json() as { url: string };
         return data.url;
     }
 };

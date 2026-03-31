@@ -3,9 +3,8 @@
 import { useState, useEffect } from 'react';
 import { vacancyService, Vacancy, JobApplication, Question } from '@/lib/vacancyService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Edit, Users, Eye, Search, FileDown, Loader2, MapPin, Briefcase, ChevronRight, X, Layout, HelpCircle, Save, FileText } from 'lucide-react';
+import { Plus, Trash2, Users, Eye, Search, FileDown, Loader2, MapPin, Briefcase, X, Layout, HelpCircle, Save, FileText } from 'lucide-react';
 import { toast } from 'sonner';
-import Image from 'next/image';
 
 export default function VacanciesAdmin() {
     const [view, setView] = useState<'list' | 'applications'>('list');
@@ -48,6 +47,7 @@ export default function VacanciesAdmin() {
             setVacancies(vData);
             setApplications(aData);
         } catch (error) {
+            console.error(error);
             toast.error('Erro ao carregar dados');
         } finally {
             setLoading(false);
@@ -80,6 +80,7 @@ export default function VacanciesAdmin() {
                 ]
             });
         } catch (error) {
+            console.error(error);
             toast.error('Erro ao guardar vaga');
         }
     };
@@ -91,6 +92,7 @@ export default function VacanciesAdmin() {
             toast.success('Vaga removida');
             loadData();
         } catch (error) {
+            console.error(error);
             toast.error('Erro ao remover');
         }
     };
@@ -322,7 +324,7 @@ export default function VacanciesAdmin() {
                                                     value={q.type}
                                                     onChange={(e) => {
                                                         const qs = [...(formData.questions || [])];
-                                                        qs[i].type = e.target.value as any;
+                                                        qs[i].type = e.target.value as 'text' | 'textarea' | 'select';
                                                         setFormData({...formData, questions: qs});
                                                     }}
                                                     style={{ padding: '5px', borderRadius: '6px', border: '1px solid #eee', fontSize: '0.75rem' }}

@@ -47,7 +47,7 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
         loadVacancy();
     }, [slug, router]);
 
-    const handleInputChange = (field: string, value: any) => {
+    const handleInputChange = (field: string, value: string | File | null) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
@@ -89,8 +89,9 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
             } else {
                 throw new Error(response.message || 'Erro ao submeter');
             }
-        } catch (error: any) {
-            toast.error(error.message || 'Erro ao submeter candidatura');
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Erro ao submeter candidatura';
+            toast.error(message);
         } finally {
             setSubmitting(false);
         }
