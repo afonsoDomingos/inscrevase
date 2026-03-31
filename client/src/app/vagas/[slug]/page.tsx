@@ -59,15 +59,14 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
         e.preventDefault();
         if (!vacancy) return;
 
-        if (!formData.cvFile) {
-            toast.error('O seu currículo (CV) é obrigatório.');
-            return;
-        }
 
         setSubmitting(true);
         try {
-            // 1. Upload CV
-            const cvUrl = await vacancyService.uploadCV(formData.cvFile!);
+            // 1. Upload CV (if provided)
+            let cvUrl = '';
+            if (formData.cvFile) {
+                cvUrl = await vacancyService.uploadCV(formData.cvFile);
+            }
 
             // 2. Submit all application data
             const submissionData = {
@@ -105,12 +104,7 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                 return;
             }
         }
-        if (currentStep === 1) {
-            if (!formData.cvFile) {
-                toast.error('O seu currículo (CV) é obrigatório');
-                return;
-            }
-        }
+        // No mandatory validation for CV anymore
         
         setCurrentStep(prev => prev + 1);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -281,11 +275,11 @@ export default function VacancyDetailsPage({ params }: { params: { slug: string 
                                         {currentStep === 1 && (
                                             <div style={{ display: 'grid', gap: '1.5rem' }}>
                                                 <div className="input-group">
-                                                    <label style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '8px', display: 'block' }}>Carregar Currículo (PDF/Doc) *</label>
+                                                    <label style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#888', marginBottom: '8px', display: 'block' }}>Carregar Currículo (PDF/Doc) - Opcional</label>
                                                     <div style={{ position: 'relative' }}>
-                                                        <input required type="file" accept=".pdf,.doc,.docx" onChange={(e) => handleInputChange('cvFile', e.target.files?.[0] || null)} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: 1 }} />
+                                                        <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => handleInputChange('cvFile', e.target.files?.[0] || null)} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: 1 }} />
                                                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '15px', padding: '40px 20px', borderRadius: '24px', border: '2px dashed #D4AF37', background: formData.cvFile ? '#f0fdf4' : '#fff', color: formData.cvFile ? '#10b981' : '#64748b', transition: 'all 0.3s ease' }}>
-                                                            {formData.cvFile ? <><CheckCircle size={48} /> <span style={{ fontWeight: 800 }}>{formData.cvFile.name}</span></> : <><Upload size={48} color="#D4AF37" /> <span style={{ fontWeight: 700 }}>Clique ou arraste o seu ficheiro</span><span style={{ fontSize: '0.8rem' }}>Tamanho máximo: 5MB</span></>}
+                                                            {formData.cvFile ? <><CheckCircle size={48} /> <span style={{ fontWeight: 800 }}>{formData.cvFile.name}</span></> : <><Upload size={48} color="#D4AF37" /> <span style={{ fontWeight: 700 }}>Clique para adicionar (Opcional)</span><span style={{ fontSize: '0.8rem' }}>PDF ou Word até 5MB</span></>}
                                                         </div>
                                                     </div>
                                                 </div>
