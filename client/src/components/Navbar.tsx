@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle, Home, Users, Info, LifeBuoy, Newspaper, Sparkles, MessageSquare, Calendar as CalendarIcon, Library, Briefcase } from 'lucide-react';
+import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle, Home, Users, Info, LifeBuoy, Newspaper, Sparkles, MessageSquare, Calendar as CalendarIcon, Library, Briefcase, Zap } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { authService, UserData } from '@/lib/authService';
@@ -68,32 +68,68 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* Center Links (Desktop) */}
-        <div className="nav-center-links">
-          <Link href="/experts" className="nav-item">
-            {t('nav.mentors')}
-          </Link>
-          <Link href="/calendario" className="nav-item">
-            {t('nav.calendar')}
-          </Link>
-          <Link href="/sobre-nos" className="nav-item">
-            {t('nav.about')}
-          </Link>
-          <Link href="/blog" className="nav-item">
-            {t('nav.blog')}
-          </Link>
-          <Link href="/updates" className="nav-item">
-            {t('nav.updates')}
-          </Link>
-          <Link href="/books" className="nav-item">
-            {t('nav.books')}
-          </Link>
-          <Link href="/vagas" className="nav-item">
-            Vagas
-          </Link>
-          <Link href="/suporte" className="nav-item">
-            {t('dashboard.support')}
-          </Link>
+        {/* Center Links (Desktop - Ticker Menu) */}
+        <div className="nav-ticker-container">
+          <div className="nav-ticker-wrapper">
+            <div className="nav-ticker-track">
+              <Link href="/experts" className="nav-item">
+                {t('nav.mentors') || 'Conexões'}
+              </Link>
+              <Link href="/calendario" className="nav-item">
+                {t('nav.calendar')}
+              </Link>
+              <Link href="/sobre-nos" className="nav-item">
+                {t('nav.about')}
+              </Link>
+              <Link href="/blog" className="nav-item">
+                {t('nav.blog')}
+              </Link>
+              <Link href="/updates" className="nav-item">
+                {t('nav.updates')}
+              </Link>
+              <Link href="/books" className="nav-item">
+                {t('nav.books')}
+              </Link>
+              <Link href="/vagas" className="nav-item">
+                Vagas
+              </Link>
+              <Link href="/suporte" className="nav-item">
+                {t('dashboard.support')}
+              </Link>
+              <Link href="/hub" className="nav-item">
+                Hub
+              </Link>
+              <Link href="/comunidade" className="nav-item">
+                Comunidade
+              </Link>
+              <Link href="/eventos" className="nav-item">
+                Eventos
+              </Link>
+              
+              {/* Duplicate links for seamless loop */}
+              <Link href="/experts" className="nav-item" aria-hidden="true">
+                {t('nav.mentors') || 'Conexões'}
+              </Link>
+              <Link href="/calendario" className="nav-item" aria-hidden="true">
+                {t('nav.calendar')}
+              </Link>
+              <Link href="/sobre-nos" className="nav-item" aria-hidden="true">
+                {t('nav.about')}
+              </Link>
+              <Link href="/blog" className="nav-item" aria-hidden="true">
+                {t('nav.blog')}
+              </Link>
+              <Link href="/updates" className="nav-item" aria-hidden="true">
+                {t('nav.updates')}
+              </Link>
+              <Link href="/books" className="nav-item" aria-hidden="true">
+                {t('nav.books')}
+              </Link>
+              <Link href="/vagas" className="nav-item" aria-hidden="true">
+                Vagas
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Right Icons/Auth (Desktop) */}
@@ -201,6 +237,24 @@ export default function Navbar() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
               <LifeBuoy size={20} color="#000" />
               <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>{t('dashboard.support')}</span>
+            </div>
+          </Link>
+          <Link href="/hub" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
+              <Zap size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>Hub</span>
+            </div>
+          </Link>
+          <Link href="/comunidade" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
+              <Users size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>Comunidade</span>
+            </div>
+          </Link>
+          <Link href="/eventos" className="mobile-link" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', marginBottom: '0.5rem', display: 'flex', paddingTop: '0.2rem', paddingBottom: '0.2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#000', textDecoration: 'none' }}>
+              <CalendarIcon size={20} color="#000" />
+              <span style={{ textDecoration: 'none', color: '#000', fontSize: '1.1rem' }}>Eventos</span>
             </div>
           </Link>
 
@@ -506,10 +560,36 @@ export default function Navbar() {
           transform: translateY(-2px);
           text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
-        .nav-center-links {
-          display: flex;
-          gap: 0.5rem;
+        .nav-ticker-container {
+          grid-column: 2;
+          width: 700px; /* Fixed width for exactly 7 visible items approx */
+          overflow: hidden;
+          mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+          -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
         }
+        .nav-ticker-wrapper {
+          width: 100%;
+        }
+        .nav-ticker-track {
+          display: flex;
+          width: max-content;
+          animation: ticker-scroll 35s linear infinite;
+          gap: 15px;
+        }
+        .nav-ticker-container:hover .nav-ticker-track {
+          animation-play-state: paused;
+        }
+
+        @keyframes ticker-scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            /* Scroll half the track length (original items + duplicate items) */
+            transform: translateX(calc(-50% - 7.5px));
+          }
+        }
+
         :global(.nav-item) {
           font-family: 'Poppins', sans-serif !important;
           color: #FFD700 !important;
@@ -519,11 +599,13 @@ export default function Navbar() {
           text-transform: uppercase;
           letter-spacing: 1px;
           transition: all 0.3s ease;
-          padding: 0.8rem 0.6rem;
+          padding: 0.8rem 1rem;
           position: relative;
-          display: inline-block;
-          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           white-space: nowrap;
+          min-width: 100px;
         }
         .navbar.scrolled :global(.nav-item) {
           color: #FFF !important;
