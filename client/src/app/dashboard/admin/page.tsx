@@ -81,6 +81,11 @@ export default function AdminDashboard() {
         const tab = searchParams.get('tab');
         if (tab && (['overview', 'users', 'forms', 'submissions', 'support', 'finance', 'newsletter', 'blog', 'lessons', 'ads', 'referrals', 'smartlinks', 'settings', 'marketing', 'payouts', 'books', 'whatsapp', 'vacancies'].includes(tab))) {
             setActiveTab(tab as Tab);
+            
+            // Auto expand relevant sections if needed
+            if (tab === 'vacancies' || tab === 'users' || tab === 'forms') {
+                setExpandedSections(prev => ({ ...prev, superAdmin: true }));
+            }
         }
     }, [searchParams]);
 

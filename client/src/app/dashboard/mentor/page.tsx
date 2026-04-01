@@ -154,15 +154,19 @@ function MentorDashboardContent() {
         'support': true
     });
 
-    // Handle tab switching from URL
+    // Handle initial tab and changes from URL
     useEffect(() => {
         const tab = searchParams.get('tab');
         if (tab === 'vacancies') {
             setActiveTab('vacancies');
+            // Ensure the section containing vacancies is open
+            setExpandedSections(prev => ({ ...prev, 'management': true }));
         } else if (tab === 'submissions') {
             setActiveTab('submissions');
+            setExpandedSections(prev => ({ ...prev, 'management': true }));
         } else if (tab === 'smartlinks') {
             setActiveTab('smartlinks');
+            setExpandedSections(prev => ({ ...prev, 'growth': true }));
         }
     }, [searchParams]);
 
