@@ -148,13 +148,23 @@ function MentorDashboardContent() {
     const [libraryBooks, setLibraryBooks] = useState<BookModel[]>([]);
     const [libraryLoading, setLibraryLoading] = useState(false);
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-        "DASHBOARD": true,
-        "CONTEÚDO / PRODUTOS": true,
-        "PARTICIPANTES / GESTÃO": true,
-        "MARKETING / PROMOÇÃO": true,
-        "FINANCEIRO": true,
-        "CONTA / SISTEMA": true
+        'main': true,
+        'management': true,
+        'growth': true,
+        'support': true
     });
+
+    // Handle tab switching from URL
+    useEffect(() => {
+        const tab = searchParams.get('tab');
+        if (tab === 'vacancies') {
+            setActiveTab('vacancies');
+        } else if (tab === 'submissions') {
+            setActiveTab('submissions');
+        } else if (tab === 'smartlinks') {
+            setActiveTab('smartlinks');
+        }
+    }, [searchParams]);
 
     const toggleSection = (title: string) => {
         setExpandedSections(prev => ({

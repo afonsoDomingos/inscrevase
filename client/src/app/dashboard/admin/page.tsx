@@ -25,7 +25,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Plus, Book, MessageCircle, Smartphone, Briefcase } from 'lucide-react';
 
 import ProfileModal from '@/components/mentor/ProfileModal';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supportService } from '@/lib/supportService';
 import { referralService, ReferralRanking, ReferralHistory } from '@/lib/referralService';
 import Link from 'next/link';
@@ -71,6 +71,19 @@ const itemVariants = {
 export default function AdminDashboard() {
     const { t } = useTranslate();
     const { currency, formatPrice } = useCurrency();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [user, setUser] = useState<UserData | null>(null);
+    const [activeTab, setActiveTab] = useState<Tab>('overview');
+
+    // Handle tab switching from URL
+    useEffect(() => {
+        const tab = searchParams.get('tab');
+        if (tab && (['overview', 'users', 'forms', 'submissions', 'support', 'finance', 'newsletter', 'blog', 'lessons', 'ads', 'referrals', 'smartlinks', 'settings', 'marketing', 'payouts', 'books', 'whatsapp', 'vacancies'].includes(tab))) {
+            setActiveTab(tab as Tab);
+        }
+    }, [searchParams]);
+
     const monthNames = [
         t('common.months.jan'), t('common.months.feb'), t('common.months.mar'),
         t('common.months.apr'), t('common.months.may'), t('common.months.jun'),
@@ -119,8 +132,6 @@ export default function AdminDashboard() {
         }
     ];
 
-    const router = useRouter();
-    const [user, setUser] = useState<UserData | null>(null);
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [trafficStats, setTrafficStats] = useState<TrafficStats | null>(null);
 
@@ -140,7 +151,6 @@ export default function AdminDashboard() {
           ][peakDayPatternData.day - 1] 
         : null;
     const [topMentors, setTopMentors] = useState<TopMentor[]>([]);
-    const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [loading, setLoading] = useState(true);
     const [isSupportOpen, setIsSupportOpen] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
