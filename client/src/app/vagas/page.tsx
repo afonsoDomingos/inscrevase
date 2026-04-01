@@ -6,9 +6,12 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { vacancyService, Vacancy } from '@/lib/vacancyService';
 import { motion } from 'framer-motion';
-import { Briefcase, MapPin, Clock, ArrowRight, Loader2 } from 'lucide-react';
+import { Briefcase, MapPin, Clock, ArrowRight, Loader2, Plus, Megaphone } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { authService } from '@/lib/authService';
 
 export default function VacanciesPage() {
+    const router = useRouter();
     const [vacancies, setVacancies] = useState<Vacancy[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -25,6 +28,26 @@ export default function VacanciesPage() {
         };
         loadVacancies();
     }, []);
+
+    const handlePostJob = () => {
+        const user = authService.getCurrentUser();
+        if (!user) {
+            router.push('/entrar?redirect=/vagas');
+            return;
+        }
+
+        // Redirect based on role
+        if (user.role === 'admin' || user.role === 'SuperAdmin') {
+            router.push('/dashboard/admin?tab=vacancies');
+        } else if (user.role === 'participant') {
+            // Participant can see jobs but usually can't post. 
+            // If they want to post, maybe redirect to mentor registration or just dashboard.
+            router.push('/dashboard/participant');
+        } else {
+            // mentor, company, specialist
+            router.push('/dashboard/mentor?tab=vacancies');
+        }
+    };
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -60,10 +83,35 @@ export default function VacanciesPage() {
                     <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 4rem)', fontWeight: 900, marginBottom: '1.5rem', fontFamily: 'var(--font-playfair)', color: '#fff' }}>
                         Trabalhe com os <span style={{ color: '#FFD700' }}>Melhores</span>
                     </h1>
-                    <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
+                    <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, marginBottom: '2.5rem' }}>
                         Encontre a sua próxima oportunidade no ecossistema Inscreva-se. 
                         Conectamos talentos às melhores empresas, mentores e especialistas em toda a lusofonia.
                     </p>
+
+                    <motion.button
+                        whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(212, 175, 55, 0.3)' }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={handlePostJob}
+                        style={{
+                            background: 'var(--gold-gradient)',
+                            color: '#fff',
+                            padding: '1rem 2.5rem',
+                            borderRadius: '50px',
+                            border: 'none',
+                            fontSize: '1.1rem',
+                            fontWeight: 800,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            cursor: 'pointer',
+                            boxShadow: '0 10px 25px rgba(212, 175, 55, 0.2)',
+                            fontFamily: 'var(--font-poppins)',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px'
+                        }}
+                    >
+                        <Megaphone size={22} /> Divulgar Vaga
+                    </motion.button>
                 </motion.div>
             </div>
 
