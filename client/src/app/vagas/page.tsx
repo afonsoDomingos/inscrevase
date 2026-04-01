@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { vacancyService, Vacancy } from '@/lib/vacancyService';
 import { motion } from 'framer-motion';
-import { Briefcase, MapPin, Clock, ArrowRight, Loader2, Plus, Megaphone } from 'lucide-react';
+import { Briefcase, MapPin, Clock, ArrowRight, Loader2, Megaphone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/authService';
 
