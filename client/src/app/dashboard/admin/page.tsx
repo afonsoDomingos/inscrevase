@@ -26,6 +26,7 @@ import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashbo
 
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { supportService } from '@/lib/supportService';
 import { referralService, ReferralRanking, ReferralHistory } from '@/lib/referralService';
 import Link from 'next/link';
@@ -68,7 +69,7 @@ const itemVariants = {
     visible: { opacity: 1, y: 0, transition: { type: 'spring', damping: 25, stiffness: 400 } }
 };
 
-export default function AdminDashboard() {
+function AdminDashboardContent() {
     const { t } = useTranslate();
     const { currency, formatPrice } = useCurrency();
     const router = useRouter();
@@ -2308,5 +2309,13 @@ function StatCard({ icon, label, value, color, onClick }: { icon: React.ReactNod
             {/* Subtle background element */}
             <div style={{ position: 'absolute', bottom: '-15px', right: '-15px', width: '70px', height: '70px', background: `radial-gradient(circle, ${color}08 0%, transparent 70%)`, borderRadius: '50%' }} />
         </motion.div>
+    );
+}
+
+export default function AdminDashboard() {
+    return (
+        <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#000' }}><Loader2 className="animate-spin" size={48} color="#FFD700" /></div>}>
+            <AdminDashboardContent />
+        </Suspense>
     );
 }

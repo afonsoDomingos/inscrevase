@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { authService, UserData } from '@/lib/authService';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { dashboardService, AdminStats } from '@/lib/dashboardService';
 import { formService, FormModel } from '@/lib/formService';
 import { lessonService, Lesson } from '@/lib/lessonService';
@@ -104,8 +105,6 @@ import MySalesPanel from '@/components/books/MySalesPanel';
 import { pushService } from '@/lib/pushService';
 
 type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard' | 'referral' | 'library' | 'mysales' | 'vacancies';
-
-import { Suspense } from 'react';
 
 function MentorDashboardContent() {
     const { t } = useTranslate();
