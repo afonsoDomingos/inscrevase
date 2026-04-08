@@ -396,70 +396,69 @@ function RegisterContent() {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                padding: '1rem',
+                padding: '0.75rem',
                 position: 'relative',
-                overflowY: 'auto'
+                overflow: 'hidden'
             }}>
-                <div style={{ position: 'absolute', top: '2rem', left: '2rem' }}>
-                    <Link href="/" style={{ color: '#888', textDecoration: 'none', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <ArrowRight size={16} style={{ transform: 'rotate(180deg)' }} /> Home
+                <div style={{ 
+                    position: 'absolute', 
+                    top: '1rem', 
+                    left: '1rem',
+                    zIndex: 10
+                }}>
+                    <Link href="/" style={{ color: '#888', textDecoration: 'none', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <ArrowRight size={14} style={{ transform: 'rotate(180deg)' }} /> Home
                     </Link>
                 </div>
 
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    style={{ width: '100%', maxWidth: '450px', padding: '1.5rem 0' }}
+                    style={{ width: '100%', maxWidth: '420px', padding: '0.5rem 0' }}
                 >
-                    <div style={{ marginBottom: '1.2rem' }}>
-                        <div style={{ display: 'flex', marginBottom: '1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '4px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <Link href="/entrar" style={{ flex: 1, padding: '10px', borderRadius: '8px', color: '#888', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', textDecoration: 'none' }}>
-                                <LogIn size={16} /> {t('auth.signIn')}
+                    <div style={{ marginBottom: '0.8rem' }}>
+                        <div style={{ display: 'flex', marginBottom: '0.8rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '4px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <Link href="/entrar" style={{ flex: 1, padding: '8px', borderRadius: '8px', color: '#888', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem', textDecoration: 'none' }}>
+                                <LogIn size={14} /> {t('auth.signIn')}
                             </Link>
-                            <div style={{ flex: 1, padding: '10px', borderRadius: '8px', background: 'var(--gold-gradient)', color: '#000', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem' }}>
-                                <UserPlus size={16} /> {t('auth.signUp')}
+                            <div style={{ flex: 1, padding: '8px', borderRadius: '8px', background: 'var(--gold-gradient)', color: '#000', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}>
+                                <UserPlus size={14} /> {t('auth.signUp')}
                             </div>
                         </div>
 
-                        <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem', color: '#fff' }}>
+                        <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.2rem', color: '#fff' }}>
                             {t('auth.signUpTitle')}
                         </h1>
-                        <p style={{ color: '#666' }}>{t('auth.signUpSubtitle')}</p>
+                        <p style={{ color: '#666', fontSize: '0.8rem' }}>{t('auth.signUpSubtitle')}</p>
                     </div>
 
                     {/* Role Selector */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.6rem', marginBottom: '1rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.4rem', marginBottom: '0.8rem' }}>
                         {(['mentor', 'participant', 'company', 'specialist'] as const).map((role) => (
                             <div
                                 key={role}
                                 onClick={() => setFormData({ ...formData, role })}
                                 style={{
-                                    padding: '0.6rem',
-                                    borderRadius: '12px',
+                                    padding: '0.5rem 0.25rem',
+                                    borderRadius: '10px',
                                     background: formData.role === role ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255,255,255,0.03)',
                                     border: formData.role === role ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
                                     cursor: 'pointer',
                                     transition: 'all 0.3s ease',
                                     display: 'flex',
-                                    flexDirection: 'row',
+                                    flexDirection: 'column',
                                     justifyContent: 'center',
-                                    gap: '10px',
+                                    gap: '4px',
                                     alignItems: 'center',
-                                    position: 'relative'
+                                    position: 'relative',
+                                    textAlign: 'center'
                                 }}
                             >
-                                <button
-                                    type="button"
-                                    onClick={(e) => { e.stopPropagation(); setShowRoleInfo(role); }}
-                                    style={{ position: 'absolute', top: '8px', right: '8px', background: 'none', border: 'none', color: '#444', cursor: 'help' }}
-                                >
-                                    <HelpCircle size={14} />
-                                </button>
-                                {role === 'mentor' && <Briefcase size={20} color={formData.role === role ? '#D4AF37' : '#666'} />}
-                                {role === 'participant' && <User size={20} color={formData.role === role ? '#D4AF37' : '#666'} />}
-                                {role === 'company' && <Globe size={20} color={formData.role === role ? '#D4AF37' : '#666'} />}
-                                {role === 'specialist' && <Award size={20} color={formData.role === role ? '#D4AF37' : '#666'} />}
-                                <span style={{ color: formData.role === role ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.85rem' }}>
+                                {role === 'mentor' && <Briefcase size={16} color={formData.role === role ? '#D4AF37' : '#666'} />}
+                                {role === 'participant' && <User size={16} color={formData.role === role ? '#D4AF37' : '#666'} />}
+                                {role === 'company' && <Globe size={16} color={formData.role === role ? '#D4AF37' : '#666'} />}
+                                {role === 'specialist' && <Award size={16} color={formData.role === role ? '#D4AF37' : '#666'} />}
+                                <span style={{ color: formData.role === role ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.65rem', whiteSpace: 'nowrap' }}>
                                     {t('common.badges.' + role)}
                                 </span>
                             </div>
@@ -473,35 +472,35 @@ function RegisterContent() {
                     )}
 
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.6rem' }}>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.8rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.fullName')}</label>
+                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 600, fontSize: '0.7rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.fullName')}</label>
                                 <input
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    style={{ width: '100%', padding: '1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }}
+                                    style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', outline: 'none', fontSize: '0.9rem' }}
                                     required
                                 />
                             </div>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.8rem', color: '#888', textTransform: 'uppercase' }}>Negócio/Empresa</label>
+                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 600, fontSize: '0.7rem', color: '#888', textTransform: 'uppercase' }}>Negócio/Empresa</label>
                                 <input
                                     type="text"
                                     value={formData.businessName}
                                     onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                                    style={{ width: '100%', padding: '1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }}
+                                    style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', outline: 'none', fontSize: '0.9rem' }}
                                     required
                                 />
                             </div>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.6rem' }}>
                             <div style={{ position: 'relative' }} ref={dropdownRef}>
-                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.8rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.country')}</label>
+                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 600, fontSize: '0.7rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.country')}</label>
                                 <div
                                     onClick={() => !loading && setShowCountryPicker(!showCountryPicker)}
-                                    style={{ width: '100%', padding: '0.7rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', cursor: 'pointer', fontSize: '0.9rem' }}
+                                    style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', cursor: 'pointer', fontSize: '0.9rem' }}
                                 >
                                     {formData.country || "Selecione..."}
                                 </div>
@@ -511,20 +510,20 @@ function RegisterContent() {
                                             initial={{ opacity: 0, y: -10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -10 }}
-                                            style={{ position: 'absolute', top: '105%', left: 0, right: 0, background: '#1a1a1a', borderRadius: '12px', zIndex: 100, border: '1px solid #333', maxHeight: '200px', overflowY: 'auto' }}
+                                            style={{ position: 'absolute', bottom: '105%', left: 0, right: 0, background: '#1a1a1a', borderRadius: '10px', zIndex: 100, border: '1px solid #333', maxHeight: '150px', overflowY: 'auto' }}
                                         >
-                                            <div style={{ padding: '0.5rem', position: 'sticky', top: 0, background: '#1a1a1a' }}>
+                                            <div style={{ padding: '0.4rem', position: 'sticky', top: 0, background: '#1a1a1a' }}>
                                                 <input
                                                     autoFocus
                                                     type="text"
                                                     placeholder="Pesquisar..."
                                                     value={countrySearch}
                                                     onChange={(e) => setCountrySearch(e.target.value)}
-                                                    style={{ width: '100%', padding: '0.5rem 1.8rem', borderRadius: '8px', border: '1px solid #333', background: '#222', color: '#fff', fontSize: '0.85rem' }}
+                                                    style={{ width: '100%', padding: '0.4rem 0.8rem', borderRadius: '8px', border: '1px solid #333', background: '#222', color: '#fff', fontSize: '0.8rem' }}
                                                 />
                                             </div>
                                             {filteredCountries.map(country => (
-                                                <div key={country} onClick={() => { setFormData({ ...formData, country }); setShowCountryPicker(false); }} style={{ padding: '0.8rem 1rem', cursor: 'pointer', fontSize: '0.85rem', color: formData.country === country ? '#D4AF37' : '#ccc' }}>
+                                                <div key={country} onClick={() => { setFormData({ ...formData, country }); setShowCountryPicker(false); }} style={{ padding: '0.6rem 0.8rem', cursor: 'pointer', fontSize: '0.8rem', color: formData.country === country ? '#D4AF37' : '#ccc' }}>
                                                     {country}
                                                 </div>
                                             ))}
@@ -533,12 +532,12 @@ function RegisterContent() {
                                 </AnimatePresence>
                             </div>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.8rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.email')}</label>
+                                <label style={{ display: 'block', marginBottom: '0.2rem', fontWeight: 600, fontSize: '0.7rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.email')}</label>
                                 <input
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    style={{ width: '100%', padding: '1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }}
+                                    style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', outline: 'none', fontSize: '0.9rem' }}
                                     required
                                 />
                             </div>
@@ -571,13 +570,13 @@ function RegisterContent() {
                         </motion.button>
                     </form>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', margin: '1rem 0' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', margin: '0.6rem 0' }}>
                         <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
-                        <span style={{ fontSize: '0.8rem', color: '#444' }}>OU CONTINUE COM</span>
+                        <span style={{ fontSize: '0.7rem', color: '#444' }}>OU CONTINUE COM</span>
                         <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div style={{ display: 'flex', gap: '0.8rem' }}>
                         <button onClick={() => {
                             if (!formData.role) {
                                 toast.error('Selecione um perfil antes de continuar com o Google');
@@ -585,8 +584,8 @@ function RegisterContent() {
                             }
                             const refParam = formData.referralCode ? `&referralCode=${formData.referralCode}` : '';
                             window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google?role=${formData.role}${refParam}`;
-                        }} style={{ flex: 1, padding: '0.7rem', background: '#fff', color: '#000', border: 'none', borderRadius: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem' }}>
-                            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" /><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg> Google
+                        }} style={{ flex: 1, padding: '0.6rem', background: '#fff', color: '#000', border: 'none', borderRadius: '10px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.85rem' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" /><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg> Google
                         </button>
                         <button onClick={() => {
                             if (!formData.role) {
@@ -595,12 +594,12 @@ function RegisterContent() {
                             }
                             const refParam = formData.referralCode ? `&referralCode=${formData.referralCode}` : '';
                             window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/linkedin?role=${formData.role}${refParam}`;
-                        }} style={{ flex: 1, padding: '0.7rem', background: '#0077b5', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem' }}>
-                            <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={18} height={18} style={{ filter: 'brightness(0) invert(1)' }} /> LinkedIn
+                        }} style={{ flex: 1, padding: '0.6rem', background: '#0077b5', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.85rem' }}>
+                            <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={16} height={16} style={{ filter: 'brightness(0) invert(1)' }} /> LinkedIn
                         </button>
                     </div>
 
-                    <p style={{ marginTop: '1.5rem', textAlign: 'center', color: '#666', fontSize: '0.85rem' }}>
+                    <p style={{ marginTop: '0.8rem', textAlign: 'center', color: '#666', fontSize: '0.8rem' }}>
                         {t('auth.alreadyHaveAccount')} <Link href="/entrar" style={{ color: '#D4AF37', fontWeight: 700, textDecoration: 'none' }}>{t('auth.loginNow')}</Link>
                     </p>
                 </motion.div>
