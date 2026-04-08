@@ -174,40 +174,40 @@ function LoginContent() {
                 position: 'relative',
                 overflow: 'hidden'
             }}>
-                {/* Back Link Overlay - Adjusted for Mobile to not overlap tabs */}
+                {/* Back Link Overlay - Positioned more at the top to avoid overlap */}
                 <div style={{ 
                     position: 'absolute', 
-                    top: '1.2rem', 
-                    left: '1.2rem',
-                    zIndex: 10 
+                    top: '0.8rem', 
+                    left: '1rem',
+                    zIndex: 50 
                 }}>
-                    <Link href="/" style={{ color: '#888', textDecoration: 'none', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <ArrowRight size={14} style={{ transform: 'rotate(180deg)' }} /> Home
+                    <Link href="/" style={{ color: '#666', textDecoration: 'none', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
+                        <ArrowRight size={12} style={{ transform: 'rotate(180deg)' }} /> Home
                     </Link>
                 </div>
 
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    style={{ width: '100%', maxWidth: '380px', marginTop: '1rem' }}
+                    style={{ width: '100%', maxWidth: '360px', marginTop: '1.5rem' }}
                 >
-                    <div style={{ marginBottom: '1rem' }}>
-                        <div style={{ display: 'flex', marginBottom: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '4px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <div style={{ flex: 1, padding: '8px', borderRadius: '8px', background: 'var(--gold-gradient)', color: '#000', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}>
-                                <LogIn size={14} /> {t('auth.signIn')}
+                    <div style={{ marginBottom: '0.75rem' }}>
+                        <div style={{ display: 'flex', marginBottom: '0.75rem', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '3px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div style={{ flex: 1, padding: '6px', borderRadius: '7px', background: 'var(--gold-gradient)', color: '#000', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem' }}>
+                                <LogIn size={13} /> {t('auth.signIn')}
                             </div>
                             <Link
                                 href={`/cadastro${searchParams.toString() ? '?' + searchParams.toString() : ''}`}
-                                style={{ flex: 1, padding: '8px', borderRadius: '8px', color: '#888', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem', textDecoration: 'none' }}
+                                style={{ flex: 1, padding: '6px', borderRadius: '7px', color: '#888', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', textDecoration: 'none' }}
                             >
-                                <UserPlus size={14} /> {t('auth.signUp')}
+                                <UserPlus size={13} /> {t('auth.signUp')}
                             </Link>
                         </div>
 
-                        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.25rem', color: '#fff' }}>
+                        <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.15rem', color: '#fff' }}>
                             {t('auth.loginTitle')}
                         </h1>
-                        <p style={{ color: '#666', fontSize: '0.9rem' }}>
+                        <p style={{ color: '#555', fontSize: '0.8rem' }}>
                             {t('auth.loginSubtitle') || 'Entre para continuar sua jornada premium.'}
                         </p>
                     </div>
@@ -222,13 +222,13 @@ function LoginContent() {
                         </motion.div>
                     )}
 
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         <div className="input-group">
-                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                            <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.7rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>
                                 {t('auth.email')}
                             </label>
                             <div style={{ position: 'relative' }}>
-                                <Mail size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: focusedField === 'email' ? '#D4AF37' : '#444', transition: '0.3s' }} />
+                                <Mail size={15} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: focusedField === 'email' ? '#D4AF37' : '#444', transition: '0.3s' }} />
                                 <input
                                     type="email"
                                     value={email}
@@ -238,12 +238,12 @@ function LoginContent() {
                                     placeholder="seu@email.com"
                                     style={{
                                         width: '100%',
-                                        padding: '0.9rem 1rem 0.9rem 2.8rem',
+                                        padding: '0.8rem 0.8rem 0.8rem 2.5rem',
                                         background: 'rgba(255,255,255,0.03)',
                                         border: focusedField === 'email' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
-                                        borderRadius: '10px',
+                                        borderRadius: '8px',
                                         color: '#fff',
-                                        fontSize: '0.95rem',
+                                        fontSize: '0.9rem',
                                         outline: 'none',
                                         transition: 'all 0.3s'
                                     }}
@@ -253,16 +253,16 @@ function LoginContent() {
                         </div>
 
                         <div className="input-group">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                                <label style={{ fontWeight: 600, fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem' }}>
+                                <label style={{ fontWeight: 600, fontSize: '0.7rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>
                                     {t('auth.password')}
                                 </label>
-                                <Link href="/esqueci-senha" style={{ color: '#D4AF37', fontSize: '0.75rem', textDecoration: 'none' }}>
+                                <Link href="/esqueci-senha" style={{ color: '#D4AF37', fontSize: '0.7rem', textDecoration: 'none' }}>
                                     {t('auth.forgotPassword') || 'Esqueceu?'}
                                 </Link>
                             </div>
                             <div style={{ position: 'relative' }}>
-                                <Key size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: focusedField === 'password' ? '#D4AF37' : '#444', transition: '0.3s' }} />
+                                <Key size={15} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: focusedField === 'password' ? '#D4AF37' : '#444', transition: '0.3s' }} />
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     value={password}
@@ -272,12 +272,12 @@ function LoginContent() {
                                     placeholder="••••••••"
                                     style={{
                                         width: '100%',
-                                        padding: '0.9rem 2.8rem 0.9rem 2.8rem',
+                                        padding: '0.8rem 2.5rem 0.8rem 2.5rem',
                                         background: 'rgba(255,255,255,0.03)',
                                         border: focusedField === 'password' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
-                                        borderRadius: '10px',
+                                        borderRadius: '8px',
                                         color: '#fff',
-                                        fontSize: '0.95rem',
+                                        fontSize: '0.9rem',
                                         outline: 'none',
                                         transition: 'all 0.3s'
                                     }}
@@ -286,9 +286,9 @@ function LoginContent() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#444' }}
+                                    style={{ position: 'absolute', right: '0.8rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#444' }}
                                 >
-                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                                 </button>
                             </div>
                         </div>
@@ -299,23 +299,23 @@ function LoginContent() {
                             type="submit"
                             style={{
                                 width: '100%',
-                                padding: '1rem',
+                                padding: '0.85rem',
                                 background: 'linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%)',
                                 color: '#000',
                                 fontWeight: 800,
-                                borderRadius: '10px',
+                                borderRadius: '8px',
                                 border: 'none',
                                 cursor: 'pointer',
-                                fontSize: '0.95rem',
+                                fontSize: '0.9rem',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: '8px',
-                                boxShadow: '0 8px 16px rgba(212, 175, 55, 0.15)'
+                                gap: '6px',
+                                boxShadow: '0 6px 12px rgba(212, 175, 55, 0.1)'
                             }}
                             disabled={loading}
                         >
-                            {loading ? <Loader2 size={18} className="animate-spin" /> : <>{t('auth.loginButton')} <ArrowRight size={18} /></>}
+                            {loading ? <Loader2 size={16} className="animate-spin" /> : <>{t('auth.loginButton')} <ArrowRight size={16} /></>}
                         </motion.button>
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '0.5rem 0' }}>
@@ -324,7 +324,7 @@ function LoginContent() {
                             <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '0.8rem' }}>
+                        <div style={{ display: 'flex', gap: '0.6rem' }}>
                             <button
                                 type="button"
                                 onClick={() => {
@@ -332,9 +332,9 @@ function LoginContent() {
                                     const refParam = ref ? `?referralCode=${ref}` : '';
                                     window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google${refParam}`;
                                 }}
-                                style={{ flex: 1, padding: '0.8rem', background: '#fff', border: 'none', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.85rem', fontWeight: 600 }}
+                                style={{ flex: 1, padding: '0.7rem', background: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 600 }}
                             >
-                                <svg width="18" height="18" viewBox="0 0 24 24">
+                                <svg width="15" height="15" viewBox="0 0 24 24">
                                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
@@ -348,9 +348,9 @@ function LoginContent() {
                                     const refParam = ref ? `?referralCode=${ref}` : '';
                                     window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/linkedin${refParam}`;
                                 }}
-                                style={{ flex: 1, padding: '0.8rem', background: '#0077b5', color: '#fff', border: 'none', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.85rem', fontWeight: 600 }}
+                                style={{ flex: 1, padding: '0.7rem', background: '#0077b5', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 600 }}
                             >
-                                <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={18} height={18} style={{ filter: 'brightness(0) invert(1)' }} /> LinkedIn
+                                <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={15} height={15} style={{ filter: 'brightness(0) invert(1)' }} /> LinkedIn
                             </button>
                         </div>
                     </form>
