@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Linkedin, Youtube, Facebook, MessageCircle } from 'lucide-react';
+import { Linkedin, Youtube, Facebook, MessageCircle, Instagram } from 'lucide-react';
 import { useTranslate } from '@/context/LanguageContext';
 
 export default function Footer() {
@@ -112,6 +112,7 @@ export default function Footer() {
                         },
                         { icon: Youtube, url: 'https://www.youtube.com/@Inscreva-se-events', color: '#FF0000', label: 'YouTube' },
                         { icon: Facebook, url: 'https://www.facebook.com/profile.php?id=61586427553486&locale=pt_BR', color: '#1877F2', label: 'Facebook' },
+                        { icon: Instagram, url: 'https://www.instagram.com/inscrevas_e/', color: '#E4405F', label: 'Instagram' },
                         { icon: MessageCircle, url: 'https://wa.me/258856079576', color: '#25D366', label: 'WhatsApp' }
                     ].map((social) => (
                         <motion.a

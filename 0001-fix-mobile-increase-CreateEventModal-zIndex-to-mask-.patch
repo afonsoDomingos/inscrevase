@@ -1,0 +1,88 @@
+From 0f2d4f9d9e224aea811cab3fe9461c001db0a78a Mon Sep 17 00:00:00 2001
+From: Inscrevase Bot <bot@inscrevase.com>
+Date: Thu, 26 Mar 2026 16:51:37 +0200
+Subject: [PATCH] fix(mobile): increase CreateEventModal zIndex to mask
+ dashboard toggle and clear backdrop blur in event modals
+
+---
+ .../components/mentor/CreateEventModal.tsx    | 24 +++++++++----------
+ .../src/components/mentor/EditEventModal.tsx  |  2 +-
+ 2 files changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/client/src/components/mentor/CreateEventModal.tsx b/client/src/components/mentor/CreateEventModal.tsx
+index 947c012..e7863a3 100644
+--- a/client/src/components/mentor/CreateEventModal.tsx
++++ b/client/src/components/mentor/CreateEventModal.tsx
+@@ -1214,13 +1214,13 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan
+ 
+     return (
+         <AnimatePresence>
+-            <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
++            <div style={{ position: 'fixed', inset: 0, zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                 <motion.div
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 1 }}
+                     exit={{ opacity: 0 }}
+                     onClick={onClose}
+-                    style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)' }}
++                    style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)' }}
+                 />
+ 
+                 <motion.div
+@@ -3608,11 +3608,11 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan
+                                                     value={whatsappConfig.phoneNumber}
+                                                     onChange={(e) => setWhatsappConfig({ ...whatsappConfig, phoneNumber: e.target.value })}
+                                                     placeholder="Ex: +258 84 000 0000"
+-                                                    style={{ 
+-                                                        width: '100%', 
+-                                                        padding: '1.1rem', 
+-                                                        borderRadius: '12px', 
+-                                                        border: !whatsappConfig.phoneNumber ? '2px solid #FEF2F2' : '1px solid #ddd', 
++                                                    style={{
++                                                        width: '100%',
++                                                        padding: '1.1rem',
++                                                        borderRadius: '12px',
++                                                        border: !whatsappConfig.phoneNumber ? '2px solid #FEF2F2' : '1px solid #ddd',
+                                                         background: !whatsappConfig.phoneNumber ? '#FFFAF9' : '#fff',
+                                                         outline: 'none',
+                                                         fontSize: '1rem',
+@@ -3878,7 +3878,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan
+                         {/* Unified Sticky Footer Action */}
+                         {step !== 0 && (
+                             <div style={{
+-                                padding: isMobile ? '1rem 1.5rem calc(1rem + env(safe-area-inset-bottom))' : '1rem 2rem', 
++                                padding: isMobile ? '1rem 1.5rem calc(1rem + env(safe-area-inset-bottom))' : '1rem 2rem',
+                                 background: '#fff',
+                                 borderTop: '2px solid #FFD700',
+                                 display: 'flex',
+@@ -3917,10 +3917,10 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan
+                                         <button
+                                             type="button"
+                                             onClick={
+-                                                step === 9 
+-                                                    ? handleSubmit 
+-                                                    : (step === 6 && !whatsappConfig.phoneNumber?.trim()) 
+-                                                        ? () => toast.error(t('events.whatsappNumberRequiredToast')) 
++                                                step === 9
++                                                    ? handleSubmit
++                                                    : (step === 6 && !whatsappConfig.phoneNumber?.trim())
++                                                        ? () => toast.error(t('events.whatsappNumberRequiredToast'))
+                                                         : () => setStep(step + 1)
+                                             }
+                                             disabled={loading}
+diff --git a/client/src/components/mentor/EditEventModal.tsx b/client/src/components/mentor/EditEventModal.tsx
+index a065d8f..debd059 100644
+--- a/client/src/components/mentor/EditEventModal.tsx
++++ b/client/src/components/mentor/EditEventModal.tsx
+@@ -628,7 +628,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
+                     animate={{ opacity: 1 }}
+                     exit={{ opacity: 0 }}
+                     onClick={onClose}
+-                    style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)' }}
++                    style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)' }}
+                 />
+ 
+                 <motion.div
+-- 
+2.50.0.windows.1
+
