@@ -385,16 +385,7 @@ function RegisterContent() {
                 position: 'relative',
                 overflow: 'hidden'
             }}>
-                <div style={{ 
-                    position: 'absolute', 
-                    top: '0.6rem', 
-                    left: '0.8rem',
-                    zIndex: 50
-                }}>
-                    <Link href="/" style={{ color: '#666', textDecoration: 'none', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
-                        <ArrowRight size={12} style={{ transform: 'rotate(180deg)' }} /> Home
-                    </Link>
-                </div>
+
 
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
@@ -568,7 +559,7 @@ function RegisterContent() {
                     </p>
                 </motion.div>
 
-                <div style={{ padding: '1rem 0', color: '#333', fontSize: '0.7rem', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
+                <div style={{ padding: '0.4rem 0', color: 'rgba(255,255,255,0.2)', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
                     Inscreva-se &copy; 2026
                 </div>
             </div>

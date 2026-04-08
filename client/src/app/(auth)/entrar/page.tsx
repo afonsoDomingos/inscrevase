@@ -174,17 +174,7 @@ function LoginContent() {
                 position: 'relative',
                 overflow: 'hidden'
             }}>
-                {/* Back Link Overlay - Positioned more at the top to avoid overlap */}
-                <div style={{ 
-                    position: 'absolute', 
-                    top: '0.8rem', 
-                    left: '1rem',
-                    zIndex: 50 
-                }}>
-                    <Link href="/" style={{ color: '#666', textDecoration: 'none', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
-                        <ArrowRight size={12} style={{ transform: 'rotate(180deg)' }} /> Home
-                    </Link>
-                </div>
+
 
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
@@ -358,7 +348,7 @@ function LoginContent() {
                 </motion.div>
 
                 {/* Footer Brand */}
-                <div style={{ position: 'absolute', bottom: '2rem', color: '#333', fontSize: '0.8rem', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
+                <div style={{ position: 'absolute', bottom: '1rem', color: 'rgba(255,255,255,0.2)', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
                     Inscreva-se &copy; 2026
                 </div>
             </div>
