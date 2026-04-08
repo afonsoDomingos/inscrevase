@@ -223,13 +223,6 @@ function RegisterContent() {
 
     // Country Search State
     const [showCountryPicker, setShowCountryPicker] = useState(false);
-    const [countrySearch, setCountrySearch] = useState('');
-
-    const filteredCountries = useMemo(() => {
-        return COUNTRIES.filter(c =>
-            c.toLowerCase().includes(countrySearch.toLowerCase())
-        );
-    }, [countrySearch]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -496,14 +489,19 @@ function RegisterContent() {
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.4rem' }}>
-                            <div style={{ position: 'relative' }} ref={dropdownRef}>
+                            <div style={{ position: 'relative' }}>
                                 <label style={{ display: 'block', marginBottom: '0.1rem', fontWeight: 600, fontSize: '0.65rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.country')}</label>
-                                <div
-                                    onClick={() => !loading && setShowCountryPicker(!showCountryPicker)}
-                                    style={{ width: '100%', padding: '0.7rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontSize: '0.85rem' }}
+                                <select
+                                    value={formData.country}
+                                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                                    style={{ width: '100%', padding: '0.7rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', outline: 'none', appearance: 'none' }}
+                                    required
                                 >
-                                    {formData.country || "Selecione..."}
-                                </div>
+                                    <option value="" disabled style={{ background: '#1a1a1a' }}>Selecione o país...</option>
+                                    {COUNTRIES.map(c => (
+                                        <option key={c} value={c} style={{ background: '#1a1a1a' }}>{c}</option>
+                                    ))}
+                                </select>
                             </div>
                             <div>
                                 <label style={{ display: 'block', marginBottom: '0.1rem', fontWeight: 600, fontSize: '0.65rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.email')}</label>
