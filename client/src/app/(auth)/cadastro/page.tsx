@@ -222,7 +222,7 @@ function RegisterContent() {
     };
 
     // Country Search State
-    const [showCountryPicker, setShowCountryPicker] = useState(false);
+
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
