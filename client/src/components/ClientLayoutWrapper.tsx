@@ -12,12 +12,14 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
     const isPublicForm = pathname?.startsWith('/f/');
     const isHub = pathname?.startsWith('/hub/');
     const isBioPage = pathname?.includes('/l/') && pathname?.endsWith('/bio');
+    const isAuthPage = pathname?.includes('/entrar') || pathname?.includes('/cadastro');
 
     return (
         <>
             {children}
             {!isPublicForm && !isBioPage && <ScrollToTop />}
-            {!isPublicForm && !isHub && !isBioPage && <AuraConcierge />}
+            {!isPublicForm && !isHub && !isBioPage && !isAuthPage && <AuraConcierge />}
+            {!isPublicForm && !isHub && !isBioPage && !isAuthPage && <WhatsAppFloat />}
             <CookieConsent />
         </>
     );

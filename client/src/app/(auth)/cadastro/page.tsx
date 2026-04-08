@@ -381,7 +381,7 @@ function RegisterContent() {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                padding: '0.6rem',
+                padding: '0.4rem',
                 position: 'relative',
                 overflow: 'hidden'
             }}>
@@ -390,7 +390,7 @@ function RegisterContent() {
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    style={{ width: '100%', maxWidth: '390px', padding: '0.4rem 0' }}
+                    style={{ width: '100%', maxWidth: '390px', padding: '0.2rem 0' }}
                 >
                     <div style={{ marginBottom: '0.6rem' }}>
                         <div style={{ display: 'flex', marginBottom: '0.6rem', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '3px', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -409,7 +409,7 @@ function RegisterContent() {
                     </div>
 
                     {/* Role Selector */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.3rem', marginBottom: '0.6rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.25rem', marginBottom: '0.5rem' }}>
                         {(['mentor', 'participant', 'company', 'specialist'] as const).map((role) => (
                             <div
                                 key={role}
@@ -447,7 +447,7 @@ function RegisterContent() {
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.4rem' }}>
                             <div>
                                 <label style={{ display: 'block', marginBottom: '0.1rem', fontWeight: 600, fontSize: '0.65rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.fullName')}</label>
@@ -477,7 +477,7 @@ function RegisterContent() {
                                 <select
                                     value={formData.country}
                                     onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                                    style={{ width: '100%', padding: '0.7rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', outline: 'none', appearance: 'none' }}
+                                    style={{ width: '100%', padding: '0.6rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.8rem', outline: 'none', appearance: 'none' }}
                                     required
                                 >
                                     <option value="" disabled style={{ background: '#1a1a1a' }}>Selecione o país...</option>
@@ -518,10 +518,10 @@ function RegisterContent() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             type="submit"
-                            style={{ width: '100%', padding: '1rem', background: 'var(--gold-gradient)', color: '#000', fontWeight: 800, borderRadius: '12px', border: 'none', cursor: 'pointer', fontSize: '1rem', marginTop: '0.5rem' }}
+                            style={{ width: '100%', padding: '0.8rem', background: 'var(--gold-gradient)', color: '#000', fontWeight: 800, borderRadius: '12px', border: 'none', cursor: 'pointer', fontSize: '0.9rem', marginTop: '0.3rem' }}
                             disabled={loading}
                         >
-                            {loading ? <Loader2 className="animate-spin" /> : <>{t('auth.createAccount')} <ArrowRight size={20} /></>}
+                            {loading ? <Loader2 className="animate-spin" /> : <>{t('auth.createAccount')} <ArrowRight size={18} /></>}
                         </motion.button>
                     </form>
 
