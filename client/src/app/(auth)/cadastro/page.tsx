@@ -46,7 +46,7 @@ export default function Register() {
 function RegisterContent() {
     const { t } = useTranslate();
     const router = useRouter();
-    const dropdownRef = useRef<HTMLDivElement>(null);
+
 
     const searchParams = useSearchParams();
     const redirectUrl = searchParams.get('redirect');
@@ -224,15 +224,7 @@ function RegisterContent() {
     // Country Search State
 
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setShowCountryPicker(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+
 
     const [shuffledImages, setShuffledImages] = useState<string[]>([]);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
