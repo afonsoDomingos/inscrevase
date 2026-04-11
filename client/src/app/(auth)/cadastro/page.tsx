@@ -643,7 +643,7 @@ function RegisterContent() {
                     }
                     .registration-form-container {
                         max-width: 100% !important;
-                        padding: 1.5rem 1.2rem !important;
+                        padding: 1.5rem 0.5rem !important;
                         border-radius: 0 !important;
                         border: none !important;
                         background: transparent !important;
