@@ -298,21 +298,21 @@ function RegisterContent() {
 
     return (
         <div style={{
-            position: 'fixed',
-            inset: 0,
+            minHeight: '100dvh',
             display: 'flex',
-            zIndex: 100,
-            background: '#000'
+            background: '#0a0a0a',
+            position: 'relative',
+            overflowY: 'auto'
         }}>
             <AnimatePresence>
                 {showRoleInfo && <RoleDetailModal role={showRoleInfo} />}
             </AnimatePresence>
 
             {/* Left Side: Visual Slideshow */}
-            <div style={{
+            <div className="register-visual-side" style={{
                 flex: 1.2,
                 position: 'relative',
-                display: typeof window !== 'undefined' && window.innerWidth < 1024 ? 'none' : 'block',
+                display: 'block',
                 overflow: 'hidden'
             }}>
                 <AnimatePresence mode="wait">
@@ -376,14 +376,14 @@ function RegisterContent() {
             {/* Right Side: Registration Form */}
             <div style={{
                 flex: 1,
-                background: '#0a0a0a',
+                minHeight: '100dvh',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                padding: '0.4rem',
+                padding: '2rem 1rem',
                 position: 'relative',
-                overflow: 'hidden'
+                width: '100%'
             }}>
 
 
@@ -559,13 +559,18 @@ function RegisterContent() {
                     </p>
                 </motion.div>
 
-                <div style={{ padding: '0.4rem 0', color: 'rgba(255,255,255,0.2)', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
+                <div style={{ padding: '1rem 0', color: 'rgba(255,255,255,0.2)', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
                     Inscreva-se &copy; 2026
                 </div>
             </div>
 
             <style>{`
                 .gold-text { background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+                @media (max-width: 1023px) {
+                    .register-visual-side {
+                        display: none !important;
+                    }
+                }
             `}</style>
         </div>
     );

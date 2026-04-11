@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import ScrollToTop from '@/components/ScrollToTop';
 import AuraConcierge from '@/components/AuraConcierge';
 import CookieConsent from '@/components/CookieConsent';
+import WhatsAppFloat from '@/components/common/WhatsAppFloat';
 
 export default function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();

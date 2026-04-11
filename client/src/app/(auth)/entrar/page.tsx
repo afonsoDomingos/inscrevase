@@ -91,17 +91,17 @@ function LoginContent() {
 
     return (
         <div style={{
-            position: 'fixed',
-            inset: 0,
+            minHeight: '100dvh', // Use dynamic viewport height
             display: 'flex',
-            zIndex: 100,
-            background: '#000'
+            background: '#0a0a0a',
+            position: 'relative',
+            overflowY: 'auto'
         }}>
             {/* Left Side: Visual/Image Slideshow */}
-            <div style={{
+            <div className="login-visual-side" style={{
                 flex: 1.2,
                 position: 'relative',
-                display: typeof window !== 'undefined' && window.innerWidth < 1024 ? 'none' : 'block',
+                display: 'block', // Controlled by CSS below for responsiveness
                 overflow: 'hidden'
             }}>
                 <AnimatePresence mode="wait">
@@ -165,14 +165,14 @@ function LoginContent() {
             {/* Right Side: Login Form */}
             <div style={{
                 flex: 1,
-                background: '#0a0a0a',
+                minHeight: '100dvh',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                padding: '1rem',
+                padding: '2rem 1.5rem',
                 position: 'relative',
-                overflow: 'hidden'
+                width: '100%'
             }}>
 
 
@@ -348,10 +348,16 @@ function LoginContent() {
                 </motion.div>
 
                 {/* Footer Brand */}
-                <div style={{ position: 'absolute', bottom: '1rem', color: 'rgba(255,255,255,0.2)', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
-                    Inscreva-se &copy; 2026
-                </div>
-            </div>
+            <style>{`
+                @media (max-width: 1023px) {
+                    .login-visual-side {
+                        display: none !important;
+                    }
+                }
+                input::placeholder {
+                    color: #444;
+                }
+            `}</style>
         </div>
     );
 }
