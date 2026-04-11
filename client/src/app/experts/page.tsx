@@ -22,6 +22,7 @@ export default function ExpertsShowcase() {
     const [minPrice, setMinPrice] = useState<string>('');
     const [maxPrice, setMaxPrice] = useState<string>('');
     const [showFilters, setShowFilters] = useState(false);
+    const [focusedField, setFocusedField] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
