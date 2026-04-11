@@ -639,10 +639,14 @@ function RegisterContent() {
                         display: none !important;
                     }
                     .registration-form-side {
-                        padding: 0.5rem 0.5rem !important;
+                        padding: 0.5rem 0 !important;
                     }
                     .registration-form-container {
                         max-width: 100% !important;
+                        padding: 1.5rem 1.2rem !important;
+                        border-radius: 0 !important;
+                        border: none !important;
+                        background: transparent !important;
                     }
                 }
                 @media (max-height: 750px) {
