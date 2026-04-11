@@ -392,7 +392,16 @@ function RegisterContent() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     className="registration-form-container"
-                    style={{ width: '100%', maxWidth: '390px', padding: '0.2rem 0' }}
+                    style={{ 
+                        width: '100%', 
+                        maxWidth: '580px', 
+                        padding: '3rem 2.5rem',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '32px',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+                    }}
                 >
                     <div style={{ marginBottom: '0.6rem' }}>
                         <div style={{ display: 'flex', marginBottom: '0.6rem', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '3px', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -404,39 +413,41 @@ function RegisterContent() {
                             </div>
                         </div>
 
-                        <h1 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.1rem', color: '#fff' }}>
+                        <h1 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.4rem', color: '#fff', letterSpacing: '-1px', fontFamily: 'var(--font-playfair)' }}>
                             {t('auth.signUpTitle')}
                         </h1>
-                        <p style={{ color: '#555', fontSize: '0.75rem' }}>{t('auth.signUpSubtitle')}</p>
+                        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.05rem', marginBottom: '2rem' }}>
+                            {t('auth.signUpSubtitle') || 'Crie sua conta exclusiva agora.'}
+                        </p>
                     </div>
 
                     {/* Role Selector */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.25rem', marginBottom: '0.5rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.6rem', marginBottom: '1.5rem' }}>
                         {(['mentor', 'participant', 'company', 'specialist'] as const).map((role) => (
                             <div
                                 key={role}
                                 onClick={() => setFormData({ ...formData, role })}
                                 style={{
-                                    padding: '0.4rem 0.2rem',
-                                    borderRadius: '8px',
-                                    background: formData.role === role ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255,255,255,0.03)',
+                                    padding: '0.8rem 0.4rem',
+                                    borderRadius: '14px',
+                                    background: formData.role === role ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255,255,255,0.03)',
                                     border: formData.role === role ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
                                     cursor: 'pointer',
                                     transition: 'all 0.3s ease',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     justifyContent: 'center',
-                                    gap: '3px',
+                                    gap: '6px',
                                     alignItems: 'center',
                                     position: 'relative',
                                     textAlign: 'center'
                                 }}
                             >
-                                {role === 'mentor' && <Briefcase size={14} color={formData.role === role ? '#D4AF37' : '#666'} />}
-                                {role === 'participant' && <User size={14} color={formData.role === role ? '#D4AF37' : '#666'} />}
-                                {role === 'company' && <Globe size={14} color={formData.role === role ? '#D4AF37' : '#666'} />}
-                                {role === 'specialist' && <Award size={14} color={formData.role === role ? '#D4AF37' : '#666'} />}
-                                <span style={{ color: formData.role === role ? '#fff' : '#ccc', fontWeight: 600, fontSize: '0.6rem', whiteSpace: 'nowrap' }}>
+                                {role === 'mentor' && <Briefcase size={18} color={formData.role === role ? '#FFD700' : '#666'} />}
+                                {role === 'participant' && <User size={18} color={formData.role === role ? '#FFD700' : '#666'} />}
+                                {role === 'company' && <Globe size={18} color={formData.role === role ? '#FFD700' : '#666'} />}
+                                {role === 'specialist' && <Award size={18} color={formData.role === role ? '#FFD700' : '#666'} />}
+                                <span style={{ color: formData.role === role ? '#fff' : '#888', fontWeight: 700, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                     {t('common.badges.' + role)}
                                 </span>
                             </div>
@@ -450,48 +461,50 @@ function RegisterContent() {
                     )}
 
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.4rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '0.1rem', fontWeight: 600, fontSize: '0.65rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.fullName')}</label>
+                                <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 700, fontSize: '0.7rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>{t('auth.fullName')}</label>
                                 <input
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     onFocus={() => setFocusedField('name')}
                                     onBlur={() => setFocusedField(null)}
+                                    placeholder="João Silva"
                                     style={{ 
                                         width: '100%', 
-                                        padding: '0.7rem', 
+                                        padding: '0.9rem 1rem', 
                                         background: 'rgba(255,255,255,0.03)', 
                                         border: focusedField === 'name' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
-                                        boxShadow: focusedField === 'name' ? '0 0 10px rgba(212, 175, 55, 0.1)' : 'none',
-                                        borderRadius: '8px', 
+                                        boxShadow: focusedField === 'name' ? '0 0 15px rgba(212, 175, 55, 0.1)' : 'none',
+                                        borderRadius: '12px', 
                                         color: '#fff', 
                                         outline: 'none', 
-                                        fontSize: '0.85rem',
+                                        fontSize: '0.95rem',
                                         transition: 'all 0.3s ease'
                                     }}
                                     required
                                 />
                             </div>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '0.1rem', fontWeight: 600, fontSize: '0.65rem', color: '#888', textTransform: 'uppercase' }}>Negócio/Empresa</label>
+                                <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 700, fontSize: '0.7rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>Negócio/Empresa</label>
                                 <input
                                     type="text"
                                     value={formData.businessName}
                                     onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                                     onFocus={() => setFocusedField('business')}
                                     onBlur={() => setFocusedField(null)}
+                                    placeholder="Nome da sua Empresa"
                                     style={{ 
                                         width: '100%', 
-                                        padding: '0.7rem', 
+                                        padding: '0.9rem 1rem', 
                                         background: 'rgba(255,255,255,0.03)', 
                                         border: focusedField === 'business' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
-                                        boxShadow: focusedField === 'business' ? '0 0 10px rgba(212, 175, 55, 0.1)' : 'none',
-                                        borderRadius: '8px', 
+                                        boxShadow: focusedField === 'business' ? '0 0 15px rgba(212, 175, 55, 0.1)' : 'none',
+                                        borderRadius: '12px', 
                                         color: '#fff', 
                                         outline: 'none', 
-                                        fontSize: '0.85rem',
+                                        fontSize: '0.95rem',
                                         transition: 'all 0.3s ease'
                                     }}
                                     required
@@ -499,53 +512,57 @@ function RegisterContent() {
                             </div>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.4rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                             <div style={{ position: 'relative' }}>
-                                <label style={{ display: 'block', marginBottom: '0.1rem', fontWeight: 600, fontSize: '0.65rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.country')}</label>
-                                <select
-                                    value={formData.country}
-                                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                                    onFocus={() => setFocusedField('country')}
-                                    onBlur={() => setFocusedField(null)}
-                                    style={{ 
-                                        width: '100%', 
-                                        padding: '0.6rem', 
-                                        background: 'rgba(255,255,255,0.03)', 
-                                        border: focusedField === 'country' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
-                                        boxShadow: focusedField === 'country' ? '0 0 10px rgba(212, 175, 55, 0.1)' : 'none',
-                                        borderRadius: '8px', 
-                                        color: '#fff', 
-                                        fontSize: '0.8rem', 
-                                        outline: 'none', 
-                                        appearance: 'none',
-                                        transition: 'all 0.3s ease'
-                                    }}
-                                    required
-                                >
-                                    <option value="" disabled style={{ background: '#1a1a1a' }}>Selecione o país...</option>
-                                    {COUNTRIES.map(c => (
-                                        <option key={c} value={c} style={{ background: '#1a1a1a' }}>{c}</option>
-                                    ))}
-                                </select>
+                                <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 700, fontSize: '0.7rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>{t('auth.country')}</label>
+                                <div style={{ position: 'relative' }}>
+                                    <Globe size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: focusedField === 'country' ? '#D4AF37' : '#444', transition: '0.3s' }} />
+                                    <select
+                                        value={formData.country}
+                                        onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                                        onFocus={() => setFocusedField('country')}
+                                        onBlur={() => setFocusedField(null)}
+                                        style={{ 
+                                            width: '100%', 
+                                            padding: '0.9rem 1rem 0.9rem 2.8rem', 
+                                            background: 'rgba(255,255,255,0.03)', 
+                                            border: focusedField === 'country' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
+                                            boxShadow: focusedField === 'country' ? '0 0 15px rgba(212, 175, 55, 0.1)' : 'none',
+                                            borderRadius: '12px', 
+                                            color: '#fff', 
+                                            fontSize: '0.95rem', 
+                                            outline: 'none', 
+                                            appearance: 'none',
+                                            transition: 'all 0.3s ease'
+                                        }}
+                                        required
+                                    >
+                                        <option value="" disabled style={{ background: '#1a1a1a' }}>Selecione o país...</option>
+                                        {COUNTRIES.map(c => (
+                                            <option key={c} value={c} style={{ background: '#1a1a1a' }}>{c}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '0.1rem', fontWeight: 600, fontSize: '0.65rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.email')}</label>
+                                <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 700, fontSize: '0.7rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>{t('auth.email')}</label>
                                 <input
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     onFocus={() => setFocusedField('email')}
                                     onBlur={() => setFocusedField(null)}
+                                    placeholder="seu@email.com"
                                     style={{ 
                                         width: '100%', 
-                                        padding: '0.7rem', 
+                                        padding: '0.9rem 1rem', 
                                         background: 'rgba(255,255,255,0.03)', 
                                         border: focusedField === 'email' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
-                                        boxShadow: focusedField === 'email' ? '0 0 10px rgba(212, 175, 55, 0.1)' : 'none',
-                                        borderRadius: '8px', 
+                                        boxShadow: focusedField === 'email' ? '0 0 15px rgba(212, 175, 55, 0.1)' : 'none',
+                                        borderRadius: '12px', 
                                         color: '#fff', 
                                         outline: 'none', 
-                                        fontSize: '0.85rem',
+                                        fontSize: '0.95rem',
                                         transition: 'all 0.3s ease'
                                     }}
                                     required
@@ -554,7 +571,7 @@ function RegisterContent() {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.8rem', color: '#888', textTransform: 'uppercase' }}>{t('auth.password')}</label>
+                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 700, fontSize: '0.7rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>{t('auth.password')}</label>
                             <div style={{ position: 'relative' }}>
                                 <input
                                     type={showPassword ? "text" : "password"}
@@ -562,16 +579,17 @@ function RegisterContent() {
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                     onFocus={() => setFocusedField('password')}
                                     onBlur={() => setFocusedField(null)}
+                                    placeholder="••••••••"
                                     style={{ 
                                         width: '100%', 
-                                        padding: '0.7rem', 
+                                        padding: '0.9rem 1rem', 
                                         background: 'rgba(255,255,255,0.03)', 
                                         border: focusedField === 'password' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
-                                        boxShadow: focusedField === 'password' ? '0 0 10px rgba(212, 175, 55, 0.1)' : 'none',
+                                        boxShadow: focusedField === 'password' ? '0 0 15px rgba(212, 175, 55, 0.1)' : 'none',
                                         borderRadius: '12px', 
                                         color: '#fff', 
                                         outline: 'none', 
-                                        fontSize: '0.9rem',
+                                        fontSize: '0.95rem',
                                         transition: 'all 0.3s ease'
                                     }}
                                     required
@@ -583,42 +601,95 @@ function RegisterContent() {
                         </div>
 
                         <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
+                            whileHover={{ scale: 1.01, boxShadow: '0 0 20px rgba(212, 175, 55, 0.3)' }}
+                            whileTap={{ scale: 0.99 }}
                             type="submit"
-                            style={{ width: '100%', padding: '0.8rem', background: 'var(--gold-gradient)', color: '#000', fontWeight: 800, borderRadius: '12px', border: 'none', cursor: 'pointer', fontSize: '0.9rem', marginTop: '0.3rem' }}
+                            style={{ 
+                                width: '100%', 
+                                padding: '1.1rem', 
+                                background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)', 
+                                color: '#000', 
+                                fontWeight: 800, 
+                                borderRadius: '14px', 
+                                border: 'none', 
+                                cursor: 'pointer', 
+                                fontSize: '1.05rem', 
+                                marginTop: '1rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '10px',
+                                boxShadow: '0 10px 25px rgba(212, 175, 55, 0.2)',
+                                transition: 'all 0.3s ease'
+                            }}
                             disabled={loading}
                         >
-                            {loading ? <Loader2 className="animate-spin" /> : <>{t('auth.createAccount')} <ArrowRight size={18} /></>}
+                            {loading ? <Loader2 size={24} className="animate-spin" /> : <>{t('auth.createAccount')} <ArrowRight size={20} /></>}
                         </motion.button>
                     </form>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0.4rem 0' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '0.8rem 0' }}>
                         <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
-                        <span style={{ fontSize: '0.65rem', color: '#444' }}>OU CONTINUE COM</span>
+                        <span style={{ fontSize: '0.8rem', color: '#444', fontWeight: 600 }}>OU CONTINUE COM</span>
                         <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '0.6rem' }}>
-                        <button onClick={() => {
-                            if (!formData.role) {
-                                toast.error('Selecione um perfil antes de continuar com o Google');
-                                return;
-                            }
-                            const refParam = formData.referralCode ? `&referralCode=${formData.referralCode}` : '';
-                            window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google?role=${formData.role}${refParam}`;
-                        }} style={{ flex: 1, padding: '0.55rem', background: '#fff', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '0.8rem' }}>
-                            <svg width="14" height="14" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" /><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg> Google
+                    <div style={{ display: 'flex', gap: '1.2rem', marginTop: '1.2rem' }}>
+                        <button 
+                            onClick={() => {
+                                if (!formData.role) {
+                                    toast.error('Selecione um perfil antes de continuar com o Google');
+                                    return;
+                                }
+                                const refParam = formData.referralCode ? `&referralCode=${formData.referralCode}` : '';
+                                window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google?role=${formData.role}${refParam}`;
+                            }} 
+                            style={{ 
+                                flex: 1, 
+                                padding: '1rem', 
+                                background: '#fff', 
+                                color: '#000', 
+                                border: 'none', 
+                                borderRadius: '14px', 
+                                fontWeight: 700, 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center', 
+                                gap: '10px', 
+                                fontSize: '0.95rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease'
+                            }}
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" /><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg> Google
                         </button>
-                        <button onClick={() => {
-                            if (!formData.role) {
-                                toast.error('Selecione um perfil antes de continuar com o LinkedIn');
-                                return;
-                            }
-                            const refParam = formData.referralCode ? `&referralCode=${formData.referralCode}` : '';
-                            window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/linkedin?role=${formData.role}${refParam}`;
-                        }} style={{ flex: 1, padding: '0.55rem', background: '#0077b5', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '0.8rem' }}>
-                            <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={14} height={14} style={{ filter: 'brightness(0) invert(1)' }} /> LinkedIn
+                        <button 
+                            onClick={() => {
+                                if (!formData.role) {
+                                    toast.error('Selecione um perfil antes de continuar com o LinkedIn');
+                                    return;
+                                }
+                                const refParam = formData.referralCode ? `&referralCode=${formData.referralCode}` : '';
+                                window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/linkedin?role=${formData.role}${refParam}`;
+                            }} 
+                            style={{ 
+                                flex: 1, 
+                                padding: '1rem', 
+                                background: '#0077b5', 
+                                color: '#fff', 
+                                border: 'none', 
+                                borderRadius: '14px', 
+                                fontWeight: 700, 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center', 
+                                gap: '10px', 
+                                fontSize: '0.95rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease'
+                            }}
+                        >
+                            <Image src="https://www.svgrepo.com/show/475661/linkedin-color.svg" alt="LinkedIn" width={20} height={20} style={{ filter: 'brightness(0) invert(1)' }} /> LinkedIn
                         </button>
                     </div>
 
