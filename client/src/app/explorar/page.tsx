@@ -19,6 +19,7 @@ export default function ExploreEvents() {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [showFilters, setShowFilters] = useState(false);
     const [sortBy, setSortBy] = useState<'newest' | 'popular' | 'price_low' | 'price_high'>('newest');
+    const [focusedField, setFocusedField] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchServices = async () => {
@@ -122,14 +123,19 @@ export default function ExploreEvents() {
                             placeholder="Pesquisar por título, mentor ou categoria..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            onFocus={() => setFocusedField('search')}
+                            onBlur={() => setFocusedField(null)}
                             style={{
                                 flex: 1,
                                 background: 'transparent',
-                                border: 'none',
+                                border: focusedField === 'search' ? '1px solid #D4AF37' : 'none',
                                 padding: '0.8rem 1rem',
                                 color: '#fff',
                                 outline: 'none',
-                                fontSize: '1rem'
+                                fontSize: '1rem',
+                                borderRadius: '100px',
+                                transition: 'all 0.3s',
+                                boxShadow: focusedField === 'search' ? '0 0 15px rgba(212, 175, 55, 0.2)' : 'none'
                             }}
                         />
                         <button 

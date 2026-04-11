@@ -13,6 +13,7 @@ export default function ForgotPasswordPage() {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const [focusedField, setFocusedField] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -115,17 +116,21 @@ export default function ForgotPasswordPage() {
                                         type="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
+                                        onFocus={() => setFocusedField('email')}
+                                        onBlur={() => setFocusedField(null)}
                                         placeholder={t('auth.emailPlaceholder')}
                                         required
                                         style={{
                                             width: '100%',
                                             background: 'rgba(255,255,255,0.05)',
-                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            border: focusedField === 'email' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
                                             borderRadius: '12px',
                                             padding: '14px 14px 14px 45px',
                                             color: '#fff',
                                             fontSize: '1rem',
-                                            transition: 'all 0.3s'
+                                            transition: 'all 0.3s',
+                                            boxShadow: focusedField === 'email' ? '0 0 15px rgba(212, 175, 55, 0.2)' : 'none',
+                                            outline: 'none'
                                         }}
                                     />
                                     <Mail size={18} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />

@@ -19,6 +19,7 @@ function ResetPasswordContent() {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [focusedField, setFocusedField] = useState<string | null>(null);
 
     useEffect(() => {
         if (!token) {
@@ -193,16 +194,21 @@ function ResetPasswordContent() {
                                         type={showPassword ? "text" : "password"}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
+                                        onFocus={() => setFocusedField('password')}
+                                        onBlur={() => setFocusedField(null)}
                                         placeholder="Min. 6 caracteres"
                                         required
                                         style={{
                                             width: '100%',
                                             background: 'rgba(255,255,255,0.05)',
-                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            border: focusedField === 'password' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
                                             borderRadius: '12px',
                                             padding: '14px 45px 14px 45px',
                                             color: '#fff',
-                                            fontSize: '1rem'
+                                            fontSize: '1rem',
+                                            transition: 'all 0.3s',
+                                            boxShadow: focusedField === 'password' ? '0 0 15px rgba(212, 175, 55, 0.2)' : 'none',
+                                            outline: 'none'
                                         }}
                                     />
                                     <Lock size={18} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -225,16 +231,21 @@ function ResetPasswordContent() {
                                         type={showPassword ? "text" : "password"}
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
+                                        onFocus={() => setFocusedField('confirmPassword')}
+                                        onBlur={() => setFocusedField(null)}
                                         placeholder="Repita a senha"
                                         required
                                         style={{
                                             width: '100%',
                                             background: 'rgba(255,255,255,0.05)',
-                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            border: focusedField === 'confirmPassword' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
                                             borderRadius: '12px',
                                             padding: '14px 45px 14px 45px',
                                             color: '#fff',
-                                            fontSize: '1rem'
+                                            fontSize: '1rem',
+                                            transition: 'all 0.3s',
+                                            boxShadow: focusedField === 'confirmPassword' ? '0 0 15px rgba(212, 175, 55, 0.2)' : 'none',
+                                            outline: 'none'
                                         }}
                                     />
                                     <Lock size={18} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />

@@ -192,12 +192,16 @@ export default function ExpertsShowcase() {
                                 width: '100%',
                                 padding: '0.8rem 1.2rem 0.8rem 3rem',
                                 borderRadius: '100px',
-                                border: 'none',
+                                border: focusedField === 'search' ? '1px solid #FFD700' : 'none',
                                 background: 'transparent',
                                 color: '#fff',
                                 fontSize: '1rem',
-                                outline: 'none'
+                                outline: 'none',
+                                transition: 'all 0.3s',
+                                boxShadow: focusedField === 'search' ? '0 0 15px rgba(255,215,0,0.2)' : 'none'
                             }}
+                            onFocus={() => setFocusedField('search')}
+                            onBlur={() => setFocusedField(null)}
                         />
                         <button
                             onClick={() => setShowFilters(!showFilters)}
