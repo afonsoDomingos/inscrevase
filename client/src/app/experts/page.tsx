@@ -328,41 +328,73 @@ export default function ExpertsShowcase() {
                         )}
                     </AnimatePresence>
 
-                    {/* Role Filter Tabs */}
+                    {/* Role Filter Tabs & Explore Bridge */}
                     <div style={{
                         display: 'flex',
                         justifyContent: 'center',
-                        gap: '1rem',
-                        marginTop: '2rem',
+                        alignItems: 'center',
+                        gap: '1.5rem',
+                        marginTop: '2.5rem',
                         flexWrap: 'wrap'
                     }}>
-                        {[
-                            { id: 'mentor', label: t('mentors.roleMentor'), icon: User },
-                            { id: 'specialist', label: t('mentors.roleSpecialist'), icon: Award },
-                            { id: 'company', label: t('mentors.roleCompany'), icon: Briefcase }
-                        ].map((tab) => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id as 'mentor' | 'specialist' | 'company')}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    padding: '10px 20px',
-                                    borderRadius: '50px',
-                                    background: activeTab === tab.id ? 'var(--gold-gradient)' : 'rgba(255,255,255,0.05)',
-                                    border: activeTab === tab.id ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                                    color: activeTab === tab.id ? '#000' : '#fff',
-                                    fontWeight: activeTab === tab.id ? 700 : 500,
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s ease',
-                                    fontSize: '0.9rem'
-                                }}
-                            >
-                                <tab.icon size={16} />
-                                {tab.label}
-                            </button>
-                        ))}
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                            {[
+                                { id: 'mentor', label: t('mentors.roleMentor'), icon: User },
+                                { id: 'specialist', label: t('mentors.roleSpecialist'), icon: Award },
+                                { id: 'company', label: t('mentors.roleCompany'), icon: Briefcase }
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id as 'mentor' | 'specialist' | 'company')}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        padding: '10px 20px',
+                                        borderRadius: '50px',
+                                        background: activeTab === tab.id ? 'var(--gold-gradient)' : 'rgba(255,255,255,0.05)',
+                                        border: activeTab === tab.id ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                                        color: activeTab === tab.id ? '#000' : '#fff',
+                                        fontWeight: activeTab === tab.id ? 700 : 500,
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s ease',
+                                        fontSize: '0.85rem'
+                                    }}
+                                >
+                                    <tab.icon size={16} />
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Bridge to Events */}
+                        <Link href="/explorar" style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            color: '#FFD700',
+                            textDecoration: 'none',
+                            fontSize: '0.9rem',
+                            fontWeight: 700,
+                            padding: '10px 25px',
+                            borderRadius: '50px',
+                            border: '1px solid rgba(255,215,0,0.3)',
+                            background: 'rgba(255,215,0,0.05)',
+                            transition: 'all 0.3s ease',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px'
+                        }}
+                        onMouseOver={(e) => {
+                            (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,215,0,0.15)';
+                            (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 0 20px rgba(255,215,0,0.2)';
+                        }}
+                        onMouseOut={(e) => {
+                            (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,215,0,0.05)';
+                            (e.currentTarget as HTMLAnchorElement).style.boxShadow = 'none';
+                        }}
+                        >
+                            {t('common.explore')} Eventos <ChevronRight size={18} />
+                        </Link>
                     </div>
                 </motion.div>
             </section>
