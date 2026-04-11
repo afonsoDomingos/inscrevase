@@ -398,15 +398,24 @@ function LoginContent() {
 
             <style>{`
                 @media (max-width: 1023px) {
+                    html, body {
+                        overflow: hidden !important;
+                        height: 100% !important;
+                        position: fixed !important;
+                        width: 100% !important;
+                    }
                     .auth-wrapper {
                         grid-template-columns: 1fr !important;
+                        overflow: hidden !important;
+                        height: 100dvh !important;
                     }
                     .login-visual-side {
                         display: none !important;
                     }
                     .login-form-side {
                         width: 100vw !important;
-                        height: 100vh !important;
+                        height: 100dvh !important;
+                        overflow: hidden !important;
                         padding: 1.5rem !important;
                     }
                     .login-form-container {

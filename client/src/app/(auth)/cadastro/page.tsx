@@ -704,15 +704,24 @@ function RegisterContent() {
             <style>{`
                 .gold-text { background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
                 @media (max-width: 1023px) {
+                    html, body {
+                        overflow: hidden !important;
+                        height: 100% !important;
+                        position: fixed !important;
+                        width: 100% !important;
+                    }
                     .auth-wrapper {
                         grid-template-columns: 1fr !important;
+                        overflow: hidden !important;
+                        height: 100dvh !important;
                     }
                     .register-visual-side {
                         display: none !important;
                     }
                     .registration-form-side {
                         width: 100vw !important;
-                        height: 100vh !important;
+                        height: 100dvh !important;
+                        overflow: hidden !important;
                         padding: 1.5rem !important;
                     }
                     .registration-form-container {
