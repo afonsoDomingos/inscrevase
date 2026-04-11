@@ -15,6 +15,7 @@ import WhatsAppFloat from '@/components/common/WhatsAppFloat';
 import HealthCheck from '@/components/common/HealthCheck';
 import PWAInstallPrompt from '@/components/common/PWAInstallPrompt';
 import PayPalProviderWrapper from '@/components/common/PayPalProviderWrapper';
+import OfflineDetector from '@/components/common/OfflineDetector';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -425,6 +426,7 @@ export default function RootLayout({
                 <PayPalProviderWrapper>
                   <LoadingScreen />
                   <HealthCheck />
+                  <OfflineDetector />
                   <ClientLayoutWrapper>
                     <Suspense fallback={null}>
                       <AnalyticsTracker />
