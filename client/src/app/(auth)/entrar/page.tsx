@@ -91,7 +91,7 @@ function LoginContent() {
 
     return (
         <div style={{
-            minHeight: '100dvh', // Use dynamic viewport height
+            minHeight: '100dvh',
             display: 'flex',
             background: '#0a0a0a',
             position: 'relative',
