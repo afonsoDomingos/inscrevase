@@ -99,9 +99,9 @@ function LoginContent() {
         }}>
             {/* Left Side: Visual/Image Slideshow */}
             <div className="login-visual-side" style={{
-                flex: 1.2,
+                flex: 1,
                 position: 'relative',
-                display: 'block', // Controlled by CSS below for responsiveness
+                display: 'block',
                 overflow: 'hidden'
             }}>
                 <AnimatePresence mode="wait">
@@ -182,14 +182,14 @@ function LoginContent() {
                     className="login-form-container"
                     style={{ 
                         width: '100%', 
-                        maxWidth: '520px', 
-                        padding: '3.5rem 3rem',
+                        maxWidth: '560px', 
+                        padding: '4rem 3.5rem',
                         background: 'rgba(255, 255, 255, 0.03)',
-                        backdropFilter: 'blur(20px)',
+                        backdropFilter: 'blur(30px)',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '32px',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-                        marginTop: '1.5rem' 
+                        borderRadius: '40px',
+                        boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)',
+                        marginTop: '0' 
                     }}
                 >
                     <div style={{ marginBottom: '0.75rem' }}>

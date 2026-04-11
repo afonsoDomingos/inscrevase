@@ -311,7 +311,7 @@ function RegisterContent() {
 
             {/* Left Side: Visual Slideshow */}
             <div className="register-visual-side" style={{
-                flex: 1.2,
+                flex: 1,
                 position: 'relative',
                 display: 'block',
                 overflow: 'hidden'
@@ -384,23 +384,20 @@ function RegisterContent() {
                 alignItems: 'center',
                 padding: '2rem 1rem',
                 position: 'relative',
-                width: '100%'
             }}>
-
-
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     className="registration-form-container"
                     style={{ 
                         width: '100%', 
-                        maxWidth: '580px', 
-                        padding: '3rem 2.5rem',
+                        maxWidth: '620px', 
+                        padding: '3rem',
                         background: 'rgba(255, 255, 255, 0.03)',
-                        backdropFilter: 'blur(20px)',
+                        backdropFilter: 'blur(30px)',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '32px',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+                        borderRadius: '40px',
+                        boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)'
                     }}
                 >
                     <div style={{ marginBottom: '0.6rem' }}>
