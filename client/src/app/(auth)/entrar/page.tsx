@@ -348,6 +348,11 @@ function LoginContent() {
                 </motion.div>
 
                 {/* Footer Brand */}
+                <div style={{ position: 'absolute', bottom: '1rem', color: 'rgba(255,255,255,0.2)', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>
+                    Inscreva-se &copy; 2026
+                </div>
+            </div>
+
             <style>{`
                 @media (max-width: 1023px) {
                     .login-visual-side {
