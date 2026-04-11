@@ -90,19 +90,20 @@ function LoginContent() {
     };
 
     return (
-        <div style={{
-            minHeight: '100dvh',
-            display: 'flex',
+        <div className="auth-wrapper" style={{
+            width: '100vw',
+            height: '100vh',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
             background: '#0a0a0a',
             position: 'relative',
-            overflow: 'hidden' // Prevent any unwanted scroll
+            overflow: 'hidden'
         }}>
             {/* Left Side: Visual/Image Slideshow */}
             <div className="login-visual-side" style={{
-                flex: 1,
                 position: 'relative',
-                display: 'block',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                height: '100%'
             }}>
                 <AnimatePresence mode="wait">
                     {shuffledImages.length > 0 && (
@@ -164,15 +165,14 @@ function LoginContent() {
 
             {/* Right Side: Login Form */}
             <div className="login-form-side" style={{
-                flex: 1,
-                minHeight: '100dvh',
+                height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                padding: '2rem 1.5rem',
+                padding: '2rem',
                 position: 'relative',
-                width: '100%'
+                background: '#0a0a0a'
             }}>
 
 
@@ -398,19 +398,25 @@ function LoginContent() {
 
             <style>{`
                 @media (max-width: 1023px) {
+                    .auth-wrapper {
+                        grid-template-columns: 1fr !important;
+                    }
                     .login-visual-side {
                         display: none !important;
                     }
                     .login-form-side {
-                        padding: 0.5rem 0 !important;
+                        width: 100vw !important;
+                        height: 100vh !important;
+                        padding: 1.5rem !important;
                     }
                     .login-form-container {
                         max-width: 100% !important;
-                        padding: 1.5rem 0.5rem !important;
-                        margin-top: 0 !important;
-                        border-radius: 0 !important;
-                        border: none !important;
+                        padding: 0 !important;
+                        margin: 0 !important;
                         background: transparent !important;
+                        border: none !important;
+                        box-shadow: none !important;
+                        backdrop-filter: none !important;
                     }
                 }
                 @media (max-height: 700px) {

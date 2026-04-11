@@ -298,9 +298,11 @@ function RegisterContent() {
 
 
     return (
-        <div style={{
-            minHeight: '100dvh',
-            display: 'flex',
+        <div className="auth-wrapper" style={{
+            width: '100vw',
+            height: '100vh',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
             background: '#0a0a0a',
             position: 'relative',
             overflow: 'hidden'
@@ -311,10 +313,9 @@ function RegisterContent() {
 
             {/* Left Side: Visual Slideshow */}
             <div className="register-visual-side" style={{
-                flex: 1,
                 position: 'relative',
-                display: 'block',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                height: '100%'
             }}>
                 <AnimatePresence mode="wait">
                     {shuffledImages.length > 0 && (
@@ -376,14 +377,14 @@ function RegisterContent() {
 
             {/* Right Side: Registration Form */}
             <div className="registration-form-side" style={{
-                flex: 1,
-                minHeight: '100dvh',
+                height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                padding: '2rem 1rem',
+                padding: '2rem',
                 position: 'relative',
+                background: '#0a0a0a'
             }}>
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
@@ -703,18 +704,25 @@ function RegisterContent() {
             <style>{`
                 .gold-text { background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
                 @media (max-width: 1023px) {
+                    .auth-wrapper {
+                        grid-template-columns: 1fr !important;
+                    }
                     .register-visual-side {
                         display: none !important;
                     }
                     .registration-form-side {
-                        padding: 0.5rem 0 !important;
+                        width: 100vw !important;
+                        height: 100vh !important;
+                        padding: 1.5rem !important;
                     }
                     .registration-form-container {
                         max-width: 100% !important;
-                        padding: 1.5rem 0.5rem !important;
-                        border-radius: 0 !important;
-                        border: none !important;
+                        padding: 0 !important;
+                        margin: 0 !important;
                         background: transparent !important;
+                        border: none !important;
+                        box-shadow: none !important;
+                        backdrop-filter: none !important;
                     }
                 }
                 @media (max-height: 750px) {
