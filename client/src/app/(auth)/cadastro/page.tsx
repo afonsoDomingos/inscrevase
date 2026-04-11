@@ -80,7 +80,7 @@ function RegisterContent() {
         }
     }, [initialRole, referralCode]);
 
-    const [loading, setLoading] = useState(false);
+    const [focusedField, setFocusedField] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
 
@@ -455,7 +455,20 @@ function RegisterContent() {
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    style={{ width: '100%', padding: '0.7rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                                    onFocus={() => setFocusedField('name')}
+                                    onBlur={() => setFocusedField(null)}
+                                    style={{ 
+                                        width: '100%', 
+                                        padding: '0.7rem', 
+                                        background: 'rgba(255,255,255,0.03)', 
+                                        border: focusedField === 'name' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
+                                        boxShadow: focusedField === 'name' ? '0 0 10px rgba(212, 175, 55, 0.1)' : 'none',
+                                        borderRadius: '8px', 
+                                        color: '#fff', 
+                                        outline: 'none', 
+                                        fontSize: '0.85rem',
+                                        transition: 'all 0.3s ease'
+                                    }}
                                     required
                                 />
                             </div>
@@ -465,7 +478,20 @@ function RegisterContent() {
                                     type="text"
                                     value={formData.businessName}
                                     onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                                    style={{ width: '100%', padding: '0.7rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                                    onFocus={() => setFocusedField('business')}
+                                    onBlur={() => setFocusedField(null)}
+                                    style={{ 
+                                        width: '100%', 
+                                        padding: '0.7rem', 
+                                        background: 'rgba(255,255,255,0.03)', 
+                                        border: focusedField === 'business' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
+                                        boxShadow: focusedField === 'business' ? '0 0 10px rgba(212, 175, 55, 0.1)' : 'none',
+                                        borderRadius: '8px', 
+                                        color: '#fff', 
+                                        outline: 'none', 
+                                        fontSize: '0.85rem',
+                                        transition: 'all 0.3s ease'
+                                    }}
                                     required
                                 />
                             </div>
@@ -477,7 +503,21 @@ function RegisterContent() {
                                 <select
                                     value={formData.country}
                                     onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                                    style={{ width: '100%', padding: '0.6rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.8rem', outline: 'none', appearance: 'none' }}
+                                    onFocus={() => setFocusedField('country')}
+                                    onBlur={() => setFocusedField(null)}
+                                    style={{ 
+                                        width: '100%', 
+                                        padding: '0.6rem', 
+                                        background: 'rgba(255,255,255,0.03)', 
+                                        border: focusedField === 'country' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
+                                        boxShadow: focusedField === 'country' ? '0 0 10px rgba(212, 175, 55, 0.1)' : 'none',
+                                        borderRadius: '8px', 
+                                        color: '#fff', 
+                                        fontSize: '0.8rem', 
+                                        outline: 'none', 
+                                        appearance: 'none',
+                                        transition: 'all 0.3s ease'
+                                    }}
                                     required
                                 >
                                     <option value="" disabled style={{ background: '#1a1a1a' }}>Selecione o país...</option>
@@ -492,7 +532,20 @@ function RegisterContent() {
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    style={{ width: '100%', padding: '0.7rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                                    onFocus={() => setFocusedField('email')}
+                                    onBlur={() => setFocusedField(null)}
+                                    style={{ 
+                                        width: '100%', 
+                                        padding: '0.7rem', 
+                                        background: 'rgba(255,255,255,0.03)', 
+                                        border: focusedField === 'email' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
+                                        boxShadow: focusedField === 'email' ? '0 0 10px rgba(212, 175, 55, 0.1)' : 'none',
+                                        borderRadius: '8px', 
+                                        color: '#fff', 
+                                        outline: 'none', 
+                                        fontSize: '0.85rem',
+                                        transition: 'all 0.3s ease'
+                                    }}
                                     required
                                 />
                             </div>
@@ -505,7 +558,20 @@ function RegisterContent() {
                                     type={showPassword ? "text" : "password"}
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                    style={{ width: '100%', padding: '0.7rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none', fontSize: '0.9rem' }}
+                                    onFocus={() => setFocusedField('password')}
+                                    onBlur={() => setFocusedField(null)}
+                                    style={{ 
+                                        width: '100%', 
+                                        padding: '0.7rem', 
+                                        background: 'rgba(255,255,255,0.03)', 
+                                        border: focusedField === 'password' ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
+                                        boxShadow: focusedField === 'password' ? '0 0 10px rgba(212, 175, 55, 0.1)' : 'none',
+                                        borderRadius: '12px', 
+                                        color: '#fff', 
+                                        outline: 'none', 
+                                        fontSize: '0.9rem',
+                                        transition: 'all 0.3s ease'
+                                    }}
                                     required
                                 />
                                 <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#444' }}>
