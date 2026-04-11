@@ -35,7 +35,7 @@ export default function OfflineDetector() {
 
         // Network Quality Monitoring (Advanced)
         const checkConnectionQuality = () => {
-            // @ts-ignore - navigator.connection is not supported in all browsers
+            // @ts-expect-error - navigator.connection is not supported in all browsers
             const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             
             if (connection) {
