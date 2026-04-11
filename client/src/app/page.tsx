@@ -287,7 +287,7 @@ export default function Home() {
               }} className="hero-btn primary hover-glow">
                 {isLoggedIn ? t('nav.dashboard') : t('common.getStarted')}
               </Link>
-              <Link href="/experts" style={{
+              <Link href="/explorar" style={{
                 flex: 1,
                 minWidth: '220px',
                 padding: '1.2rem 0',
