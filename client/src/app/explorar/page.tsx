@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { serviceService, ServiceModel } from '@/lib/serviceService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, Loader2, Calendar, MapPin, Tag, ArrowRight, Star, Globe, TrendingUp, Users } from 'lucide-react';
+import { Search, Filter, Loader2, Calendar, ArrowRight, Star, TrendingUp, Users, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
@@ -206,7 +206,7 @@ export default function ExploreEvents() {
                                         </label>
                                         <select 
                                             value={sortBy}
-                                            onChange={(e) => setSortBy(e.target.value as any)}
+                                            onChange={(e) => setSortBy(e.target.value as 'newest' | 'popular' | 'price_low' | 'price_high')}
                                             style={{
                                                 width: '100%',
                                                 background: '#0a0a0a',
@@ -436,7 +436,7 @@ export default function ExploreEvents() {
     );
 }
 
-function User(props: any) {
+function User(props: React.SVGProps<SVGSVGElement>) {
     return (
         <svg
             {...props}
