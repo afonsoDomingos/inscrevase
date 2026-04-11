@@ -105,9 +105,7 @@ if (googleClientId && googleClientSecret) {
     passport.use(new GoogleStrategy({
         clientID: googleClientId,
         clientSecret: googleClientSecret,
-        callbackURL: process.env.NODE_ENV === 'production'
-            ? 'https://inscreva-se.com/api/auth/google/callback'
-            : 'http://localhost:5000/api/auth/google/callback',
+        callbackURL: '/api/auth/google/callback',
         proxy: true,
         passReqToCallback: true
     },
@@ -206,7 +204,12 @@ if (googleClientId && googleClientSecret) {
 
                 done(null, user);
             } catch (err) {
-                console.error("Google Auth Error:", err);
+                console.error("❌ Google Auth Error Details:", {
+                    message: err.message,
+                    stack: err.stack,
+                    profileId: profile.id,
+                    email: profile.emails?.[0]?.value
+                });
                 done(err, null);
             }
         }));
@@ -221,9 +224,7 @@ if (linkedinClientId && linkedinClientSecret) {
         tokenURL: 'https://www.linkedin.com/oauth/v2/accessToken',
         clientID: linkedinClientId,
         clientSecret: linkedinClientSecret,
-        callbackURL: process.env.NODE_ENV === 'production'
-            ? 'https://inscreva-se.com/api/auth/linkedin/callback'
-            : 'http://localhost:5000/api/auth/linkedin/callback',
+        callbackURL: '/api/auth/linkedin/callback',
         scope: ['openid', 'profile', 'email'],
         passReqToCallback: true
     },
