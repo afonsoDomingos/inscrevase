@@ -28,6 +28,7 @@ export default function SuportePage() {
     const [sending, setSending] = useState(false);
     const [sent, setSent] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [focusedField, setFocusedField] = useState<string | null>(null);
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -274,18 +275,19 @@ export default function SuportePage() {
                                     required
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    onFocus={() => setFocusedField('name')}
+                                    onBlur={() => setFocusedField(null)}
                                     placeholder={t('supportPage.namePlaceholder')}
                                     style={{
                                         width: '100%',
                                         padding: '12px 16px',
                                         borderRadius: '10px',
-                                        border: '1px solid #ddd',
+                                        border: focusedField === 'name' ? '1px solid #D4AF37' : '1px solid #ddd',
                                         outline: 'none',
                                         fontSize: '0.95rem',
-                                        transition: 'border 0.3s'
+                                        transition: 'all 0.3s',
+                                        boxShadow: focusedField === 'name' ? '0 0 15px rgba(212, 175, 55, 0.2)' : 'none'
                                     }}
-                                    onFocus={(e) => e.target.style.borderColor = '#171A20'}
-                                    onBlur={(e) => e.target.style.borderColor = '#ddd'}
                                 />
                             </div>
 
@@ -298,18 +300,19 @@ export default function SuportePage() {
                                     required
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    onFocus={() => setFocusedField('email')}
+                                    onBlur={() => setFocusedField(null)}
                                     placeholder={t('supportPage.emailPlaceholder')}
                                     style={{
                                         width: '100%',
                                         padding: '12px 16px',
                                         borderRadius: '10px',
-                                        border: '1px solid #ddd',
+                                        border: focusedField === 'email' ? '1px solid #D4AF37' : '1px solid #ddd',
                                         outline: 'none',
                                         fontSize: '0.95rem',
-                                        transition: 'border 0.3s'
+                                        transition: 'all 0.3s',
+                                        boxShadow: focusedField === 'email' ? '0 0 15px rgba(212, 175, 55, 0.2)' : 'none'
                                     }}
-                                    onFocus={(e) => e.target.style.borderColor = '#171A20'}
-                                    onBlur={(e) => e.target.style.borderColor = '#ddd'}
                                 />
                             </div>
 
@@ -322,18 +325,19 @@ export default function SuportePage() {
                                     required
                                     value={formData.subject}
                                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                                    onFocus={() => setFocusedField('subject')}
+                                    onBlur={() => setFocusedField(null)}
                                     placeholder={t('supportPage.subjectHelpPlaceholder')}
                                     style={{
                                         width: '100%',
                                         padding: '12px 16px',
                                         borderRadius: '10px',
-                                        border: '1px solid #ddd',
+                                        border: focusedField === 'subject' ? '1px solid #D4AF37' : '1px solid #ddd',
                                         outline: 'none',
                                         fontSize: '0.95rem',
-                                        transition: 'border 0.3s'
+                                        transition: 'all 0.3s',
+                                        boxShadow: focusedField === 'subject' ? '0 0 15px rgba(212, 175, 55, 0.2)' : 'none'
                                     }}
-                                    onFocus={(e) => e.target.style.borderColor = '#171A20'}
-                                    onBlur={(e) => e.target.style.borderColor = '#ddd'}
                                 />
                             </div>
 
@@ -345,21 +349,22 @@ export default function SuportePage() {
                                     required
                                     value={formData.message}
                                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                    onFocus={() => setFocusedField('message')}
+                                    onBlur={() => setFocusedField(null)}
                                     placeholder={t('supportPage.messagePlaceholder')}
                                     rows={5}
                                     style={{
                                         width: '100%',
                                         padding: '12px 16px',
                                         borderRadius: '10px',
-                                        border: '1px solid #ddd',
+                                        border: focusedField === 'message' ? '1px solid #D4AF37' : '1px solid #ddd',
                                         outline: 'none',
                                         fontSize: '0.95rem',
                                         resize: 'vertical',
                                         fontFamily: 'inherit',
-                                        transition: 'border 0.3s'
+                                        transition: 'all 0.3s',
+                                        boxShadow: focusedField === 'message' ? '0 0 15px rgba(212, 175, 55, 0.2)' : 'none'
                                     }}
-                                    onFocus={(e) => e.target.style.borderColor = '#171A20'}
-                                    onBlur={(e) => e.target.style.borderColor = '#ddd'}
                                 />
                             </div>
 
