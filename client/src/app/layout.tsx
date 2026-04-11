@@ -433,7 +433,6 @@ export default function RootLayout({
                       <GlobalMetaPixel />
                     </Suspense>
                     {children}
-                    <WhatsAppFloat />
                     <PWAInstallPrompt />
                   </ClientLayoutWrapper>
                 </PayPalProviderWrapper>

@@ -13,7 +13,11 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
     const isPublicForm = pathname?.startsWith('/f/');
     const isHub = pathname?.startsWith('/hub/');
     const isBioPage = pathname?.includes('/l/') && pathname?.endsWith('/bio');
-    const isAuthPage = pathname?.includes('/entrar') || pathname?.includes('/cadastro');
+    const isAuthPage = pathname?.includes('/entrar') || 
+                       pathname?.includes('/cadastro') || 
+                       pathname?.includes('/esqueci-senha') || 
+                       pathname?.includes('/redefinir-senha') || 
+                       pathname?.includes('/confirmar-email');
 
     return (
         <>
