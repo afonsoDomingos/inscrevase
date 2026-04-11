@@ -95,7 +95,7 @@ function LoginContent() {
             display: 'flex',
             background: '#0a0a0a',
             position: 'relative',
-            overflowY: 'auto'
+            overflow: 'hidden' // Prevent any unwanted scroll
         }}>
             {/* Left Side: Visual/Image Slideshow */}
             <div className="login-visual-side" style={{
@@ -163,7 +163,7 @@ function LoginContent() {
             </div>
 
             {/* Right Side: Login Form */}
-            <div style={{
+            <div className="login-form-side" style={{
                 flex: 1,
                 minHeight: '100dvh',
                 display: 'flex',
@@ -179,6 +179,7 @@ function LoginContent() {
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
+                    className="login-form-container"
                     style={{ width: '100%', maxWidth: '360px', marginTop: '1.5rem' }}
                 >
                     <div style={{ marginBottom: '0.75rem' }}>
@@ -358,6 +359,18 @@ function LoginContent() {
                     .login-visual-side {
                         display: none !important;
                     }
+                    .login-form-side {
+                        padding: 1rem 0.5rem !important;
+                    }
+                    .login-form-container {
+                        max-width: 100% !important;
+                        margin-top: 0.5rem !important;
+                    }
+                }
+                @media (max-height: 700px) {
+                    .login-form-container h1 { font-size: 1.2rem !important; }
+                    .login-form-container p { display: none; }
+                    .input-group { gap: 0.4rem !important; }
                 }
                 input::placeholder {
                     color: #444;

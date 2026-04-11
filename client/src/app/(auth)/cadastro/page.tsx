@@ -303,7 +303,7 @@ function RegisterContent() {
             display: 'flex',
             background: '#0a0a0a',
             position: 'relative',
-            overflowY: 'auto'
+            overflow: 'hidden'
         }}>
             <AnimatePresence>
                 {showRoleInfo && <RoleDetailModal role={showRoleInfo} />}
@@ -375,7 +375,7 @@ function RegisterContent() {
             </div>
 
             {/* Right Side: Registration Form */}
-            <div style={{
+            <div className="registration-form-side" style={{
                 flex: 1,
                 minHeight: '100dvh',
                 display: 'flex',
@@ -391,6 +391,7 @@ function RegisterContent() {
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
+                    className="registration-form-container"
                     style={{ width: '100%', maxWidth: '390px', padding: '0.2rem 0' }}
                 >
                     <div style={{ marginBottom: '0.6rem' }}>
@@ -637,6 +638,24 @@ function RegisterContent() {
                     .register-visual-side {
                         display: none !important;
                     }
+                    .registration-form-side {
+                        padding: 0.5rem 0.5rem !important;
+                    }
+                    .registration-form-container {
+                        max-width: 100% !important;
+                    }
+                }
+                @media (max-height: 750px) {
+                    .registration-form-container h1 { font-size: 1.1rem !important; }
+                    .registration-form-container p { display: none; }
+                    .registration-form-container form { gap: 0.3rem !important; }
+                    .registration-form-container .role-selector-grid { margin-bottom: 0.3rem !important; }
+                    .input-group label { font-size: 0.55rem !important; margin-bottom: 0.15rem !important; }
+                    .input-group input { padding: 0.45rem 0.5rem 0.45rem 2rem !important; font-size: 0.8rem !important; }
+                    .input-group svg { width: 12px !important; height: 12px !important; }
+                }
+                input::placeholder {
+                    color: #444;
                 }
             `}</style>
         </div>
