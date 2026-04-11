@@ -11,7 +11,6 @@ import { Suspense } from "react";
 import GlobalMetaPixel from '@/components/GlobalMetaPixel';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { ThemeProvider } from '@/context/ThemeContext';
-import WhatsAppFloat from '@/components/common/WhatsAppFloat';
 import HealthCheck from '@/components/common/HealthCheck';
 import PWAInstallPrompt from '@/components/common/PWAInstallPrompt';
 import PayPalProviderWrapper from '@/components/common/PayPalProviderWrapper';
