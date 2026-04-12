@@ -456,7 +456,17 @@ function AdminDashboardContent() {
                 className="admin-mobile-toggle"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             >
-                {isSidebarOpen ? <Plus style={{ transform: 'rotate(45deg)' }} size={24} /> : <Menu size={24} />}
+                {/* Logo */}
+                <span className="toggle-logo">
+                    INSCREVA<span>.SE</span>
+                </span>
+                {/* Chip */}
+                <span className="toggle-chip">
+                    {isSidebarOpen
+                        ? <><X size={16} /> Fechar</>
+                        : <><Menu size={16} /> Menu</>
+                    }
+                </span>
             </button>
 
             <div
@@ -466,16 +476,35 @@ function AdminDashboardContent() {
 
             {/* Sidebar */}
             <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''} ${isDesktopSidebarCollapsed ? 'collapsed' : ''}`}>
-                <div style={{ padding: '1.5rem', textAlign: 'center', borderBottom: '1px solid #333' }}>
+                <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #333' }}>
                     {!isDesktopSidebarCollapsed ? (
-                        <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>
+                        <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#fff', margin: 0 }}>
                             INSCREVA<span className="gold-text">.SE</span>
                         </h2>
                     ) : (
-                        <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#FFD700' }}>
+                        <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '1.8rem', fontWeight: 700, color: '#FFD700', margin: 0 }}>
                             I.
                         </h2>
                     )}
+                    {/* Mobile close button inside sidebar */}
+                    <button
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="admin-sidebar-close-btn"
+                        style={{
+                            display: 'none',
+                            background: 'rgba(255,215,0,0.1)',
+                            border: '1px solid rgba(255,215,0,0.3)',
+                            color: '#FFD700',
+                            borderRadius: '10px',
+                            padding: '8px',
+                            cursor: 'pointer',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            WebkitTapHighlightColor: 'transparent'
+                        }}
+                    >
+                        <X size={20} />
+                    </button>
                 </div>
 
                 <nav className="luxury-scrollbar" style={{ padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '1.25rem', overflowY: 'auto' }}>
@@ -498,7 +527,7 @@ function AdminDashboardContent() {
                             {group.items.map((item) => (
                                 <button
                                     key={item.id}
-                                    onClick={() => setActiveTab(item.id as Tab)}
+                                    onClick={() => { setActiveTab(item.id as Tab); setIsSidebarOpen(false); }}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',

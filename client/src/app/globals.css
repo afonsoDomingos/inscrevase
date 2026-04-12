@@ -640,6 +640,7 @@ h6 {
   z-index: 1000;
   box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  overflow-y: auto;
 }
 
 .admin-main {
@@ -653,9 +654,6 @@ h6 {
 
 .admin-mobile-toggle {
   display: none;
-  position: fixed;
-  top: 25px;
-  left: 20px;
 }
 
 .admin-sidebar.collapsed {
@@ -701,24 +699,52 @@ h6 {
 .admin-mobile-toggle {
   display: none;
   position: fixed;
-  top: 1.25rem;
-  left: 1.25rem;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
   z-index: 2001;
-  background: #1a1a1a;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
   color: #FFD700;
-  border: 1px solid #FFD700;
-  border-radius: 10px;
-  width: 42px;
-  height: 42px;
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-radius: 16px;
+  padding: 0.75rem 1.25rem;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 215, 0, 0.1);
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .admin-mobile-toggle:active {
-  transform: scale(0.95);
+  transform: scale(0.97);
+}
+
+.admin-mobile-toggle .toggle-logo {
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -0.5px;
+  color: #fff;
+  font-family: var(--font-playfair);
+}
+
+.admin-mobile-toggle .toggle-logo span {
+  color: #FFD700;
+}
+
+.admin-mobile-toggle .toggle-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 215, 0, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .admin-overlay {
@@ -757,17 +783,23 @@ h6 {
 @media (max-width: 992px) {
   .admin-sidebar {
     transform: translateX(-100%);
+    width: 100vw !important;
+    border-right: none;
   }
 
   .admin-sidebar.open {
     transform: translateX(0);
   }
 
+  .admin-sidebar-close-btn {
+    display: flex !important;
+  }
+
   .admin-main {
     margin-left: 0;
     width: 100%;
-    padding: 1.25rem;
-    padding-top: 4.8rem;
+    padding: 1rem;
+    padding-top: 5.5rem;
     overflow-x: hidden;
   }
 
