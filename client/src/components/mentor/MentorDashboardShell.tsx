@@ -99,14 +99,20 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
         loadUnreadCounts();
 
         const checkMobile = () => {
-            setIsMobile(window.innerWidth <= 1024);
-            if (window.innerWidth > 1024) setIsMobileSidebarOpen(false);
+            const mobile = window.innerWidth <= 1024;
+            setIsMobile(mobile);
+            console.log('Screen Resize Detected. isMobile:', mobile);
         };
+        
         checkMobile();
         window.addEventListener('resize', checkMobile);
 
         return () => window.removeEventListener('resize', checkMobile);
     }, [router]);
+
+    useEffect(() => {
+        console.log('Sidebar State Changed - isMobileSidebarOpen:', isMobileSidebarOpen);
+    }, [isMobileSidebarOpen]);
 
     // Socket listeners for counts
     useEffect(() => {
@@ -213,7 +219,10 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
             {!isMobileSidebarOpen && (
                 <button
                     className="mentor-mobile-toggle"
-                    onClick={() => setIsMobileSidebarOpen(true)}
+                    onClick={() => {
+                        console.log('Mentor Mobile Toggle Clicked');
+                        setIsMobileSidebarOpen(true);
+                    }}
                 >
                     <span className="toggle-logo">
                         INSCREVA<span>.SE</span>
