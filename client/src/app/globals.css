@@ -862,10 +862,6 @@ h6 {
     display: flex;
   }
 
-  .mentor-mobile-toggle {
-    display: flex;
-  }
-
   .admin-overlay {
     display: block;
     pointer-events: none;
@@ -1171,3 +1167,16 @@ h6 {
     height: 24px !important;
   }
 }
+
+/* Mentor Mobile Nav Bar — show on mobile, hide on desktop */
+@media (max-width: 1024px) {
+  .mentor-mobile-toggle {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .mentor-mobile-toggle {
+    display: none !important;
+  }
+}
