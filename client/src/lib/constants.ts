@@ -21,3 +21,6 @@ export const COUNTRIES = [
     "Taiwan", "Tanzânia", "Tajiquistão", "Togo", "Tonga", "Trindade e Tobago", "Tunísia", "Turcomenistão", "Turquia",
     "Tuvalu", "Ucrânia", "Uganda", "Uruguai", "Uzbequistão", "Vanuatu", "Vaticano", "Venezuela", "Vietnã", "Zâmbia", "Zimbábue"
 ].sort();
+
+export const SUPPORT_WHATSAPP = "258847877405";
+export const SUPPORT_WHATSAPP_LINK = `https://wa.me/${SUPPORT_WHATSAPP}`;

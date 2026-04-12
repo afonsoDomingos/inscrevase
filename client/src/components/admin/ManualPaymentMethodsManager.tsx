@@ -172,7 +172,7 @@ export default function ManualPaymentMethodsManager() {
                             </div>
                             <div style={{ gridColumn: 'span 2' }}>
                                 <label style={labelStyle}>Detalhes (número, email, IBAN...) *</label>
-                                <input value={newMethod.details} onChange={(e) => setNewMethod({ ...newMethod, details: e.target.value })} style={inputStyle} placeholder="Ex: 856079576 (Nome do Titular)" />
+                                <input value={newMethod.details} onChange={(e) => setNewMethod({ ...newMethod, details: e.target.value })} style={inputStyle} placeholder="Ex: 847877405 (Nome do Titular)" />
                             </div>
                         </div>
                         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>

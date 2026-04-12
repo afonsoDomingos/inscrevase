@@ -30,14 +30,27 @@ export default function SystemSettings() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [settings, setSettings] = useState<SystemSettingsData | null>(null);
-    const [activeSettingsTab, setActiveSettingsTab] = useState<'plans' | 'payments' | 'pixel'>('plans');
+    const [activeSettingsTab, setActiveSettingsTab] = useState<'plans' | 'payments' | 'pixel' | 'general'>('plans');
     const [globalPixel, setGlobalPixel] = useState('');
     const [savingPixel, setSavingPixel] = useState(false);
+    const [whatsappNumber, setWhatsappNumber] = useState('');
+    const [savingWhatsapp, setSavingWhatsapp] = useState(false);
 
     useEffect(() => {
         fetchSettings();
         fetchPixel();
+        fetchWhatsapp();
     }, []);
+
+    const fetchWhatsapp = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings/support-whatsapp`);
+            const data = await response.json();
+            if (data.number) setWhatsappNumber(data.number);
+        } catch (error) {
+            console.error('Error fetching whatsapp:', error);
+        }
+    };
 
     const fetchPixel = async () => {
         try {
@@ -112,6 +125,11 @@ export default function SystemSettings() {
         }
     };
 
+        } finally {
+            setSavingPixel(false);
+        }
+    };
+
     const handleSavePixel = async () => {
         if (!globalPixel) return;
         setSavingPixel(true);
@@ -139,6 +157,33 @@ export default function SystemSettings() {
         }
     };
 
+    const handleSaveWhatsapp = async () => {
+        if (!whatsappNumber) return;
+        setSavingWhatsapp(true);
+        try {
+            const token = Cookies.get('token');
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings/support-whatsapp`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ number: whatsappNumber })
+            });
+
+            if (response.ok) {
+                toast.success('WhatsApp de Suporte atualizado!');
+            } else {
+                throw new Error('Erro ao salvar whatsapp');
+            }
+        } catch (error) {
+            console.error('Save whatsapp error:', error);
+            toast.error('Erro ao salvar whatsapp');
+        } finally {
+            setSavingWhatsapp(false);
+        }
+    };
+
     const planKeys: ('free' | 'pro' | 'enterprise')[] = ['free', 'pro', 'enterprise'];
 
     return (
@@ -162,6 +207,12 @@ export default function SystemSettings() {
                     style={{ padding: '9px 22px', borderRadius: '10px', border: 'none', background: activeSettingsTab === 'pixel' ? '#fff' : 'transparent', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', color: activeSettingsTab === 'pixel' ? '#111' : '#6b7280', boxShadow: activeSettingsTab === 'pixel' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s' }}
                 >
                     <Zap size={16} /> Meta Pixel Global
+                </button>
+                <button
+                    onClick={() => setActiveSettingsTab('general')}
+                    style={{ padding: '9px 22px', borderRadius: '10px', border: 'none', background: activeSettingsTab === 'general' ? '#fff' : 'transparent', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', color: activeSettingsTab === 'general' ? '#111' : '#6b7280', boxShadow: activeSettingsTab === 'general' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s' }}
+                >
+                    <Settings size={16} /> Geral
                 </button>
             </div>
 
@@ -325,6 +376,50 @@ export default function SystemSettings() {
                         >
                             {savingPixel ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
                             Atualizar Pixel Global
+                        </button>
+                    </div>
+                </motion.div>
+            )}
+
+            {/* Tab: General Settings */}
+            {activeSettingsTab === 'general' && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{ background: '#fff', padding: '2.5rem', borderRadius: '30px', border: '1px solid #eee', maxWidth: '600px', margin: '0 auto' }}
+                >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                        <div>
+                            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', margin: 0 }}>Configurações <span className="gold-text">Gerais</span></h3>
+                            <p style={{ color: '#666', fontSize: '0.9rem', marginTop: '5px' }}>Configure parâmetros globais do sistema.</p>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <div>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, color: '#888', marginBottom: '8px', textTransform: 'uppercase' }}>
+                                <MessageCircle size={14} /> WhatsApp de Suporte
+                            </label>
+                            <input
+                                type="text"
+                                value={whatsappNumber}
+                                onChange={(e) => setWhatsappNumber(e.target.value)}
+                                placeholder="Ex: 258847877405"
+                                style={{ width: '100%', padding: '15px 20px', borderRadius: '15px', border: '1px solid #eee', background: '#fcfcfc', fontWeight: 700, fontSize: '1.1rem', color: '#000' }}
+                            />
+                        </div>
+
+                        <div style={{ padding: '1.5rem', background: '#fffbeb', borderRadius: '15px', border: '1px solid #fde68a', color: '#92400e', fontSize: '0.85rem' }}>
+                            ⚠️ <strong>Atenção:</strong> Insira o número com o prefixo internacional (ex: 258 para Moçambique) e sem espaços ou símbolos.
+                        </div>
+
+                        <button
+                            onClick={handleSaveWhatsapp}
+                            disabled={savingWhatsapp}
+                            style={{ padding: '1.2rem', background: 'var(--gold-gradient)', color: '#000', border: 'none', borderRadius: '15px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 8px 20px rgba(212, 175, 55, 0.2)', marginTop: '1rem' }}
+                        >
+                            {savingWhatsapp ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
+                            Atualizar Configurações Gerais
                         </button>
                     </div>
                 </motion.div>

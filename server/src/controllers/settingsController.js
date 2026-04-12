@@ -183,3 +183,48 @@ exports.updateGlobalPixel = async (req, res) => {
         res.status(500).json({ message: 'Error updating global pixel' });
     }
 };
+
+/**
+ * Get the support WhatsApp number
+ */
+exports.getSupportWhatsapp = async (req, res) => {
+    try {
+        const settings = await GlobalSettings.findOne({ key: 'support_whatsapp' });
+        // Fallback to new provided number 258847877405
+        res.status(200).json({ number: settings ? settings.value : '258847877405' });
+    } catch (error) {
+        console.error('[SETTINGS] Error fetching support whatsapp:', error.message);
+        res.status(500).json({ message: 'Error fetching support whatsapp' });
+    }
+};
+
+/**
+ * Update the support WhatsApp number (Admin only)
+ */
+exports.updateSupportWhatsapp = async (req, res) => {
+    try {
+        const { number } = req.body;
+
+        if (!number) {
+            return res.status(400).json({ message: 'WhatsApp number is required' });
+        }
+
+        // Clean number (remove spaces, +, etc)
+        const cleanNumber = number.replace(/\D/g, '');
+
+        const settings = await GlobalSettings.findOneAndUpdate(
+            { key: 'support_whatsapp' },
+            {
+                key: 'support_whatsapp',
+                value: cleanNumber,
+                lastUpdated: Date.now()
+            },
+            { upsert: true, new: true }
+        );
+
+        res.status(200).json({ message: 'Support WhatsApp updated successfully', settings });
+    } catch (error) {
+        console.error('[SETTINGS] Error updating support whatsapp:', error.message);
+        res.status(500).json({ message: 'Error updating support whatsapp' });
+    }
+};

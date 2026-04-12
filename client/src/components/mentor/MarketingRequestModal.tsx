@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SUPPORT_WHATSAPP } from '@/lib/constants';
 import { X, Loader2, Facebook, Instagram, Linkedin, Youtube, Music2, ArrowRight, Trophy } from 'lucide-react';
 import { toast } from 'sonner';
 import { marketingService } from '@/lib/marketingService';
@@ -98,7 +99,7 @@ export default function MarketingRequestModal({ isOpen, onClose, serviceType, se
 
     const handleWhatsAppSupport = () => {
         const message = encodeURIComponent(`Olá! Sou o ${formData.contactName || 'um Mentor'} e gostaria de tirar algumas dúvidas sobre o ${serviceName}.`);
-        window.open(`https://wa.me/258856079576?text=${message}`, '_blank');
+        window.open(`https://wa.me/${SUPPORT_WHATSAPP}?text=${message}`, '_blank');
     };
 
     return (

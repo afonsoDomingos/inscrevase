@@ -26,4 +26,10 @@ router.get('/payment-attempts', authMiddleware, adminMiddleware, settingsControl
 router.get('/meta-pixel', settingsController.getGlobalPixel);
 router.put('/meta-pixel', authMiddleware, adminMiddleware, settingsController.updateGlobalPixel);
 
+/**
+ * SUPPORT WHATSAPP
+ */
+router.get('/support-whatsapp', settingsController.getSupportWhatsapp);
+router.put('/support-whatsapp', authMiddleware, adminMiddleware, settingsController.updateSupportWhatsapp);
+
 module.exports = router;

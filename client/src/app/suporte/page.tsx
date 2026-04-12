@@ -12,9 +12,9 @@ import {
     Loader2,
     ChevronLeft
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useTranslate } from '@/context/LanguageContext';
+import { SUPPORT_WHATSAPP, SUPPORT_WHATSAPP_LINK } from '@/lib/constants';
 
 export default function SuportePage() {
     const { t } = useTranslate();
@@ -85,8 +85,8 @@ export default function SuportePage() {
         {
             icon: <Phone size={24} />,
             title: t('supportPage.phoneWhatsApp'),
-            value: '+258 85 607 9576',
-            link: 'https://wa.me/258856079576',
+            value: `+${SUPPORT_WHATSAPP.slice(0, 3)} ${SUPPORT_WHATSAPP.slice(3, 5)} ${SUPPORT_WHATSAPP.slice(5, 8)} ${SUPPORT_WHATSAPP.slice(8)}`,
+            link: SUPPORT_WHATSAPP_LINK,
             description: t('supportPage.whatsappUrgentDesc')
         },
         {
@@ -100,7 +100,7 @@ export default function SuportePage() {
             icon: <MessageCircle size={24} />,
             title: t('supportPage.directWhatsApp'),
             value: t('supportPage.instantChat'),
-            link: 'https://wa.me/258856079576?text=Olá!%20Preciso%20de%20ajuda%20com%20a%20plataforma%20Inscreva-se',
+            link: `${SUPPORT_WHATSAPP_LINK}?text=Olá!%20Preciso%20de%20ajuda%20com%20a%20plataforma%20Inscreva-se`,
             description: t('supportPage.realtimeSupportDesc')
         }
     ];

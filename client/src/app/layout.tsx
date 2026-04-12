@@ -12,6 +12,7 @@ import GlobalMetaPixel from '@/components/GlobalMetaPixel';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { ThemeProvider } from '@/context/ThemeContext';
 import HealthCheck from '@/components/common/HealthCheck';
+import { SUPPORT_WHATSAPP } from '@/lib/constants';
 import PWAInstallPrompt from '@/components/common/PWAInstallPrompt';
 import PayPalProviderWrapper from '@/components/common/PayPalProviderWrapper';
 import OfflineDetector from '@/components/common/OfflineDetector';
@@ -65,7 +66,7 @@ export const metadata: Metadata = {
     // Marca
     "Inscreva-se", "inscrevase", "inscreva-se.com"
   ],
-  authors: [{ name: "Inscreva-se", url: "https://inscreva-se.com" }],
+  authors: [{ name: "Inscreva-se", url: `https://wa.me/${SUPPORT_WHATSAPP}` }],
   creator: "Inscreva-se",
   publisher: "Inscreva-se",
   category: "Technology",
@@ -255,7 +256,7 @@ export default function RootLayout({
               "contactPoint": [
                 {
                   "@type": "ContactPoint",
-                  "telephone": "+258856079576",
+                  "telephone": `+${SUPPORT_WHATSAPP}`,
                   "contactType": "customer service",
                   "areaServed": ["AO", "MZ", "PT", "BR"],
                   "availableLanguage": ["Portuguese", "English"]

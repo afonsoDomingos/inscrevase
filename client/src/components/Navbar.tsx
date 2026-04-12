@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle, Home, Users, Info, LifeBuoy, Newspaper, Sparkles, MessageSquare, Calendar as CalendarIcon, Library, Briefcase } from 'lucide-react';
+import { SUPPORT_WHATSAPP } from '@/lib/constants';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { authService, UserData } from '@/lib/authService';
@@ -253,7 +254,7 @@ export default function Navbar() {
               <a href="https://www.linkedin.com/company/inscreva-se" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '8px', borderRadius: '10px', display: 'flex' }}><Linkedin size={18} /></a>
               <a href="https://www.youtube.com/@Inscreva-se-events" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '8px', borderRadius: '10px', display: 'flex' }}><Youtube size={18} /></a>
               <a href="https://www.facebook.com/profile.php?id=61586427553486&locale=pt_BR" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '8px', borderRadius: '10px', display: 'flex' }}><Facebook size={18} /></a>
-              <a href="https://wa.me/258856079576" target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '8px', borderRadius: '10px', display: 'flex' }}><MessageCircle size={18} /></a>
+              <a href={`https://wa.me/${SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" style={{ color: '#1a1a1a', border: '1px solid #eee', padding: '8px', borderRadius: '10px', display: 'flex' }}><MessageCircle size={18} /></a>
 
               <div style={{ width: '1px', height: '20px', background: '#e0e0e0', margin: '0 4px' }}></div>
 
