@@ -22,7 +22,7 @@ import WhatsAppLogs from '@/components/dashboard/WhatsAppLogs';
 import VacanciesAdmin from '@/components/admin/VacanciesAdmin';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Plus, Book, MessageCircle, Smartphone, Briefcase } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Book, MessageCircle, Smartphone, Briefcase } from 'lucide-react';
 
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -454,7 +454,8 @@ function AdminDashboardContent() {
             <div className="bg-mesh" />
             <button
                 className="admin-mobile-toggle"
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                onClick={() => setIsSidebarOpen(true)}
+                style={{ visibility: isSidebarOpen ? 'hidden' : undefined, pointerEvents: isSidebarOpen ? 'none' : undefined }}
             >
                 {/* Logo */}
                 <span className="toggle-logo">
@@ -462,10 +463,7 @@ function AdminDashboardContent() {
                 </span>
                 {/* Chip */}
                 <span className="toggle-chip">
-                    {isSidebarOpen
-                        ? <><X size={16} /> Fechar</>
-                        : <><Menu size={16} /> Menu</>
-                    }
+                    <Menu size={16} /> Menu
                 </span>
             </button>
 

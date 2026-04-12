@@ -209,10 +209,10 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--background)', position: 'relative', overflowX: 'hidden' }}>
-            {/* Mobile Toggle Button */}
-            {isMobile && (
+            {/* Mobile Toggle Button — only shown when sidebar is CLOSED */}
+            {isMobile && !isMobileSidebarOpen && (
                 <motion.button
-                    onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                    onClick={() => setIsMobileSidebarOpen(true)}
                     whileTap={{ scale: 0.96 }}
                     style={{
                         position: 'fixed',
@@ -245,7 +245,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                         Inscreva<span style={{ color: '#FFD700' }}>.se</span>
                     </span>
 
-                    {/* Right: animated icon */}
+                    {/* Right: menu chip */}
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -255,18 +255,9 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                         borderRadius: '10px',
                         padding: '6px 12px'
                     }}>
-                        <motion.div
-                            animate={{ rotate: isMobileSidebarOpen ? 45 : 0 }}
-                            transition={{ duration: 0.25 }}
-                            style={{ display: 'flex', alignItems: 'center' }}
-                        >
-                            {isMobileSidebarOpen
-                                ? <Plus size={18} />
-                                : <Menu size={18} />
-                            }
-                        </motion.div>
+                        <Menu size={18} />
                         <span style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                            {isMobileSidebarOpen ? 'Fechar' : 'Menu'}
+                            Menu
                         </span>
                     </div>
                 </motion.button>
