@@ -209,35 +209,40 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--background)', position: 'relative', overflowX: 'hidden' }}>
-            {/* Mobile Toggle Button — only shown when sidebar is CLOSED */}
+            {/* Mobile Top Nav Bar — only shown when sidebar is CLOSED */}
             {isMobile && !isMobileSidebarOpen && (
                 <motion.button
                     onClick={() => setIsMobileSidebarOpen(true)}
-                    whileTap={{ scale: 0.96 }}
+                    whileTap={{ scale: 0.99 }}
+                    initial={{ y: -60, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ type: 'spring', damping: 20, stiffness: 300 }}
                     style={{
                         position: 'fixed',
-                        top: '1rem',
-                        left: '1rem',
-                        right: '1rem',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        width: '100%',
                         zIndex: 2001,
-                        background: 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)',
+                        background: 'linear-gradient(135deg, #111 0%, #0a0a0a 100%)',
                         color: '#FFD700',
-                        border: '1px solid rgba(255,215,0,0.4)',
-                        borderRadius: '16px',
-                        padding: '0.75rem 1.25rem',
+                        border: 'none',
+                        borderBottom: '1px solid rgba(255,215,0,0.2)',
+                        borderRadius: '0 0 20px 20px',
+                        padding: '1rem 1.5rem',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,215,0,0.1)',
+                        boxShadow: '0 4px 24px rgba(0,0,0,0.35)',
                         WebkitTapHighlightColor: 'transparent',
                         touchAction: 'manipulation'
                     }}
                 >
-                    {/* Left: logo text */}
+                    {/* Left: logo */}
                     <span style={{
                         fontWeight: 800,
-                        fontSize: '1.15rem',
+                        fontSize: '1.2rem',
                         letterSpacing: '-0.5px',
                         color: '#fff',
                         fontFamily: 'var(--font-playfair)'
@@ -245,18 +250,23 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                         Inscreva<span style={{ color: '#FFD700' }}>.se</span>
                     </span>
 
-                    {/* Right: menu chip */}
+                    {/* Right: menu pill */}
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px',
                         background: 'rgba(255,215,0,0.12)',
-                        border: '1px solid rgba(255,215,0,0.25)',
-                        borderRadius: '10px',
-                        padding: '6px 12px'
+                        border: '1px solid rgba(255,215,0,0.3)',
+                        borderRadius: '12px',
+                        padding: '8px 14px'
                     }}>
                         <Menu size={18} />
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                        <span style={{
+                            fontSize: '0.78rem',
+                            fontWeight: 700,
+                            letterSpacing: '0.8px',
+                            textTransform: 'uppercase'
+                        }}>
                             Menu
                         </span>
                     </div>
@@ -501,7 +511,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                 transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 flex: 1,
                 padding: isMobile ? '1rem' : '2.5rem',
-                paddingTop: isMobile ? '6rem' : '2.5rem',
+                paddingTop: isMobile ? '5rem' : '2.5rem',
                 minHeight: '100vh',
                 maxWidth: isMobile ? '100%' : `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`,
                 overflowX: 'hidden'
