@@ -466,16 +466,13 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
             </aside>
 
             {/* Main Content */}
-            <main style={{
-                marginLeft: isMobile ? '0' : (isSidebarCollapsed ? '80px' : '280px'),
-                transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                flex: 1,
-                padding: isMobile ? '1rem' : '2.5rem',
-                paddingTop: isMobile ? '6rem' : '2.5rem',
-                minHeight: '100vh',
-                maxWidth: isMobile ? '100%' : `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`,
-                overflowX: 'hidden'
-            }}>
+            <main 
+                className="mentor-main"
+                style={{
+                    marginLeft: isMobile ? '0' : (isSidebarCollapsed ? '80px' : '280px'),
+                    maxWidth: isMobile ? '100%' : `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`,
+                }}
+            >
                 {/* Header */}
                 <header style={{
                     display: 'flex',

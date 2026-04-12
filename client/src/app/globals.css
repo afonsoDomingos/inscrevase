@@ -1177,4 +1177,24 @@ h6 {
   .mentor-mobile-toggle {
     display: none !important;
   }
-}
+}
+
+/* Mentor Main Content Area — No Flash of Layout */
+.mentor-main {
+  flex: 1;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 2.5rem;
+  padding-top: 2.5rem;
+}
+
+@media (max-width: 1024px) {
+  .mentor-main {
+    margin-left: 0 !important;
+    padding: 1rem;
+    padding-top: 6rem;
+    max-width: 100% !important;
+  }
+}
+
