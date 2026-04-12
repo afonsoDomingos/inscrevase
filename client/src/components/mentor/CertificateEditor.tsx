@@ -2,6 +2,7 @@
 
 import { Award, UserCheck } from 'lucide-react';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 export interface CertificateConfig {
     enabled: boolean;
@@ -42,12 +43,21 @@ export default function CertificateEditor({ config, onChange, mentorName, logo }
         showLogo: config?.showLogo !== undefined ? config.showLogo : true
     };
 
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     const handleChange = (key: keyof CertificateConfig, value: string | boolean) => {
         onChange({ ...safeConfig, [key]: value });
     };
 
     return (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '20px' : '30px', alignItems: 'start' }}>
             {/* Left Column: Controls */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
 
@@ -81,7 +91,7 @@ export default function CertificateEditor({ config, onChange, mentorName, logo }
                             <p style={{ margin: '5px 0 0', fontSize: '0.8rem', color: '#666' }}>Quem pode receber?</p>
                         </div>
                     </div>
-                    <div style={{ display: 'flex', gap: '10px' }}>
+                    <div style={{ display: 'flex', gap: '10px', flexDirection: isMobile ? 'column' : 'row' }}>
                         <button
                             onClick={() => handleChange('requireCheckIn', false)}
                             style={{
@@ -109,7 +119,7 @@ export default function CertificateEditor({ config, onChange, mentorName, logo }
                 <div style={{ background: '#fff', padding: '20px', borderRadius: '16px', border: '1px solid #eee', boxShadow: '0 4px 6px rgba(0,0,0,0.02)', display: 'grid', gap: '15px' }}>
                     <h3 style={{ fontSize: '1rem', fontWeight: 800 }}>Personalização Visual</h3>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '15px' }}>
                         <div>
                             <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px' }}>Cor de Destaque</label>
                             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -146,7 +156,7 @@ export default function CertificateEditor({ config, onChange, mentorName, logo }
                         </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '15px' }}>
                         <div>
                             <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px' }}>Cor do Fundo</label>
                             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -198,7 +208,7 @@ export default function CertificateEditor({ config, onChange, mentorName, logo }
                         />
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '15px' }}>
                         <div>
                             <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px' }}>Assinado Por (Nome)</label>
                             <input
@@ -223,7 +233,7 @@ export default function CertificateEditor({ config, onChange, mentorName, logo }
             </div>
 
             {/* Right Column: Preview */}
-            <div style={{ position: 'sticky', top: '20px' }}>
+            <div style={{ position: isMobile ? 'relative' : 'sticky', top: '20px', order: isMobile ? -1 : 1 }}>
                 <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Award size={18} /> Pré-visualização
                 </h3>
@@ -242,7 +252,10 @@ export default function CertificateEditor({ config, onChange, mentorName, logo }
                         flexDirection: 'column',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        border: '1px solid #eee'
+                        border: '1px solid #eee',
+                        transform: isMobile ? 'scale(1)' : 'none',
+                        width: '100%',
+                        maxWidth: '100%'
                     }}
                 >
                     {/* Background Waves Simulation */}
@@ -263,15 +276,15 @@ export default function CertificateEditor({ config, onChange, mentorName, logo }
                                 </div>
                             )}
                             <div style={{ textAlign: safeConfig.showLogo && logo ? 'right' : 'center', flex: 1 }}>
-                                <div style={{ fontSize: '24px', fontFamily: 'Times New Roman, serif', fontStyle: 'italic', fontWeight: 'bold', color: safeConfig.primaryColor, lineHeight: 1 }}>{safeConfig.title}</div>
-                                <div style={{ fontSize: '8px', letterSpacing: '2px', color: '#666' }}>{safeConfig.subtitle}</div>
+                                <div style={{ fontSize: isMobile ? '16px' : '24px', fontFamily: 'Times New Roman, serif', fontStyle: 'italic', fontWeight: 'bold', color: safeConfig.primaryColor, lineHeight: 1 }}>{safeConfig.title}</div>
+                                <div style={{ fontSize: isMobile ? '6px' : '8px', letterSpacing: '2px', color: '#666' }}>{safeConfig.subtitle}</div>
                             </div>
                         </div>
 
-                        <div style={{ marginTop: '20px', fontSize: '10px', fontWeight: 'bold', color: '#D4AF37', marginBottom: '5px' }}>ESTE DIPLOMA É CONFERIDO A</div>
+                        <div style={{ marginTop: '20px', fontSize: isMobile ? '7px' : '10px', fontWeight: 'bold', color: '#D4AF37', marginBottom: '5px' }}>ESTE DIPLOMA É CONFERIDO A</div>
 
                         <div style={{
-                            fontSize: '28px',
+                            fontSize: isMobile ? '18px' : '28px',
                             fontFamily: 'Times New Roman, serif',
                             fontStyle: 'italic',
                             color: safeConfig.nameColor,
@@ -284,19 +297,19 @@ export default function CertificateEditor({ config, onChange, mentorName, logo }
                             Nome do Participante
                         </div>
 
-                        <div style={{ fontSize: '9px', color: '#666', marginBottom: '20px', width: '70%', margin: '0 auto 20px auto', lineHeight: 1.4 }}>
+                        <div style={{ fontSize: isMobile ? '7px' : '9px', color: '#666', marginBottom: isMobile ? '10px' : '20px', width: '70%', margin: '0 auto 20px auto', lineHeight: 1.4 }}>
                             {safeConfig.description} &quot;Workshop GIS Avançado&quot;. Este documento certifica a atualização profissional na data de {new Date().toLocaleDateString()}.
                         </div>
 
                         {/* Signatures */}
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: '60px', marginTop: '20px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: isMobile ? '20px' : '60px', marginTop: isMobile ? '10px' : '20px' }}>
                             <div style={{ textAlign: 'center' }}>
-                                <div style={{ fontSize: '14px', fontFamily: 'Times New Roman, serif', fontStyle: 'italic', marginBottom: '2px' }}>{safeConfig.signerName}</div>
-                                <div style={{ borderTop: `1px solid #D4AF37`, width: '80px', margin: '0 auto', paddingTop: '2px', fontSize: '6px', color: safeConfig.primaryColor, fontWeight: 'bold' }}>{safeConfig.signerRole}</div>
+                                <div style={{ fontSize: isMobile ? '10px' : '14px', fontFamily: 'Times New Roman, serif', fontStyle: 'italic', marginBottom: '2px' }}>{safeConfig.signerName}</div>
+                                <div style={{ borderTop: `1px solid #D4AF37`, width: isMobile ? '60px' : '80px', margin: '0 auto', paddingTop: '2px', fontSize: isMobile ? '5px' : '6px', color: safeConfig.primaryColor, fontWeight: 'bold' }}>{safeConfig.signerRole}</div>
                             </div>
                             <div style={{ textAlign: 'center' }}>
-                                <div style={{ fontSize: '14px', fontFamily: 'Times New Roman, serif', fontStyle: 'italic', marginBottom: '2px' }}>{new Date().toLocaleDateString()}</div>
-                                <div style={{ borderTop: `1px solid #D4AF37`, width: '80px', margin: '0 auto', paddingTop: '2px', fontSize: '6px', color: '#666', fontWeight: 'bold' }}>DATA DE EMISSÃO</div>
+                                <div style={{ fontSize: isMobile ? '10px' : '14px', fontFamily: 'Times New Roman, serif', fontStyle: 'italic', marginBottom: '2px' }}>{new Date().toLocaleDateString()}</div>
+                                <div style={{ borderTop: `1px solid #D4AF37`, width: isMobile ? '60px' : '80px', margin: '0 auto', paddingTop: '2px', fontSize: isMobile ? '5px' : '6px', color: '#666', fontWeight: 'bold' }}>DATA DE EMISSÃO</div>
                             </div>
                         </div>
                     </div>

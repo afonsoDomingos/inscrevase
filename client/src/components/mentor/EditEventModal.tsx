@@ -2583,7 +2583,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
 
                                 {step === 8 && (
                                     <motion.div key="step8" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Configuração de Certificados</h2>
+                                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 800, marginBottom: '2rem' }}>Configuração de Certificados</h2>
                                         {userPlan === 'free' && !isAdmin ? (
                                             <FeaturePaywall
                                                 title="Certificados Automatizados"

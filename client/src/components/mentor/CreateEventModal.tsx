@@ -3185,7 +3185,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                                 <button className="btn-primary" style={{ padding: '0.8rem 2rem', borderRadius: '12px' }}>Fazer Upgrade agora</button>
                                             </div>
                                         ) : (
-                                            <div style={{ background: '#fff', padding: '2rem', borderRadius: '24px', border: '1px solid #eee' }}>
+                                            <div style={{ background: '#fff', padding: isMobile ? '1rem' : '2rem', borderRadius: '24px', border: '1px solid #eee' }}>
                                                 <CertificateEditor
                                                     config={certificateConfig}
                                                     onChange={setCertificateConfig}

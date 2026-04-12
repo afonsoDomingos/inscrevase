@@ -255,7 +255,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
 
             {/* Sidebar */}
             <aside style={{
-                width: isMobile ? '280px' : (isSidebarCollapsed ? '80px' : '280px'),
+                width: isMobile ? '100vw' : (isSidebarCollapsed ? '80px' : '280px'),
                 transform: isMobile ? (isMobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)') : 'none',
                 transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                 background: 'var(--paper)',
@@ -269,7 +269,8 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                 zIndex: 2000,
                 boxShadow: isMobile && !isMobileSidebarOpen ? 'none' : '4px 0 30px rgba(0,0,0,0.1)',
                 overflowX: 'hidden',
-                borderRight: '1px solid var(--border)'
+                overflowY: 'auto',
+                borderRight: isMobile ? 'none' : '1px solid var(--border)'
             }}>
                 <div style={{ padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid var(--border)' }}>
                     {!isSidebarCollapsed && (
@@ -277,7 +278,26 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                             Inscreva<span className="gold-text">.se</span>
                         </h2>
                     )}
-                    {!isMobile && (
+                    {isMobile ? (
+                        <button
+                            onClick={() => setIsMobileSidebarOpen(false)}
+                            style={{
+                                background: 'rgba(255,215,0,0.1)',
+                                border: '1px solid rgba(255,215,0,0.3)',
+                                color: '#FFD700',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: '8px',
+                                borderRadius: '10px',
+                                WebkitTapHighlightColor: 'transparent',
+                                touchAction: 'manipulation'
+                            }}
+                        >
+                            <Plus style={{ transform: 'rotate(45deg)' }} size={22} />
+                        </button>
+                    ) : (
                         <button
                             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                             style={{
@@ -311,11 +331,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                             )}
                             {!isSidebarCollapsed && (
                                 <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        toggleSection(section.title);
-                                    }}
+                                    onClick={() => toggleSection(section.title)}
                                     style={{
                                         width: '100%',
                                         display: 'flex',
@@ -332,14 +348,16 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                         letterSpacing: '1.2px',
                                         cursor: 'pointer',
                                         outline: 'none',
-                                        textAlign: 'left'
+                                        textAlign: 'left',
+                                        WebkitTapHighlightColor: 'transparent',
+                                        touchAction: 'manipulation'
                                     }}
                                 >
                                     {section.title}
                                     <motion.div
                                         animate={{ rotate: expandedSections[section.title] ? 0 : -90 }}
                                         transition={{ duration: 0.2 }}
-                                        style={{ display: 'flex', alignItems: 'center' }}
+                                        style={{ display: 'flex', alignItems: 'center', pointerEvents: 'none' }}
                                     >
                                         <ChevronDown size={14} />
                                     </motion.div>
@@ -352,8 +370,8 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                                         initial={isSidebarCollapsed ? false : { height: 0, opacity: 0 }}
                                         animate={{ height: 'auto', opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.3, ease: 'easeInOut' }}
-                                        style={{ overflow: 'hidden' }}
+                                        transition={{ duration: 0.25, ease: 'easeInOut' }}
+                                        style={{ overflow: 'hidden', pointerEvents: 'auto' }}
                                     >
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                                             {section.items.map((item) => (
