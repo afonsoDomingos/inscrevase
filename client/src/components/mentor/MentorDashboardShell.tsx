@@ -211,27 +211,65 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
         <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--background)', position: 'relative', overflowX: 'hidden' }}>
             {/* Mobile Toggle Button */}
             {isMobile && (
-                <button
+                <motion.button
                     onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                    whileTap={{ scale: 0.96 }}
                     style={{
                         position: 'fixed',
-                        top: '1.25rem',
-                        left: '1.25rem',
+                        top: '1rem',
+                        left: '1rem',
+                        right: '1rem',
                         zIndex: 2001,
-                        background: '#1a1a1a',
+                        background: 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)',
                         color: '#FFD700',
-                        border: '1px solid #FFD700',
-                        borderRadius: '10px',
-                        padding: '8px',
+                        border: '1px solid rgba(255,215,0,0.4)',
+                        borderRadius: '16px',
+                        padding: '0.75rem 1.25rem',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        justifyContent: 'space-between',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,215,0,0.1)',
+                        WebkitTapHighlightColor: 'transparent',
+                        touchAction: 'manipulation'
                     }}
                 >
-                    {isMobileSidebarOpen ? <Plus style={{ transform: 'rotate(45deg)' }} size={24} /> : <Menu size={24} />}
-                </button>
+                    {/* Left: logo text */}
+                    <span style={{
+                        fontWeight: 800,
+                        fontSize: '1.15rem',
+                        letterSpacing: '-0.5px',
+                        color: '#fff',
+                        fontFamily: 'var(--font-playfair)'
+                    }}>
+                        Inscreva<span style={{ color: '#FFD700' }}>.se</span>
+                    </span>
+
+                    {/* Right: animated icon */}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        background: 'rgba(255,215,0,0.12)',
+                        border: '1px solid rgba(255,215,0,0.25)',
+                        borderRadius: '10px',
+                        padding: '6px 12px'
+                    }}>
+                        <motion.div
+                            animate={{ rotate: isMobileSidebarOpen ? 45 : 0 }}
+                            transition={{ duration: 0.25 }}
+                            style={{ display: 'flex', alignItems: 'center' }}
+                        >
+                            {isMobileSidebarOpen
+                                ? <Plus size={18} />
+                                : <Menu size={18} />
+                            }
+                        </motion.div>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                            {isMobileSidebarOpen ? 'Fechar' : 'Menu'}
+                        </span>
+                    </div>
+                </motion.button>
             )}
 
             {/* Mobile Overlay */}
@@ -472,7 +510,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                 transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 flex: 1,
                 padding: isMobile ? '1rem' : '2.5rem',
-                paddingTop: isMobile ? '5rem' : '2.5rem',
+                paddingTop: isMobile ? '6rem' : '2.5rem',
                 minHeight: '100vh',
                 maxWidth: isMobile ? '100%' : `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`,
                 overflowX: 'hidden'
