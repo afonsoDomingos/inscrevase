@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { UserData, authService } from '@/lib/authService';
 import { formService } from '@/lib/formService';
+import { COUNTRIES } from '@/lib/constants';
 import { stripeService } from '@/lib/stripeService';
 import { User, Briefcase, Phone, FileText, Globe, Instagram, Linkedin, Facebook, Save, Camera, Loader2, Mail, AlertCircle, CreditCard, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
@@ -33,7 +34,8 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
             facebook: '',
             website: ''
         },
-        paypalEmail: ''
+        paypalEmail: '',
+        country: ''
     });
 
     useEffect(() => {
@@ -50,7 +52,8 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                     facebook: user.socialLinks?.facebook || '',
                     website: user.socialLinks?.website || ''
                 },
-                paypalEmail: user.paypalEmail || ''
+                paypalEmail: user.paypalEmail || '',
+                country: user.country || ''
             });
         }
     }, [user]);
@@ -95,7 +98,8 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                 whatsapp: formData.whatsapp,
                 profilePhoto: formData.profilePhoto,
                 socialLinks: formData.socialLinks,
-                paypalEmail: formData.paypalEmail
+                paypalEmail: formData.paypalEmail,
+                country: formData.country
             });
             onUpdate();
             toast.success(t('dashboard.settings.updateSuccess'));
@@ -266,15 +270,31 @@ export default function MentorSettings({ user, onUpdate }: MentorSettingsProps) 
                             </div>
                         </div>
 
-                        <div className="input-group" style={{ marginTop: '1rem' }}>
-                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#555' }}>E-mail do PayPal (para receber pagamentos)</label>
-                            <input
-                                type="email" name="paypalEmail"
-                                value={formData.paypalEmail} onChange={handleInputChange}
-                                className="input-luxury" style={{ padding: '0.7rem' }}
-                                placeholder="vendas@exemplo.com"
-                            />
-                            <p style={{ fontSize: '0.7rem', color: '#888', marginTop: '4px' }}>Este e-mail será usado para direcionar os pagamentos dos seus inscritos via PayPal.</p>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
+                            <div className="input-group">
+                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#555' }}>País</label>
+                                <select
+                                    name="country"
+                                    value={formData.country}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
+                                    className="input-luxury"
+                                    style={{ padding: '0.7rem', width: '100%', background: '#fff' }}
+                                >
+                                    <option value="" disabled>Selecione seu país</option>
+                                    {COUNTRIES.map(c => (
+                                        <option key={c} value={c}>{c}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="input-group">
+                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#555' }}>E-mail do PayPal (Recebimento)</label>
+                                <input
+                                    type="email" name="paypalEmail"
+                                    value={formData.paypalEmail} onChange={handleInputChange}
+                                    className="input-luxury" style={{ padding: '0.7rem' }}
+                                    placeholder="vendas@exemplo.com"
+                                />
+                            </div>
                         </div>
 
                         <div className="input-group" style={{ marginTop: '1rem' }}>

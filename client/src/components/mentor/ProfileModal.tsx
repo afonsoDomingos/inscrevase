@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Briefcase, Phone, FileText, Camera, Save, Loader2, Link as LinkIcon, Globe, Instagram, Linkedin, Facebook, Sparkles, Mail } from 'lucide-react';
 import { authService, UserData } from '@/lib/authService';
 import { formService } from '@/lib/formService';
+import { COUNTRIES } from '@/lib/constants';
 import Image from 'next/image';
 import { useTranslate } from '@/context/LanguageContext';
 import { toast } from 'sonner';
@@ -32,6 +33,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess, onUpgra
     const [socialLinks, setSocialLinks] = useState(user.socialLinks || {});
     const [facebookPixelId, setFacebookPixelId] = useState(user.facebookPixelId || '');
     const [paypalEmail, setPaypalEmail] = useState(user.paypalEmail || '');
+    const [country, setCountry] = useState(user.country || '');
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -60,7 +62,8 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess, onUpgra
                 profilePhoto,
                 socialLinks,
                 facebookPixelId,
-                paypalEmail
+                paypalEmail,
+                country
             });
             toast.success(t('events.profile.updateSuccess') || 'Perfil atualizado com sucesso!');
             onSuccess();
@@ -170,23 +173,42 @@ export default function ProfileModal({ isOpen, onClose, user, onSuccess, onUpgra
                             </div>
                         </div>
 
-                        {/* PayPal Email Section */}
-                        <div className="input-group">
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, color: '#333', marginBottom: '0.3rem' }}>
-                                <Mail size={12} /> E-mail do PayPal (Recebimento)
-                            </label>
-                            <input
-                                type="email"
-                                className="input-luxury"
-                                value={paypalEmail}
-                                onChange={(e) => setPaypalEmail(e.target.value)}
-                                placeholder="vendas@exemplo.com"
-                                style={{ padding: '0.8rem' }}
-                            />
-                            <p style={{ fontSize: '0.7rem', color: '#888', marginTop: '4px' }}>
-                                Use este campo para definir onde você deseja receber o saldo das suas vendas pelo PayPal.
-                            </p>
+                        {/* Country & PayPal Email Section */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div className="input-group">
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, color: '#333', marginBottom: '0.3rem' }}>
+                                    <Globe size={12} /> País
+                                </label>
+                                <select
+                                    className="input-luxury"
+                                    value={country}
+                                    onChange={(e) => setCountry(e.target.value)}
+                                    required
+                                    style={{ padding: '0.8rem', width: '100%', background: '#fff' }}
+                                >
+                                    <option value="" disabled>Selecione seu país</option>
+                                    {COUNTRIES.map(c => (
+                                        <option key={c} value={c}>{c}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="input-group">
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, color: '#333', marginBottom: '0.3rem' }}>
+                                    <Mail size={12} /> E-mail do PayPal (Recebimento)
+                                </label>
+                                <input
+                                    type="email"
+                                    className="input-luxury"
+                                    value={paypalEmail}
+                                    onChange={(e) => setPaypalEmail(e.target.value)}
+                                    placeholder="vendas@exemplo.com"
+                                    style={{ padding: '0.8rem' }}
+                                />
+                            </div>
                         </div>
+                        <p style={{ fontSize: '0.7rem', color: '#888', marginTop: '-0.5rem' }}>
+                            Essas informações são essenciais para processar seus pagamentos corretamente.
+                        </p>
 
                         {/* Social Links Section */}
                         <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '12px' }}>

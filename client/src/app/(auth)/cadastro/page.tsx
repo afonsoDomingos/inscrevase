@@ -11,29 +11,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslate } from '@/context/LanguageContext';
 import { Suspense } from 'react';
 
-const COUNTRIES = [
-    "Moçambique", "Angola", "Brasil", "Portugal", "Cabo Verde", "Guiné-Bissau", "São Tomé e Príncipe", "Timor-Leste",
-    "Afeganistão", "África do Sul", "Albânia", "Alemanha", "Andorra", "Antígua e Barbuda", "Arábia Saudita", "Argélia",
-    "Argentina", "Armênia", "Austrália", "Áustria", "Azerbaijão", "Bahamas", "Bahrein", "Bangladesh", "Barbados",
-    "Bélgica", "Belize", "Benim", "Bielorrússia", "Bolívia", "Bósnia e Herzegovina", "Botswana", "Brunei", "Bulgária",
-    "Burkina Faso", "Burundi", "Butão", "Camarões", "Camboja", "Canadá", "Catar", "Cazaquistão", "Chade", "Chile",
-    "China", "Chipre", "Cingapura", "Colômbia", "Comores", "Congo-Brazzaville", "Congo-Kinshasa", "Coreia do Norte",
-    "Coreia do Sul", "Costa do Marfim", "Costa Rica", "Croácia", "Cuba", "Dinamarca", "Djibuti", "Dominica", "Egito",
-    "El Salvador", "Emirados Árabes Unidos", "Equador", "Eritreia", "Eslováquia", "Eslovênia", "Espanha", "Estados Unidos",
-    "Estônia", "Eswatini", "Etiópia", "Fiji", "Filipinas", "Finlândia", "França", "Gabão", "Gâmbia", "Gana", "Geórgia",
-    "Granada", "Grécia", "Guatemala", "Guiana", "Guiné", "Guiné Equatorial", "Haiti", "Honduras", "Hungria", "Iêmen",
-    "Índia", "Indonésia", "Irã", "Iraque", "Irlanda", "Islândia", "Israel", "Itália", "Jamaica", "Japão", "Jordânia",
-    "Kosovo", "Kuwait", "Laos", "Lesoto", "Letônia", "Líbano", "Libéria", "Líbia", "Liechtenstein", "Lituânia",
-    "Luxemburgo", "Macedônia do Norte", "Madagascar", "Malásia", "Malawi", "Maldivas", "Mali", "Malta", "Marrocos",
-    "Maurícia", "Mauritânia", "México", "Mianmar", "Moldávia", "Mônaco", "Mongólia", "Montenegro", "Namíbia", "Nauru",
-    "Nepal", "Nicarágua", "Níger", "Nigéria", "Noruega", "Nova Zelândia", "Omã", "Países Baixos", "Palau", "Palestina",
-    "Panamá", "Papua-Nova Guiné", "Paquistão", "Paraguai", "Peru", "Polônia", "Quênia", "Quirguistão", "Reino Unido",
-    "República Centro-Africana", "República Checa", "República Dominicana", "Romênia", "Ruanda", "Rússia", "Samoa",
-    "San Marino", "Santa Lúcia", "São Cristóvão e Neves", "São Vicente e Granadinas", "Senegal", "Serra Leoa",
-    "Seicheles", "Síria", "Somália", "Sri Lanka", "Sudão", "Sudão do Sul", "Suécia", "Suíça", "Suriname", "Tailândia",
-    "Taiwan", "Tanzânia", "Tajiquistão", "Togo", "Tonga", "Trindade e Tobago", "Tunísia", "Turcomenistão", "Turquia",
-    "Tuvalu", "Ucrânia", "Uganda", "Uruguai", "Uzbequistão", "Vanuatu", "Vaticano", "Venezuela", "Vietnã", "Zâmbia", "Zimbábue"
-].sort();
+import { COUNTRIES } from '@/lib/constants';
 
 export default function Register() {
     return (

@@ -10,6 +10,7 @@ import { formService } from '@/lib/formService'; // For uploading images if admi
 import Image from 'next/image';
 import Tooltip from '../common/Tooltip';
 import { useTranslate } from '@/context/LanguageContext';
+import { COUNTRIES } from '@/lib/constants';
 
 
 interface EditUserModalProps {
@@ -39,6 +40,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
     const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
     const [badges, setBadges] = useState<{ name: string; color: string }[]>([]);
     const [canCreateEvents, setCanCreateEvents] = useState(true);
+    const [country, setCountry] = useState('');
     const [currentUser, setCurrentUser] = useState<UserData | null>(null);
 
     useEffect(() => {
@@ -60,6 +62,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
             setSocialLinks(user.socialLinks || {});
             setBadges(user.badges || []);
             setCanCreateEvents(user.canCreateEvents !== false);
+            setCountry(user.country || '');
         }
     }, [user]);
 
@@ -98,7 +101,8 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                 password, // Include password in update
                 isPublic,
                 canCreateEvents,
-                badges
+                badges,
+                country
             });
             onSuccess();
             onClose();
@@ -375,6 +379,22 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                         onChange={(e) => setWhatsapp(e.target.value)}
                                         placeholder="+258 84 123 4567"
                                     />
+                                </div>
+                                <div className="input-group">
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#333', marginBottom: '0.5rem' }}>
+                                        <Globe size={14} /> País
+                                    </label>
+                                    <select
+                                        className="input-luxury"
+                                        value={country}
+                                        onChange={(e) => setCountry(e.target.value)}
+                                        style={{ padding: '0.6rem', width: '100%', background: '#fff' }}
+                                    >
+                                        <option value="" disabled>Selecione um país</option>
+                                        {COUNTRIES.map(c => (
+                                            <option key={c} value={c}>{c}</option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 <div className="input-group" style={{ gridColumn: 'span 1' }}> {/* On large screens could span 2, but 3 items... logic checks out for auto-fit */}
