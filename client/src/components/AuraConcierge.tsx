@@ -26,8 +26,16 @@ export default function AuraConcierge() {
     const [isTyping, setIsTyping] = useState(false);
     const [attachment, setAttachment] = useState<string | null>(null);
     const [uploadingFile, setUploadingFile] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -155,7 +163,7 @@ export default function AuraConcierge() {
                     >
                         {/* Header */}
                         <div style={{
-                            padding: '1.5rem',
+                            padding: isMobile ? '1rem' : '1.5rem',
                             background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)',
                             color: '#FFD700',
                             display: 'flex',
@@ -164,8 +172,8 @@ export default function AuraConcierge() {
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <div style={{
-                                    width: '40px',
-                                    height: '40px',
+                                    width: isMobile ? '32px' : '40px',
+                                    height: isMobile ? '32px' : '40px',
                                     borderRadius: '50%',
                                     background: 'var(--gold-gradient)',
                                     display: 'flex',
@@ -173,35 +181,35 @@ export default function AuraConcierge() {
                                     justifyContent: 'center',
                                     color: '#000'
                                 }}>
-                                    <Sparkles size={20} />
+                                    <Sparkles size={isMobile ? 16 : 20} />
                                 </div>
                                 <div>
-                                    <div style={{ fontWeight: 800, fontSize: '1rem', letterSpacing: '1px' }}>AURA</div>
-                                    <div style={{ fontSize: '0.7rem', opacity: 0.8, textTransform: 'uppercase' }}>Luxury Concierge</div>
+                                    <div style={{ fontWeight: 800, fontSize: isMobile ? '0.85rem' : '1rem', letterSpacing: '1px' }}>AURA</div>
+                                    <div style={{ fontSize: '0.65rem', opacity: 0.8, textTransform: 'uppercase' }}>Luxury Concierge</div>
                                 </div>
                             </div>
                             <button
                                 onClick={() => setIsOpen(false)}
                                 style={{ background: 'rgba(255,215,0,0.1)', border: 'none', color: '#FFD700', padding: '5px', borderRadius: '50%', cursor: 'pointer' }}
                             >
-                                <X size={20} />
+                                <X size={isMobile ? 18 : 20} />
                             </button>
                         </div>
 
                         {/* Messages */}
-                        <div style={{ flex: 1, padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div style={{ flex: 1, padding: isMobile ? '1rem' : '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {messages.map((msg) => (
                                 <div key={msg.id} style={{
                                     alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
                                     maxWidth: '85%'
                                 }}>
                                     <div style={{
-                                        padding: '0.8rem 1.2rem',
+                                        padding: isMobile ? '0.6rem 1rem' : '0.8rem 1.2rem',
                                         borderRadius: msg.sender === 'user' ? '18px 18px 2px 18px' : '18px 18px 18px 2px',
                                         background: msg.sender === 'user' ? '#000' : '#fff',
                                         color: msg.sender === 'user' ? '#fff' : '#000',
-                                        fontSize: '0.9rem',
-                                        lineHeight: '1.6',
+                                        fontSize: isMobile ? '0.85rem' : '0.9rem',
+                                        lineHeight: '1.5',
                                         boxShadow: '0 4px 10px rgba(0,0,0,0.05)',
                                         border: msg.sender === 'aura' ? '1px solid #eee' : 'none',
                                     }}>
@@ -289,9 +297,9 @@ export default function AuraConcierge() {
                                                     background: 'rgba(212, 175, 55, 0.1)',
                                                     border: '1px solid rgba(212, 175, 55, 0.3)',
                                                     color: '#000',
-                                                    padding: '0.5rem 1rem',
+                                                    padding: isMobile ? '0.4rem 0.8rem' : '0.5rem 1rem',
                                                     borderRadius: '20px',
-                                                    fontSize: '0.8rem',
+                                                    fontSize: isMobile ? '0.75rem' : '0.8rem',
                                                     cursor: 'pointer',
                                                     transition: 'all 0.2s ease',
                                                     textAlign: 'left'
@@ -314,7 +322,7 @@ export default function AuraConcierge() {
                         </div>
 
                         {/* Input Area */}
-                        <div style={{ padding: '1.5rem', borderTop: '1px solid rgba(0,0,0,0.05)', background: '#fff' }}>
+                        <div style={{ padding: isMobile ? '1rem' : '1.5rem', borderTop: '1px solid rgba(0,0,0,0.05)', background: '#fff' }}>
                             {attachment && (
                                 <div style={{
                                     marginBottom: '0.75rem',
@@ -353,7 +361,8 @@ export default function AuraConcierge() {
                                         background: '#f8f9fa',
                                         color: '#666',
                                         border: '1px solid #eee',
-                                        width: '45px',
+                                        width: isMobile ? '38px' : '45px',
+                                        height: isMobile ? '38px' : '45px',
                                         borderRadius: '12px',
                                         cursor: 'pointer',
                                         display: 'flex',
@@ -362,7 +371,7 @@ export default function AuraConcierge() {
                                         flexShrink: 0
                                     }}
                                 >
-                                    {uploadingFile ? <Loader2 className="animate-spin" size={20} /> : <Paperclip size={20} />}
+                                    {uploadingFile ? <Loader2 className="animate-spin" size={isMobile ? 18 : 20} /> : <Paperclip size={isMobile ? 18 : 20} />}
                                 </button>
                                 <input
                                     type="text"
@@ -371,12 +380,13 @@ export default function AuraConcierge() {
                                     placeholder={t('aura.placeholder')}
                                     style={{
                                         flex: 1,
-                                        padding: '0.8rem 1.2rem',
+                                        padding: isMobile ? '0.6rem 1rem' : '0.8rem 1.2rem',
                                         borderRadius: '12px',
                                         border: '1px solid #eee',
                                         outline: 'none',
-                                        fontSize: '0.9rem',
-                                        background: '#f8f9fa'
+                                        fontSize: isMobile ? '0.85rem' : '0.9rem',
+                                        background: '#f8f9fa',
+                                        height: isMobile ? '38px' : 'auto'
                                     }}
                                 />
                                 <button
@@ -386,8 +396,8 @@ export default function AuraConcierge() {
                                         background: '#000',
                                         color: '#FFD700',
                                         border: 'none',
-                                        width: '45px',
-                                        height: '45px',
+                                        width: isMobile ? '38px' : '45px',
+                                        height: isMobile ? '38px' : '45px',
                                         borderRadius: '12px',
                                         display: 'flex',
                                         alignItems: 'center',
@@ -397,7 +407,7 @@ export default function AuraConcierge() {
                                         opacity: (!message.trim() && !attachment) ? 0.5 : 1
                                     }}
                                 >
-                                    <Send size={20} />
+                                    <Send size={isMobile ? 18 : 20} />
                                 </button>
                             </form>
                         </div>
