@@ -211,66 +211,17 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
         <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--background)', position: 'relative', overflowX: 'hidden' }}>
             {/* Mobile Top Nav Bar — only shown when sidebar is CLOSED */}
             {isMobile && !isMobileSidebarOpen && (
-                <motion.button
+                <button
+                    className="mentor-mobile-toggle"
                     onClick={() => setIsMobileSidebarOpen(true)}
-                    whileTap={{ scale: 0.99 }}
-                    initial={{ y: -60, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-                    style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        width: '100%',
-                        zIndex: 2001,
-                        background: 'linear-gradient(135deg, #111 0%, #0a0a0a 100%)',
-                        color: '#FFD700',
-                        border: 'none',
-                        borderBottom: '1px solid rgba(255,215,0,0.2)',
-                        borderRadius: '0 0 20px 20px',
-                        padding: '1rem 1.5rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        boxShadow: '0 4px 24px rgba(0,0,0,0.35)',
-                        WebkitTapHighlightColor: 'transparent',
-                        touchAction: 'manipulation'
-                    }}
                 >
-                    {/* Left: logo */}
-                    <span style={{
-                        fontWeight: 800,
-                        fontSize: '1.2rem',
-                        letterSpacing: '-0.5px',
-                        color: '#fff',
-                        fontFamily: 'var(--font-playfair)'
-                    }}>
-                        Inscreva<span style={{ color: '#FFD700' }}>.se</span>
+                    <span className="toggle-logo">
+                        Inscreva<span>.se</span>
                     </span>
-
-                    {/* Right: menu pill */}
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        background: 'rgba(255,215,0,0.12)',
-                        border: '1px solid rgba(255,215,0,0.3)',
-                        borderRadius: '12px',
-                        padding: '8px 14px'
-                    }}>
-                        <Menu size={18} />
-                        <span style={{
-                            fontSize: '0.78rem',
-                            fontWeight: 700,
-                            letterSpacing: '0.8px',
-                            textTransform: 'uppercase'
-                        }}>
-                            Menu
-                        </span>
-                    </div>
-                </motion.button>
+                    <span className="toggle-chip">
+                        <Menu size={18} /> Menu
+                    </span>
+                </button>
             )}
 
             {/* Mobile Overlay */}

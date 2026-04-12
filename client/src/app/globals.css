@@ -747,6 +747,61 @@ h6 {
   text-transform: uppercase;
 }
 
+/* === Mentor Mobile Nav Bar === */
+.mentor-mobile-toggle {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 2001;
+  background: linear-gradient(135deg, #111 0%, #0a0a0a 100%);
+  color: #FFD700;
+  border: none;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 0 0 20px 20px;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  box-sizing: border-box;
+}
+
+.mentor-mobile-toggle:active {
+  transform: scale(0.99);
+}
+
+.mentor-mobile-toggle .toggle-logo {
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: -0.5px;
+  color: #fff;
+  font-family: var(--font-playfair);
+}
+
+.mentor-mobile-toggle .toggle-logo span {
+  color: #FFD700;
+}
+
+.mentor-mobile-toggle .toggle-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 215, 0, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
 .admin-overlay {
   display: none;
   position: fixed;
@@ -804,6 +859,10 @@ h6 {
   }
 
   .admin-mobile-toggle {
+    display: flex;
+  }
+
+  .mentor-mobile-toggle {
     display: flex;
   }
 
