@@ -12,7 +12,14 @@ export default function VacanciesAdmin() {
     const [vacancies, setVacancies] = useState<Vacancy[]>([]);
     const [applications, setApplications] = useState<JobApplication[]>([]);
     const [appSearchTerm, setAppSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [isMobile, setIsMobile] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAppModalOpen, setIsAppModalOpen] = useState(false);
+    const [selectedVacancy, setSelectedVacancy] = useState<Vacancy | null>(null);
+    const [selectedApplication, setSelectedApplication] = useState<JobApplication | null>(null);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
