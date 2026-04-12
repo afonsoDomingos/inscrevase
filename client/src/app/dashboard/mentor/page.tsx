@@ -633,7 +633,7 @@ function MentorDashboardContent() {
                 <nav
                     className="luxury-scrollbar"
                     style={{
-                        padding: '1rem 1.5rem',
+                        padding: isMobile ? '1rem 12px' : '1rem 1.5rem',
                         flex: 1,
                         display: 'flex',
                         flexDirection: 'column',
@@ -828,7 +828,7 @@ function MentorDashboardContent() {
                                     fontWeight: 800, 
                                     transition: 'all 0.3s', 
                                     position: 'relative', 
-                                    fontSize: '0.9rem',
+                                    fontSize: isMobile ? '0.8rem' : '0.9rem',
                                     boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
                                     marginBottom: '10px'
                                 }}
