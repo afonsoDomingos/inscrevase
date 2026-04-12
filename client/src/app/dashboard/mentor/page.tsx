@@ -807,7 +807,7 @@ function MentorDashboardContent() {
                             </button>
                         </Tooltip>
 
-                        <Tooltip content={isSidebarCollapsed ? t('dashboard.support') : ""} position="right">
+                        <Tooltip content={isSidebarCollapsed ? "Pedir Suporte Pelo Whatsapp" : ""} position="right">
                             <button
                                 onClick={() => {
                                     setIsSupportOpen(true);
@@ -815,9 +815,9 @@ function MentorDashboardContent() {
                                 }}
                                 style={{ 
                                     width: '100%', 
-                                    padding: '1rem', 
+                                    padding: '12px 16px', 
                                     background: '#111', 
-                                    border: '1px solid rgba(255,215,0,0.4)', 
+                                    border: '1.5px solid rgba(255,215,0,0.6)', 
                                     borderRadius: '16px', 
                                     color: '#fff', 
                                     cursor: 'pointer', 
@@ -828,14 +828,21 @@ function MentorDashboardContent() {
                                     fontWeight: 800, 
                                     transition: 'all 0.3s', 
                                     position: 'relative', 
-                                    fontSize: '0.95rem',
-                                    boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
+                                    fontSize: '0.9rem',
+                                    boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
+                                    marginBottom: '10px'
                                 }}
-                                onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-                                onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                onMouseOver={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1.02)';
+                                    e.currentTarget.style.borderColor = 'rgba(255,215,0,1)';
+                                }}
+                                onMouseOut={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1)';
+                                    e.currentTarget.style.borderColor = 'rgba(255,215,0,0.6)';
+                                }}
                             >
                                 <LifeBuoy size={22} color="#FFD700" />
-                                {!isSidebarCollapsed && (t('dashboard.support') || "Pedir Suporte")}
+                                {!isSidebarCollapsed && "Pedir Suporte Pelo Whatsapp"}
                                 {unreadCount > 0 && (
                                     <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#ef4444', color: '#fff', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 800, border: '2px solid #000' }}>
                                         {unreadCount > 9 ? '9+' : unreadCount}

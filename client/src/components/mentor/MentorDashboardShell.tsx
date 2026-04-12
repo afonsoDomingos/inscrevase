@@ -436,13 +436,31 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                         </button>
                     </Tooltip>
 
-                    <Tooltip content={isSidebarCollapsed ? t('dashboard.support') : ""} position="right">
+                    <Tooltip content={isSidebarCollapsed ? "Pedir Suporte Pelo Whatsapp" : ""} position="right">
                         <button
                             onClick={() => router.push('/dashboard/mentor?tab=support')}
-                            style={{ width: '100%', padding: '0.75rem 1rem', background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.2)', borderRadius: '12px', color: '#FFD700', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', position: 'relative', fontSize: '0.9rem' }}
+                            style={{ 
+                                width: '100%', 
+                                padding: '12px 16px', 
+                                background: '#111', 
+                                border: '1.5px solid rgba(255,215,0,0.4)', 
+                                borderRadius: '16px', 
+                                color: '#fff', 
+                                cursor: 'pointer', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', 
+                                gap: '12px', 
+                                fontWeight: 800, 
+                                transition: 'all 0.2s', 
+                                position: 'relative', 
+                                fontSize: '0.9rem',
+                                boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+                                marginBottom: '8px'
+                            }}
                         >
-                            <LifeBuoy size={20} />
-                            {!isSidebarCollapsed && t('dashboard.support')}
+                            <LifeBuoy size={20} color="#FFD700" />
+                            {!isSidebarCollapsed && "Pedir Suporte Pelo Whatsapp"}
                             {unreadCount > 0 && (
                                 <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#ef4444', color: '#fff', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 700, border: '2px solid var(--paper)' }}>
                                     {unreadCount > 9 ? '9+' : unreadCount}
