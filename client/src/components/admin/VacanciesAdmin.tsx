@@ -453,17 +453,29 @@ export default function VacanciesAdmin() {
             {/* Create/Edit Modal */}
             <AnimatePresence>
                 {isModalOpen && (
-                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? '0' : '2rem' }}>
                         <motion.div 
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            initial={{ opacity: 0, scale: 0.95, y: isMobile ? '100%' : 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            style={{ background: '#fff', width: '100%', maxWidth: '800px', borderRadius: '32px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: '90vh' }}
+                            exit={{ opacity: 0, scale: 0.95, y: isMobile ? '100%' : 20 }}
+                            style={{ 
+                                background: '#fff', 
+                                width: '100%', 
+                                maxWidth: '800px', 
+                                borderRadius: isMobile ? '32px 32px 0 0' : '32px', 
+                                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', 
+                                overflow: 'hidden', 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                maxHeight: isMobile ? '92vh' : '90vh' 
+                            }}
                         >
-                            <div style={{ padding: '1.5rem 2.5rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <h3 style={{ fontSize: '1.5rem', fontWeight: 900, margin: 0 }}>{selectedVacancy ? 'Editar' : 'Configurar'} <span className="gold-text">Vaga</span></h3>
-                                <button onClick={() => { setIsModalOpen(false); setSelectedVacancy(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><X size={24} /></button>
-                                                 <div style={{ padding: isMobile ? '1.25rem' : '2.5rem', overflowY: 'auto', flex: 1, display: 'grid', gap: '1.5rem' }}>
+                            <div style={{ padding: isMobile ? '1rem 1.5rem' : '1.5rem 2.5rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <h3 style={{ fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: 900, margin: 0 }}>{selectedVacancy ? 'Editar' : 'Configurar'} <span className="gold-text">Vaga</span></h3>
+                                <button onClick={() => { setIsModalOpen(false); setSelectedVacancy(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><X size={isMobile ? 20 : 24} /></button>
+                            </div>
+
+                            <div style={{ padding: isMobile ? '1.5rem' : '2.5rem', overflowY: 'auto', flex: 1, display: 'grid', gap: '1.5rem' }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: '1rem' }}>
                                     <div>
                                         <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#888', marginBottom: '8px' }}>Título da Vaga</label>
@@ -541,7 +553,6 @@ export default function VacanciesAdmin() {
                                             + Adicionar Pergunta
                                         </button>
                                     </div>
-                   </div>
                                     <div style={{ display: 'grid', gap: '10px' }}>
                                         {formData.questions?.map((q, i) => (
                                             <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'center', background: '#fcfcfc', padding: '10px', borderRadius: '12px', border: '1px solid #eee' }}>
@@ -584,9 +595,9 @@ export default function VacanciesAdmin() {
                                 </div>
                             </div>
 
-                             <div style={{ padding: '1.5rem 2.5rem', background: '#fcfcfc', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-                                <button onClick={() => { setIsModalOpen(false); setSelectedVacancy(null); }} style={{ padding: '12px 25px', borderRadius: '12px', border: '1px solid #eee', background: '#fff', fontWeight: 700, cursor: 'pointer' }}>Cancelar</button>
-                                <button onClick={handleCreateOrUpdate} disabled={uploading} style={{ padding: '12px 35px', borderRadius: '12px', border: 'none', background: '#000', color: '#fff', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', opacity: uploading ? 0.6 : 1 }}>
+                             <div style={{ padding: isMobile ? '1rem 1.5rem' : '1.5rem 2.5rem', background: '#fcfcfc', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'flex-end', gap: '1rem', flexDirection: isMobile ? 'column-reverse' : 'row' }}>
+                                <button onClick={() => { setIsModalOpen(false); setSelectedVacancy(null); }} style={{ padding: '12px 25px', borderRadius: '12px', border: '1px solid #eee', background: '#fff', fontWeight: 700, cursor: 'pointer', width: isMobile ? '100%' : 'auto' }}>Cancelar</button>
+                                <button onClick={handleCreateOrUpdate} disabled={uploading} style={{ padding: '12px 35px', borderRadius: '12px', border: 'none', background: '#000', color: '#fff', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: uploading ? 0.6 : 1, width: isMobile ? '100%' : 'auto' }}>
                                     <Save size={18} /> {selectedVacancy ? 'Guardar Alterações' : 'Publicar Vaga'}
                                 </button>
                             </div>
@@ -596,12 +607,22 @@ export default function VacanciesAdmin() {
 
                 {/* Application Details Modal */}
                 {isAppModalOpen && selectedApplication && (
-                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', zIndex: 1100, display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? '0' : '2rem' }}>
                         <motion.div 
-                            initial={{ opacity: 0, scale: 0.95, y: 30 }}
+                            initial={{ opacity: 0, scale: 0.95, y: isMobile ? '100%' : 30 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 30 }}
-                            style={{ background: '#fff', width: isMobile ? '95%' : '100%', maxWidth: '700px', borderRadius: isMobile ? '30px' : '40px', boxShadow: '0 30px 60px -15px rgba(0,0,0,0.3)', overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: '90vh' }}
+                            exit={{ opacity: 0, scale: 0.95, y: isMobile ? '100%' : 30 }}
+                            style={{ 
+                                background: '#fff', 
+                                width: '100%', 
+                                maxWidth: '750px', 
+                                borderRadius: isMobile ? '32px 32px 0 0' : '40px', 
+                                boxShadow: '0 30px 60px -15px rgba(0,0,0,0.3)', 
+                                overflow: 'hidden', 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                maxHeight: isMobile ? '92vh' : '90vh' 
+                            }}
                         >
                             <div style={{ padding: isMobile ? '2.5rem 1.5rem 1.5rem' : '2rem 3rem', background: 'linear-gradient(135deg, #000 0%, #333 100%)', color: '#fff', position: 'relative', display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'center' : 'center', gap: isMobile ? '1rem' : '2rem', textAlign: isMobile ? 'center' : 'left' }}>
                                 <div style={{ width: isMobile ? '100px' : '120px', height: isMobile ? '100px' : '120px', borderRadius: '30px', background: '#fff', border: '4px solid rgba(255,255,255,0.2)', overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
