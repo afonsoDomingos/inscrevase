@@ -462,7 +462,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                 transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 flex: 1,
                 padding: isMobile ? '1rem' : '2.5rem',
-                paddingTop: isMobile ? '5rem' : '2.5rem',
+                paddingTop: isMobile ? '6rem' : '2.5rem',
                 minHeight: '100vh',
                 maxWidth: isMobile ? '100%' : `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`,
                 overflowX: 'hidden'
