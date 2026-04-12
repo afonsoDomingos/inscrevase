@@ -18,5 +18,6 @@ router.put('/:id', authMiddleware, recruiterMiddleware, vacancyController.update
 router.get('/admin/all', authMiddleware, recruiterMiddleware, vacancyController.getAdminVacancies);
 router.delete('/:id', authMiddleware, recruiterMiddleware, vacancyController.deleteVacancy);
 router.get('/admin/applications', authMiddleware, recruiterMiddleware, vacancyController.getApplications);
+router.delete('/admin/applications/:id', authMiddleware, recruiterMiddleware, vacancyController.deleteApplication);
 
 module.exports = router;

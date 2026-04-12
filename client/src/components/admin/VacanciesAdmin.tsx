@@ -12,6 +12,7 @@ export default function VacanciesAdmin() {
     const [vacancies, setVacancies] = useState<Vacancy[]>([]);
     const [applications, setApplications] = useState<JobApplication[]>([]);
     const [appSearchTerm, setAppSearchTerm] = useState('');
+    const [appVacancyFilter, setAppVacancyFilter] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [isMobile, setIsMobile] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -129,6 +130,24 @@ export default function VacanciesAdmin() {
         }
     };
 
+    const handleDeleteApplication = async (id: string) => {
+        if (!confirm('Tem a certeza que deseja remover esta candidatura permanentemente?')) return;
+        try {
+            const res = await vacancyService.deleteApplication(id);
+            if (res.success) {
+                toast.success('Candidatura removida');
+                setIsAppModalOpen(false);
+                setSelectedApplication(null);
+                loadData();
+            } else {
+                throw new Error(res.message);
+            }
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.message || 'Erro ao remover candidatura');
+        }
+    };
+
     const filteredVacancies = vacancies.filter(v => 
         v.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         v.category.toLowerCase().includes(searchTerm.toLowerCase())
@@ -136,8 +155,14 @@ export default function VacanciesAdmin() {
 
     const filteredApplications = applications.filter(a => {
         const vTitle = typeof a.vacancyId === 'object' ? a.vacancyId.title : '';
-        return a.fullName.toLowerCase().includes(appSearchTerm.toLowerCase()) ||
-               vTitle.toLowerCase().includes(appSearchTerm.toLowerCase());
+        const vId = typeof a.vacancyId === 'object' ? a.vacancyId._id : a.vacancyId;
+        
+        const matchesSearch = a.fullName.toLowerCase().includes(appSearchTerm.toLowerCase()) ||
+                             vTitle.toLowerCase().includes(appSearchTerm.toLowerCase());
+        
+        const matchesVacancy = appVacancyFilter === '' || vId === appVacancyFilter;
+        
+        return matchesSearch && matchesVacancy;
     });
 
     return (
@@ -350,8 +375,8 @@ export default function VacanciesAdmin() {
             ) : (
                 /* Applications List */
                 <div style={{ background: isMobile ? 'transparent' : '#fff', borderRadius: '24px', border: isMobile ? 'none' : '1px solid #eee', overflow: 'hidden' }}>
-                    <div style={{ padding: isMobile ? '0 0 1rem' : '1.5rem', borderBottom: isMobile ? 'none' : '1px solid #eee', display: 'flex', gap: '1rem' }}>
-                        <div style={{ flex: 1, position: 'relative' }}>
+                    <div style={{ padding: isMobile ? '0 0 1rem' : '1.5rem', borderBottom: isMobile ? 'none' : '1px solid #eee', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                        <div style={{ flex: 1, position: 'relative', minWidth: '200px' }}>
                             <Search style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: '#888' }} size={18} />
                             <input 
                                 type="text" 
@@ -361,6 +386,25 @@ export default function VacanciesAdmin() {
                                 style={{ width: '100%', padding: '12px 12px 12px 45px', borderRadius: '12px', border: '1px solid #eee', background: '#f9f9f9', fontSize: '0.9rem' }}
                             />
                         </div>
+                        <select 
+                            value={appVacancyFilter}
+                            onChange={(e) => setAppVacancyFilter(e.target.value)}
+                            style={{ 
+                                padding: '12px 15px', 
+                                borderRadius: '12px', 
+                                border: '1px solid #eee', 
+                                background: '#f9f9f9', 
+                                fontSize: '0.9rem', 
+                                fontWeight: 700, 
+                                cursor: 'pointer',
+                                minWidth: isMobile ? '100%' : '200px'
+                            }}
+                        >
+                            <option value="">Todas as Vagas</option>
+                            {vacancies.map(v => (
+                                <option key={v._id} value={v._id}>{v.title}</option>
+                            ))}
+                        </select>
                     </div>
 
                     {!isMobile ? (
@@ -404,6 +448,13 @@ export default function VacanciesAdmin() {
                                                 >
                                                     <Eye size={16} /> Ver Tudo
                                                 </button>
+                                                <button 
+                                                    onClick={() => handleDeleteApplication(app._id)}
+                                                    style={{ padding: '8px', borderRadius: '8px', border: '1px solid #fee2e2', color: '#ef4444', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                    title="Remover Candidatura"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -441,6 +492,12 @@ export default function VacanciesAdmin() {
                                             style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #eee', background: '#fff', color: '#888', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 700 }}
                                         >
                                             <Eye size={16} /> Ver Tudo
+                                        </button>
+                                        <button 
+                                            onClick={() => handleDeleteApplication(app._id)}
+                                            style={{ padding: '10px', borderRadius: '10px', border: '1px solid #fee2e2', color: '#ef4444', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                        >
+                                            <Trash2 size={16} />
                                         </button>
                                     </div>
                                 </div>
@@ -687,10 +744,16 @@ export default function VacanciesAdmin() {
                                     </div>
                                 )}
 
-                                <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                                <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexDirection: isMobile ? 'column' : 'row' }}>
                                     <a href={selectedApplication.cvUrl} target="_blank" rel="noreferrer" style={{ flex: 1, padding: '1.2rem', borderRadius: '16px', background: '#000', color: '#fff', textAlign: 'center', fontWeight: 800, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
                                         <FileDown size={20} /> Descarregar Currículo (CV)
                                     </a>
+                                    <button 
+                                        onClick={() => handleDeleteApplication(selectedApplication._id)}
+                                        style={{ padding: '1.2rem', borderRadius: '16px', background: '#ef4444', color: '#fff', border: 'none', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', minWidth: isMobile ? '100%' : '180px' }}
+                                    >
+                                        <Trash2 size={20} /> Remover Candidatura
+                                    </button>
                                 </div>
                             </div>
                         </motion.div>

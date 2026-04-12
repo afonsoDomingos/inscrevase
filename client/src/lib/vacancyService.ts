@@ -114,6 +114,15 @@ export const vacancyService = {
         });
         return res.json();
     },
+    
+    deleteApplication: async (id: string): Promise<{ success: boolean, message?: string }> => {
+        const token = Cookies.get('token');
+        const res = await fetch(`${API_URL}/vacancies/admin/applications/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return res.json();
+    },
 
     uploadCV: async (file: File): Promise<string> => {
         const formData = new FormData();
