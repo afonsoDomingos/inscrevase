@@ -12,6 +12,7 @@ import {
     Loader2,
     ChevronLeft
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useTranslate } from '@/context/LanguageContext';
 import { SUPPORT_WHATSAPP, SUPPORT_WHATSAPP_LINK } from '@/lib/constants';
