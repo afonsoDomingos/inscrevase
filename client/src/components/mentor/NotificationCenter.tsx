@@ -18,6 +18,14 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
     const [replyMode, setReplyMode] = useState<string | null>(null);
     const [replyText, setReplyText] = useState('');
     const [sendingReply, setSendingReply] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 480);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const getDepartmentInfo = (dept: string) => {
         switch (dept) {
@@ -97,8 +105,8 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
 
     return (
         <div style={{
-            width: '400px',
-            maxHeight: '600px',
+            width: isMobile ? 'calc(100vw - 32px)' : '400px',
+            maxHeight: isMobile ? '80vh' : '600px',
             background: '#fff',
             borderRadius: '20px',
             boxShadow: '0 20px 50px rgba(0,0,0,0.15)',
@@ -108,7 +116,7 @@ export default function NotificationCenter({ onClose }: NotificationCenterProps)
             border: '1px solid #eee'
         }}>
             <div style={{
-                padding: '1.5rem',
+                padding: isMobile ? '1rem' : '1.5rem',
                 borderBottom: '1px solid #eee',
                 display: 'flex',
                 justifyContent: 'space-between',

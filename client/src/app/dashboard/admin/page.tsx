@@ -752,10 +752,13 @@ function AdminDashboardContent() {
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                         style={{
-                                            position: 'absolute',
-                                            top: '55px',
-                                            right: 0,
-                                            zIndex: 2000
+                                            position: isMobile ? 'fixed' : 'absolute',
+                                            top: isMobile ? '70px' : '55px',
+                                            right: isMobile ? '16px' : 0,
+                                            left: isMobile ? '16px' : 'auto',
+                                            zIndex: 2000,
+                                            display: isMobile ? 'flex' : 'block',
+                                            justifyContent: 'center'
                                         }}
                                     >
                                         <NotificationCenter onClose={() => { setIsNotificationsOpen(false); loadUnreadNotifications(); }} />

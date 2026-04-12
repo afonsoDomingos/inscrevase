@@ -1163,10 +1163,13 @@ function MentorDashboardContent() {
                                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                         style={{
                                             position: 'fixed',
-                                            top: dropdownPos.top,
-                                            right: dropdownPos.right,
+                                            top: isMobile ? '70px' : dropdownPos.top,
+                                            right: isMobile ? '16px' : dropdownPos.right,
+                                            left: isMobile ? '16px' : 'auto',
                                             zIndex: 9999,
-                                            transformOrigin: 'top right'
+                                            transformOrigin: isMobile ? 'top center' : 'top right',
+                                            display: 'flex',
+                                            justifyContent: 'center'
                                         }}
                                     >
                                         <NotificationCenter onClose={() => setIsNotificationsOpen(false)} />
