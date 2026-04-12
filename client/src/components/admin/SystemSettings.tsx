@@ -125,11 +125,6 @@ export default function SystemSettings() {
         }
     };
 
-        } finally {
-            setSavingPixel(false);
-        }
-    };
-
     const handleSavePixel = async () => {
         if (!globalPixel) return;
         setSavingPixel(true);
