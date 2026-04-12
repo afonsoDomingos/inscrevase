@@ -696,32 +696,40 @@ function MentorDashboardContent() {
                                 <div style={{ height: '1px', background: 'rgba(255,215,0,0.15)', margin: '4px 16px 12px', width: 'auto' }} />
                             )}
                             {!isSidebarCollapsed && (
-                                <div
-                                    onClick={() => toggleSection(section.title)}
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        toggleSection(section.title);
+                                    }}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
-                                        padding: '0.5rem 0.75rem',
-                                        marginBottom: '0.5rem',
+                                        padding: '0.65rem 0.75rem',
+                                        marginBottom: '0.25rem',
                                         background: 'transparent',
                                         border: 'none',
-                                        color: 'rgba(255,255,255,0.3)',
-                                        fontWeight: 700,
-                                        fontSize: '0.75rem',
+                                        width: '100%',
+                                        color: 'rgba(255,255,255,0.4)',
+                                        fontWeight: 800,
+                                        fontSize: '0.72rem',
                                         textTransform: 'uppercase',
-                                        letterSpacing: '1px',
-                                        cursor: 'pointer'
+                                        letterSpacing: '1.2px',
+                                        cursor: 'pointer',
+                                        textAlign: 'left',
+                                        outline: 'none'
                                     }}
                                 >
                                     {section.title}
                                     <motion.div
                                         animate={{ rotate: expandedSections[section.title] ? 0 : -90 }}
-                                        transition={{ duration: 0.3 }}
+                                        transition={{ duration: 0.2 }}
+                                        style={{ display: 'flex', alignItems: 'center' }}
                                     >
                                         <ChevronDown size={14} />
                                     </motion.div>
-                                </div>
+                                </button>
                             )}
 
                             <AnimatePresence initial={false}>

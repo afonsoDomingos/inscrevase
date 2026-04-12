@@ -132,7 +132,7 @@ export default function OnboardingTour({ steps, storageKey }: OnboardingTourProp
         let top: string | number = 0;
         let left: string | number = 0;
         let transform = '';
-        const width = 320;
+        const width = window.innerWidth < 480 ? window.innerWidth * 0.9 : 340;
 
         switch (step.position) {
             case 'bottom':
@@ -157,12 +157,30 @@ export default function OnboardingTour({ steps, storageKey }: OnboardingTourProp
         }
 
         // Screen boundary safety and clamping
-        const padding = 20;
+        const padding = 16;
+        const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
 
-        // Manual numeric left clamping (since we assigned it earlier)
+        // On small mobiles, force more vertical stacking for left/right positions
+        if (isMobile && (step.position === 'left' || step.position === 'right')) {
+            top = targetRect.bottom + gap;
+            left = targetRect.left + (targetRect.width / 2) - (width / 2);
+            transform = '';
+        }
+
+        // Horizontal boundary safety and clamping
         if (typeof left === 'number') {
             if (left < padding) left = padding;
             if (left + width > window.innerWidth - padding) left = window.innerWidth - width - padding;
+        }
+
+        // Vertical boundary safety (ensure it's not off-screen top or bottom)
+        if (typeof top === 'number') {
+            if (top < padding) top = padding;
+            // Rough estimate of card height to prevent bottom overflow
+            const estimatedHeight = 250;
+            if (top + estimatedHeight > window.innerHeight - padding) {
+                top = Math.max(padding, window.innerHeight - estimatedHeight - padding);
+            }
         }
 
         return {
@@ -170,8 +188,9 @@ export default function OnboardingTour({ steps, storageKey }: OnboardingTourProp
             left: left,
             transform: transform,
             position: 'fixed' as const,
-            width: `${width}px`,
-            transition: 'all 0.3s ease-out'
+            width: isMobile ? `calc(100vw - ${padding * 2}px)` : `${width}px`,
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            zIndex: 10001
         };
     };
 
@@ -225,10 +244,11 @@ export default function OnboardingTour({ steps, storageKey }: OnboardingTourProp
                                 pointerEvents: 'auto',
                                 background: '#fff',
                                 borderRadius: '24px',
-                                padding: '24px',
-                                boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
-                                maxWidth: '400px',
+                                padding: window.innerWidth < 480 ? '20px' : '28px',
+                                boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+                                maxWidth: 'calc(100vw - 32px)',
                                 width: '100%',
+                                border: '1px solid rgba(255,215,0,0.2)',
                                 ...getTooltipStyle()
                             }}
                             className="onboarding-card"
