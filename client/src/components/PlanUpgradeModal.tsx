@@ -40,7 +40,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
     const [manualPlan, setManualPlan] = useState<{ id: string, amount: number } | null>(initialManualPlan || null);
     const [uploading, setUploading] = useState(false);
     const [manualMethods, setManualMethods] = useState<ManualPaymentMethod[]>([]);
-    const [selectedCountry, setSelectedCountry] = useState<string>('ALL');
+    const [selectedCountry, setSelectedCountry] = useState<string>('');
     const [loadingMethods, setLoadingMethods] = useState(false);
     const { currency, setCurrency, formatPrice, getPlanPrice } = useCurrency();
     const { t } = useTranslate();
@@ -90,8 +90,8 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
         return acc;
     }, []);
 
-    const filteredMethods = selectedCountry === 'ALL'
-        ? manualMethods
+    const filteredMethods = !selectedCountry || selectedCountry === 'ALL'
+        ? []
         : manualMethods.filter(m => m.country === selectedCountry);
 
     const handleUpgradeStripe = async (plan: string) => {
@@ -264,7 +264,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                             onFocus={(e) => e.target.style.borderColor = '#D4AF37'}
                                             onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                                         >
-                                            <option value="ALL">{t('plans.manualUpgrade.allCountries')}</option>
+                                            <option value="" disabled>{t('plans.manualUpgrade.selectRegion')}</option>
                                             {countryGroups.map(g => (
                                                 <option key={g.code} value={g.code}>{g.flag} {g.label}</option>
                                             ))}
@@ -330,7 +330,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                         })}
 
                                     </div>
-                                ) : (
+                                ) : selectedCountry && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#fef9c3', border: '1px solid #fde047', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px' }}>
                                         <AlertCircle size={18} color="#854d0e" />
                                         <p style={{ fontSize: '0.85rem', color: '#854d0e', fontWeight: 600 }}>{t('plans.manualUpgrade.noMethods')}</p>
