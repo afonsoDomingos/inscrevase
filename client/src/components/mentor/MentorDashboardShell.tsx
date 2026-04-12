@@ -215,23 +215,7 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--background)', position: 'relative', overflowX: 'hidden' }}>
-            {/* Mobile Top Nav Bar — CSS controls visibility, always in DOM when sidebar closed */}
-            {!isMobileSidebarOpen && (
-                <button
-                    className="mentor-mobile-toggle"
-                    onClick={() => {
-                        console.log('Mentor Mobile Toggle Clicked');
-                        setIsMobileSidebarOpen(true);
-                    }}
-                >
-                    <span className="toggle-logo">
-                        INSCREVA<span>.SE</span>
-                    </span>
-                    <span className="toggle-chip">
-                        <Menu size={18} /> MENU
-                    </span>
-                </button>
-            )}
+            {/* Mobile Top Nav Bar — REMOVED FOR DEPLOYMENT VERIFICATION */}
 
             {/* Mobile Overlay */}
             <AnimatePresence>
