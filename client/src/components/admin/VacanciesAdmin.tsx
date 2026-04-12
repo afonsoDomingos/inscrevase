@@ -259,7 +259,7 @@ export default function VacanciesAdmin() {
                                 placeholder="Procurar vagas..." 
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                style={{ width: '100%', padding: '12px 12px 12px 45px', borderRadius: '12px', border: '1px solid #eee', background: '#f9f9f9', fontSize: '0.9rem' }}
+                                style={{ width: '100%', padding: isMobile ? '10px 10px 10px 40px' : '12px 12px 12px 45px', borderRadius: '12px', border: '1px solid #eee', background: '#f9f9f9', fontSize: isMobile ? '0.85rem' : '0.9rem' }}
                             />
                         </div>
                     </div>
@@ -532,7 +532,7 @@ export default function VacanciesAdmin() {
                                 <button onClick={() => { setIsModalOpen(false); setSelectedVacancy(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}><X size={isMobile ? 20 : 24} /></button>
                             </div>
 
-                            <div style={{ padding: isMobile ? '1.5rem' : '2.5rem', overflowY: 'auto', flex: 1, display: 'grid', gap: '1.5rem' }}>
+                            <div style={{ padding: isMobile ? '1.25rem' : '2.5rem', overflowY: 'auto', flex: 1, display: 'grid', gap: isMobile ? '1.25rem' : '1.5rem' }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: '1rem' }}>
                                     <div>
                                         <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#888', marginBottom: '8px' }}>Título da Vaga</label>
@@ -562,9 +562,9 @@ export default function VacanciesAdmin() {
 
                                 <div>
                                     <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#888', marginBottom: '8px' }}>Imagem da Vaga (Opcional)</label>
-                                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                                        <div style={{ width: '80px', height: '50px', borderRadius: '12px', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid #eee', position: 'relative', flexShrink: 0 }}>
-                                            {formData.image ? <Image src={formData.image} alt="Vaga" fill style={{ objectFit: 'cover' }} /> : <ImageIcon size={20} color="#ccc" />}
+                                    <div style={{ display: 'flex', gap: isMobile ? '0.75rem' : '1rem', alignItems: 'center' }}>
+                                        <div style={{ width: isMobile ? '60px' : '80px', height: isMobile ? '40px' : '50px', borderRadius: '12px', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid #eee', position: 'relative', flexShrink: 0 }}>
+                                            {formData.image ? <Image src={formData.image} alt="Vaga" fill style={{ objectFit: 'cover' }} /> : <ImageIcon size={isMobile ? 16 : 20} color="#ccc" />}
                                         </div>
                                         <div style={{ position: 'relative', flex: 1 }}>
                                             <input 
@@ -573,8 +573,8 @@ export default function VacanciesAdmin() {
                                                 onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0])} 
                                                 style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }}
                                             />
-                                            <div style={{ padding: '10px 15px', borderRadius: '10px', border: '1px dashed #000', textAlign: 'center', fontSize: '0.75rem', fontWeight: 700, color: '#666', background: '#fcfcfc' }}>
-                                                {uploading ? <Loader2 size={16} className="animate-spin" /> : 'Alterar Imagem'}
+                                            <div style={{ padding: isMobile ? '8px 12px' : '10px 15px', borderRadius: '10px', border: '1px dashed #000', textAlign: 'center', fontSize: isMobile ? '0.7rem' : '0.75rem', fontWeight: 700, color: '#666', background: '#fcfcfc' }}>
+                                                {uploading ? <Loader2 size={14} className="animate-spin" /> : 'Alterar Imagem'}
                                             </div>
                                         </div>
                                     </div>
