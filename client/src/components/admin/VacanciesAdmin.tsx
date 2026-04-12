@@ -142,9 +142,10 @@ export default function VacanciesAdmin() {
             } else {
                 throw new Error(res.message);
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error);
-            toast.error(error.message || 'Erro ao remover candidatura');
+            const message = error instanceof Error ? error.message : 'Erro ao remover candidatura';
+            toast.error(message);
         }
     };
 
