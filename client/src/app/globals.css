@@ -751,21 +751,20 @@ h6 {
 .mentor-mobile-toggle {
   display: none;
   position: fixed;
-  top: 1rem;
-  left: 1rem;
-  right: 1rem;
-  width: calc(100% - 2rem);
+  top: 0.6rem;
+  left: 0.6rem;
+  right: 0.6rem;
   z-index: 2001;
-  background: #0a0a0a;
+  background: #0d0d0d;
   color: #FFD700;
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  border-radius: 24px;
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 16px;
   padding: 0.8rem 1.25rem;
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
   align-items: center;
   justify-content: space-between;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   box-sizing: border-box;
@@ -777,10 +776,10 @@ h6 {
 
 .mentor-mobile-toggle .toggle-logo {
   font-weight: 900;
-  font-size: 1.1rem;
-  letter-spacing: 0.5px;
+  font-size: 1.2rem;
+  letter-spacing: 0px;
   color: #fff;
-  text-transform: uppercase;
+  font-family: var(--font-playfair);
 }
 
 .mentor-mobile-toggle .toggle-logo span {
@@ -791,14 +790,13 @@ h6 {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 215, 0, 0.1);
+  background: rgba(35, 35, 35, 0.9);
   border: 1px solid rgba(255, 215, 0, 0.3);
-  border-radius: 14px;
-  padding: 6px 14px;
-  font-size: 0.75rem;
+  border-radius: 12px;
+  padding: 7px 16px;
+  font-size: 0.8rem;
   font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: #FFD700;
 }
 

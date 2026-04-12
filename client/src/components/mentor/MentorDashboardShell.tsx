@@ -216,10 +216,10 @@ export default function MentorDashboardShell({ children, activeRoute = 'lessons'
                     onClick={() => setIsMobileSidebarOpen(true)}
                 >
                     <span className="toggle-logo">
-                        Inscreva<span>.se</span>
+                        INSCREVA<span>.SE</span>
                     </span>
                     <span className="toggle-chip">
-                        <Menu size={18} /> Menu
+                        <Menu size={18} /> MENU
                     </span>
                 </button>
             )}
