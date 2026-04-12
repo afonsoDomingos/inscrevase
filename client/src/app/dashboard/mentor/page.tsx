@@ -577,7 +577,7 @@ function MentorDashboardContent() {
                             position: 'fixed',
                             inset: 0,
                             background: 'rgba(0,0,0,0.7)',
-                            zIndex: 1999
+                            zIndex: 3999
                         }}
                     />
                 )}
@@ -592,28 +592,33 @@ function MentorDashboardContent() {
                 position: 'fixed',
                 left: isMobile ? (isMobileSidebarOpen ? '0' : '-100%') : '0',
                 top: 0,
-                zIndex: 1000,
+                zIndex: 4000,
                 transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                 display: 'flex',
                 flexDirection: 'column',
                 boxShadow: '10px 0 30px rgba(0,0,0,0.5)',
                 overflow: 'hidden'
             }}>
-                <div style={{ padding: '2rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid rgba(255, 215, 0, 0.1)' }}>
-                    {!isSidebarCollapsed && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{
-                                fontWeight: 900,
-                                fontSize: '1.6rem',
-                                color: '#fff',
-                                letterSpacing: '-0.5px',
-                                fontFamily: 'var(--font-playfair)' // Using serif for the logo as in image
-                            }}>
-                                INSCREVA<span style={{ color: '#FFD700' }}>.SE</span>
-                            </span>
-                        </div>
-                    )}
-                    {!isMobile && (
+                <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 215, 0, 0.08)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{
+                            fontWeight: 900,
+                            fontSize: isMobile ? '1.3rem' : '1.6rem',
+                            color: '#fff',
+                            letterSpacing: '-0.5px',
+                            fontFamily: 'var(--font-playfair)'
+                        }}>
+                            INSCREVA<span style={{ color: '#FFD700' }}>.SE</span>
+                        </span>
+                    </div>
+                    {isMobile ? (
+                        <button
+                            onClick={() => setIsMobileSidebarOpen(false)}
+                            style={{ background: 'rgba(255,215,0,0.1)', border: 'none', borderRadius: '10px', color: '#FFD700', padding: '8px', cursor: 'pointer' }}
+                        >
+                            <Plus style={{ transform: 'rotate(45deg)' }} size={24} />
+                        </button>
+                    ) : (
                         <button
                             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                             style={{ background: 'rgba(255,215,0,0.1)', border: 'none', borderRadius: '8px', color: '#FFD700', padding: '6px', cursor: 'pointer', transition: 'all 0.3s' }}
@@ -791,7 +796,10 @@ function MentorDashboardContent() {
 
                         <Tooltip content={isSidebarCollapsed ? t('dashboard.settings.guidedTour') : ""} position="right">
                             <button
-                                onClick={() => window.dispatchEvent(new Event('start-onboarding'))}
+                                onClick={() => {
+                                    window.dispatchEvent(new Event('start-onboarding'));
+                                    if (isMobile) setIsMobileSidebarOpen(false);
+                                }}
                                 style={{ display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', padding: '0.75rem 1rem', width: '100%', borderRadius: '12px', border: 'none', background: 'transparent', color: '#FFD700', fontWeight: 600, cursor: 'pointer', transition: 'all 0.3s ease', fontSize: '0.9rem' }}
                             >
                                 <Map size={20} />
@@ -801,7 +809,10 @@ function MentorDashboardContent() {
 
                         <Tooltip content={isSidebarCollapsed ? t('dashboard.support') : ""} position="right">
                             <button
-                                onClick={() => setIsSupportOpen(true)}
+                                onClick={() => {
+                                    setIsSupportOpen(true);
+                                    if (isMobile) setIsMobileSidebarOpen(false);
+                                }}
                                 style={{ width: '100%', padding: '0.75rem 1rem', background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.2)', borderRadius: '12px', color: '#FFD700', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', position: 'relative', fontSize: '0.9rem' }}
                             >
                                 <LifeBuoy size={20} />
@@ -814,11 +825,12 @@ function MentorDashboardContent() {
                             </button>
                         </Tooltip>
 
-
-
                         <Tooltip content={isSidebarCollapsed ? t('common.logout') : ""} position="right">
                             <button
-                                onClick={() => authService.logout()}
+                                onClick={() => {
+                                    authService.logout();
+                                    if (isMobile) setIsMobileSidebarOpen(false);
+                                }}
                                 style={{ width: '100%', padding: '0.75rem 1rem', background: 'transparent', border: '1px solid rgba(229, 62, 62, 0.2)', borderRadius: '12px', color: '#e53e3e', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', fontSize: '0.9rem' }}
                             >
                                 <LogOut size={20} />
