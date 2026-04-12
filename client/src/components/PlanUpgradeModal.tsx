@@ -246,7 +246,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                 {/* Divider */}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                                     <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
-                                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#9ca3af', background: '#fff', padding: '0 12px', whiteSpace: 'nowrap', letterSpacing: '0.05em' }}>{t('plans.manualUpgrade.manualTransferTitle')}</span>
+                                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#9ca3af', background: '#fff', padding: '0 12px', textAlign: 'center', letterSpacing: '0.05em', lineHeight: 1.4 }}>{t('plans.manualUpgrade.manualTransferTitle')}</span>
                                     <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
                                 </div>
 
@@ -297,9 +297,9 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                             )?.[1] ?? null;
 
                                             return (
-                                                <div key={method.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', background: '#fff', borderBottom: i < filteredMethods.length - 1 ? '1px solid #f0f0f0' : 'none' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                        <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', overflow: 'hidden', border: '1px solid #eee' }}>
+                                                <div key={method.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', background: '#fff', borderBottom: i < filteredMethods.length - 1 ? '1px solid #f0f0f0' : 'none', flexWrap: 'wrap', gap: '10px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '140px' }}>
+                                                        <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', overflow: 'hidden', border: '1px solid #eee', flexShrink: 0 }}>
                                                             {logo
                                                                 ? <Image src={logo} alt={method.label} width={42} height={42} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }} />
                                                                 : method.icon
@@ -310,8 +310,8 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                                             <p style={{ fontSize: '0.78rem', color: '#6b7280' }}>{method.countryLabel}</p>
                                                         </div>
                                                     </div>
-                                                    <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <p style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111', fontFamily: 'monospace', margin: 0, letterSpacing: '0.5px' }}>{method.details}</p>
+                                                    <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '8px', flex: 1, justifyContent: 'flex-end', minWidth: '150px' }}>
+                                                        <p style={{ fontWeight: 700, fontSize: 'clamp(0.75rem, 3vw, 0.9rem)', color: '#111', fontFamily: 'monospace', margin: 0, letterSpacing: '0.5px', wordBreak: 'break-all' }}>{method.details}</p>
                                                         <button
                                                             onClick={(e) => {
                                                                 e.preventDefault();
