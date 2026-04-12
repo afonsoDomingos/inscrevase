@@ -547,29 +547,21 @@ function MentorDashboardContent() {
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--background)', position: 'relative', overflowX: 'hidden' }}>
-            {/* Mobile Toggle Button */}
-            {isMobile && (
+            {/* Mobile Top Nav Bar — New Premium Design */}
+            {!isMobileSidebarOpen && (
                 <button
-                    className="mobile-sidebar-toggle"
-                    onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-                    style={{
-                        position: 'fixed',
-                        top: '1.25rem',
-                        left: '1.25rem',
-                        zIndex: 2001,
-                        background: '#1a1a1a',
-                        color: '#FFD700',
-                        border: '1px solid #FFD700',
-                        borderRadius: '10px',
-                        padding: '8px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    className="mentor-mobile-toggle"
+                    onClick={() => {
+                        console.log('Mentor Mobile Toggle Clicked (Page)');
+                        setIsMobileSidebarOpen(true);
                     }}
                 >
-                    {isMobileSidebarOpen ? <Plus style={{ transform: 'rotate(45deg)' }} size={24} /> : <Menu size={24} />}
+                    <span className="toggle-logo">
+                        INSCREVA<span>.SE</span>
+                    </span>
+                    <span className="toggle-chip">
+                        <Menu size={18} /> MENU
+                    </span>
                 </button>
             )}
 
@@ -858,16 +850,13 @@ function MentorDashboardContent() {
             </aside>
 
             {/* Main Content */}
-            <main style={{
-                marginLeft: isMobile ? '0' : (isSidebarCollapsed ? '80px' : '280px'),
-                transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                flex: 1,
-                padding: isMobile ? '1rem' : '2.5rem',
-                paddingTop: isMobile ? '5rem' : '2.5rem',
-                minHeight: '100vh',
-                maxWidth: isMobile ? '100%' : `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`,
-                overflowX: 'hidden'
-            }}>
+            <main 
+                className="mentor-main"
+                style={{
+                    marginLeft: isMobile ? '0' : (isSidebarCollapsed ? '80px' : '280px'),
+                    maxWidth: isMobile ? '100%' : `calc(100vw - ${isSidebarCollapsed ? '80px' : '280px'})`,
+                }}
+            >
                 {user && !user.isEmailVerified && user.role !== 'admin' && user.role !== 'SuperAdmin' && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
