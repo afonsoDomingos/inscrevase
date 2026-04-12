@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Loader2, DollarSign, Percent, TrendingUp, Shield, Zap, Crown, CreditCard } from 'lucide-react';
+import { Save, Loader2, DollarSign, Percent, TrendingUp, Shield, Zap, Crown, CreditCard, Settings, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import Cookies from 'js-cookie';
 import ManualPaymentMethodsManager from './ManualPaymentMethodsManager';

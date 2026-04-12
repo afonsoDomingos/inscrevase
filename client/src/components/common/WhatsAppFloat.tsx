@@ -3,7 +3,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { MessageCircle } from 'lucide-react';
 import { SUPPORT_WHATSAPP } from '@/lib/constants';
 
 export default function WhatsAppFloat() {
