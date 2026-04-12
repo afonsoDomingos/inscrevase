@@ -140,6 +140,14 @@ function AdminDashboardContent() {
 
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [trafficStats, setTrafficStats] = useState<TrafficStats | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const peakHourToday = trafficStats?.trafficByHour?.length 
         ? [...trafficStats.trafficByHour].sort((a,b) => b.count - a.count)[0] 
