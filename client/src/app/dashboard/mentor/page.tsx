@@ -813,12 +813,31 @@ function MentorDashboardContent() {
                                     setIsSupportOpen(true);
                                     if (isMobile) setIsMobileSidebarOpen(false);
                                 }}
-                                style={{ width: '100%', padding: '0.75rem 1rem', background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.2)', borderRadius: '12px', color: '#FFD700', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', position: 'relative', fontSize: '0.9rem' }}
+                                style={{ 
+                                    width: '100%', 
+                                    padding: '1rem', 
+                                    background: '#111', 
+                                    border: '1px solid rgba(255,215,0,0.4)', 
+                                    borderRadius: '16px', 
+                                    color: '#fff', 
+                                    cursor: 'pointer', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', 
+                                    gap: '12px', 
+                                    fontWeight: 800, 
+                                    transition: 'all 0.3s', 
+                                    position: 'relative', 
+                                    fontSize: '0.95rem',
+                                    boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
+                                }}
+                                onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                                onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                             >
-                                <LifeBuoy size={20} />
-                                {!isSidebarCollapsed && t('dashboard.support')}
+                                <LifeBuoy size={22} color="#FFD700" />
+                                {!isSidebarCollapsed && (t('dashboard.support') || "Pedir Suporte")}
                                 {unreadCount > 0 && (
-                                    <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#ef4444', color: '#fff', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 700, border: '2px solid var(--paper)' }}>
+                                    <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#ef4444', color: '#fff', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 800, border: '2px solid #000' }}>
                                         {unreadCount > 9 ? '9+' : unreadCount}
                                     </span>
                                 )}
@@ -831,7 +850,7 @@ function MentorDashboardContent() {
                                     authService.logout();
                                     if (isMobile) setIsMobileSidebarOpen(false);
                                 }}
-                                style={{ width: '100%', padding: '0.75rem 1rem', background: 'transparent', border: '1px solid rgba(229, 62, 62, 0.2)', borderRadius: '12px', color: '#e53e3e', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', fontSize: '0.9rem' }}
+                                style={{ width: '100%', padding: '0.75rem 1rem', background: 'transparent', border: '1px solid rgba(229, 62, 62, 0.2)', borderRadius: '12px', color: '#e53e3e', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', gap: '12px', fontWeight: 600, transition: 'all 0.2s', fontSize: '0.9rem', marginBottom: '1.5rem' }}
                             >
                                 <LogOut size={20} />
                                 {!isSidebarCollapsed && t('common.logout')}
