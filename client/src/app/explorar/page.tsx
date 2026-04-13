@@ -32,6 +32,7 @@ interface UnifiedItem {
     };
     link: string;
     isCourse: boolean;
+    ctaText?: string;
 }
 
 export default function ExploreEvents() {
@@ -67,7 +68,8 @@ export default function ExploreEvents() {
                     createdAt: s.createdAt,
                     stats: { views: s.views, inquiries: s.inquiries },
                     link: `/hub/${s._id}`,
-                    isCourse: s.category === 'Treinamento' || s.category === 'Educação'
+                    isCourse: s.category === 'Treinamento' || s.category === 'Educação',
+                    ctaText: s.ctaText
                 }));
 
                 const normalizedEvents: UnifiedItem[] = (eventsData || []).map(e => ({
@@ -113,6 +115,14 @@ export default function ExploreEvents() {
 
         return matchesSearch && matchesMainFilter && matchesCategory;
     }).sort((a, b) => {
+        // Priority 1: Admin/Featured items could go here, but let's stick to user request:
+        // Featured Events & Courses > Other Events & Courses > Services
+        const aPriority = (a.type === 'event' || a.isCourse) ? 1 : 0;
+        const bPriority = (b.type === 'event' || b.isCourse) ? 1 : 0;
+        
+        if (aPriority !== bPriority) return bPriority - aPriority;
+
+        // If same priority, apply the selected sort
         if (sortBy === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         if (sortBy === 'popular') return (b.stats.views || 0) - (a.stats.views || 0);
         if (sortBy === 'price_low') return (a.price || 0) - (b.price || 0);
@@ -509,7 +519,7 @@ export default function ExploreEvents() {
                                                         transition: 'all 0.2s'
                                                     }}
                                                 >
-                                                    {item.type === 'service' ? 'Solicitar' : 'Inscrever-se'} <ArrowRight size={14} />
+                                                    {item.type === 'service' ? (item.ctaText || 'Solicitar') : 'Inscrever-se'} <ArrowRight size={14} />
                                                 </Link>
                                             </div>
                                         </div>

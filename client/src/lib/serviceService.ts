@@ -31,6 +31,7 @@ export interface ServiceModel {
     duration?: string;
     views: number;
     inquiries: number;
+    ctaText?: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -51,6 +52,7 @@ export interface CreateServiceData {
     };
     delivery?: string;
     duration?: string;
+    ctaText?: string;
 }
 
 class ServiceService {

@@ -65,6 +65,12 @@ const serviceSchema = new mongoose.Schema({
     inquiries: {
         type: Number,
         default: 0
+    },
+    ctaText: {
+        type: String,
+        trim: true,
+        maxlength: [30, 'CTA não pode ter mais de 30 caracteres'],
+        default: 'Solicitar'
     }
 }, {
     timestamps: true

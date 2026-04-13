@@ -342,9 +342,9 @@ export default function VacanciesAdmin() {
                                             {v.active ? 'Ativa' : 'Pausada'}
                                         </span>
                                     </div>
-                                    <div style={{ display: 'flex', gap: '15px', color: '#666', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><MapPin size={14} /> {v.location}</div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Briefcase size={14} /> {v.type}</div>
+                                    <div style={{ display: 'flex', gap: '15px', color: '#666', fontSize: '0.8rem', marginBottom: '1.25rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><MapPin size={12} /> {v.location}</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Briefcase size={12} /> {v.type}</div>
                                     </div>
                                     <div style={{ display: 'flex', gap: '8px' }}>
                                         <button 
@@ -564,8 +564,8 @@ export default function VacanciesAdmin() {
                                 <div>
                                     <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#888', marginBottom: '8px' }}>Imagem da Vaga (Opcional)</label>
                                     <div style={{ display: 'flex', gap: isMobile ? '0.75rem' : '1rem', alignItems: 'center' }}>
-                                        <div style={{ width: isMobile ? '60px' : '80px', height: isMobile ? '40px' : '50px', borderRadius: '12px', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid #eee', position: 'relative', flexShrink: 0 }}>
-                                            {formData.image ? <Image src={formData.image} alt="Vaga" fill style={{ objectFit: 'cover' }} /> : <ImageIcon size={isMobile ? 16 : 20} color="#ccc" />}
+                                        <div style={{ width: isMobile ? '50px' : '80px', height: isMobile ? '36px' : '50px', borderRadius: '10px', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid #eee', position: 'relative', flexShrink: 0 }}>
+                                            {formData.image ? <Image src={formData.image} alt="Vaga" fill style={{ objectFit: 'cover' }} /> : <ImageIcon size={isMobile ? 14 : 20} color="#ccc" />}
                                         </div>
                                         <div style={{ position: 'relative', flex: 1 }}>
                                             <input 
@@ -574,8 +574,8 @@ export default function VacanciesAdmin() {
                                                 onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0])} 
                                                 style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }}
                                             />
-                                            <div style={{ padding: isMobile ? '8px 12px' : '10px 15px', borderRadius: '10px', border: '1px dashed #000', textAlign: 'center', fontSize: isMobile ? '0.7rem' : '0.75rem', fontWeight: 700, color: '#666', background: '#fcfcfc' }}>
-                                                {uploading ? <Loader2 size={14} className="animate-spin" /> : 'Alterar Imagem'}
+                                            <div style={{ padding: isMobile ? '6px 8px' : '10px 15px', borderRadius: '10px', border: '1px dashed #000', textAlign: 'center', fontSize: isMobile ? '0.6rem' : '0.75rem', fontWeight: 800, color: '#666', background: '#fcfcfc' }}>
+                                                {uploading ? <Loader2 size={12} className="animate-spin" /> : (isMobile ? 'Subir Foto' : 'Alterar Imagem')}
                                             </div>
                                         </div>
                                     </div>

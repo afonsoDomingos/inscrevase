@@ -24,7 +24,8 @@ export default function ServicesManagement() {
         tags: [],
         contactInfo: {},
         delivery: 'Online',
-        duration: ''
+        duration: '',
+        ctaText: 'Solicitar'
     });
 
     const categories = ['Consultoria', 'Mentoria', 'Treinamento', 'Design', 'Desenvolvimento', 'Marketing', 'Outro'];
@@ -87,7 +88,8 @@ export default function ServicesManagement() {
             tags: service.tags,
             contactInfo: service.contactInfo,
             delivery: service.delivery,
-            duration: service.duration
+            duration: service.duration,
+            ctaText: service.ctaText || 'Solicitar'
         });
         setIsModalOpen(true);
     };
@@ -126,7 +128,8 @@ export default function ServicesManagement() {
             tags: [],
             contactInfo: {},
             delivery: 'Online',
-            duration: ''
+            duration: '',
+            ctaText: 'Solicitar'
         });
         setEditingService(null);
     };
@@ -462,7 +465,6 @@ export default function ServicesManagement() {
                                         />
                                     </div>
                                 </div>
-
                                 <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
                                     <div>
                                         <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>{t('dashboard.servicesManagement.priceLabel')}</label>
@@ -504,6 +506,24 @@ export default function ServicesManagement() {
                                             <option value="XOF">XOF</option>
                                         </select>
                                     </div>
+                                </div>
+                                
+                                <div style={{ marginBottom: '1.5rem' }}>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Texto do Botão (CTA)</label>
+                                    <input
+                                        type="text"
+                                        value={formData.ctaText}
+                                        onChange={e => setFormData({ ...formData, ctaText: e.target.value })}
+                                        placeholder="Ex: Solicitar, Contactar, Orçamento..."
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.8rem',
+                                            borderRadius: '12px',
+                                            border: '1px solid var(--border)',
+                                            background: 'var(--background)',
+                                            color: 'var(--foreground)'
+                                        }}
+                                    />
                                 </div>
 
                                 <div style={{ display: 'flex', gap: '1rem' }}>

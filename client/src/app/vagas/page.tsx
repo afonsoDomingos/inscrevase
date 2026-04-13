@@ -14,6 +14,14 @@ export default function VacanciesPage() {
     const router = useRouter();
     const [vacancies, setVacancies] = useState<Vacancy[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         const loadVacancies = async () => {
@@ -142,7 +150,8 @@ export default function VacanciesPage() {
                                     display: 'flex',
                                     flexDirection: 'column',
                                     height: '100%',
-                                    transition: 'all 0.3s ease'
+                                    transition: 'all 0.3s ease',
+                                    padding: isMobile ? '0.5rem' : '0' // Add padding on mobile to contain inner elements
                                 }}
                             >
                                 {/* Image */}
@@ -151,7 +160,11 @@ export default function VacanciesPage() {
                                         src={vacancy.image || '/bg-organic.png'}
                                         alt={vacancy.title}
                                         fill
-                                        style={{ objectFit: vacancy.image ? 'cover' : 'contain', opacity: vacancy.image ? 1 : 0.2 }}
+                                        style={{ 
+                                            objectFit: vacancy.image ? 'cover' : 'contain', 
+                                            opacity: vacancy.image ? 1 : 0.2,
+                                            borderRadius: isMobile ? '18px' : '0'
+                                        }}
                                     />
                                     <div style={{
                                         position: 'absolute',
@@ -175,11 +188,11 @@ export default function VacanciesPage() {
                                         {vacancy.title}
                                     </h3>
                                     <div style={{ display: 'flex', gap: '15px', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', color: '#64748b' }}>
-                                            <MapPin size={14} /> {vacancy.location}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: isMobile ? '0.7rem' : '0.8rem', color: '#64748b' }}>
+                                            <MapPin size={isMobile ? 12 : 14} /> {vacancy.location}
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', color: '#64748b' }}>
-                                            <Clock size={14} /> {vacancy.type}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: isMobile ? '0.7rem' : '0.8rem', color: '#64748b' }}>
+                                            <Clock size={isMobile ? 12 : 14} /> {vacancy.type}
                                         </div>
                                     </div>
                                     <p style={{ fontSize: '0.9rem', color: '#64748b', lineHeight: 1.6, marginBottom: '2rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
