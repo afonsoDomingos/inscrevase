@@ -548,6 +548,13 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
             return;
         }
 
+        // Validar imagem obrigatória
+        if (!coverImage) {
+            toast.error('A imagem de capa é obrigatória.');
+            setStep(3); // Go to Design step
+            return;
+        }
+
         // Validate Fields
         const hasEmptyFields = fields.some(f => !f.label.trim());
         if (hasEmptyFields) {
@@ -1008,7 +1015,9 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                                             </div>
 
                                             <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.coverImageLabel')}</label>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                    {t('events.coverImageLabel')} <span style={{ color: '#ef4444' }}>(Obrigatório)</span>
+                                                </label>
                                                 <div style={{
                                                     width: '100%',
                                                     height: '180px',

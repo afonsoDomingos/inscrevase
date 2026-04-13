@@ -23,7 +23,7 @@ const FormSchema = new mongoose.Schema({
     slug: { type: String, required: true, unique: true },
     description: { type: String, maxLength: 3000 },
     logo: { type: String },
-    coverImage: { type: String },
+    coverImage: { type: String, required: [true, 'A imagem de capa é obrigatória'] },
     coverImageMode: { type: String, enum: ['full', 'banner'], default: 'full' }, // full = imagem completa, banner = cortada
     videoUrl: { type: String },
     videoOrientation: { type: String, enum: ['vertical', 'horizontal'], default: 'vertical' },

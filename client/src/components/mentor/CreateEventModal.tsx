@@ -1017,6 +1017,13 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
             return;
         }
 
+        // 3. Validar imagem obrigatória
+        if (!coverImage) {
+            toast.error('A imagem de capa é obrigatória. Por favor, adicione uma imagem no passo Design.');
+            setStep(3); // Go to Design step where image is uploaded
+            return;
+        }
+
 
         // 4. Campos opcionais (Location e Online Link não são mais obrigatórios)
 
@@ -2205,7 +2212,9 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
                                             </div>
 
                                             <div>
-                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>{t('events.coverImageLabel')}</label>
+                                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                    {t('events.coverImageLabel')} <span style={{ color: '#ef4444' }}>(Obrigatório)</span>
+                                                </label>
                                                 <div
                                                     onDragOver={(e) => { e.preventDefault(); setIsDraggingImage(true); }}
                                                     onDragLeave={() => setIsDraggingImage(false)}
