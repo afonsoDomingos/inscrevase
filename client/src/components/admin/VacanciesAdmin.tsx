@@ -692,7 +692,7 @@ export default function VacanciesAdmin() {
                                 </div>
                                 <div style={{ flex: 1 }}>
                                     <div style={{ fontSize: isMobile ? '0.65rem' : '0.75rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', color: '#FFD700', marginBottom: '0.5rem' }}>Perfil do Candidato</div>
-                                    <h3 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 900, margin: 0, fontFamily: 'var(--font-playfair)' }}>{selectedApplication.fullName}</h3>
+                                    <h3 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 900, margin: 0, color: '#fff', fontFamily: 'var(--font-playfair)' }}>{selectedApplication.fullName}</h3>
                                     <div style={{ fontSize: isMobile ? '0.85rem' : '1rem', opacity: 0.8, marginTop: '5px' }}>
                                         Candidatura para: <strong style={{color: '#FFD700'}}>{typeof selectedApplication.vacancyId === 'object' ? selectedApplication.vacancyId.title : 'Vaga'}</strong>
                                     </div>
