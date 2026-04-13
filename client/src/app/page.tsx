@@ -46,27 +46,17 @@ export default function Home() {
   const [isMotivaEnabledAdmin] = useState(true);
 
   // Motiva Contest Floating Button State
-  const [motivaPosition, setMotivaPosition] = useState<{ top?: string; bottom?: string; right?: string; left?: string }>({ top: '80%', right: '5%' });
+  // Keeping it static logically in the lower right area.
   const [isMotivaVisible, setIsMotivaVisible] = useState(false);
 
   useEffect(() => {
-    const showTimeout = setTimeout(() => setIsMotivaVisible(true), 5000);
+    // Apresentar o botão após 3 segundos
+    const showTimeout = setTimeout(() => setIsMotivaVisible(true), 3000);
     
+    // Fazer desaparecer por breves momentos e reaparecer (Fade in / Fade out, sempre no mesmo sítio)
     const interval = setInterval(() => {
-      setIsMotivaVisible(v => {
-        if (!v) {
-          // When turning visible, pick a random position
-          const positions = [
-            { top: '80%', right: '5%' },
-            { bottom: '15%', left: '5%' },
-            { top: '25%', right: '2%' }
-          ];
-          setMotivaPosition(positions[Math.floor(Math.random() * positions.length)]);
-          return true;
-        }
-        return false;
-      });
-    }, 12000); // Toggles state every 12 seconds
+      setIsMotivaVisible(v => !v);
+    }, 15000); // Oscilação a cada 15 segundos para chamar atenção sem chatear
     
     return () => {
       clearTimeout(showTimeout);
@@ -1295,13 +1285,14 @@ export default function Home() {
       <AnimatePresence>
         {isMotivaEnabledAdmin && isMotivaVisible && (
           <motion.div
-            initial={{ scale: 0, opacity: 0, rotate: -10 }}
-            animate={{ scale: 1, opacity: 1, rotate: 0 }}
-            exit={{ scale: 0, opacity: 0, rotate: 10 }}
+            initial={{ scale: 0, opacity: 0, y: 50 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0, opacity: 0, y: 50 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
             style={{
               position: 'fixed',
-              ...motivaPosition,
+              bottom: '40px',
+              right: '30px',
               zIndex: 9999,
               display: 'flex',
               flexDirection: 'column',

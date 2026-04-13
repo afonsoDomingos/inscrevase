@@ -25,16 +25,13 @@ export default function MotivaPrototype() {
   const [isUploading, setIsUploading] = useState(false);
 
   // Phase Logic
-  const currentPhase = 3;
+  const currentPhase = 1;
   const [uploadCount] = useState(10); // Simulating 10/10 limit reached
   const UPLOAD_LIMIT = 10;
 
   // States for Ranking/Feed
   const [activeTab, setActiveTab] = useState<'ranking' | 'historico' | 'regras'>('ranking');
-  const [historicalPhases] = useState([
-    { phase: 2, winner: { name: 'João Alves', title: 'O Poder do Hábito', likes: 2500, url: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&q=80&w=400&h=700' } },
-    { phase: 1, winner: { name: 'Marta Ribeiro', title: 'Como Vencer o Medo', likes: 3100, url: 'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&q=80&w=400&h=700' } }
-  ]);
+  const [historicalPhases] = useState<{ phase: number; winner: any }[]>([]);
   const [videos, setVideos] = useState([
     { id: 1, author: 'Ana Silva', title: 'O Segredo da Persistência', likes: 1245, url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=400&h=700', rank: 1, liked: false },
     { id: 2, author: 'Carlos Mendes', title: 'Nunca Desista', likes: 982, url: 'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&q=80&w=400&h=700', rank: 2, liked: true },
@@ -305,32 +302,40 @@ export default function MotivaPrototype() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ maxWidth: '800px', margin: '0 auto' }}>
             <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '30px', color: '#FFD700', textAlign: 'center' }}>Vencedores Anteriores</h2>
             <div style={{ display: 'grid', gap: '40px' }}>
-              {historicalPhases.map((hist) => (
-                <div key={hist.phase} style={{ background: '#111', borderRadius: '24px', overflow: 'hidden', border: '1px solid #333', display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ padding: '15px 30px', background: 'linear-gradient(90deg, #222, #111)', borderBottom: '1px solid #333', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFD700' }}>FASE {hist.phase}</h3>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#888' }}><Trophy size={16} /> Elevado pelos Admins</div>
-                  </div>
-                  <div style={{ display: 'flex', padding: '30px', gap: '30px', alignItems: 'center' }}>
-                    {/* Simulated Video Placeholder */}
-                    <div style={{ position: 'relative', width: '200px', height: '350px', borderRadius: '15px', overflow: 'hidden', background: '#222', flexShrink: 0 }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={hist.winner.url} alt={hist.winner.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Play size={32} color="#fff" fill="rgba(255,255,255,0.5)" />
-                      </div>
-                    </div>
-                    <div>
-                      <h4 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '10px' }}>{hist.winner.title}</h4>
-                      <p style={{ color: '#FFD700', fontSize: '1.2rem', marginBottom: '20px', fontWeight: 600 }}>por {hist.winner.name}</p>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#222', padding: '8px 16px', borderRadius: '15px', color: '#fff', fontWeight: 600 }}>
-                        <ThumbsUp size={16} fill="#FFD700" color="#FFD700" />
-                        {hist.winner.likes} Gotos e Preferência Admin
-                      </div>
-                    </div>
-                  </div>
+              {historicalPhases.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '60px 20px', background: '#111', borderRadius: '24px', border: '1px dashed #333' }}>
+                  <Trophy size={48} color="#333" style={{ marginBottom: '20px' }} />
+                  <h3 style={{ fontSize: '1.5rem', color: '#888', marginBottom: '10px' }}>Ainda sem Edições Anteriores</h3>
+                  <p style={{ color: '#555' }}>Nós estamos apenas na nossa Fase Inicial. Os próximos vencedores farão parte da história aqui.</p>
                 </div>
-              ))}
+              ) : (
+                historicalPhases.map((hist) => (
+                  <div key={hist.phase} style={{ background: '#111', borderRadius: '24px', overflow: 'hidden', border: '1px solid #333', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ padding: '15px 30px', background: 'linear-gradient(90deg, #222, #111)', borderBottom: '1px solid #333', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFD700' }}>FASE {hist.phase}</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#888' }}><Trophy size={16} /> Elevado pelos Admins</div>
+                    </div>
+                    <div style={{ display: 'flex', padding: '30px', gap: '30px', alignItems: 'center' }}>
+                      {/* Simulated Video Placeholder */}
+                      <div style={{ position: 'relative', width: '200px', height: '350px', borderRadius: '15px', overflow: 'hidden', background: '#222', flexShrink: 0 }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={hist.winner.url} alt={hist.winner.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Play size={32} color="#fff" fill="rgba(255,255,255,0.5)" />
+                        </div>
+                      </div>
+                      <div>
+                        <h4 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '10px' }}>{hist.winner.title}</h4>
+                        <p style={{ color: '#FFD700', fontSize: '1.2rem', marginBottom: '20px', fontWeight: 600 }}>por {hist.winner.name}</p>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#222', padding: '8px 16px', borderRadius: '15px', color: '#fff', fontWeight: 600 }}>
+                          <ThumbsUp size={16} fill="#FFD700" color="#FFD700" />
+                          {hist.winner.likes} Gotos e Preferência Admin
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </motion.div>
         )}
