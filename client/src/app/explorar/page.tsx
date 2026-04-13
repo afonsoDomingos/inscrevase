@@ -2,52 +2,120 @@
 
 import { useEffect, useState } from 'react';
 import { serviceService, ServiceModel } from '@/lib/serviceService';
+import { formService, FormModel } from '@/lib/formService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, Loader2, Calendar, ArrowRight, Star, TrendingUp, Users, Sparkles } from 'lucide-react';
+import { Search, Filter, Loader2, Calendar, ArrowRight, Star, TrendingUp, Users, Sparkles, BookOpen, Briefcase, PlayCircle } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
 import Navbar from '@/components/Navbar';
 import { useCurrency } from '@/context/CurrencyContext';
 
+interface UnifiedItem {
+    id: string;
+    type: 'event' | 'service';
+    title: string;
+    description: string;
+    category: string;
+    price?: number;
+    currency: string;
+    image: string;
+    creator?: {
+        name: string;
+        profilePhoto?: string;
+    };
+    createdAt: string;
+    stats: {
+        views?: number;
+        inquiries?: number;
+        submissions?: number;
+    };
+    link: string;
+    isCourse: boolean;
+}
+
 export default function ExploreEvents() {
     const { t } = useTranslate();
     const { formatPrice } = useCurrency();
-    const [services, setServices] = useState<ServiceModel[]>([]);
+    const [items, setItems] = useState<UnifiedItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [mainFilter, setMainFilter] = useState<'all' | 'event' | 'service' | 'course'>('all');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [showFilters, setShowFilters] = useState(false);
     const [sortBy, setSortBy] = useState<'newest' | 'popular' | 'price_low' | 'price_high'>('newest');
     const [focusedField, setFocusedField] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchServices = async () => {
+        const loadAllData = async () => {
+            setLoading(true);
             try {
-                const data = await serviceService.getServices();
-                setServices(data || []);
+                const [servicesData, eventsData] = await Promise.all([
+                    serviceService.getServices(),
+                    formService.getExploreEvents()
+                ]);
+
+                const normalizedServices: UnifiedItem[] = (servicesData || []).map(s => ({
+                    id: s._id,
+                    type: 'service',
+                    title: s.title,
+                    description: s.description,
+                    category: s.category,
+                    price: s.price,
+                    currency: s.currency,
+                    image: s.images?.[0] || '',
+                    creator: s.creator ? { name: s.creator.name, profilePhoto: s.creator.profilePhoto } : undefined,
+                    createdAt: s.createdAt,
+                    stats: { views: s.views, inquiries: s.inquiries },
+                    link: `/hub/${s._id}`,
+                    isCourse: s.category === 'Treinamento' || s.category === 'Educação'
+                }));
+
+                const normalizedEvents: UnifiedItem[] = (eventsData || []).map(e => ({
+                    id: e._id,
+                    type: 'event',
+                    title: e.title,
+                    description: e.description || '',
+                    category: e.category || 'Eventos',
+                    price: e.paymentConfig?.price,
+                    currency: e.paymentConfig?.currency || 'USD',
+                    image: e.coverImage || '',
+                    creator: e.creator ? { name: e.creator.name, profilePhoto: e.creator.profilePhoto } : undefined,
+                    createdAt: e.createdAt,
+                    stats: { views: e.visits, submissions: e.submissionCount },
+                    link: `/f/${e.slug}`,
+                    isCourse: e.category === 'Treinamento' || e.category === 'Educação'
+                }));
+
+                setItems([...normalizedServices, ...normalizedEvents]);
             } catch (error) {
-                console.error("Error fetching services:", error);
+                console.error("Error fetching explorer data:", error);
             } finally {
                 setLoading(false);
             }
         };
-        fetchServices();
+        loadAllData();
     }, []);
 
-    const categories = ['Consultoria', 'Mentoria', 'Treinamento', 'Design', 'Desenvolvimento', 'Marketing', 'Outro'];
+    const categories = ['Negócios', 'Tecnologia', 'Treinamento', 'Educação', 'Design', 'Saúde & Bem-estar', 'Marketing', 'Networking', 'Outro'];
 
-    const filteredServices = services.filter(s => {
-        const matchesSearch = s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            s.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (s.creator?.name && s.creator.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredItems = items.filter(item => {
+        const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (item.creator?.name && item.creator.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
-        const matchesCategory = selectedCategory === 'all' || s.category === selectedCategory;
+        const matchesMainFilter = 
+            mainFilter === 'all' || 
+            (mainFilter === 'event' && item.type === 'event') ||
+            (mainFilter === 'service' && item.type === 'service') ||
+            (mainFilter === 'course' && item.isCourse);
 
-        return matchesSearch && matchesCategory;
+        const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+
+        return matchesSearch && matchesMainFilter && matchesCategory;
     }).sort((a, b) => {
         if (sortBy === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        if (sortBy === 'popular') return (b.views || 0) - (a.views || 0);
+        if (sortBy === 'popular') return (b.stats.views || 0) - (a.stats.views || 0);
         if (sortBy === 'price_low') return (a.price || 0) - (b.price || 0);
         if (sortBy === 'price_high') return (b.price || 0) - (a.price || 0);
         return 0;
@@ -120,7 +188,7 @@ export default function ExploreEvents() {
                         <Search style={{ marginLeft: '1rem', color: '#666' }} size={20} />
                         <input
                             type="text"
-                            placeholder="Pesquisar por título, mentor ou categoria..."
+                            placeholder="O que você procura hoje?"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onFocus={() => setFocusedField('search')}
@@ -128,35 +196,75 @@ export default function ExploreEvents() {
                             style={{
                                 flex: 1,
                                 background: 'transparent',
-                                border: focusedField === 'search' ? '1px solid #D4AF37' : 'none',
+                                border: 'none',
                                 padding: '0.8rem 1rem',
                                 color: '#fff',
                                 outline: 'none',
                                 fontSize: '1rem',
-                                borderRadius: '100px',
-                                transition: 'all 0.3s',
-                                boxShadow: focusedField === 'search' ? '0 0 15px rgba(212, 175, 55, 0.2)' : 'none'
+                                borderRadius: '100px'
                             }}
                         />
                         <button 
                             onClick={() => setShowFilters(!showFilters)}
                             style={{
-                                background: 'rgba(255,255,255,0.05)',
-                                color: '#fff',
+                                background: showFilters ? '#D4AF37' : 'rgba(255,255,255,0.05)',
+                                color: showFilters ? '#000' : '#fff',
                                 border: '1px solid rgba(255,255,255,0.1)',
                                 padding: '0.6rem 1.2rem',
                                 borderRadius: '100px',
                                 fontSize: '0.85rem',
-                                fontWeight: 600,
+                                fontWeight: 700,
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                marginRight: '0.5rem'
+                                marginRight: '0.5rem',
+                                transition: 'all 0.3s'
                             }}
                         >
                             <Filter size={16} /> Filtros
                         </button>
+                    </div>
+
+                    {/* Elite Main Filters - SEMPRE VISÍVEIS */}
+                    <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'center', 
+                        gap: '10px', 
+                        marginTop: '2rem',
+                        padding: '0 10px',
+                        overflowX: 'auto',
+                        scrollbarWidth: 'none'
+                    }}>
+                        {[
+                            { id: 'all', label: 'Tudo', icon: <Sparkles size={16} /> },
+                            { id: 'event', label: 'Eventos', icon: <Calendar size={16} /> },
+                            { id: 'service', label: 'Serviços', icon: <Briefcase size={16} /> },
+                            { id: 'course', label: 'Cursos', icon: <BookOpen size={16} /> }
+                        ].map((btn) => (
+                            <button
+                                key={btn.id}
+                                onClick={() => setMainFilter(btn.id as any)}
+                                style={{
+                                    padding: '10px 24px',
+                                    borderRadius: '100px',
+                                    background: mainFilter === btn.id ? '#FFD700' : 'rgba(255,255,255,0.05)',
+                                    color: mainFilter === btn.id ? '#000' : '#fff',
+                                    border: `1px solid ${mainFilter === btn.id ? '#FFD700' : 'rgba(255,255,255,0.1)'}`,
+                                    fontSize: '0.9rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    transition: 'all 0.3s',
+                                    whiteSpace: 'nowrap',
+                                    boxShadow: mainFilter === btn.id ? '0 10px 20px rgba(255,215,0,0.2)' : 'none'
+                                }}
+                            >
+                                {btn.icon} {btn.label}
+                            </button>
+                        ))}
                     </div>
 
                     {/* Advanced Filters Backdrop */}
@@ -237,8 +345,7 @@ export default function ExploreEvents() {
                         <Loader2 className="animate-spin" size={48} color="#FFD700" />
                     </div>
                 ) : (
-                    <>
-                        {filteredServices.length === 0 ? (
+                        filteredItems.length === 0 ? (
                             <div style={{ textAlign: 'center', padding: '100px 0' }}>
                                 <div style={{ 
                                     width: '80px', height: '80px', background: '#f5f5f5', 
@@ -247,8 +354,8 @@ export default function ExploreEvents() {
                                 }}>
                                     <Star size={32} style={{ opacity: 0.2 }} />
                                 </div>
-                                <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#111' }}>Nenhum serviço disponível</h3>
-                                <p style={{ color: '#666' }}>Tente ajustar seus filtros ou pesquisar por outro termo.</p>
+                                <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#111' }}>Nenhum resultado encontrado</h3>
+                                <p style={{ color: '#666' }}>Tente ajustar seus filtros ou selecionar outra categoria.</p>
                             </div>
                         ) : (
                             <div style={{
@@ -256,9 +363,9 @@ export default function ExploreEvents() {
                                 gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
                                 gap: '2rem'
                             }}>
-                                {filteredServices.map((service, index) => (
+                                {filteredItems.map((item, index) => (
                                     <motion.div
-                                        key={service._id}
+                                        key={`${item.type}-${item.id}`}
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: index * 0.05 }}
@@ -270,16 +377,17 @@ export default function ExploreEvents() {
                                             boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
                                             display: 'flex',
                                             flexDirection: 'column',
-                                            transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                                            transition: 'all 0.3s ease',
+                                            position: 'relative'
                                         }}
-                                        whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(0,0,0,0.08)' }}
+                                        whileHover={{ y: -10, boxShadow: '0 25px 50px rgba(0,0,0,0.1)' }}
                                     >
                                         {/* Image Header */}
-                                        <div style={{ position: 'relative', height: '200px', background: '#000' }}>
-                                            {service.images && service.images[0] ? (
+                                        <div style={{ position: 'relative', height: '220px', background: '#000' }}>
+                                            {item.image ? (
                                                 <Image 
-                                                    src={service.images[0]} 
-                                                    alt={service.title}
+                                                    src={item.image} 
+                                                    alt={item.title}
                                                     fill
                                                     style={{ objectFit: 'cover', opacity: 0.9 }}
                                                 />
@@ -289,63 +397,79 @@ export default function ExploreEvents() {
                                                 </div>
                                             )}
                                             
-                                            {/* Category Badge */}
+                                            {/* Type Badge - ELITE STYLE */}
                                             <div style={{
                                                 position: 'absolute',
                                                 top: '1rem',
-                                                left: '1rem',
-                                                background: 'rgba(0,0,0,0.6)',
-                                                backdropFilter: 'blur(10px)',
-                                                padding: '4px 12px',
-                                                borderRadius: '50px',
+                                                right: '1rem',
+                                                background: item.type === 'event' ? '#000' : '#111',
+                                                padding: '6px 14px',
+                                                borderRadius: '12px',
                                                 color: '#FFD700',
-                                                fontSize: '0.7rem',
-                                                fontWeight: 800,
+                                                fontSize: '0.65rem',
+                                                fontWeight: 900,
                                                 textTransform: 'uppercase',
-                                                letterSpacing: '1px',
-                                                border: '1px solid rgba(255,215,0,0.3)'
+                                                letterSpacing: '2px',
+                                                border: '1px solid #FFD700',
+                                                zIndex: 2,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px'
                                             }}>
-                                                {service.category}
+                                                {item.isCourse ? <BookOpen size={12} /> : item.type === 'event' ? <Calendar size={12} /> : <Briefcase size={12} />}
+                                                {item.isCourse ? 'CURSO' : item.type === 'event' ? 'EVENTO' : 'SERVIÇO'}
                                             </div>
 
-                                            {/* Price Badge */}
+                                            {/* Category Overlay */}
                                             <div style={{
                                                 position: 'absolute',
-                                                bottom: '1rem',
-                                                right: '1rem',
-                                                background: 'var(--gold-gradient)',
-                                                padding: '6px 16px',
-                                                borderRadius: '50px',
-                                                color: '#000',
-                                                fontSize: '0.9rem',
-                                                fontWeight: 800,
-                                                boxShadow: '0 5px 15px rgba(255,215,0,0.3)'
+                                                bottom: 0,
+                                                left: 0,
+                                                right: 0,
+                                                padding: '20px 1.5rem 1rem',
+                                                background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'flex-end'
                                             }}>
-                                                {service.price ? formatPrice(service.price, service.currency) : 'Grátis'}
+                                                <div style={{ color: '#fff', fontSize: '0.75rem', fontWeight: 600, opacity: 0.9 }}>
+                                                    {item.category}
+                                                </div>
+                                                <div style={{
+                                                    background: 'var(--gold-gradient)',
+                                                    padding: '4px 12px',
+                                                    borderRadius: '8px',
+                                                    color: '#000',
+                                                    fontSize: '0.85rem',
+                                                    fontWeight: 800,
+                                                    boxShadow: '0 4px 15px rgba(255,215,0,0.3)'
+                                                }}>
+                                                    {item.price ? formatPrice(item.price, item.currency) : 'Grátis'}
+                                                </div>
                                             </div>
                                         </div>
 
                                         {/* Content Body */}
                                         <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.8rem' }}>
-                                                <div style={{ position: 'relative', width: '24px', height: '24px', borderRadius: '50%', overflow: 'hidden', background: '#eee' }}>
-                                                    {service.creator?.profilePhoto ? (
-                                                        <Image src={service.creator.profilePhoto} alt={service.creator.name} fill style={{ objectFit: 'cover' }} />
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
+                                                <div style={{ position: 'relative', width: '28px', height: '28px', borderRadius: '10px', overflow: 'hidden', background: '#f5f5f5', border: '1px solid #eee' }}>
+                                                    {item.creator?.profilePhoto ? (
+                                                        <Image src={item.creator.profilePhoto} alt={item.creator.name} fill style={{ objectFit: 'cover' }} />
                                                     ) : (
-                                                        <User style={{ padding: '4px' }} size={16} />
+                                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Users size={14} color="#ccc" /></div>
                                                     )}
                                                 </div>
-                                                <span style={{ fontSize: '0.8rem', color: '#666', fontWeight: 600 }}>{service.creator?.name}</span>
+                                                <span style={{ fontSize: '0.85rem', color: '#111', fontWeight: 700 }}>{item.creator?.name}</span>
                                             </div>
 
-                                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.6rem', color: '#111', lineHeight: 1.3 }}>
-                                                {service.title}
+                                            <h3 style={{ fontSize: '1.3rem', fontWeight: 900, marginBottom: '0.8rem', color: '#000', lineHeight: 1.2, letterSpacing: '-0.02em' }}>
+                                                {item.title}
                                             </h3>
                                             
                                             <p style={{ 
                                                 fontSize: '0.9rem', 
-                                                color: '#555', 
-                                                lineHeight: 1.5,
+                                                color: '#666', 
+                                                lineHeight: 1.6,
                                                 display: '-webkit-box',
                                                 WebkitLineClamp: 2,
                                                 WebkitBoxOrient: 'vertical',
@@ -353,39 +477,41 @@ export default function ExploreEvents() {
                                                 marginBottom: '1.5rem',
                                                 flex: 1
                                             }}>
-                                                {service.description}
+                                                {item.description}
                                             </p>
 
-                                            {/* Stats Row */}
+                                            {/* Action Row */}
                                             <div style={{ 
                                                 display: 'flex', 
                                                 justifyContent: 'space-between', 
                                                 alignItems: 'center',
-                                                paddingTop: '1rem',
-                                                borderTop: '1px solid #f5f5f5'
+                                                paddingTop: '1.2rem',
+                                                borderTop: '1px solid #f2f2f2'
                                             }}>
                                                 <div style={{ display: 'flex', gap: '12px' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: '#999' }}>
-                                                        <Calendar size={14} /> {new Date(service.createdAt).toLocaleDateString()}
-                                                    </div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: '#999' }}>
-                                                        <Users size={14} /> {service.inquiries || 0}
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: '#888', fontWeight: 600 }}>
+                                                        <TrendingUp size={14} className="gold-text" /> 
+                                                        {(item.stats.views || 0)} vistos
                                                     </div>
                                                 </div>
                                                 
                                                 <Link 
-                                                    href={`/hub/${service._id}`}
+                                                    href={item.link}
                                                     style={{
-                                                        color: '#111',
-                                                        fontWeight: 700,
-                                                        fontSize: '0.85rem',
+                                                        background: '#000',
+                                                        color: '#fff',
+                                                        padding: '10px 20px',
+                                                        borderRadius: '12px',
+                                                        fontWeight: 800,
+                                                        fontSize: '0.8rem',
                                                         display: 'flex',
                                                         alignItems: 'center',
-                                                        gap: '6px',
-                                                        textDecoration: 'none'
+                                                        gap: '8px',
+                                                        textDecoration: 'none',
+                                                        transition: 'all 0.2s'
                                                     }}
                                                 >
-                                                    Detalhes <ArrowRight size={16} />
+                                                    {item.type === 'service' ? 'Solicitar' : 'Inscrever-se'} <ArrowRight size={14} />
                                                 </Link>
                                             </div>
                                         </div>
@@ -412,7 +538,7 @@ export default function ExploreEvents() {
                     <p style={{ color: '#888', marginBottom: '2rem' }}>
                         Cadastre-se para receber notificações sobre novos treinamentos e oportunidades na sua área de interesse.
                     </p>
-                    {!loading && services.length > 0 && (
+                    {!loading && items.length > 0 && (
                         <Link href="/entrar" style={{
                             background: 'var(--gold-gradient)',
                             color: '#000',
