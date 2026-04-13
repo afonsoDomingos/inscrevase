@@ -25,7 +25,8 @@ export default function ServicesManagement() {
         contactInfo: {},
         delivery: 'Online',
         duration: '',
-        ctaText: 'Solicitar'
+        ctaText: 'Solicitar',
+        whatsapp: ''
     });
 
     const categories = ['Consultoria', 'Mentoria', 'Treinamento', 'Design', 'Desenvolvimento', 'Marketing', 'Outro'];
@@ -60,11 +61,19 @@ export default function ServicesManagement() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const submissionData = {
+                ...formData,
+                contactInfo: {
+                    ...formData.contactInfo,
+                    whatsapp: formData.whatsapp
+                }
+            };
+
             if (editingService) {
-                await serviceService.updateService(editingService._id, formData);
+                await serviceService.updateService(editingService._id, submissionData);
                 toast.success(t('dashboard.servicesManagement.updateSuccess'));
             } else {
-                await serviceService.createService(formData);
+                await serviceService.createService(submissionData as any);
                 toast.success(t('dashboard.servicesManagement.createSuccess'));
             }
             setIsModalOpen(false);
@@ -89,7 +98,8 @@ export default function ServicesManagement() {
             contactInfo: service.contactInfo,
             delivery: service.delivery,
             duration: service.duration,
-            ctaText: service.ctaText || 'Solicitar'
+            ctaText: service.ctaText || 'Solicitar',
+            whatsapp: service.contactInfo?.whatsapp || ''
         });
         setIsModalOpen(true);
     };
@@ -129,7 +139,8 @@ export default function ServicesManagement() {
             contactInfo: {},
             delivery: 'Online',
             duration: '',
-            ctaText: 'Solicitar'
+            ctaText: 'Solicitar',
+            whatsapp: ''
         });
         setEditingService(null);
     };
@@ -507,23 +518,28 @@ export default function ServicesManagement() {
                                         </select>
                                     </div>
                                 </div>
-                                
-                                <div style={{ marginBottom: '1.5rem' }}>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Texto do Botão (CTA)</label>
-                                    <input
-                                        type="text"
-                                        value={formData.ctaText}
-                                        onChange={e => setFormData({ ...formData, ctaText: e.target.value })}
-                                        placeholder="Ex: Solicitar, Contactar, Orçamento..."
-                                        style={{
-                                            width: '100%',
-                                            padding: '0.8rem',
-                                            borderRadius: '12px',
-                                            border: '1px solid var(--border)',
-                                            background: 'var(--background)',
-                                            color: 'var(--foreground)'
-                                        }}
-                                    />
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Texto do Botão (CTA)</label>
+                                        <input
+                                            type="text"
+                                            value={formData.ctaText}
+                                            onChange={e => setFormData({ ...formData, ctaText: e.target.value })}
+                                            placeholder="Ex: Solicitar, Contactar..."
+                                            style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--foreground)' }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>WhatsApp (Opcional)</label>
+                                        <input
+                                            type="text"
+                                            value={formData.whatsapp}
+                                            onChange={e => setFormData({ ...formData, whatsapp: e.target.value })}
+                                            placeholder="Ex: +25884..."
+                                            style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--foreground)' }}
+                                        />
+                                    </div>
                                 </div>
 
                                 <div style={{ display: 'flex', gap: '1rem' }}>

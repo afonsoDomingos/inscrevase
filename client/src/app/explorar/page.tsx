@@ -33,6 +33,7 @@ interface UnifiedItem {
     link: string;
     isCourse: boolean;
     ctaText?: string;
+    contactWhatsApp?: string;
 }
 
 export default function ExploreEvents() {
@@ -69,7 +70,8 @@ export default function ExploreEvents() {
                     stats: { views: s.views, inquiries: s.inquiries },
                     link: `/hub/${s._id}`,
                     isCourse: s.category === 'Treinamento' || s.category === 'Educação',
-                    ctaText: s.ctaText
+                    ctaText: s.ctaText,
+                    contactWhatsApp: s.contactInfo?.whatsapp || (s.creator ? (s.creator as any).whatsapp : '')
                 }));
 
                 const normalizedEvents: UnifiedItem[] = (eventsData || []).map(e => ({
@@ -507,24 +509,47 @@ export default function ExploreEvents() {
                                                     </div>
                                                 </div>
                                                 
-                                                <Link 
-                                                    href={item.link}
-                                                    style={{
-                                                        background: '#000',
-                                                        color: '#fff',
-                                                        padding: '10px 20px',
-                                                        borderRadius: '12px',
-                                                        fontWeight: 800,
-                                                        fontSize: '0.8rem',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '8px',
-                                                        textDecoration: 'none',
-                                                        transition: 'all 0.2s'
-                                                    }}
-                                                >
-                                                    {item.type === 'service' ? (item.ctaText || 'Solicitar') : 'Inscrever-se'} <ArrowRight size={14} />
-                                                </Link>
+                                                {item.type === 'service' ? (
+                                                    <a 
+                                                        href={`https://wa.me/${(item.contactWhatsApp || '').replace(/\D/g, '')}?text=${encodeURIComponent(`Olá! Vi o seu serviço "${item.title}" no Inscreva-se e gostaria de saber mais.`)}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{
+                                                            background: '#000',
+                                                            color: '#fff',
+                                                            padding: '10px 20px',
+                                                            borderRadius: '12px',
+                                                            fontWeight: 800,
+                                                            fontSize: '0.8rem',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '8px',
+                                                            textDecoration: 'none',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                    >
+                                                        {item.ctaText || 'Solicitar'} <ArrowRight size={14} />
+                                                    </a>
+                                                ) : (
+                                                    <Link 
+                                                        href={item.link}
+                                                        style={{
+                                                            background: '#000',
+                                                            color: '#fff',
+                                                            padding: '10px 20px',
+                                                            borderRadius: '12px',
+                                                            fontWeight: 800,
+                                                            fontSize: '0.8rem',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '8px',
+                                                            textDecoration: 'none',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                    >
+                                                        Inscrever-se <ArrowRight size={14} />
+                                                    </Link>
+                                                )}
                                             </div>
                                         </div>
                                     </motion.div>

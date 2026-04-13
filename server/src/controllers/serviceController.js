@@ -62,7 +62,7 @@ exports.getServices = async (req, res) => {
         }
 
         const services = await Service.find(query)
-            .populate('creator', 'name businessName profilePhoto role country')
+            .populate('creator', 'name businessName profilePhoto role country whatsapp')
             .sort({ featured: -1, createdAt: -1 })
             .limit(50);
 
@@ -97,7 +97,7 @@ exports.getServiceById = async (req, res) => {
             req.params.id,
             { $inc: { views: 1 } },
             { new: true }
-        ).populate('creator', 'name businessName profilePhoto role country email');
+        ).populate('creator', 'name businessName profilePhoto role country email whatsapp');
 
         if (!service) {
             return res.status(404).json({ message: 'Serviço não encontrado' });
