@@ -7,7 +7,7 @@ import Footer from '@/components/Footer';
 import { 
   Trophy, Upload, Video, Play, ThumbsUp, Share2, Info, X, 
   Instagram, Scissors, Type, CheckCircle, ShieldAlert,
-  MessageCircle, Gift, AlertTriangle
+  MessageCircle, Gift, AlertTriangle, Clock
 } from 'lucide-react';
 
 import { toast } from 'sonner';
@@ -31,7 +31,7 @@ export default function MotivaPrototype() {
 
   // States for Ranking/Feed
   const [activeTab, setActiveTab] = useState<'ranking' | 'historico' | 'regras'>('ranking');
-  const [historicalPhases] = useState<{ phase: number; winner: any }[]>([]);
+  const [historicalPhases] = useState<{ phase: number; winner: { name: string; title: string; likes: number; url: string } }[]>([]);
   const [videos, setVideos] = useState([
     { id: 1, author: 'Ana Silva', title: 'O Segredo da Persistência', likes: 1245, url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=400&h=700', rank: 1, liked: false },
     { id: 2, author: 'Carlos Mendes', title: 'Nunca Desista', likes: 982, url: 'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&q=80&w=400&h=700', rank: 2, liked: true },
@@ -44,7 +44,8 @@ export default function MotivaPrototype() {
     setIsLoggedIn(!!token);
   }, []);
 
-  const [timeLeft, setTimeLeft] = useState({ days: 2, hours: 14, minutes: 35, seconds: 0 });
+  // Timer set to exactly 1 month (30 days) to inaugurate Phase 1
+  const [timeLeft, setTimeLeft] = useState({ days: 30, hours: 0, minutes: 0, seconds: 0 });
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
@@ -346,6 +347,14 @@ export default function MotivaPrototype() {
             <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '30px', color: '#FFD700' }}>Regras do Concurso MOTIVA</h2>
             
             <div style={{ display: 'grid', gap: '20px' }}>
+              <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
+                <div style={{ background: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px' }}><Clock size={24} color="#FFD700" /></div>
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '5px' }}>Ciclos de 1 Mês</h3>
+                  <p style={{ color: '#aaa', lineHeight: 1.5 }}>O concurso MOTIVA está unicamente estruturado por <b>Fases exclusivas com a duração exata de 1 mês (30 dias)</b>. Após o relógio zerar, não são contabilizados mais envios ou votos, e a fase é oficial e definitivamente encerrada.</p>
+                </div>
+              </div>
+
               <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
                 <div style={{ background: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px' }}><Video size={24} color="#FFD700" /></div>
                 <div>
