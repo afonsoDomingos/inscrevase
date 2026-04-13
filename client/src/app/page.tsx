@@ -1,7 +1,7 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,7 +13,7 @@ import Cookies from "js-cookie";
 import SocialProof from "@/components/home/SocialProof";
 import Testimonials from "@/components/home/Testimonials";
 import Footer from "@/components/Footer";
-import { Calendar, Users, TrendingUp, Star } from "lucide-react";
+import { Calendar, Users, TrendingUp, Star, Trophy } from "lucide-react";
 import { TextDispersion } from "@/components/TextDispersion";
 import TeamSection from "@/components/home/TeamSection";
 import { formService } from "@/lib/formService";
@@ -41,6 +41,35 @@ export default function Home() {
   const { handleMouseMove } = useSpotlight();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
+
+  // Motiva Contest Floating Button State
+  const [motivaPosition, setMotivaPosition] = useState({ top: '80%', right: '5%' });
+  const [isMotivaVisible, setIsMotivaVisible] = useState(false);
+
+  useEffect(() => {
+    const showTimeout = setTimeout(() => setIsMotivaVisible(true), 5000);
+    
+    const interval = setInterval(() => {
+      setIsMotivaVisible(v => {
+        if (!v) {
+          // When turning visible, pick a random position
+          const positions = [
+            { top: '80%', right: '5%' },
+            { bottom: '15%', left: '5%' },
+            { top: '25%', right: '2%' }
+          ];
+          setMotivaPosition(positions[Math.floor(Math.random() * positions.length)]);
+          return true;
+        }
+        return false;
+      });
+    }, 12000); // Toggles state every 12 seconds
+    
+    return () => {
+      clearTimeout(showTimeout);
+      clearInterval(interval);
+    };
+  }, []);
 
   const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
   const [impactStats, setImpactStats] = useState<PublicImpactStats | null>(null);
@@ -1258,6 +1287,50 @@ export default function Home() {
 
       {/* Tesla-inspired Minimalist Footer with Developer Credits */}
       < Footer />
+
+      {/* Strategic Floating MOTIVA Button */}
+      <AnimatePresence>
+        {isMotivaVisible && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0, rotate: -10 }}
+            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+            exit={{ scale: 0, opacity: 0, rotate: 10 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+            style={{
+              position: 'fixed',
+              ...motivaPosition,
+              zIndex: 9999,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
+          >
+            <Link href="/motiva" style={{ textDecoration: 'none' }}>
+              <motion.div 
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                  padding: '12px 24px',
+                  borderRadius: '50px',
+                  color: '#000',
+                  fontWeight: 900,
+                  fontSize: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: '0 10px 30px rgba(255, 215, 0, 0.4)',
+                  border: '2px solid rgba(255, 255, 255, 0.5)'
+                }}
+              >
+                <Trophy size={20} />
+                <span style={{ textTransform: 'uppercase', letterSpacing: '1px' }}>Prémio Motiva</span>
+              </motion.div>
+            </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </main >
   );
 }

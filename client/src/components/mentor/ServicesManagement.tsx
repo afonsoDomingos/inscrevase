@@ -14,7 +14,7 @@ export default function ServicesManagement() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingService, setEditingService] = useState<ServiceModel | null>(null);
 
-    const [formData, setFormData] = useState<CreateServiceData>({
+    const [formData, setFormData] = useState<CreateServiceData & { whatsapp: string }>({
         title: '',
         description: '',
         category: 'Consultoria',
