@@ -6,16 +6,24 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { 
   Trophy, Upload, Video, Play, ThumbsUp, Share2, Info, X, 
-  Instagram, Scissors, Type, CheckCircle, ShieldAlert,
+  Scissors, Type, CheckCircle, ShieldAlert,
   MessageCircle, Gift, AlertTriangle, Clock
 } from 'lucide-react';
 
 import { toast } from 'sonner';
 import Cookies from 'js-cookie';
 import Link from 'next/link';
+import { motivaService, MotivaContest, MotivaEntry } from '@/lib/motivaService';
 
 export default function MotivaPrototype() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+  
+  // Real Data States
+  const [contestData, setContestData] = useState<MotivaContest | null>(null);
+  const [realEntries, setRealEntries] = useState<MotivaEntry[]>([]);
+  const [historicalData, setHistoricalData] = useState<MotivaContest[]>([]);
+  const [currentUploadCount, setCurrentUploadCount] = useState(0);
   
   // States for Upload Flow
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -24,28 +32,52 @@ export default function MotivaPrototype() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Phase Logic
-  const currentPhase = 1;
-  const [uploadCount] = useState(10); // Simulating 10/10 limit reached
-  const UPLOAD_LIMIT = 10;
-
   // States for Ranking/Feed
   const [activeTab, setActiveTab] = useState<'ranking' | 'historico' | 'regras'>('ranking');
-  const [historicalPhases] = useState<{ phase: number; winner: { name: string; title: string; likes: number; url: string } }[]>([]);
-  const [videos, setVideos] = useState([
-    { id: 1, author: 'Ana Silva', title: 'O Segredo da Persistência', likes: 1245, url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=400&h=700', rank: 1, liked: false },
-    { id: 2, author: 'Carlos Mendes', title: 'Nunca Desista', likes: 982, url: 'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&q=80&w=400&h=700', rank: 2, liked: true },
-    { id: 3, author: 'Mariana Costa', title: 'Superando Limites', likes: 856, url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=400&h=700', rank: 3, liked: false },
-    { id: 4, author: 'João Pedro', title: 'Acorde Cedo, Vença', likes: 640, url: 'https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?auto=format&fit=crop&q=80&w=400&h=700', rank: 4, liked: false }
+  const [exampleVideos] = useState([
+    { id: 1, author: 'Exemplo: Ana Silva', title: 'O Segredo da Persistência', likes: 1245, url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=400&h=700', rank: 1, liked: false },
+    { id: 2, author: 'Exemplo: Carlos Mendes', title: 'Nunca Desista', likes: 982, url: 'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&q=80&w=400&h=700', rank: 2, liked: true }
   ]);
+
 
   useEffect(() => {
     const token = Cookies.get('token');
     setIsLoggedIn(!!token);
+    loadContestData();
   }, []);
+
+  const loadContestData = async () => {
+    setLoading(true);
+    const result = await motivaService.getActiveContest();
+    if (result) {
+      setContestData(result.contest);
+      setCurrentUploadCount(result.entryCount);
+      
+      // Load entries for this phase
+      const entries = await motivaService.getEntries(result.contest.phase);
+      setRealEntries(entries);
+      
+      // Update timer based on real endDate
+      const end = new Date(result.contest.endDate).getTime();
+      const now = new Date().getTime();
+      const diff = Math.max(0, end - now);
+      
+      setTimeLeft({
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((diff % (1000 * 60)) / 1000)
+      });
+    }
+
+    const winners = await motivaService.getWinners();
+    setHistoricalData(winners);
+    setLoading(false);
+  };
 
   // Timer set to exactly 1 month (30 days) to inaugurate Phase 1
   const [timeLeft, setTimeLeft] = useState({ days: 30, hours: 0, minutes: 0, seconds: 0 });
+
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
@@ -81,29 +113,50 @@ export default function MotivaPrototype() {
     }
   };
 
-  const submitVideo = () => {
+  const submitVideo = async () => {
+    if (!contestData) return;
+    
     setIsUploading(true);
-    setTimeout(() => {
+    try {
+      await motivaService.uploadEntry({
+        title: textOverlay || 'Sem Título',
+        videoUrl: videoPreviewUrl, // No protótipo ainda é um blob URL, na real seria o link do storage
+        phase: contestData.phase
+      });
+      
       toast.success('Vídeo enviado com sucesso para aprovação!');
       setIsUploading(false);
       setIsUploadModalOpen(false);
       setVideoPreviewUrl('');
       setTextOverlay('');
-    }, 2000);
+      loadContestData(); // Refresh counts
+    } catch (error) {
+      const message = (error as Error).message || 'Erro ao enviar vídeo.';
+      toast.error(message);
+      setIsUploading(false);
+    }
   };
 
-  const handleLike = (id: number) => {
+  const handleLike = async (entryId: string) => {
     if (!isLoggedIn) {
       toast.error('Tem de iniciar sessão para votar.');
       return;
     }
-    setVideos(videos.map(v => {
-      if (v.id === id) {
-        return { ...v, likes: v.liked ? v.likes - 1 : v.likes + 1, liked: !v.liked };
-      }
-      return v;
-    }));
+    
+    try {
+      const result = await motivaService.toggleLike(entryId);
+      setRealEntries(prev => prev.map(entry => {
+        if (entry._id === entryId) {
+          return { ...entry, likeCount: result.likes, liked: result.liked };
+        }
+        return entry;
+      }));
+    } catch (error) {
+      const message = (error as Error).message || 'Erro ao votar.';
+      toast.error(message);
+    }
   };
+
 
   return (
     <main style={{ backgroundColor: '#050505', minHeight: '100vh', color: '#fff' }}>
@@ -124,19 +177,21 @@ export default function MotivaPrototype() {
             Prémio <span style={{ color: '#FFD700' }}>MOTIVA</span>
           </h1>
           <p style={{ fontSize: '1.2rem', color: '#aaa', maxWidth: '600px', margin: '0 auto 2.5rem', lineHeight: 1.6 }}>
-            Fase atual: <strong style={{ color: '#fff' }}>FASE {currentPhase}</strong>. Inspire milhares de pessoas, concorra ao topo do ranking votado pelos Admins e ganhe prémios exclusivos.
+            Fase atual: <strong style={{ color: '#fff' }}>FASE {contestData?.phase || 1}</strong>. {contestData ? 'Inspire milhares de pessoas e concorra aos prémios reais!' : 'Prepare-se: novas fases e prémios reais em breve.'}
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', marginBottom: '3rem' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.3)', padding: '12px 24px', borderRadius: '12px' }}>
               <Gift size={22} color="#FFD700" />
-              <span style={{ fontSize: '1.1rem' }}><strong>Prémio Fase {currentPhase}:</strong> Assinatura Premium 1 Ano + 10.000 MT</span>
+              <span style={{ fontSize: '1.1rem' }}>
+                <strong>Prémio Fase {contestData?.phase || 1}:</strong> {contestData ? `${contestData.rewardTitle} - ${contestData.rewardValue}` : 'Carregando prémios reais...'}
+              </span>
             </div>
             
             <div style={{ display: 'flex', gap: '15px' }}>
               {Object.entries(timeLeft).map(([unit, value]) => (
                 <div key={unit} style={{ background: '#111', padding: '12px 20px', borderRadius: '12px', border: '1px solid #333', minWidth: '80px', boxShadow: '0 10px 20px rgba(0,0,0,0.5)' }}>
-                  <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#FFD700' }}>{String(value).padStart(2, '0')}</div>
+                  <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#FFD700' }}>{loading ? '--' : String(value).padStart(2, '0')}</div>
                   <div style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', fontWeight: 700 }}>{unit === 'days' ? 'Dias' : unit === 'hours' ? 'Horas' : unit === 'minutes' ? 'Min' : 'Seg'}</div>
                 </div>
               ))}
@@ -149,8 +204,12 @@ export default function MotivaPrototype() {
                 toast.error('Inicie sessão para participar!');
                 return;
               }
-              if (uploadCount >= UPLOAD_LIMIT) {
-                toast.error(`O limite de ${UPLOAD_LIMIT} vídeos da Fase ${currentPhase} já foi alcançado. Aguarde e prepare-se para a próxima fase! 🔥`, { duration: 6000 });
+              if (!contestData) {
+                toast.error('Nenhum concurso ativo no momento.');
+                return;
+              }
+              if (currentUploadCount >= (contestData.maxUploads || 10)) {
+                toast.error(`O limite de ${contestData.maxUploads} vídeos da Fase ${contestData.phase} já foi alcançado. Aguarde e prepare-se para a próxima fase! 🔥`, { duration: 6000 });
                 return;
               }
               setIsUploadModalOpen(true);
@@ -237,23 +296,23 @@ export default function MotivaPrototype() {
 
         {/* Ranking Feed */}
         {activeTab === 'ranking' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '30px' }}>
-            {videos.map((video) => (
-              <div key={video.id} style={{ 
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '30px' }}>
+            {/* Real Entries */}
+            {realEntries.map((entry, index) => (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} key={entry._id} style={{ 
                 background: '#111', 
                 borderRadius: '20px', 
                 overflow: 'hidden',
-                border: video.rank === 1 ? '2px solid #FFD700' : '1px solid #222',
+                border: index === 0 ? '2px solid #FFD700' : '1px solid #222',
                 position: 'relative'
               }}>
-                <div style={{ position: 'absolute', top: '15px', left: '15px', background: 'rgba(0,0,0,0.8)', padding: '5px 12px', borderRadius: '20px', fontWeight: 800, color: video.rank === 1 ? '#FFD700' : '#fff', zIndex: 10 }}>
-                  #{video.rank}
+                <div style={{ position: 'absolute', top: '15px', left: '15px', background: 'rgba(0,0,0,0.8)', padding: '5px 12px', borderRadius: '20px', fontWeight: 800, color: index === 0 ? '#FFD700' : '#fff', zIndex: 10 }}>
+                  #{index + 1}
                 </div>
                 
-                {/* Simulated Video Placeholder */}
                 <div style={{ position: 'relative', height: '450px', background: '#222' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={video.url} alt={video.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} />
+                  <img src={entry.videoUrl || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=400&h=700'} alt={entry.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} />
                   <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                       <Play size={24} color="#fff" fill="#fff" />
@@ -262,40 +321,61 @@ export default function MotivaPrototype() {
                 </div>
 
                 <div style={{ padding: '20px' }}>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '5px', color: '#fff' }}>{video.title}</h3>
-                  <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '15px' }}>por {video.author}</p>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '5px', color: '#fff' }}>{entry.title}</h3>
+                  <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '15px' }}>por {entry.user?.name || 'Utilizador'}</p>
                   
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <button 
-                      onClick={() => handleLike(video.id)}
+                      onClick={() => handleLike(entry._id)}
                       style={{ 
                         display: 'flex', alignItems: 'center', gap: '8px', 
-                        background: video.liked ? 'rgba(255, 215, 0, 0.2)' : '#222', 
+                        background: entry.liked ? 'rgba(255, 215, 0, 0.2)' : '#222', 
                         border: 'none', padding: '8px 16px', borderRadius: '15px', 
-                        color: video.liked ? '#FFD700' : '#fff', 
+                        color: entry.liked ? '#FFD700' : '#fff', 
                         cursor: 'pointer', fontWeight: 600, transition: '0.2s'
                       }}
                     >
-                      <ThumbsUp size={16} fill={video.liked ? '#FFD700' : 'none'} />
-                      {video.likes}
+                      <ThumbsUp size={16} fill={entry.liked ? '#FFD700' : 'none'} />
+                      {entry.likeCount}
                     </button>
                     
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                       <button 
                         title="Partilhar no WhatsApp" 
-                        onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent('Olá! Participei no concurso MOTIVA da Inscreva-se! Cria tua conta grátis, lê as regras e deixa o teu voto no meu vídeo aqui: ' + window.location.href)}`, '_blank')}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(37, 211, 102, 0.15)', border: '1px solid rgba(37, 211, 102, 0.3)', color: '#25D366', padding: '8px', borderRadius: '50%', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 10px rgba(37, 211, 102, 0.2)' }}
+                        onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`Vota no meu vídeo "${entry.title}" no concurso MOTIVA da Inscreva-se! ` + window.location.href)}`, '_blank')}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(37, 211, 102, 0.15)', border: '1px solid rgba(37, 211, 102, 0.3)', color: '#25D366', padding: '8px', borderRadius: '50%', cursor: 'pointer', transition: 'all 0.2s' }}
                       >
                         <MessageCircle size={20} />
                       </button>
-                      <button title="Partilhar Link" style={{ background: 'transparent', border: 'none', color: '#888', cursor: 'pointer', padding: '5px' }}><Share2 size={20} /></button>
-                      <button title="Instagram" style={{ background: 'transparent', border: 'none', color: '#888', cursor: 'pointer', padding: '5px' }}><Instagram size={20} /></button>
+                      <button title="Partilhar Link" onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copiado!'); }} style={{ background: 'transparent', border: 'none', color: '#888', cursor: 'pointer', padding: '5px' }}><Share2 size={20} /></button>
                     </div>
                   </div>
                 </div>
+              </motion.div>
+            ))}
+
+            {/* Example Videos (Instructional) */}
+            {realEntries.length === 0 && exampleVideos.map((video) => (
+              <div key={video.id} style={{ 
+                background: '#111', 
+                borderRadius: '20px', 
+                overflow: 'hidden',
+                border: '1px solid #222',
+                opacity: 0.6,
+                position: 'relative'
+              }}>
+                <div style={{ position: 'absolute', top: '15px', right: '15px', background: 'rgba(255,215,0,0.2)', color: '#FFD700', padding: '4px 10px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, zIndex: 10 }}>EXEMPLO</div>
+                <div style={{ position: 'relative', height: '450px', background: '#222' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={video.url} alt={video.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} />
+                </div>
+                <div style={{ padding: '20px' }}>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '5px', color: '#fff' }}>{video.title}</h3>
+                  <p style={{ color: '#888', fontSize: '0.9rem' }}>{video.author}</p>
+                </div>
               </div>
             ))}
-          </motion.div>
+          </div>
         )}
 
         {/* Historical Feed (Past Winners) */}
@@ -303,37 +383,35 @@ export default function MotivaPrototype() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ maxWidth: '800px', margin: '0 auto' }}>
             <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '30px', color: '#FFD700', textAlign: 'center' }}>Vencedores Anteriores</h2>
             <div style={{ display: 'grid', gap: '40px' }}>
-              {historicalPhases.length === 0 ? (
+              {historicalData.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '60px 20px', background: '#111', borderRadius: '24px', border: '1px dashed #333' }}>
                   <Trophy size={48} color="#333" style={{ marginBottom: '20px' }} />
                   <h3 style={{ fontSize: '1.5rem', color: '#fff', marginBottom: '10px' }}>Ainda sem Edições Anteriores</h3>
                   <p style={{ color: '#aaa' }}>Nós estamos apenas na nossa Fase Inicial. Os próximos vencedores farão parte da história aqui.</p>
                 </div>
               ) : (
-                historicalPhases.map((hist) => (
-                  <div key={hist.phase} style={{ background: '#111', borderRadius: '24px', overflow: 'hidden', border: '1px solid #333', display: 'flex', flexDirection: 'column' }}>
+                historicalData.map((hist) => (
+                  <div key={hist._id} style={{ background: '#111', borderRadius: '24px', overflow: 'hidden', border: '1px solid #333', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ padding: '15px 30px', background: 'linear-gradient(90deg, #222, #111)', borderBottom: '1px solid #333', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFD700' }}>FASE {hist.phase}</h3>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#888' }}><Trophy size={16} /> Elevado pelos Admins</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#888' }}><Trophy size={16} /> Verificado pelos Admins</div>
                     </div>
-                    <div style={{ display: 'flex', padding: '30px', gap: '30px', alignItems: 'center' }}>
-                      {/* Simulated Video Placeholder */}
-                      <div style={{ position: 'relative', width: '200px', height: '350px', borderRadius: '15px', overflow: 'hidden', background: '#222', flexShrink: 0 }}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={hist.winner.url} alt={hist.winner.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Play size={32} color="#fff" fill="rgba(255,255,255,0.5)" />
+                    {hist.winner && (
+                      <div style={{ display: 'flex', padding: '30px', gap: '30px', alignItems: 'center' }}>
+                        <div style={{ position: 'relative', width: '200px', height: '350px', borderRadius: '15px', overflow: 'hidden', background: '#222', flexShrink: 0 }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={hist.winner.videoUrl} alt={hist.winner.videoTitle} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                        <div>
+                          <h4 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '10px', color: '#fff' }}>{hist.winner.videoTitle}</h4>
+                          <p style={{ color: '#FFD700', fontSize: '1.2rem', marginBottom: '20px', fontWeight: 600 }}>por {hist.winner.name}</p>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#222', padding: '8px 16px', borderRadius: '15px', color: '#fff', fontWeight: 600 }}>
+                            <ThumbsUp size={16} fill="#FFD700" color="#FFD700" />
+                            {hist.winner.likes} Gotos na fase final
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <h4 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '10px', color: '#fff' }}>{hist.winner.title}</h4>
-                        <p style={{ color: '#FFD700', fontSize: '1.2rem', marginBottom: '20px', fontWeight: 600 }}>por {hist.winner.name}</p>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#222', padding: '8px 16px', borderRadius: '15px', color: '#fff', fontWeight: 600 }}>
-                          <ThumbsUp size={16} fill="#FFD700" color="#FFD700" />
-                          {hist.winner.likes} Gotos e Preferência Admin
-                        </div>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 ))
               )}
