@@ -235,7 +235,7 @@ app.use('/api/settings', require('./routes/settingsRoutes'));
 app.use('/api/vacancies', require('./routes/vacancyRoutes'));
 app.use('/api/push', require('./routes/pushRoutes'));
 app.use('/api/admin/whatsapp', require('./routes/whatsappRoutes'));
-app.use('/api/motiva', require('./routes/motivaRoutes'));
+app.use('/api/motiva', require('./routes/motivaRoutes')); // Motiva Official Route
 
 // --- GLOBAL SMARTLINK REDIRECT ---
 // This allows clean links like inscreva-se.com/l/meu-evento
