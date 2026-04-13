@@ -6,7 +6,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { 
   Trophy, Upload, Video, Play, ThumbsUp, Share2, Info, X, 
-  Instagram, Facebook, Scissors, Type, CheckCircle, ShieldAlert 
+  Instagram, Facebook, Scissors, Type, CheckCircle, ShieldAlert,
+  MessageCircle, Clock, Gift, AlertTriangle
 } from 'lucide-react';
 
 import { toast } from 'sonner';
@@ -44,6 +45,30 @@ export default function MotivaPrototype() {
   useEffect(() => {
     const token = Cookies.get('token');
     setIsLoggedIn(!!token);
+  }, []);
+
+  const [timeLeft, setTimeLeft] = useState({ days: 2, hours: 14, minutes: 35, seconds: 0 });
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        let { days, hours, minutes, seconds } = prev;
+        if (seconds > 0) seconds--;
+        else {
+          seconds = 59;
+          if (minutes > 0) minutes--;
+          else {
+            minutes = 59;
+            if (hours > 0) hours--;
+            else {
+              hours = 23;
+              if (days > 0) days--;
+            }
+          }
+        }
+        return { days, hours, minutes, seconds };
+      });
+    }, 1000);
+    return () => clearInterval(timer);
   }, []);
 
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,6 +128,22 @@ export default function MotivaPrototype() {
           <p style={{ fontSize: '1.2rem', color: '#aaa', maxWidth: '600px', margin: '0 auto 2.5rem', lineHeight: 1.6 }}>
             Fase atual: <strong style={{ color: '#fff' }}>FASE {currentPhase}</strong>. Inspire milhares de pessoas, concorra ao topo do ranking votado pelos Admins e ganhe prémios exclusivos.
           </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', marginBottom: '3rem' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.3)', padding: '12px 24px', borderRadius: '12px' }}>
+              <Gift size={22} color="#FFD700" />
+              <span style={{ fontSize: '1.1rem' }}><strong>Prémio Fase {currentPhase}:</strong> Assinatura Premium 1 Ano + 10.000 MT</span>
+            </div>
+            
+            <div style={{ display: 'flex', gap: '15px' }}>
+              {Object.entries(timeLeft).map(([unit, value]) => (
+                <div key={unit} style={{ background: '#111', padding: '12px 20px', borderRadius: '12px', border: '1px solid #333', minWidth: '80px', boxShadow: '0 10px 20px rgba(0,0,0,0.5)' }}>
+                  <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#FFD700' }}>{String(value).padStart(2, '0')}</div>
+                  <div style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', fontWeight: 700 }}>{unit === 'days' ? 'Dias' : unit === 'hours' ? 'Horas' : unit === 'minutes' ? 'Min' : 'Seg'}</div>
+                </div>
+              ))}
+            </div>
+          </div>
           
           <button 
             onClick={() => {
@@ -241,10 +282,16 @@ export default function MotivaPrototype() {
                       {video.likes}
                     </button>
                     
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                      <button title="Partilhar" style={{ background: 'transparent', border: 'none', color: '#888', cursor: 'pointer' }}><Share2 size={20} /></button>
-                      <button title="Instagram" style={{ background: 'transparent', border: 'none', color: '#888', cursor: 'pointer' }}><Instagram size={20} /></button>
-                      <button title="Facebook" style={{ background: 'transparent', border: 'none', color: '#888', cursor: 'pointer' }}><Facebook size={20} /></button>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <button 
+                        title="Partilhar no WhatsApp" 
+                        onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent('Olá! Participei no concurso MOTIVA da Inscreva-se! Cria tua conta grátis, lê as regras e deixa o teu voto no meu vídeo aqui: ' + window.location.href)}`, '_blank')}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(37, 211, 102, 0.15)', border: '1px solid rgba(37, 211, 102, 0.3)', color: '#25D366', padding: '8px', borderRadius: '50%', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 10px rgba(37, 211, 102, 0.2)' }}
+                      >
+                        <MessageCircle size={20} />
+                      </button>
+                      <button title="Partilhar Link" style={{ background: 'transparent', border: 'none', color: '#888', cursor: 'pointer', padding: '5px' }}><Share2 size={20} /></button>
+                      <button title="Instagram" style={{ background: 'transparent', border: 'none', color: '#888', cursor: 'pointer', padding: '5px' }}><Instagram size={20} /></button>
                     </div>
                   </div>
                 </div>
@@ -315,6 +362,16 @@ export default function MotivaPrototype() {
                 <div>
                   <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '5px' }}>Conduta e Respeito</h3>
                   <p style={{ color: '#aaa', lineHeight: 1.5 }}>Não é permitido o uso de linguagem ofensiva, difamação, nudez ou qualquer conteúdo que viole os termos de comunidade. O respeito mútuo é obrigatório.</p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', marginTop: '10px', borderTop: '1px dashed #333', paddingTop: '30px' }}>
+                <div style={{ background: 'rgba(255,107,107,0.1)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,107,107,0.3)' }}><AlertTriangle size={24} color="#ff6b6b" /></div>
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '5px', color: '#ff6b6b', textTransform: 'uppercase' }}>Defesa Anti-Fraudes (Auditoria OBRIGATÓRIA)</h3>
+                  <p style={{ color: '#ccc', lineHeight: 1.6, fontSize: '1rem' }}>
+                    <strong>1 Conta = 1 Voto.</strong> Apenas os likes dados por utilizadores reais e engajados são contabilizados perante a nossa base de dados. Todo o nosso sistema possui auditoria severa contra votos falsos. A deteção de criação sistemática de contas múltiplas, <em>bots</em> ou farms de likes resultará na <b style={{ color: '#ff6b6b' }}>desclassificação imediata e irreversível</b> do participante ou vídeo do Hall of Fame. Jogue limpo e inspire!
+                  </p>
                 </div>
               </div>
             </div>
