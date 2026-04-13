@@ -20,6 +20,7 @@ import PaypalPayouts from '@/components/admin/PaypalPayouts';
 import BooksManager from '@/components/admin/BooksManager';
 import WhatsAppLogs from '@/components/dashboard/WhatsAppLogs';
 import VacanciesAdmin from '@/components/admin/VacanciesAdmin';
+import MotivaManager from '@/components/admin/MotivaManager';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Book, MessageCircle, Smartphone, Briefcase } from 'lucide-react';
@@ -52,7 +53,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
 import Tooltip from '@/components/common/Tooltip';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts' | 'books' | 'whatsapp' | 'vacancies';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts' | 'books' | 'whatsapp' | 'vacancies' | 'motiva';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -80,7 +81,7 @@ function AdminDashboardContent() {
     // Handle tab switching from URL
     useEffect(() => {
         const tab = searchParams.get('tab');
-        if (tab && (['overview', 'users', 'forms', 'submissions', 'support', 'finance', 'newsletter', 'blog', 'lessons', 'ads', 'referrals', 'smartlinks', 'settings', 'marketing', 'payouts', 'books', 'whatsapp', 'vacancies'].includes(tab))) {
+        if (tab && (['overview', 'users', 'forms', 'submissions', 'support', 'finance', 'newsletter', 'blog', 'lessons', 'ads', 'referrals', 'smartlinks', 'settings', 'marketing', 'payouts', 'books', 'whatsapp', 'vacancies', 'motiva'].includes(tab))) {
             setActiveTab(tab as Tab);
             
             // Auto expand relevant sections if needed
@@ -434,6 +435,7 @@ function AdminDashboardContent() {
                 { id: 'marketing', label: t('dashboard.marketing') || 'Marketing', icon: <Zap size={18} /> },
                 { id: 'referrals', label: t('referral.title') || 'Referenciações', icon: <Trophy size={18} /> },
                 { id: 'newsletter', label: t('dashboard.newsletter'), icon: <Mail size={18} /> },
+                { id: 'motiva', label: 'Prémio MOTIVA', icon: <Trophy size={18} /> },
             ]
         },
         {
@@ -1920,6 +1922,12 @@ function AdminDashboardContent() {
                     {activeTab === 'vacancies' && (
                         <ErrorBoundary>
                             <VacanciesAdmin />
+                        </ErrorBoundary>
+                    )}
+                    
+                    {activeTab === 'motiva' && (
+                        <ErrorBoundary>
+                            <MotivaManager />
                         </ErrorBoundary>
                     )}
 

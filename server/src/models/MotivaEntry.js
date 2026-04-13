@@ -30,7 +30,10 @@ const motivaEntrySchema = new mongoose.Schema({
     likeCount: {
         type: Number,
         default: 0
-    }
+    },
+    contactName: String,
+    contactWhatsApp: String,
+    contactEmail: String
 }, { timestamps: true });
 
 // Pre-save to keep likeCount updated for easier sorting

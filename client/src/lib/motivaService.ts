@@ -69,7 +69,7 @@ export const motivaService = {
         }
     },
 
-    uploadEntry: async (data: { title: string; videoUrl: string; phase: number }) => {
+    uploadEntry: async (data: { title: string; videoUrl: string; phase: number; contactName?: string; contactWhatsApp?: string; contactEmail?: string }) => {
         const token = Cookies.get('token');
         const response = await fetch(`${API_URL}/motiva/upload`, {
             method: 'POST',

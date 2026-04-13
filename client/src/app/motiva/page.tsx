@@ -7,8 +7,9 @@ import Footer from '@/components/Footer';
 import { 
   Trophy, Upload, Video, Play, ThumbsUp, Share2, Info, X, 
   Scissors, Type, CheckCircle, ShieldAlert,
-  MessageCircle, Gift, AlertTriangle, Clock
+  MessageCircle, Gift, AlertTriangle, Clock, Mail, User as UserIcon, Phone
 } from 'lucide-react';
+import { authService } from '@/lib/authService';
 
 import { toast } from 'sonner';
 import Cookies from 'js-cookie';
@@ -31,6 +32,11 @@ export default function MotivaPrototype() {
   const [textOverlay, setTextOverlay] = useState('');
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  
+  // Contact States
+  const [contactName, setContactName] = useState('');
+  const [contactWhatsApp, setContactWhatsApp] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
 
   // States for Ranking/Feed
   const [activeTab, setActiveTab] = useState<'ranking' | 'historico' | 'regras'>('ranking');
@@ -43,6 +49,13 @@ export default function MotivaPrototype() {
   useEffect(() => {
     const token = Cookies.get('token');
     setIsLoggedIn(!!token);
+    if (token) {
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+            setContactName(currentUser.name || '');
+            setContactEmail(currentUser.email || '');
+        }
+    }
     loadContestData();
   }, []);
 
@@ -120,8 +133,11 @@ export default function MotivaPrototype() {
     try {
       await motivaService.uploadEntry({
         title: textOverlay || 'Sem Título',
-        videoUrl: videoPreviewUrl, // No protótipo ainda é um blob URL, na real seria o link do storage
-        phase: contestData.phase
+        videoUrl: videoPreviewUrl,
+        phase: contestData.phase,
+        contactName,
+        contactWhatsApp,
+        contactEmail
       });
       
       toast.success('Vídeo enviado com sucesso para aprovação!');
@@ -542,8 +558,23 @@ export default function MotivaPrototype() {
                     </div>
                   </div>
 
-                  <div style={{ background: 'rgba(255,0,0,0.1)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-                    <p style={{ fontSize: '0.8rem', color: '#ff6b6b' }}>Ao enviar, concorda que o seu conteúdo tem duração menor que 1 minuto e respeita as regras do concurso.</p>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#aaa', marginBottom: '10px' }}><UserIcon size={16} /> Nome Completo</label>
+                    <input type="text" value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="Teu Nome" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333', background: '#000', color: '#fff' }} />
+                  </div>
+
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#aaa', marginBottom: '10px' }}><Phone size={16} /> WhatsApp</label>
+                    <input type="text" value={contactWhatsApp} onChange={(e) => setContactWhatsApp(e.target.value)} placeholder="Ex: 841234567" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333', background: '#000', color: '#fff' }} />
+                  </div>
+
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#aaa', marginBottom: '10px' }}><Mail size={16} /> Email de Contacto</label>
+                    <input type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="Teu Email" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333', background: '#000', color: '#fff' }} />
+                  </div>
+
+                  <div style={{ background: 'rgba(255,180,0,0.1)', padding: '15px', borderRadius: '8px', marginBottom: '20px', border: '1px solid rgba(255,215,0,0.2)' }}>
+                    <p style={{ fontSize: '0.8rem', color: '#FFD700' }}>Confirmas que os teus dados estão corretos? Receberás uma mensagem assim que o teu vídeo for aprovado.</p>
                   </div>
                 </div>
 
