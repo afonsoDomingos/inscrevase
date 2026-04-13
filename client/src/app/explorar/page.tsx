@@ -82,7 +82,7 @@ export default function ExploreEvents() {
                     creator: e.creator ? { name: e.creator.name, profilePhoto: e.creator.profilePhoto } : undefined,
                     createdAt: e.createdAt,
                     stats: { views: e.visits, submissions: e.submissionCount },
-                    link: `/hub/${e._id}`,
+                    link: `/f/${e.slug || e._id}`,
                     isCourse: e.category === 'Treinamento' || e.category === 'Educação'
                 }));
 
