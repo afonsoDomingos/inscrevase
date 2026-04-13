@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { serviceService, ServiceModel } from '@/lib/serviceService';
-import { formService, FormModel } from '@/lib/formService';
+import { serviceService } from '@/lib/serviceService';
+import { formService } from '@/lib/formService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, Loader2, Calendar, ArrowRight, Star, TrendingUp, Users, Sparkles, BookOpen, Briefcase, PlayCircle } from 'lucide-react';
+import { Search, Filter, Loader2, Calendar, ArrowRight, Star, TrendingUp, Users, Sparkles, BookOpen, Briefcase } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslate } from '@/context/LanguageContext';
@@ -44,7 +44,6 @@ export default function ExploreEvents() {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [showFilters, setShowFilters] = useState(false);
     const [sortBy, setSortBy] = useState<'newest' | 'popular' | 'price_low' | 'price_high'>('newest');
-    const [focusedField, setFocusedField] = useState<string | null>(null);
 
     useEffect(() => {
         const loadAllData = async () => {
@@ -563,22 +562,3 @@ export default function ExploreEvents() {
     );
 }
 
-function User({ size = 24, ...props }: React.SVGProps<SVGSVGElement> & { size?: number }) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width={size}
-            height={size}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-        </svg>
-    )
-}
