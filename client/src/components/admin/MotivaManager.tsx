@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Trophy, Check, X, Play, Clock, Gift, Eye, Trash2, ShieldCheck, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Trophy, Check, X, Play, Clock, Eye, ShieldCheck, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import Cookies from 'js-cookie';
 
@@ -40,13 +40,12 @@ export default function MotivaManager() {
         setLoading(true);
         try {
             const token = Cookies.get('token');
-            // We'll add this specific admin route to the controller/routes if not exists
             const response = await fetch(`${API_URL}/motiva/admin/entries`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
             if (response.ok) setEntries(data);
-        } catch (error) {
+        } catch {
             toast.error('Erro ao carregar entradas do concurso.');
         } finally {
             setLoading(false);
@@ -73,7 +72,7 @@ export default function MotivaManager() {
                 toast.success(status === 'approved' ? 'Vídeo aprovado e listado!' : 'Vídeo rejeitado.');
                 setEntries(prev => prev.map(e => e._id === entryId ? { ...e, status } : e));
             }
-        } catch (error) {
+        } catch {
             toast.error('Erro ao atualizar estado.');
         }
     };
@@ -95,10 +94,10 @@ export default function MotivaManager() {
                 toast.success(`Fase ${phaseForm.phase} iniciada com sucesso!`);
                 setShowNewPhaseModal(false);
             } else {
-                const error = await response.json();
-                toast.error(error.message);
+                const errorData = await response.json();
+                toast.error(errorData.message);
             }
-        } catch (error) {
+        } catch {
             toast.error('Erro ao criar nova fase.');
         }
     };
@@ -140,10 +139,10 @@ export default function MotivaManager() {
 
             {/* Filters */}
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid #222', paddingBottom: '20px' }}>
-                {['pending', 'approved', 'rejected', 'all'].map((f) => (
+                {(['pending', 'approved', 'rejected', 'all'] as const).map((f) => (
                     <button 
                         key={f}
-                        onClick={() => setFilter(f as any)}
+                        onClick={() => setFilter(f)}
                         style={{
                             padding: '8px 20px',
                             background: filter === f ? 'rgba(255,215,0,0.1)' : 'transparent',
