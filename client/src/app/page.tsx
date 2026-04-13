@@ -42,6 +42,9 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
 
+  // Define admin switch for Motiva
+  const [isMotivaEnabledAdmin] = useState(true);
+
   // Motiva Contest Floating Button State
   const [motivaPosition, setMotivaPosition] = useState({ top: '80%', right: '5%' });
   const [isMotivaVisible, setIsMotivaVisible] = useState(false);
@@ -1288,9 +1291,9 @@ export default function Home() {
       {/* Tesla-inspired Minimalist Footer with Developer Credits */}
       < Footer />
 
-      {/* Strategic Floating MOTIVA Button */}
+      {/* Strategic Floating MOTIVA Button (Only shows if Admin enabled) */}
       <AnimatePresence>
-        {isMotivaVisible && (
+        {isMotivaEnabledAdmin && isMotivaVisible && (
           <motion.div
             initial={{ scale: 0, opacity: 0, rotate: -10 }}
             animate={{ scale: 1, opacity: 1, rotate: 0 }}
