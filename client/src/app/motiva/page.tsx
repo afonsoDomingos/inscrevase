@@ -190,7 +190,7 @@ export default function MotivaPrototype() {
             CONCURSO OFICIAL
           </div>
           <h1 style={{ fontSize: 'clamp(3rem, 8vw, 5rem)', fontWeight: 900, marginBottom: '1rem', letterSpacing: '-2px', textTransform: 'uppercase' }}>
-            Prémio <span style={{ color: '#FFD700' }}>MOTIVA</span>
+            <span style={{ color: '#fff' }}>Prémio</span> <span style={{ color: '#FFD700' }}>MOTIVA</span>
           </h1>
           <p style={{ fontSize: '1.2rem', color: '#aaa', maxWidth: '600px', margin: '0 auto 2.5rem', lineHeight: 1.6 }}>
             Fase atual: <strong style={{ color: '#fff' }}>FASE {contestData?.phase || 1}</strong>. {contestData ? 'Inspire milhares de pessoas e concorra aos prémios reais!' : 'Prepare-se: novas fases e prémios reais em breve.'}

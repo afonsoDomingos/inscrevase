@@ -435,7 +435,7 @@ function AdminDashboardContent() {
                 { id: 'marketing', label: t('dashboard.marketing') || 'Marketing', icon: <Zap size={18} /> },
                 { id: 'referrals', label: t('referral.title') || 'Referenciações', icon: <Trophy size={18} /> },
                 { id: 'newsletter', label: t('dashboard.newsletter'), icon: <Mail size={18} /> },
-                { id: 'motiva', label: 'Prémio MOTIVA', icon: <Trophy size={18} /> },
+                { id: 'motiva', label: 'Prémio MOTIVA', icon: <Trophy size={18} />, isNew: true },
             ]
         },
         {
@@ -456,7 +456,7 @@ function AdminDashboardContent() {
 
     ].map(group => ({
         ...group,
-        items: group.items.filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing' && item.id !== 'payouts' && item.id !== 'whatsapp' && item.id !== 'vacancies') || user?.role === 'SuperAdmin' || (user?.role === 'admin' && item.id === 'vacancies'))
+        items: group.items.filter(item => (item.id !== 'finance' && item.id !== 'ads' && item.id !== 'settings' && item.id !== 'marketing' && item.id !== 'payouts' && item.id !== 'whatsapp' && item.id !== 'vacancies' && item.id !== 'motiva') || user?.role === 'SuperAdmin' || (user?.role === 'admin' && (item.id === 'vacancies' || item.id === 'motiva')))
     }));
 
     return (
@@ -560,6 +560,20 @@ function AdminDashboardContent() {
                                     {!isDesktopSidebarCollapsed && (
                                         <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                             {item.label}
+                                        </span>
+                                    )}
+                                    {!isDesktopSidebarCollapsed && item.isNew && (
+                                        <span style={{
+                                            marginLeft: '8px',
+                                            padding: '2px 6px',
+                                            background: activeTab === item.id ? '#000' : '#FFD700',
+                                            color: activeTab === item.id ? '#FFD700' : '#000',
+                                            borderRadius: '6px',
+                                            fontSize: '0.6rem',
+                                            fontWeight: 900,
+                                            textTransform: 'uppercase'
+                                        }}>
+                                            Novo
                                         </span>
                                     )}
                                     {!isDesktopSidebarCollapsed && item.id === 'support' && unreadCount > 0 && (
