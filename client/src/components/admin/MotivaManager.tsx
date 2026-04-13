@@ -14,6 +14,9 @@ interface MotivaEntry {
     status: 'pending' | 'approved' | 'rejected';
     phase: number;
     likeCount: number;
+    contactName?: string;
+    contactWhatsApp?: string;
+    contactEmail?: string;
     createdAt: string;
 }
 
@@ -178,8 +181,11 @@ export default function MotivaManager() {
                         ) : filteredEntries.map((entry) => (
                             <tr key={entry._id} style={{ borderBottom: '1px solid #1a1a1a' }}>
                                 <td style={{ padding: '20px' }}>
-                                    <div style={{ fontWeight: 700 }}>{entry.user?.name}</div>
-                                    <div style={{ fontSize: '0.8rem', color: '#555' }}>{entry.user?.email}</div>
+                                    <div style={{ fontWeight: 700 }}>{entry.contactName || entry.user?.name}</div>
+                                    <div style={{ fontSize: '0.8rem', color: '#888' }}>📧 {entry.contactEmail || entry.user?.email}</div>
+                                    {entry.contactWhatsApp && (
+                                        <div style={{ fontSize: '0.8rem', color: '#25D366', fontWeight: 600 }}>📱 {entry.contactWhatsApp}</div>
+                                    )}
                                 </td>
                                 <td style={{ padding: '20px' }}>
                                     <button 
