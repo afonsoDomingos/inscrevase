@@ -262,7 +262,7 @@ export default function MotivaPrototype() {
                 </div>
 
                 <div style={{ padding: '20px' }}>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '5px' }}>{video.title}</h3>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '5px', color: '#fff' }}>{video.title}</h3>
                   <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '15px' }}>por {video.author}</p>
                   
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -306,8 +306,8 @@ export default function MotivaPrototype() {
               {historicalPhases.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '60px 20px', background: '#111', borderRadius: '24px', border: '1px dashed #333' }}>
                   <Trophy size={48} color="#333" style={{ marginBottom: '20px' }} />
-                  <h3 style={{ fontSize: '1.5rem', color: '#888', marginBottom: '10px' }}>Ainda sem Edições Anteriores</h3>
-                  <p style={{ color: '#555' }}>Nós estamos apenas na nossa Fase Inicial. Os próximos vencedores farão parte da história aqui.</p>
+                  <h3 style={{ fontSize: '1.5rem', color: '#fff', marginBottom: '10px' }}>Ainda sem Edições Anteriores</h3>
+                  <p style={{ color: '#aaa' }}>Nós estamos apenas na nossa Fase Inicial. Os próximos vencedores farão parte da história aqui.</p>
                 </div>
               ) : (
                 historicalPhases.map((hist) => (
@@ -326,7 +326,7 @@ export default function MotivaPrototype() {
                         </div>
                       </div>
                       <div>
-                        <h4 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '10px' }}>{hist.winner.title}</h4>
+                        <h4 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '10px', color: '#fff' }}>{hist.winner.title}</h4>
                         <p style={{ color: '#FFD700', fontSize: '1.2rem', marginBottom: '20px', fontWeight: 600 }}>por {hist.winner.name}</p>
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#222', padding: '8px 16px', borderRadius: '15px', color: '#fff', fontWeight: 600 }}>
                           <ThumbsUp size={16} fill="#FFD700" color="#FFD700" />
@@ -350,7 +350,7 @@ export default function MotivaPrototype() {
               <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
                 <div style={{ background: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px' }}><Clock size={24} color="#FFD700" /></div>
                 <div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '5px' }}>Ciclos de 1 Mês</h3>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '5px', color: '#fff' }}>Ciclos de 1 Mês</h3>
                   <p style={{ color: '#aaa', lineHeight: 1.5 }}>O concurso MOTIVA está unicamente estruturado por <b>Fases exclusivas com a duração exata de 1 mês (30 dias)</b>. Após o relógio zerar, não são contabilizados mais envios ou votos, e a fase é oficial e definitivamente encerrada.</p>
                 </div>
               </div>
@@ -358,7 +358,7 @@ export default function MotivaPrototype() {
               <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
                 <div style={{ background: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px' }}><Video size={24} color="#FFD700" /></div>
                 <div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '5px' }}>Formato e Duração</h3>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '5px', color: '#fff' }}>Formato e Duração</h3>
                   <p style={{ color: '#aaa', lineHeight: 1.5 }}>Os vídeos devem ser gravados na vertical (formato Reels/TikTok) e ter a duração <b>máxima de 1 minuto (60 segundos)</b>. Vídeos com maior duração serão automaticamente desclassificados.</p>
                 </div>
               </div>
@@ -366,7 +366,7 @@ export default function MotivaPrototype() {
               <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
                 <div style={{ background: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px' }}><Info size={24} color="#FFD700" /></div>
                 <div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '5px' }}>Conteúdo Motivacional</h3>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '5px', color: '#fff' }}>Conteúdo Motivacional</h3>
                   <p style={{ color: '#aaa', lineHeight: 1.5 }}>O núcleo da mensagem deve ser estritamente inspirador, educativo ou motivacional. Fale sobre superação, carreira, foco ou desenvolvimento pessoal.</p>
                 </div>
               </div>
@@ -374,7 +374,7 @@ export default function MotivaPrototype() {
               <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
                 <div style={{ background: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px' }}><ShieldAlert size={24} color="#FFD700" /></div>
                 <div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '5px' }}>Conduta e Respeito</h3>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '5px', color: '#fff' }}>Conduta e Respeito</h3>
                   <p style={{ color: '#aaa', lineHeight: 1.5 }}>Não é permitido o uso de linguagem ofensiva, difamação, nudez ou qualquer conteúdo que viole os termos de comunidade. O respeito mútuo é obrigatório.</p>
                 </div>
               </div>
@@ -418,7 +418,7 @@ export default function MotivaPrototype() {
                 {!videoPreviewUrl ? (
                   <div style={{ textAlign: 'center', padding: '2rem' }}>
                     <Upload size={48} color="#FFD700" style={{ marginBottom: '1rem' }} />
-                    <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Arraste o seu vídeo vertical</h3>
+                    <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: '#fff' }}>Arraste o seu vídeo vertical</h3>
                     <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '2rem' }}>MP4 ou MOV. Máximo 60 segundos.</p>
                     <label style={{ cursor: 'pointer', background: '#333', padding: '12px 24px', borderRadius: '50px', fontWeight: 600 }}>
                       Selecionar Ficheiro
