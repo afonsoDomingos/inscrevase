@@ -11,6 +11,7 @@ export interface ServiceModel {
         profilePhoto?: string;
         role: string;
         country?: string;
+        whatsapp?: string;
     };
     title: string;
     description: string;

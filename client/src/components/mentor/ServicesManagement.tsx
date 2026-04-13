@@ -67,13 +67,13 @@ export default function ServicesManagement() {
                     ...formData.contactInfo,
                     whatsapp: formData.whatsapp
                 }
-            };
+            } as CreateServiceData;
 
             if (editingService) {
                 await serviceService.updateService(editingService._id, submissionData);
                 toast.success(t('dashboard.servicesManagement.updateSuccess'));
             } else {
-                await serviceService.createService(submissionData as any);
+                await serviceService.createService(submissionData);
                 toast.success(t('dashboard.servicesManagement.createSuccess'));
             }
             setIsModalOpen(false);

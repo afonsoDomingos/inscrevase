@@ -71,7 +71,7 @@ export default function ExploreEvents() {
                     link: `/hub/${s._id}`,
                     isCourse: s.category === 'Treinamento' || s.category === 'Educação',
                     ctaText: s.ctaText,
-                    contactWhatsApp: s.contactInfo?.whatsapp || (s.creator ? (s.creator as any).whatsapp : '')
+                    contactWhatsApp: s.contactInfo?.whatsapp || (s.creator?.whatsapp || '')
                 }));
 
                 const normalizedEvents: UnifiedItem[] = (eventsData || []).map(e => ({
@@ -514,6 +514,11 @@ export default function ExploreEvents() {
                                                         href={`https://wa.me/${(item.contactWhatsApp || '').replace(/\D/g, '')}?text=${encodeURIComponent(`Olá! Vi o seu serviço "${item.title}" no Inscreva-se e gostaria de saber mais.`)}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
+                                                        onClick={() => {
+                                                            if (item.id) {
+                                                                serviceService.incrementInquiry(item.id).catch(console.error);
+                                                            }
+                                                        }}
                                                         style={{
                                                             background: '#000',
                                                             color: '#fff',
