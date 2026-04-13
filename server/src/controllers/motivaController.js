@@ -3,6 +3,11 @@ const MotivaEntry = require('../models/MotivaEntry');
 const User = require('../models/User');
 const whatsappService = require('../services/whatsappService');
 const sendEmail = require('../utils/emailService');
+const { 
+    generateMotivaSubmissionEmail, 
+    generateMotivaApprovalEmail, 
+    generateMotivaPhaseLaunchEmail 
+} = require('../utils/emailTemplates');
 
 // PUBLIC METHODS
 
@@ -103,15 +108,9 @@ exports.uploadEntry = async (req, res) => {
         }
 
         if (contactEmail) {
-            sendEmail(contactEmail, `Confirmação de Participação - Prémio MOTIVA`, `
-                <h2>Olá ${contactName}!</h2>
-                <p>Recebemos com sucesso a tua participação no <b>Prémio MOTIVA - Fase ${phase}</b>.</p>
-                <p><b>Vídeo:</b> ${title}</p>
-                <p>O teu vídeo está agora em fase de moderação. Assim que for aprovado, ele será listado no nosso site para votação pública.</p>
-                <p>Fica atento ao teu WhatsApp e Email para actualizações!</p>
-                <br/>
-                <p>Atenciosamente,<br/>Equipa Inscreva-se</p>
-            `).catch(e => console.error('Email Error:', e));
+            const emailHtml = generateMotivaSubmissionEmail(contactName, title);
+            sendEmail(contactEmail, `Vídeo Recebido! 🎬 - Prémio MOTIVA`, emailHtml)
+                .catch(e => console.error('Email Error:', e));
         }
 
         res.status(201).json({ message: 'Vídeo enviado com sucesso! Aguarde aprovação.', entry: newEntry });
@@ -181,29 +180,8 @@ exports.adminCreatePhase = async (req, res) => {
                 console.log(`📣 [Motiva Marketing] Broadcasting new phase to ${allEmails.size} recipients...`);
 
                 for (const email of allEmails) {
-                    await sendEmail(email, `🔥 Nova Fase do Prémio MOTIVA Disponível!`, `
-                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #111;">
-                            <h1 style="color: #B8860B; text-align: center;">O Prémio MOTIVA voltou! 🏆</h1>
-                            <p>Olá,</p>
-                            <p>Temos o prazer de anunciar que a <b>Fase ${phase}</b> do Prémio MOTIVA acaba de ser lançada!</p>
-                            <div style="background: #fdfdfd; padding: 25px; border: 1px solid #eee; border-radius: 15px; margin: 25px 0;">
-                                <h2 style="margin-top: 0;">Prémio desta Fase:</h2>
-                                <p style="font-size: 1.5rem; font-weight: 800; color: #B8860B;">${rewardTitle}</p>
-                                <p>${rewardValue}</p>
-                            </div>
-                            <p><b>O que precisas de fazer?</b></p>
-                            <ul>
-                                <li>Grava um vídeo de até 60 segundos com conteúdo inspirador.</li>
-                                <li>Faz o upload na plataforma <b>Inscreva-se</b>.</li>
-                                <li>Partilha e ganha likes para chegar ao topo do ranking!</li>
-                            </ul>
-                            <div style="text-align: center; margin-top: 40px;">
-                                <a href="https://inscreva-se.com/motiva" style="background: #FFD700; color: #000; padding: 15px 30px; border-radius: 30px; text-decoration: none; fontWeight: 800; display: inline-block;">PARTICIPAR AGORA</a>
-                            </div>
-                            <hr style="margin: 40px 0; border: 0; border-top: 1px solid #eee;"/>
-                            <p style="font-size: 0.8rem; color: #888; text-align: center;">Atenciosamente, <br/><b>Equipa Inscreva-se</b></p>
-                        </div>
-                    `);
+                    const emailHtml = generateMotivaPhaseLaunchEmail(phase, rewardTitle, rewardValue);
+                    await sendEmail(email, `🔥 Nova Fase do Prémio MOTIVA Disponível!`, emailHtml);
                     // Small delay to avoid rate limits if any
                     await new Promise(r => setTimeout(r, 100));
                 }
@@ -235,14 +213,9 @@ exports.adminUpdateEntryStatus = async (req, res) => {
             }
 
             if (contactEmail) {
-                sendEmail(contactEmail, `A tua participação foi APROVADA - Prémio MOTIVA`, `
-                    <h2>Parabéns ${contactName}!</h2>
-                    <p>O teu vídeo <b>"${title}"</b> foi aprovado pela nossa equipa e já está disponível para votação pública!</p>
-                    <p>Agora é hora de partilhar com os teus amigos e ganhar o máximo de votos possível para garantir o grande prémio da Fase ${phase}.</p>
-                    <p><a href="https://inscreva-se.com/motiva">Ver no Ranking Público</a></p>
-                    <br/>
-                    <p>Boa sorte!<br/>Equipa Inscreva-se</p>
-                `).catch(e => console.error('Email Error:', e));
+                const emailHtml = generateMotivaApprovalEmail(contactName, title);
+                sendEmail(contactEmail, `Vídeo APROVADO! 🚀 - Prémio MOTIVA`, emailHtml)
+                    .catch(e => console.error('Email Error:', e));
             }
         }
 

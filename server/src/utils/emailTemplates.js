@@ -1250,9 +1250,6 @@ const generateMilestoneEmail = (
         </div>
     `;
 };
-// ─────────────────────────────────────────────────────────────────────────────
-
-
 const generateApplicationConfirmationEmail = (candidateName, vacancyTitle) => {
     const accentColor = "#D4AF37";
     return `
@@ -1288,6 +1285,132 @@ const generateApplicationConfirmationEmail = (candidateName, vacancyTitle) => {
         </div>
     `;
 };
+const generateMotivaSubmissionEmail = (name, videoTitle) => {
+    const accentColor = "#D4AF37";
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, ${accentColor} 0%, #000000 100%); padding: 50px 20px; text-align: center; position: relative;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1;">
+                <h1 style="color: #ffffff; font-size: 24px; font-weight: 900; margin-top: 20px; letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 1;">Vídeo <span style="color: ${accentColor};">Recebido</span> 🎬</h1>
+            </div>
+            
+            <div style="padding: 45px;">
+                <div style="background-color: #fcfcfc; padding: 35px; border-radius: 20px; border: 1px solid #f0f0f0; border-left: 5px solid ${accentColor};">
+                    <p style="font-size: 18px; color: #111; margin-top: 0; font-weight: 800;">Olá, ${name}! 👋</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.7; margin-bottom: 25px;">
+                        O teu vídeo para o <b>Prémio MOTIVA</b> foi carregado com sucesso: <br>
+                        <strong style="color: #000; font-size: 18px; display: block; margin-top: 8px;">${videoTitle}</strong>
+                    </p>
+
+                    <div style="background: #ffffff; padding: 25px; border-radius: 16px; margin: 30px 0; border: 1px solid #f5f5f5;">
+                        <p style="margin: 0 0 10px 0; color: #111; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Estado da Candidatura:</p>
+                        <div style="display: inline-block; padding: 6px 15px; border-radius: 30px; background: ${accentColor}15; color: ${accentColor}; font-weight: 800; font-size: 12px; text-transform: uppercase;">
+                            🔍 Em Auditoria
+                        </div>
+                        <p style="margin: 15px 0 0 0; color: #666; font-size: 14px; line-height: 1.6;">
+                            A nossa equipa vai validar o conteúdo nas próximas horas. Assim que for aprovado, o teu vídeo será listado no ranking oficial e poderás começar a acumular votos!
+                        </p>
+                    </div>
+
+                    <p style="font-size: 14px; color: #888; font-style: italic;">
+                        Prepara-te para partilhar com os teus amigos assim que receberes a confirmação de aprovação. Boa sorte!
+                    </p>
+                </div>
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
+const generateMotivaApprovalEmail = (name, videoTitle) => {
+    const accentColor = "#D4AF37";
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, #2ecc71 0%, #000000 100%); padding: 50px 20px; text-align: center; position: relative;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1;">
+                <h1 style="color: #ffffff; font-size: 24px; font-weight: 900; margin-top: 20px; letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 1;">Vídeo <span style="color: #2ecc71;">Aprovado</span> 🚀</h1>
+            </div>
+            
+            <div style="padding: 45px;">
+                <div style="background-color: #fcfcfc; padding: 35px; border-radius: 20px; border: 1px solid #f0f0f0; border-left: 5px solid #2ecc71;">
+                    <p style="font-size: 18px; color: #111; margin-top: 0; font-weight: 800;">Parabéns, ${name}! 🎉</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.7; margin-bottom: 25px;">
+                        O teu vídeo <b>"${videoTitle}"</b> passou na nossa auditoria e já está **disponível para votação** no site oficial!
+                    </p>
+
+                    <div style="background: #ffffff; padding: 25px; border-radius: 16px; margin: 30px 0; border: 1px solid #f5f5f5; text-align: center;">
+                        <p style="margin: 0 0 15px 0; color: #111; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">É hora de brilhar!</p>
+                        <a href="https://inscreva-se.com/motiva" style="background: linear-gradient(135deg, #D4AF37 0%, #000 100%); color: #ffffff; padding: 18px 40px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 14px; display: inline-block; box-shadow: 0 10px 20px rgba(0,0,0,0.1); text-transform: uppercase;">VER MEU VÍDEO NO SITE</a>
+                    </div>
+
+                    <p style="font-size: 15px; color: #555; line-height: 1.7;">
+                        Partilha o link com toda a gente! Quantos mais likes tiveres, maior a tua hipótese de ganhar o prémio desta fase.
+                    </p>
+                </div>
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
+const generateMotivaPhaseLaunchEmail = (phase, rewardTitle, rewardValue) => {
+    const accentColor = "#D4AF37";
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, ${accentColor} 0%, #000000 100%); padding: 50px 20px; text-align: center; position: relative;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1;">
+                <div style="display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 100px; padding: 6px 18px; margin-top: 16px; position: relative; z-index: 1;">
+                    <span style="color: #fff; font-size: 11px; font-weight: 900; letter-spacing: 2px;">🏆 PRÉMIO MOTIVA</span>
+                </div>
+                <h1 style="color: #ffffff; font-size: 26px; font-weight: 900; margin-top: 20px; letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 1;">Nova Fase <span style="color: ${accentColor};">Lançada</span>!</h1>
+            </div>
+            
+            <div style="padding: 45px;">
+                <div style="background-color: #fcfcfc; padding: 35px; border-radius: 20px; border: 1px solid #f0f0f0; border-left: 5px solid ${accentColor};">
+                    <p style="font-size: 20px; color: #111; margin-top: 0; font-weight: 800;">O regresso mais aguardado! 🎉</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.7; margin-bottom: 25px;">
+                        Temos o prazer de anunciar que a <b>Fase ${phase}</b> do Prémio MOTIVA acaba de ser lançada. Esta é a tua oportunidade de mostrar o teu talento e ganhar prémios épicos!
+                    </p>
+
+                    <div style="background: linear-gradient(145deg, #ffffff 0%, #fdfbf1 100%); padding: 30px; border: 1px solid #eee; border-radius: 20px; margin: 30px 0; box-shadow: 0 4px 15px rgba(212,175,55,0.05);">
+                        <p style="margin: 0 0 10px 0; color: #888; font-size: 12px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">O Grande Prémio desta Fase:</p>
+                        <h2 style="margin: 0; font-size: 1.6rem; font-weight: 900; color: ${accentColor}; line-height: 1.2;">${rewardTitle}</h2>
+                        <p style="margin: 10px 0 0 0; color: #444; font-size: 14px;">${rewardValue}</p>
+                    </div>
+
+                    <div style="margin: 30px 0;">
+                        <p style="font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #111; margin-bottom: 15px;">Como Participar:</p>
+                        <div style="display: grid; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #555;">
+                                <span style="width: 24px; height: 24px; background: #000; color: #fff; border-radius: 50%; display: flex; items-center; justify-center; font-size: 12px; font-weight: 800; flex-shrink: 0;">1</span> 
+                                <span>Grava um vídeo inspirador de até 60 segundos.</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #555;">
+                                <span style="width: 24px; height: 24px; background: #000; color: #fff; border-radius: 50%; display: flex; items-center; justify-center; font-size: 12px; font-weight: 800; flex-shrink: 0;">2</span> 
+                                <span>Faz o upload no site <b>Inscreva-se</b>.</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #555;">
+                                <span style="width: 24px; height: 24px; background: #000; color: #fff; border-radius: 50%; display: flex; items-center; justify-center; font-size: 12px; font-weight: 800; flex-shrink: 0;">3</span> 
+                                <span>Acumula votos e sobe no ranking!</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 40px;">
+                        <a href="https://inscreva-se.com/motiva" style="background: linear-gradient(135deg, ${accentColor} 0%, #000 100%); color: #ffffff; padding: 20px 45px; text-decoration: none; border-radius: 15px; font-weight: 900; font-size: 15px; display: inline-block; box-shadow: 0 10px 25px rgba(212,175,55,0.2); text-transform: uppercase; letter-spacing: 1px;">ACEITAR O DESAFIO AGORA</a>
+                    </div>
+                </div>
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
 
 module.exports = {
     generateWelcomeEmail,
@@ -1310,6 +1433,9 @@ module.exports = {
     generatePromotionalCampaignEmail,
     generateMilestoneEmail,
     generateApplicationConfirmationEmail,
+    generateMotivaSubmissionEmail,
+    generateMotivaApprovalEmail,
+    generateMotivaPhaseLaunchEmail,
     getSocialFooter,
     socialLinks
 };
