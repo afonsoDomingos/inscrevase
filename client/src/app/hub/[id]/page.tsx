@@ -32,6 +32,7 @@ import {
     Star
 } from 'lucide-react';
 import { authService, UserData } from '@/lib/authService';
+import { serviceService } from '@/lib/serviceService';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -253,7 +254,35 @@ function HubContent() {
                         document.title = `${formData.title} - Hub (Preview)`;
                         fetchLessons();
                     } else {
-                        toast.error(t('dashboard.submissionNotFound'));
+                        // TRY SERVICE FALLBACK
+                        try {
+                            const serviceData = await serviceService.getServiceById(id as string);
+                            if (serviceData) {
+                                setSubmission({
+                                    _id: 'service',
+                                    status: 'approved',
+                                    paymentStatus: 'paid',
+                                    data: {},
+                                    submittedAt: new Date().toISOString(),
+                                    form: {
+                                        _id: serviceData._id,
+                                        title: serviceData.title,
+                                        description: serviceData.description,
+                                        coverImage: serviceData.images?.[0] || '',
+                                        logo: serviceData.creator?.profilePhoto || '',
+                                        eventDate: serviceData.createdAt,
+                                        creator: serviceData.creator as any,
+                                        theme: { style: 'minimalist' }
+                                    } as any
+                                });
+                                document.title = `${serviceData.title} - Hub`;
+                            } else {
+                                toast.error(t('dashboard.submissionNotFound'));
+                            }
+                        } catch (sErr) {
+                            console.error("Service fallback failed:", sErr);
+                            toast.error(t('dashboard.submissionNotFound'));
+                        }
                     }
                 } catch (err) {
                     console.error("Preview fallback failed:", err);

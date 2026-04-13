@@ -83,7 +83,7 @@ export default function ExploreEvents() {
                     creator: e.creator ? { name: e.creator.name, profilePhoto: e.creator.profilePhoto } : undefined,
                     createdAt: e.createdAt,
                     stats: { views: e.visits, submissions: e.submissionCount },
-                    link: `/f/${e.slug}`,
+                    link: `/hub/${e._id}`,
                     isCourse: e.category === 'Treinamento' || e.category === 'Educação'
                 }));
 
@@ -165,8 +165,8 @@ export default function ExploreEvents() {
                         </span>
                     </div>
 
-                    <h1 style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '1rem', fontFamily: 'var(--font-playfair)' }}>
-                        Descubra <span className="gold-text">Eventos & Serviços</span> de Elite
+                    <h1 style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '1rem', fontFamily: 'var(--font-playfair)', color: '#fff' }}>
+                        Descubra <span className="gold-text">Eventos, Serviços & Cursos</span> de Elite
                     </h1>
                     <p style={{ fontSize: '1.1rem', color: '#888', marginBottom: '2.5rem', maxWidth: '600px', margin: '0 auto 2.5rem' }}>
                         Conecte-se com mentores, participe de workshops exclusivos e impulsione sua carreira com as melhores ofertas da nossa rede.
@@ -244,7 +244,7 @@ export default function ExploreEvents() {
                         ].map((btn) => (
                             <button
                                 key={btn.id}
-                                onClick={() => setMainFilter(btn.id as any)}
+                                onClick={() => setMainFilter(btn.id as 'all' | 'event' | 'service' | 'course')}
                                 style={{
                                     padding: '10px 24px',
                                     borderRadius: '100px',
@@ -345,7 +345,8 @@ export default function ExploreEvents() {
                         <Loader2 className="animate-spin" size={48} color="#FFD700" />
                     </div>
                 ) : (
-                        filteredItems.length === 0 ? (
+                    <>
+                        {filteredItems.length === 0 ? (
                             <div style={{ textAlign: 'center', padding: '100px 0' }}>
                                 <div style={{ 
                                     width: '80px', height: '80px', background: '#f5f5f5', 
