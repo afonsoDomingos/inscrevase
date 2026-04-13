@@ -46,7 +46,7 @@ export default function Home() {
   const [isMotivaEnabledAdmin] = useState(true);
 
   // Motiva Contest Floating Button State
-  const [motivaPosition, setMotivaPosition] = useState({ top: '80%', right: '5%' });
+  const [motivaPosition, setMotivaPosition] = useState<{ top?: string; bottom?: string; right?: string; left?: string }>({ top: '80%', right: '5%' });
   const [isMotivaVisible, setIsMotivaVisible] = useState(false);
 
   useEffect(() => {
