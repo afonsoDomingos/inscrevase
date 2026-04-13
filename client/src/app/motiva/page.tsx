@@ -6,8 +6,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { 
   Trophy, Upload, Video, Play, ThumbsUp, Share2, Info, X, 
-  Instagram, Facebook, Scissors, Type, CheckCircle, ShieldAlert,
-  MessageCircle, Clock, Gift, AlertTriangle
+  Instagram, Scissors, Type, CheckCircle, ShieldAlert,
+  MessageCircle, Gift, AlertTriangle
 } from 'lucide-react';
 
 import { toast } from 'sonner';
