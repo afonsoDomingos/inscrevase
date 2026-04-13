@@ -190,8 +190,6 @@ export default function ExploreEvents() {
                             placeholder="O que você procura hoje?"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            onFocus={() => setFocusedField('search')}
-                            onBlur={() => setFocusedField(null)}
                             style={{
                                 flex: 1,
                                 background: 'transparent',
