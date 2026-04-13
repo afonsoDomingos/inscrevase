@@ -272,6 +272,7 @@ export default function VacanciesAdmin() {
                                     <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.8rem', textTransform: 'uppercase' }}>Título / Categoria</th>
                                     <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.8rem', textTransform: 'uppercase' }}>Local/Tipo</th>
                                     <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.8rem', textTransform: 'uppercase' }}>Estado</th>
+                                    <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.8rem', textTransform: 'uppercase' }}>Candidatos</th>
                                     <th style={{ padding: '1.2rem', color: '#888', fontSize: '0.8rem', textTransform: 'uppercase' }}>Ações</th>
                                 </tr>
                             </thead>
@@ -290,6 +291,12 @@ export default function VacanciesAdmin() {
                                             <span style={{ padding: '4px 10px', borderRadius: '50px', background: v.active ? '#e6fadf' : '#fee2e2', color: v.active ? '#22c55e' : '#ef4444', fontSize: '0.75rem', fontWeight: 800 }}>
                                                 {v.active ? 'Ativa' : 'Pausada'}
                                             </span>
+                                        </td>
+                                        <td style={{ padding: '1.2rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', fontWeight: 800, color: '#333' }}>
+                                                <Users size={14} color="#888" />
+                                                {applications.filter(a => (typeof a.vacancyId === 'object' ? a.vacancyId._id : a.vacancyId) === v._id).length}
+                                            </div>
                                         </td>
                                         <td style={{ padding: '1.2rem' }}>
                                             <div style={{ display: 'flex', gap: '10px' }}>
@@ -345,6 +352,7 @@ export default function VacanciesAdmin() {
                                     <div style={{ display: 'flex', gap: '15px', color: '#666', fontSize: '0.8rem', marginBottom: '1.25rem' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><MapPin size={12} /> {v.location}</div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Briefcase size={12} /> {v.type}</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 800, color: '#000' }}><Users size={12} /> {applications.filter(a => (typeof a.vacancyId === 'object' ? a.vacancyId._id : a.vacancyId) === v._id).length}</div>
                                     </div>
                                     <div style={{ display: 'flex', gap: '8px' }}>
                                         <button 
