@@ -32,6 +32,7 @@ export interface MotivaEntry {
     status: string;
     likes: string[];
     likeCount: number;
+    contactName?: string;
     liked?: boolean; // Client-side helper
 }
 
