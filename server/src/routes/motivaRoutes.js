@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const motivaController = require('../controllers/motivaController');
-const { protect, admin } = require('../middleware/authMiddleware');
+const { protect, adminOnly: admin } = require('../middleware/authMiddleware');
 
 // Public routes
 router.get('/active', motivaController.getActiveContest);

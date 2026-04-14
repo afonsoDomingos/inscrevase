@@ -368,11 +368,18 @@ export default function MotivaPrototype() {
                   {index < 3 && <span style={{ fontSize: '0.6rem', opacity: 0.8 }}>TOP</span>}
                 </div>
                 
-                <div style={{ position: 'relative', height: '450px', background: '#222' }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={entry.videoUrl || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=400&h=700'} alt={entry.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} />
-                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                <div style={{ position: 'relative', height: '450px', background: '#000' }}>
+                  <video 
+                    src={entry.videoUrl} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} 
+                    muted 
+                    loop 
+                    onMouseOver={(e) => e.currentTarget.play()}
+                    onMouseOut={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                    poster={entry.videoUrl.replace(/\.[^/.]+$/, ".jpg")} // Basic Cloudinary auto-thumb trick
+                  />
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+                    <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Play size={24} color="#fff" fill="#fff" />
                     </div>
                   </div>
