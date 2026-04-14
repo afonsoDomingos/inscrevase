@@ -20,8 +20,19 @@ interface MotivaEntry {
     createdAt: string;
 }
 
+interface MotivaContestPhase {
+    _id: string;
+    phase: number;
+    rewardTitle: string;
+    rewardValue: string;
+    endDate: string;
+    maxUploads: number;
+    isActive: boolean;
+}
+
 export default function MotivaManager() {
     const [entries, setEntries] = useState<MotivaEntry[]>([]);
+    const [phases, setPhases] = useState<MotivaContestPhase[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
     const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
@@ -55,8 +66,22 @@ export default function MotivaManager() {
     const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
     const [isBulkLoading, setIsBulkLoading] = useState(false);
 
+    const fetchPhases = async () => {
+        try {
+            const token = Cookies.get('token');
+            const response = await fetch(`${API_URL}/motiva/admin/phases`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            if (response.ok) setPhases(data);
+        } catch {
+            console.error('Erro ao carregar fases');
+        }
+    };
+
     useEffect(() => {
         fetchAllEntries();
+        fetchPhases();
     }, []);
 
     const handleUpdateStatus = async (entryId: string, status: 'approved' | 'rejected') => {
@@ -94,8 +119,9 @@ export default function MotivaManager() {
             });
 
             if (response.ok) {
-                toast.success(`Fase ${phaseForm.phase} iniciada com sucesso!`);
+                toast.success(`Fase ${phaseForm.phase} guardada com sucesso!`);
                 setShowNewPhaseModal(false);
+                fetchPhases();
             } else {
                 const errorData = await response.json();
                 toast.error(errorData.message);
@@ -190,6 +216,61 @@ export default function MotivaManager() {
                         <span style={{ color: '#666', fontSize: '0.9rem', fontWeight: 600 }}>{stat.label}</span>
                     </div>
                 ))}
+            </div>
+
+            {/* Configured Phases List */}
+            <div style={{ background: '#111', borderRadius: '20px', border: '1px solid #222', padding: '20px', marginBottom: '40px' }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '20px' }}>Fases Configuradas</h3>
+                <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead>
+                            <tr style={{ borderBottom: '1px solid #222', textAlign: 'left', color: '#888' }}>
+                                <th style={{ padding: '15px' }}>Fase</th>
+                                <th style={{ padding: '15px' }}>Título do Prémio</th>
+                                <th style={{ padding: '15px' }}>Término</th>
+                                <th style={{ padding: '15px' }}>Estado</th>
+                                <th style={{ padding: '15px' }}>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {phases.length === 0 ? (
+                                <tr><td colSpan={5} style={{ padding: '20px', textAlign: 'center', color: '#666' }}>Nenhuma fase criada ainda.</td></tr>
+                            ) : phases.map(p => (
+                                <tr key={p._id} style={{ borderBottom: '1px solid #1a1a1a' }}>
+                                    <td style={{ padding: '15px', fontWeight: 800 }}>Fase {p.phase}</td>
+                                    <td style={{ padding: '15px' }}>{p.rewardTitle} <span style={{ color: '#666', fontSize: '0.8rem' }}>({p.rewardValue})</span></td>
+                                    <td style={{ padding: '15px' }}>{new Date(p.endDate).toLocaleDateString('pt-PT')}</td>
+                                    <td style={{ padding: '15px' }}>
+                                        <span style={{ 
+                                            padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700,
+                                            background: p.isActive ? 'rgba(46, 204, 113, 0.1)' : 'rgba(136, 136, 136, 0.1)',
+                                            color: p.isActive ? '#2ecc71' : '#888'
+                                        }}>
+                                            {p.isActive ? 'ATIVA' : 'INATIVA'}
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: '15px' }}>
+                                        <button 
+                                            onClick={() => {
+                                                setPhaseForm({
+                                                    phase: p.phase,
+                                                    rewardTitle: p.rewardTitle,
+                                                    rewardValue: p.rewardValue,
+                                                    endDate: new Date(p.endDate).toISOString().split('T')[0],
+                                                    maxUploads: p.maxUploads || 10
+                                                });
+                                                setShowNewPhaseModal(true);
+                                            }}
+                                            style={{ background: '#222', border: '1px solid #333', color: '#fff', padding: '6px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}
+                                        >
+                                            Editar / Relançar
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* Filters, Search and Bulk Actions */}

@@ -286,3 +286,12 @@ exports.adminGetAllEntries = async (req, res) => {
     }
 };
 
+exports.adminGetAllPhases = async (req, res) => {
+    try {
+        const phases = await MotivaContest.find().sort({ phase: -1 });
+        res.json(phases);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
