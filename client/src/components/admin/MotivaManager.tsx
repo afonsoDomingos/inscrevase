@@ -170,7 +170,7 @@ export default function MotivaManager() {
                     onClick={() => setShowNewPhaseModal(true)}
                     style={{ background: '#FFD700', color: '#000', padding: '12px 24px', borderRadius: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
                 >
-                    <Trophy size={18} /> Iniciar Nova Fase
+                    <Trophy size={18} /> Iniciar / Editar Fase
                 </button>
             </div>
 
@@ -333,8 +333,8 @@ export default function MotivaManager() {
                 <div style={{ position: 'fixed', inset: 0, zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
                     <div className="overlay" onClick={() => setShowNewPhaseModal(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)' }} />
                     <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ background: '#111', width: '100%', maxWidth: '500px', borderRadius: '20px', border: '1px solid #333', position: 'relative', padding: '40px' }}>
-                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '10px' }}>Iniciar Nova Fase</h3>
-                        <p style={{ color: '#888', marginBottom: '30px' }}>Ao criar uma nova fase, a anterior será automaticamente desativada no site.</p>
+                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '10px' }}>Iniciar ou Editar Fase</h3>
+                        <p style={{ color: '#888', marginBottom: '30px' }}>Para editar uma fase já existente, basta introduzir o mesmo Número da Fase. Ao criar uma nova fase, a anterior será desativada.</p>
                         
                         <form onSubmit={handleCreatePhase} style={{ display: 'grid', gap: '20px' }}>
                             <div>
@@ -355,7 +355,7 @@ export default function MotivaManager() {
                             </div>
                             <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
                                 <button type="button" onClick={() => setShowNewPhaseModal(false)} style={{ flex: 1, padding: '12px', background: '#222', border: 'none', color: '#fff', borderRadius: '8px', cursor: 'pointer' }}>Cancelar</button>
-                                <button type="submit" style={{ flex: 1, padding: '12px', background: '#FFD700', border: 'none', color: '#000', borderRadius: '8px', cursor: 'pointer', fontWeight: 700 }}>Iniciar Agora</button>
+                                <button type="submit" style={{ flex: 1, padding: '12px', background: '#FFD700', border: 'none', color: '#000', borderRadius: '8px', cursor: 'pointer', fontWeight: 700 }}>Guardar Fase</button>
                             </div>
                         </form>
                     </motion.div>
