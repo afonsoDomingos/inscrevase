@@ -147,25 +147,32 @@ exports.adminCreatePhase = async (req, res) => {
     try {
         const { phase, rewardTitle, rewardValue, endDate, maxUploads } = req.body;
 
-        // Check if phase already exists to avoid E11000 duplicate key error
-        const existingPhase = await MotivaContest.findOne({ phase });
-        if (existingPhase) {
-            return res.status(400).json({ message: `A Fase ${phase} já existe no sistema. Por favor digite um número de fase diferente.` });
-        }
-
-        // Deactivate all other phases
+        // Deactivate all other phases first
         await MotivaContest.updateMany({}, { isActive: false });
 
-        const newContest = new MotivaContest({
-            phase,
-            rewardTitle,
-            rewardValue,
-            endDate,
-            maxUploads: maxUploads || 10,
-            isActive: true
-        });
-
-        await newContest.save();
+        // Check if phase already exists (e.g. they created it by mistake or are updating it)
+        let contest = await MotivaContest.findOne({ phase });
+        
+        if (contest) {
+            // Update the existing phase
+            contest.rewardTitle = rewardTitle;
+            contest.rewardValue = rewardValue;
+            contest.endDate = endDate;
+            contest.maxUploads = maxUploads || 10;
+            contest.isActive = true;
+            await contest.save();
+        } else {
+            // Create new phase
+            contest = new MotivaContest({
+                phase,
+                rewardTitle,
+                rewardValue,
+                endDate,
+                maxUploads: maxUploads || 10,
+                isActive: true
+            });
+            await contest.save();
+        }
 
         // Marketing Broadcast (Non-blocking)
         const broadcastNewPhase = async () => {
@@ -183,7 +190,7 @@ exports.adminCreatePhase = async (req, res) => {
                     ...subscribers.map(s => s.email)
                 ]);
 
-                console.log(`📣 [Motiva Marketing] Broadcasting new phase to ${allEmails.size} recipients...`);
+                console.log(`📣 [Motiva Marketing] Broadcasting phase to ${allEmails.size} recipients...`);
 
                 for (const email of allEmails) {
                     const emailHtml = generateMotivaPhaseLaunchEmail(phase, rewardTitle, rewardValue);
@@ -198,7 +205,7 @@ exports.adminCreatePhase = async (req, res) => {
 
         broadcastNewPhase();
 
-        res.status(201).json(newContest);
+        res.status(201).json(contest);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
