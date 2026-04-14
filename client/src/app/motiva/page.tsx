@@ -394,7 +394,7 @@ export default function MotivaPrototype() {
 
                 <div style={{ padding: '20px' }}>
                   <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '5px', color: '#fff' }}>{entry.title}</h3>
-                  <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '15px' }}>por {entry.user?.name || 'Utilizador'}</p>
+                  <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '15px' }}>por {entry.contactName || entry.user?.name || 'Participante'}</p>
                   
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <button 
@@ -567,70 +567,88 @@ export default function MotivaPrototype() {
               <div className="motiva-upload-modal-left">
                 {!videoPreviewUrl ? (
                   <div style={{ textAlign: 'center', padding: '2rem' }}>
-                    <Upload size={48} color="#FFD700" style={{ marginBottom: '1rem' }} />
-                    <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: '#fff' }}>Arraste o seu vídeo vertical</h3>
-                    <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '2rem' }}>MP4 ou MOV. Máximo 60 segundos.</p>
-                    <label style={{ cursor: 'pointer', background: '#333', padding: '12px 24px', borderRadius: '50px', fontWeight: 600 }}>
-                      Selecionar Ficheiro
+                    <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255, 215, 0, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px dashed rgba(255, 215, 0, 0.3)' }}>
+                      <Upload size={32} color="#FFD700" />
+                    </div>
+                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem', color: '#fff' }}>O Teu Vídeo Motivacional</h3>
+                    <p style={{ color: '#888', fontSize: '0.95rem', marginBottom: '2.5rem', maxWidth: '300px', margin: '0 auto 2.5rem' }}>Arraste o ficheiro ou clique no botão abaixo. Formato vertical (9:16) até 60s.</p>
+                    <label style={{ cursor: 'pointer', background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)', color: '#000', padding: '14px 28px', borderRadius: '50px', fontWeight: 800, fontSize: '0.9rem' }}>
+                      ESCOLHER FICHEIRO
                       <input type="file" accept="video/mp4,video/quicktime" onChange={handleVideoUpload} style={{ display: 'none' }} />
                     </label>
                   </div>
                 ) : (
-                  <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-                    <div style={{ position: 'relative', width: '100%', height: '100%', maxWidth: '300px', maxHeight: '533px', aspectRatio: '9/16', borderRadius: '20px', overflow: 'hidden', background: '#222', boxShadow: '0 0 40px rgba(0,0,0,0.5)' }}>
-                      <video ref={videoRef} src={videoPreviewUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} controls controlsList="nodownload" />
-                      {textOverlay && (
-                        <div style={{ position: 'absolute', top: '20%', left: '10%', right: '10%', textAlign: 'center', color: '#fff', fontSize: '2rem', fontWeight: 900, textShadow: '2px 2px 4px rgba(0,0,0,0.8)', zIndex: 5, pointerEvents: 'none' }}>
-                          {textOverlay}
-                        </div>
-                      )}
-                    </div>
+                  <div className="motiva-upload-video-container">
+                    <video ref={videoRef} src={videoPreviewUrl} controls controlsList="nodownload" />
+                    {textOverlay && (
+                      <div style={{ position: 'absolute', top: '20%', left: '10%', right: '10%', textAlign: 'center', color: '#fff', fontSize: '1.5rem', fontWeight: 900, textShadow: '2px 2px 8px rgba(0,0,0,1)', zIndex: 5, pointerEvents: 'none', lineHeight: 1.1, textTransform: 'uppercase' }}>
+                        {textOverlay}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
 
               {/* Editor Tools (Right side) */}
               <div className="motiva-upload-modal-right">
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '20px', color: '#FFD700' }}>Edição Rápida</h3>
+                <div style={{ marginBottom: '30px' }}>
+                  <h3 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#FFD700', letterSpacing: '-0.5px', marginBottom: '8px' }}>Finalizar Candidatura</h3>
+                  <p style={{ color: '#666', fontSize: '0.9rem' }}>Preencha os dados abaixo para submeter o seu vídeo ao júri.</p>
+                </div>
                 
                 <div style={{ flex: 1, opacity: videoPreviewUrl ? 1 : 0.4, pointerEvents: videoPreviewUrl ? 'auto' : 'none' }}>
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#aaa', marginBottom: '10px' }}><Type size={16} /> Texto Sobreposto</label>
+                  <div className="motiva-input-group">
+                    <label><Type size={16} /> Título ou Frase de Impacto</label>
                     <input 
                       type="text" 
-                      placeholder="Ex: Não desista hoje"
+                      placeholder="Ex: Não desista do seu sonho..."
+                      className="motiva-input"
                       value={textOverlay}
                       onChange={(e) => setTextOverlay(e.target.value)}
                       maxLength={40}
-                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333', background: '#000', color: '#fff', outline: 'none' }}
                     />
                   </div>
 
-                  <div style={{ marginBottom: '30px' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#aaa', marginBottom: '10px' }}><Scissors size={16} /> Corte Simples</label>
-                    <div style={{ background: '#000', padding: '15px', borderRadius: '8px', border: '1px solid #333' }}>
-                      <p style={{ fontSize: '0.8rem', color: '#888', marginBottom: '10px' }}>Ajuste a duração (apenas simulação protótipo)</p>
-                      <input type="range" min="0" max="60" defaultValue="60" style={{ width: '100%', accentColor: '#FFD700' }} />
+                  <div className="motiva-input-group">
+                    <label><UserIcon size={16} /> O Teu Nome Completo</label>
+                    <input 
+                      type="text" 
+                      value={contactName} 
+                      onChange={(e) => setContactName(e.target.value)} 
+                      placeholder="Como queres ser identificado no prémio..." 
+                      className="motiva-input"
+                    />
+                  </div>
+
+                  <div className="motiva-input-group">
+                    <label><Phone size={16} /> WhatsApp de Contacto</label>
+                    <input 
+                      type="text" 
+                      value={contactWhatsApp} 
+                      onChange={(e) => setContactWhatsApp(e.target.value)} 
+                      placeholder="Ex: 84 123 4567" 
+                      className="motiva-input"
+                    />
+                  </div>
+
+                  <div className="motiva-input-group">
+                    <label><Mail size={16} /> Email Principal</label>
+                    <input 
+                      type="email" 
+                      value={contactEmail} 
+                      onChange={(e) => setContactEmail(e.target.value)} 
+                      placeholder="Para receberes a notificação de aprovação..." 
+                      className="motiva-input"
+                    />
+                  </div>
+
+                  <div style={{ background: 'rgba(255,215,0,0.05)', padding: '16px', borderRadius: '12px', marginBottom: '25px', border: '1px solid rgba(255,215,0,0.1)' }}>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <Info size={18} color="#FFD700" style={{ flexShrink: 0 }} />
+                      <p style={{ fontSize: '0.8rem', color: '#aaa', lineHeight: 1.4 }}>
+                        Ao publicar, o seu vídeo será analisado pela nossa equipa. Se aprovado, entrará no ranking oficial da <strong style={{color: '#fff'}}>Fase {contestData?.phase}</strong>.
+                      </p>
                     </div>
-                  </div>
-
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#aaa', marginBottom: '10px' }}><UserIcon size={16} /> Nome Completo</label>
-                    <input type="text" value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="Teu Nome" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333', background: '#000', color: '#fff' }} />
-                  </div>
-
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#aaa', marginBottom: '10px' }}><Phone size={16} /> WhatsApp</label>
-                    <input type="text" value={contactWhatsApp} onChange={(e) => setContactWhatsApp(e.target.value)} placeholder="Ex: 841234567" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333', background: '#000', color: '#fff' }} />
-                  </div>
-
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#aaa', marginBottom: '10px' }}><Mail size={16} /> Email de Contacto</label>
-                    <input type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="Teu Email" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333', background: '#000', color: '#fff' }} />
-                  </div>
-
-                  <div style={{ background: 'rgba(255,180,0,0.1)', padding: '15px', borderRadius: '8px', marginBottom: '20px', border: '1px solid rgba(255,215,0,0.2)' }}>
-                    <p style={{ fontSize: '0.8rem', color: '#FFD700' }}>Confirmas que os teus dados estão corretos? Receberás uma mensagem assim que o teu vídeo for aprovado.</p>
                   </div>
                 </div>
 

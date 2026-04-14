@@ -1201,47 +1201,124 @@ h6 {
 /* Motiva Video Upload Modal Responsiveness */
 .motiva-upload-modal {
   background: #111;
-  width: 100%;
+  width: 95%;
   max-width: 900px;
   border-radius: 24px;
   border: 1px solid #333;
   position: relative;
   display: flex;
+  flex-direction: row;
   overflow: hidden;
-  min-height: 600px;
   max-height: 90vh;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
+
 .motiva-upload-modal-left {
-  flex: 1;
+  flex: 1.2;
   background: #000;
   display: flex;
   align-items: center;
   justify-content: center;
   border-right: 1px solid #222;
   position: relative;
+  padding: 20px;
 }
+
+.motiva-upload-video-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  aspect-ratio: 9/16;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 0 30px rgba(0,0,0,0.8);
+}
+
+.motiva-upload-video-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Don't cut the video */
+}
+
 .motiva-upload-modal-right {
-  width: 350px;
-  padding: 30px;
+  width: 380px;
+  padding: 40px 30px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
 }
 
-@media (max-width: 768px) {
+.motiva-input-group {
+  margin-bottom: 20px;
+}
+
+.motiva-input-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.motiva-input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #222;
+  background: #000;
+  color: #fff;
+  outline: none;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+
+.motiva-input:focus {
+  border-color: #FFD700;
+  box-shadow: 0 0 0 1px #FFD700;
+  background: #050505;
+}
+
+@media (max-width: 850px) {
   .motiva-upload-modal {
     flex-direction: column;
-    overflow-y: auto;
+    max-height: 95vh;
+    width: 100%;
+    margin: 10px;
+    border-radius: 20px;
   }
+  
   .motiva-upload-modal-left {
     border-right: none;
     border-bottom: 1px solid #222;
-    min-height: 350px;
+    padding: 20px;
     height: 40vh;
+    min-height: auto;
   }
+  
+  .motiva-upload-video-container {
+    height: 100%;
+    width: auto;
+    aspect-ratio: 9/16;
+  }
+  
   .motiva-upload-modal-right {
     width: 100%;
-    padding: 20px;
+    padding: 25px;
     flex: 1;
   }
-}
+}
+
+@media (max-width: 480px) {
+  .motiva-upload-modal-left {
+    height: 35vh;
+  }
+  .motiva-upload-modal-right {
+    padding: 20px;
+  }
+}

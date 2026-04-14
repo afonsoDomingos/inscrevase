@@ -36,15 +36,25 @@ const superAdminMiddleware = (req, res, next) => {
 };
 
 const optionalAuthMiddleware = (req, res, next) => {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) return next();
-
     try {
+        const authHeader = req.header('Authorization');
+        if (!authHeader) {
+            return next();
+        }
+
+        const token = authHeader.replace('Bearer ', '');
+        
+        // Handle cases where client sends string "undefined" or "null"
+        if (!token || token === 'undefined' || token === 'null') {
+            return next();
+        }
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
-        next();
+        return next();
     } catch (err) {
-        next();
+        console.log('[AuthMiddleware] Optional Token Check - Skip (Invalid or expired)');
+        return next();
     }
 };
 
