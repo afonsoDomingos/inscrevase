@@ -129,7 +129,7 @@ export default function MotivaManager() {
             toast.success(`${selectedEntries.length} vídeos aprovados com sucesso!`);
             setSelectedEntries([]);
             fetchAllEntries();
-        } catch (error) {
+        } catch {
             toast.error('Erro na aprovação em massa.');
         } finally {
             setIsBulkLoading(false);
