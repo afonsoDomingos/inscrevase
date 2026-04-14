@@ -1322,3 +1322,72 @@ h6 {
     padding: 20px;
   }
 }
+
+/* Motiva Page Buttons Responsiveness */
+.motiva-cta-button {
+  padding: 16px 40px;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  color: #000;
+  font-weight: 800;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+  transition: all 0.2s;
+}
+
+.motiva-cta-button:hover {
+  transform: scale(1.05);
+}
+
+.motiva-tab-button {
+  padding: 12px 30px;
+  background: transparent;
+  color: #888;
+  border: 1px solid #333;
+  border-radius: 30px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.motiva-tab-button.active {
+  background: rgba(255, 215, 0, 0.15);
+  color: #FFD700;
+  border: 1px solid #FFD700;
+}
+
+@media (max-width: 768px) {
+  .motiva-cta-button {
+    padding: 10px 24px !important;
+    font-size: 0.85rem !important;
+    gap: 6px !important;
+  }
+  
+  .motiva-cta-button svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .motiva-tab-container {
+    gap: 10px !important;
+    overflow-x: auto;
+    justify-content: flex-start !important;
+    padding-bottom: 10px;
+    scrollbar-width: none; /* Hide scrollbar Firefox */
+  }
+  
+  .motiva-tab-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar Chrome/Safari */
+  }
+
+  .motiva-tab-button {
+    padding: 8px 16px !important;
+    font-size: 0.75rem !important;
+  }
+}

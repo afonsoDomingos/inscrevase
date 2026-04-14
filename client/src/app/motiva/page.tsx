@@ -261,23 +261,7 @@ export default function MotivaPrototype() {
               }
               setIsUploadModalOpen(true);
             }}
-            style={{
-              padding: '16px 40px',
-              borderRadius: '50px',
-              background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-              color: '#000',
-              fontWeight: 800,
-              fontSize: '1.1rem',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '10px',
-              boxShadow: '0 10px 30px rgba(212, 175, 55, 0.3)',
-              transition: 'transform 0.2s'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            className="motiva-cta-button"
           >
             <Upload size={20} />
             PARTICIPAR AGORA
@@ -293,49 +277,22 @@ export default function MotivaPrototype() {
 
       {/* Main Content Tabs */}
       <div className="container" style={{ padding: '0 20px 80px', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '40px' }}>
+        <div className="motiva-tab-container" style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '40px' }}>
           <button 
             onClick={() => setActiveTab('ranking')}
-            style={{
-              padding: '12px 30px',
-              background: activeTab === 'ranking' ? 'rgba(255, 215, 0, 0.15)' : 'transparent',
-              color: activeTab === 'ranking' ? '#FFD700' : '#888',
-              border: activeTab === 'ranking' ? '1px solid #FFD700' : '1px solid #333',
-              borderRadius: '30px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.3s'
-            }}
+            className={`motiva-tab-button ${activeTab === 'ranking' ? 'active' : ''}`}
           >
             Ranking Global
           </button>
           <button 
             onClick={() => setActiveTab('historico')}
-            style={{
-              padding: '12px 30px',
-              background: activeTab === 'historico' ? 'rgba(255, 215, 0, 0.15)' : 'transparent',
-              color: activeTab === 'historico' ? '#FFD700' : '#888',
-              border: activeTab === 'historico' ? '1px solid #FFD700' : '1px solid #333',
-              borderRadius: '30px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.3s'
-            }}
+            className={`motiva-tab-button ${activeTab === 'historico' ? 'active' : ''}`}
           >
             Edições Anteriores
           </button>
           <button 
             onClick={() => setActiveTab('regras')}
-            style={{
-              padding: '12px 30px',
-              background: activeTab === 'regras' ? 'rgba(255, 215, 0, 0.15)' : 'transparent',
-              color: activeTab === 'regras' ? '#FFD700' : '#888',
-              border: activeTab === 'regras' ? '1px solid #FFD700' : '1px solid #333',
-              borderRadius: '30px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.3s'
-            }}
+            className={`motiva-tab-button ${activeTab === 'regras' ? 'active' : ''}`}
           >
             Regras do Concurso
           </button>
