@@ -29,6 +29,7 @@ export default function MotivaPrototype() {
   // States for Upload Flow
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string>('');
+  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [textOverlay, setTextOverlay] = useState('');
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -121,19 +122,41 @@ export default function MotivaPrototype() {
         toast.error('O vídeo deve ter no máximo 50MB.');
         return;
       }
+      setVideoFile(file);
       const url = URL.createObjectURL(file);
       setVideoPreviewUrl(url);
     }
   };
 
   const submitVideo = async () => {
-    if (!contestData) return;
+    if (!contestData || !videoFile) return;
     
     setIsUploading(true);
     try {
+      // 1. Upload logic inspired by formService
+      const formData = new FormData();
+      formData.append('folder', 'motiva_contest');
+      formData.append('file', videoFile);
+
+      // We'll use the existing /api/upload endpoint which already maps to Cloudinary
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const uploadResponse = await fetch(`${API_URL}/upload`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!uploadResponse.ok) {
+        const errorData = await uploadResponse.json();
+        throw new Error(errorData.message || 'Erro ao fazer upload do vídeo para a nuvem.');
+      }
+
+      const uploadResult = await uploadResponse.json();
+      const finalVideoUrl = uploadResult.url;
+
+      // 2. Submit entry with final Cloudinary URL
       await motivaService.uploadEntry({
         title: textOverlay || 'Sem Título',
-        videoUrl: videoPreviewUrl,
+        videoUrl: finalVideoUrl,
         phase: contestData.phase,
         contactName,
         contactWhatsApp,
@@ -144,6 +167,7 @@ export default function MotivaPrototype() {
       setIsUploading(false);
       setIsUploadModalOpen(false);
       setVideoPreviewUrl('');
+      setVideoFile(null);
       setTextOverlay('');
       loadContestData(); // Refresh counts
     } catch (error) {
@@ -322,8 +346,26 @@ export default function MotivaPrototype() {
                 border: index === 0 ? '2px solid #FFD700' : '1px solid #222',
                 position: 'relative'
               }}>
-                <div style={{ position: 'absolute', top: '15px', left: '15px', background: 'rgba(0,0,0,0.8)', padding: '5px 12px', borderRadius: '20px', fontWeight: 800, color: index === 0 ? '#FFD700' : '#fff', zIndex: 10 }}>
+                <div style={{ 
+                  position: 'absolute', 
+                  top: '15px', 
+                  left: '15px', 
+                  background: index === 0 ? 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)' : 
+                             index === 1 ? 'linear-gradient(135deg, #C0C0C0 0%, #808080 100%)' :
+                             index === 2 ? 'linear-gradient(135deg, #CD7F32 0%, #8B4513 100%)' : 'rgba(0,0,0,0.8)', 
+                  padding: '6px 14px', 
+                  borderRadius: '20px', 
+                  fontWeight: 900, 
+                  color: index < 3 ? '#000' : '#fff', 
+                  zIndex: 10,
+                  boxShadow: index < 3 ? '0 4px 15px rgba(0,0,0,0.5)' : 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px'
+                }}>
+                  {index === 0 && <Trophy size={14} />}
                   #{index + 1}
+                  {index < 3 && <span style={{ fontSize: '0.6rem', opacity: 0.8 }}>TOP</span>}
                 </div>
                 
                 <div style={{ position: 'relative', height: '450px', background: '#222' }}>

@@ -51,6 +51,9 @@ export default function MotivaManager() {
             setLoading(false);
         }
     };
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
+    const [isBulkLoading, setIsBulkLoading] = useState(false);
 
     useEffect(() => {
         fetchAllEntries();
@@ -102,7 +105,59 @@ export default function MotivaManager() {
         }
     };
 
-    const filteredEntries = entries.filter(e => filter === 'all' ? true : e.status === filter);
+    const handleBulkApprove = async () => {
+        if (selectedEntries.length === 0) return;
+        const confirmMsg = `Deseja aprovar ${selectedEntries.length} vídeos de uma vez?`;
+        if (!window.confirm(confirmMsg)) return;
+
+        setIsBulkLoading(true);
+        try {
+            const token = Cookies.get('token');
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            
+            for (const id of selectedEntries) {
+                await fetch(`${baseUrl}/motiva/admin/entry/${id}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ status: 'approved' })
+                });
+            }
+            
+            toast.success(`${selectedEntries.length} vídeos aprovados com sucesso!`);
+            setSelectedEntries([]);
+            fetchAllEntries();
+        } catch (error) {
+            toast.error('Erro na aprovação em massa.');
+        } finally {
+            setIsBulkLoading(false);
+        }
+    };
+
+    const toggleSelectEntry = (id: string) => {
+        setSelectedEntries(prev => 
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        );
+    };
+
+    const handleSelectAll = () => {
+        if (selectedEntries.length === filteredEntries.length && filteredEntries.length > 0) {
+            setSelectedEntries([]);
+        } else {
+            setSelectedEntries(filteredEntries.map(e => e._id));
+        }
+    };
+
+    const filteredEntries = entries.filter(e => {
+        const matchesSearch = 
+            (e.contactName || e.user?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (e.contactEmail || e.user?.email || '').toLowerCase().includes(searchTerm.toLowerCase());
+        
+        if (filter === 'all') return matchesSearch;
+        return e.status === filter && matchesSearch;
+    });
 
     return (
         <div style={{ color: '#fff' }}>
@@ -137,26 +192,62 @@ export default function MotivaManager() {
                 ))}
             </div>
 
-            {/* Filters */}
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid #222', paddingBottom: '20px' }}>
-                {(['pending', 'approved', 'rejected', 'all'] as const).map((f) => (
-                    <button 
-                        key={f}
-                        onClick={() => setFilter(f)}
-                        style={{
-                            padding: '8px 20px',
-                            background: filter === f ? 'rgba(255,215,0,0.1)' : 'transparent',
-                            color: filter === f ? '#FFD700' : '#888',
-                            border: filter === f ? '1px solid #FFD700' : '1px solid #333',
-                            borderRadius: '30px',
-                            cursor: 'pointer',
-                            textTransform: 'capitalize',
-                            fontWeight: 600
-                        }}
-                    >
-                        {f}
-                    </button>
-                ))}
+            {/* Filters, Search and Bulk Actions */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '20px', flexWrap: 'wrap', borderBottom: '1px solid #222', paddingBottom: '20px' }}>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    {(['pending', 'approved', 'rejected', 'all'] as const).map((f) => (
+                        <button 
+                            key={f}
+                            onClick={() => { setFilter(f); setSelectedEntries([]); }}
+                            style={{
+                                padding: '8px 20px',
+                                background: filter === f ? 'rgba(255,215,0,0.1)' : 'transparent',
+                                color: filter === f ? '#FFD700' : '#888',
+                                border: filter === f ? '1px solid #FFD700' : '1px solid #333',
+                                borderRadius: '30px',
+                                cursor: 'pointer',
+                                textTransform: 'capitalize',
+                                fontWeight: 600
+                            }}
+                        >
+                            {f}
+                        </button>
+                    ))}
+                </div>
+
+                <div style={{ display: 'flex', gap: '15px', flex: 1, justifyContent: 'flex-end', alignItems: 'center' }}>
+                    <div style={{ position: 'relative', width: '300px' }}>
+                        <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#666' }}>🔍</span>
+                        <input 
+                            type="text" 
+                            placeholder="Procurar por nome ou email..." 
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{ width: '100%', padding: '10px 10px 10px 35px', borderRadius: '8px', background: '#000', border: '1px solid #333', color: '#fff', fontSize: '0.9rem' }}
+                        />
+                    </div>
+
+                    {selectedEntries.length > 0 && filter === 'pending' && (
+                        <button 
+                            onClick={handleBulkApprove}
+                            disabled={isBulkLoading}
+                            style={{ 
+                                padding: '10px 20px', 
+                                background: '#2ecc71', 
+                                color: '#000', 
+                                border: 'none', 
+                                borderRadius: '8px', 
+                                fontWeight: 700, 
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}
+                        >
+                            {isBulkLoading ? 'A processar...' : <><Check size={18} /> Aprovar ({selectedEntries.length})</>}
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Entries Table */}
@@ -164,6 +255,14 @@ export default function MotivaManager() {
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ borderBottom: '1px solid #222', textAlign: 'left', background: '#0a0a0a' }}>
+                            <th style={{ padding: '20px', width: '40px' }}>
+                                <input 
+                                    type="checkbox" 
+                                    checked={selectedEntries.length === filteredEntries.length && filteredEntries.length > 0} 
+                                    onChange={handleSelectAll}
+                                    style={{ cursor: 'pointer' }}
+                                />
+                            </th>
                             <th style={{ padding: '20px' }}>Autor</th>
                             <th style={{ padding: '20px' }}>Título / Vídeo</th>
                             <th style={{ padding: '20px' }}>Fase</th>
@@ -178,7 +277,15 @@ export default function MotivaManager() {
                         ) : filteredEntries.length === 0 ? (
                             <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#888' }}>Nenhuma entrada encontrada nesta categoria.</td></tr>
                         ) : filteredEntries.map((entry) => (
-                            <tr key={entry._id} style={{ borderBottom: '1px solid #1a1a1a' }}>
+                            <tr key={entry._id} style={{ borderBottom: '1px solid #1a1a1a', background: selectedEntries.includes(entry._id) ? 'rgba(255,215,0,0.05)' : 'transparent' }}>
+                                <td style={{ padding: '20px' }}>
+                                    <input 
+                                        type="checkbox" 
+                                        checked={selectedEntries.includes(entry._id)} 
+                                        onChange={() => toggleSelectEntry(entry._id)}
+                                        style={{ cursor: 'pointer' }}
+                                    />
+                                </td>
                                 <td style={{ padding: '20px' }}>
                                     <div style={{ fontWeight: 700 }}>{entry.contactName || entry.user?.name}</div>
                                     <div style={{ fontSize: '0.8rem', color: '#888' }}>📧 {entry.contactEmail || entry.user?.email}</div>
