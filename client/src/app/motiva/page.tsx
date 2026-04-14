@@ -154,7 +154,7 @@ export default function MotivaPrototype() {
       const finalVideoUrl = uploadResult.url;
 
       // 2. Submit entry with final Cloudinary URL
-      await motivaService.uploadEntry({
+      const entryResult = await motivaService.uploadEntry({
         title: textOverlay || 'Sem Título',
         videoUrl: finalVideoUrl,
         phase: contestData.phase,
@@ -163,7 +163,18 @@ export default function MotivaPrototype() {
         contactEmail
       });
       
-      toast.success('Vídeo enviado com sucesso para aprovação!');
+      if (entryResult && entryResult.incentiveSignup) {
+        toast.success('Vídeo enviado com sucesso para aprovação!', {
+          description: 'Crie uma conta para acompanhar o seu vídeo mais facilmente e participar nos votos!',
+          action: {
+            label: 'Criar Conta',
+            onClick: () => window.location.href = '/cadastro'
+          },
+          duration: 10000,
+        });
+      } else {
+        toast.success('Vídeo enviado com sucesso para aprovação!');
+      }
       setIsUploading(false);
       setIsUploadModalOpen(false);
       setVideoPreviewUrl('');
@@ -240,10 +251,6 @@ export default function MotivaPrototype() {
           
           <button 
             onClick={() => {
-              if (!isLoggedIn) {
-                toast.error('Inicie sessão para participar!');
-                return;
-              }
               if (!contestData) {
                 toast.error('Nenhum concurso ativo no momento.');
                 return;
@@ -547,7 +554,7 @@ export default function MotivaPrototype() {
             />
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              style={{ background: '#111', width: '100%', maxWidth: '900px', borderRadius: '24px', border: '1px solid #333', position: 'relative', display: 'flex', overflow: 'hidden', minHeight: '600px' }}
+              className="motiva-upload-modal"
             >
               <button 
                 onClick={() => setIsUploadModalOpen(false)}
@@ -557,7 +564,7 @@ export default function MotivaPrototype() {
               </button>
 
               {/* Preview Area (Left side) */}
-              <div style={{ flex: 1, background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid #222', position: 'relative' }}>
+              <div className="motiva-upload-modal-left">
                 {!videoPreviewUrl ? (
                   <div style={{ textAlign: 'center', padding: '2rem' }}>
                     <Upload size={48} color="#FFD700" style={{ marginBottom: '1rem' }} />
@@ -570,7 +577,7 @@ export default function MotivaPrototype() {
                   </div>
                 ) : (
                   <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-                    <div style={{ position: 'relative', width: '300px', height: '533px', borderRadius: '20px', overflow: 'hidden', background: '#222', boxShadow: '0 0 40px rgba(0,0,0,0.5)' }}>
+                    <div style={{ position: 'relative', width: '100%', height: '100%', maxWidth: '300px', maxHeight: '533px', aspectRatio: '9/16', borderRadius: '20px', overflow: 'hidden', background: '#222', boxShadow: '0 0 40px rgba(0,0,0,0.5)' }}>
                       <video ref={videoRef} src={videoPreviewUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} controls controlsList="nodownload" />
                       {textOverlay && (
                         <div style={{ position: 'absolute', top: '20%', left: '10%', right: '10%', textAlign: 'center', color: '#fff', fontSize: '2rem', fontWeight: 900, textShadow: '2px 2px 4px rgba(0,0,0,0.8)', zIndex: 5, pointerEvents: 'none' }}>
@@ -583,7 +590,7 @@ export default function MotivaPrototype() {
               </div>
 
               {/* Editor Tools (Right side) */}
-              <div style={{ width: '350px', padding: '30px', display: 'flex', flexDirection: 'column' }}>
+              <div className="motiva-upload-modal-right">
                 <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '20px', color: '#FFD700' }}>Edição Rápida</h3>
                 
                 <div style={{ flex: 1, opacity: videoPreviewUrl ? 1 : 0.4, pointerEvents: videoPreviewUrl ? 'auto' : 'none' }}>

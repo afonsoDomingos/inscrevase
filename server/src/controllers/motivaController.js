@@ -62,7 +62,7 @@ exports.getHistoricalWinners = async (req, res) => {
 exports.uploadEntry = async (req, res) => {
     try {
         const { title, videoUrl, phase } = req.body;
-        const userId = req.user.id;
+        const userId = req.user ? req.user.id : null;
 
         // Check if phase exists and is active
         const contest = await MotivaContest.findOne({ phase, isActive: true });
@@ -80,19 +80,21 @@ exports.uploadEntry = async (req, res) => {
         }
 
         // Check if user already uploaded for this phase
-        const existingEntry = await MotivaEntry.findOne({ user: userId, phase });
-        if (existingEntry) {
-            return res.status(400).json({ message: 'Você já enviou um vídeo para esta fase.' });
+        if (userId) {
+            const existingEntry = await MotivaEntry.findOne({ user: userId, phase });
+            if (existingEntry) {
+                return res.status(400).json({ message: 'Você já enviou um vídeo para esta fase.' });
+            }
         }
 
         const newEntry = new MotivaEntry({
-            user: userId,
+            user: userId || undefined,
             phase,
             title,
             videoUrl,
-            contactName: req.body.contactName || req.user.name,
+            contactName: req.body.contactName || (req.user ? req.user.name : 'Participante'),
             contactWhatsApp: req.body.contactWhatsApp,
-            contactEmail: req.body.contactEmail || req.user.email,
+            contactEmail: req.body.contactEmail || (req.user ? req.user.email : ''),
             status: 'pending' // Needs admin approval
         });
 
@@ -113,7 +115,11 @@ exports.uploadEntry = async (req, res) => {
                 .catch(e => console.error('Email Error:', e));
         }
 
-        res.status(201).json({ message: 'Vídeo enviado com sucesso! Aguarde aprovação.', entry: newEntry });
+        res.status(201).json({ 
+            message: 'Vídeo enviado com sucesso! Aguarde aprovação.', 
+            entry: newEntry,
+            incentiveSignup: !userId
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
