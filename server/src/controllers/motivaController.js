@@ -147,6 +147,12 @@ exports.adminCreatePhase = async (req, res) => {
     try {
         const { phase, rewardTitle, rewardValue, endDate, maxUploads } = req.body;
 
+        // Check if phase already exists to avoid E11000 duplicate key error
+        const existingPhase = await MotivaContest.findOne({ phase });
+        if (existingPhase) {
+            return res.status(400).json({ message: `A Fase ${phase} já existe no sistema. Por favor digite um número de fase diferente.` });
+        }
+
         // Deactivate all other phases
         await MotivaContest.updateMany({}, { isActive: false });
 
