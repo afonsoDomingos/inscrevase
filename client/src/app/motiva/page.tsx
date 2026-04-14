@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { 
   Trophy, Upload, Video, Play, ThumbsUp, Share2, Info, X, 
-  Scissors, Type, CheckCircle, ShieldAlert,
+  Type, CheckCircle, ShieldAlert,
   MessageCircle, Gift, AlertTriangle, Clock, Mail, User as UserIcon, Phone
 } from 'lucide-react';
 import { authService } from '@/lib/authService';
