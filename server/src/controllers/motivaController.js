@@ -147,13 +147,16 @@ exports.adminCreatePhase = async (req, res) => {
     try {
         const { phase, rewardTitle, rewardValue, endDate, maxUploads } = req.body;
 
-        // Deactivate all other phases first
-        await MotivaContest.updateMany({}, { isActive: false });
-
         // Check if phase already exists (e.g. they created it by mistake or are updating it)
         let contest = await MotivaContest.findOne({ phase });
+        let isFirstLaunch = false;
         
         if (contest) {
+            // Se a fase existia mas estava inativa, consideramos como um "lançamento"
+            if (!contest.isActive) {
+                isFirstLaunch = true;
+            }
+            
             // Update the existing phase
             contest.rewardTitle = rewardTitle;
             contest.rewardValue = rewardValue;
@@ -163,6 +166,7 @@ exports.adminCreatePhase = async (req, res) => {
             await contest.save();
         } else {
             // Create new phase
+            isFirstLaunch = true;
             contest = new MotivaContest({
                 phase,
                 rewardTitle,
@@ -174,7 +178,10 @@ exports.adminCreatePhase = async (req, res) => {
             await contest.save();
         }
 
-        // Marketing Broadcast (Non-blocking)
+        // Deactivate all OTHER phases (we do it here after we know our current one is safe)
+        await MotivaContest.updateMany({ _id: { $ne: contest._id } }, { isActive: false });
+
+        // Marketing Broadcast (Non-blocking) - Só envia email se for nova ou se estava inativa
         const broadcastNewPhase = async () => {
             try {
                 // Fetch all users and newsletter subscribers
@@ -203,7 +210,11 @@ exports.adminCreatePhase = async (req, res) => {
             }
         };
 
-        broadcastNewPhase();
+        if (isFirstLaunch) {
+            broadcastNewPhase();
+        } else {
+            console.log(`[Motiva] Fase ${phase} apenas atualizada. Sem envio de emails de marketing.`);
+        }
 
         res.status(201).json(contest);
     } catch (error) {
