@@ -171,7 +171,7 @@ export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
                 )}
             </div>
 
-            {u.subscriptionStatus === 'cancelled' && (
+            {u.subscriptionStatus === 'canceled' && (
                 <div style={{ 
                     marginTop: '0.5rem', padding: '12px', borderRadius: '10px', 
                     background: 'rgba(251, 191, 36, 0.1)', border: '1px solid rgba(251, 191, 36, 0.2)',
