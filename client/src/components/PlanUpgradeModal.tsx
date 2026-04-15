@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { logService } from '@/lib/logService';
 import PaypalButton, { PaypalSuccessDetails } from './common/PaypalButton';
 import Image from 'next/image';
+import PlanCard from './common/PlanCard';
 
 interface ManualPaymentMethod {
     id: string;
@@ -94,21 +95,34 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
         ? []
         : manualMethods.filter(m => m.country === selectedCountry);
 
-    const handleUpgradeStripe = async (plan: string) => {
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        const u = localStorage.getItem('user');
+        if (u) setUser(JSON.parse(u));
+    }, []);
+
+    const handleUpgradeStripe = async (plan: string, trial: boolean = false) => {
         try {
-            setLoading(plan);
+            setLoading(trial ? `${plan}-trial` : plan);
             const token = Cookies.get('token');
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/subscription/create`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ plan, currency })
+                body: JSON.stringify({ plan, currency, trial })
             });
-            const { url } = await response.json();
-            window.location.href = url;
+            const data = await response.json();
+            if (data.url) {
+                window.location.href = data.url;
+            } else {
+                toast.error(data.message || 'Erro ao iniciar assinatura');
+            }
         } catch (error) {
             console.error('Upgrade error:', error);
             setLoading(null);
             toast.error(t('plans.manualUpgrade.stripeError'));
+        } finally {
+            setLoading(null);
         }
     };
 
@@ -176,51 +190,33 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
 
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
                                     <PlanCard
-                                        id="pro" name="Pro" amount={proPrice}
+                                        id="pro"
+                                        name="Pro"
+                                        description={t('plans.pro.description')}
+                                        amount={proPrice}
                                         price={formatPrice(proPrice, currency, currency)}
-                                        color="#D4AF37" icon={<Sparkles size={22} />}
+                                        currency={currency}
+                                        bgImage="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop"
+                                        recommended={true}
+                                        canUseTrial={user?.hasUsedTrial !== true}
                                         features={[t('dashboard.plans.f1'), t('dashboard.plans.f2'), t('dashboard.plans.f3')]}
-                                        onSelect={() => handleUpgradeStripe('pro')}
-                                        onManual={() => setManualPlan({ id: 'pro', amount: proPrice })}
-                                        onPaypalSuccess={() => { onClose(); router.push('/dashboard/mentor?subscription=success&plan=pro'); }}
-                                        onStripeLocked={() => {
-                                            const msg = "Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!";
-                                            toast.info(msg);
-                                            logService.logPaymentAttempt({
-                                                type: 'subscription',
-                                                method: 'stripe',
-                                                status: 'blocked_maintenance',
-                                                amount: proPrice,
-                                                currency: currency,
-                                                metadata: { plan: 'pro' }
-                                            });
-                                        }}
-                                        loading={loading === 'pro'} currency={currency} t={t}
+                                        onManualSelect={() => setManualPlan({ id: 'pro', amount: proPrice })}
+                                        onSuccess={() => { onClose(); router.push('/dashboard/mentor?subscription=success&plan=pro'); }}
+                                        t={t}
                                     />
                                     <PlanCard
-                                        id="enterprise" name="Enterprise" amount={enterprisePrice}
+                                        id="enterprise"
+                                        name="Enterprise"
+                                        description={t('plans.enterprise.description')}
+                                        amount={enterprisePrice}
                                         price={formatPrice(enterprisePrice, currency, currency)}
-                                        color="#6366f1" icon={<Crown size={22} />}
+                                        currency={currency}
+                                        isEnterprise={true}
+                                        bgImage="https://images.unsplash.com/photo-1431540015161-0bf868a2d407?q=80&w=800&auto=format&fit=crop"
                                         features={[t('dashboard.plans.f4'), t('dashboard.plans.f5'), t('dashboard.plans.f6')]}
-                                        onSelect={() => handleUpgradeStripe('enterprise')}
-                                        onManual={() => setManualPlan({ id: 'enterprise', amount: enterprisePrice })}
-                                        onPaypalSuccess={() => {
-                                            onClose();
-                                            router.push('/dashboard/mentor?subscription=success&plan=enterprise');
-                                        }}
-                                        onStripeLocked={() => {
-                                            const msg = "Checkout via Stripe temporariamente indisponível. Por favor, use o botão PayPal abaixo para pagar com seu cartão VISA ou MASTERCARD – é 100% seguro, instantâneo e não precisa ter conta no PayPal!";
-                                            toast.info(msg);
-                                            logService.logPaymentAttempt({
-                                                type: 'subscription',
-                                                method: 'stripe',
-                                                status: 'blocked_maintenance',
-                                                amount: enterprisePrice,
-                                                currency: currency,
-                                                metadata: { plan: 'enterprise' }
-                                            });
-                                        }}
-                                        loading={loading === 'enterprise'} currency={currency} t={t}
+                                        onManualSelect={() => setManualPlan({ id: 'enterprise', amount: enterprisePrice })}
+                                        onSuccess={() => { onClose(); router.push('/dashboard/mentor?subscription=success&plan=enterprise'); }}
+                                        t={t}
                                     />
                                 </div>
                             </motion.div>
@@ -238,7 +234,13 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                                             <svg width="20" height="20" viewBox="0 0 24 24" fill="#003087"><path d="M20.067 8.478c.492.88.556 2.014.303 3.274-.744 3.713-3.005 6.045-7.054 6.045h-1.6c-.466 0-.846.347-.936.802l-.653 3.274c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l2.454-9.743c.09-.455.47-.802.936-.802h3.2c1.783 0 3.264-.09 4.316-.395.53-.151.782-.26 1.05-.53.284-.287.48-.686.586-1.124.162-.676.02-1.28-.432-1.74-.41-.424-1.07-.63-1.964-.63h-5.066c-.466 0-.846.347-.936.802l-1.306 6.548c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l1.636-6.548c.09-.455.49-.802.956-.802h6.14c1.9 0 3.4.45 4.31 1.34s1.21 2.09.82 3.65c-.09.36-.21.69-.37 1zm-1.12-5.46c-.52-.51-1.34-.78-2.45-.78h-6.14c-.97 0-1.83.67-2.02 1.62l-2.03 10.15c-.06.31.18.61.5.61h3.32c.3 0 .58-.22.63-.52l.65-3.27c.09-.46.49-.81.96-.81h1.59c3.9 0 6.07-2.12 6.81-5.83.43-2.14.07-3.7-.62-4.47z" /></svg>
                                         </div>
                                         <div style={{ position: 'relative', zIndex: 2 }}>
-                                            <PaypalButton type="subscription" planId={manualPlan.id} currency={currency} onSuccess={() => { onClose(); router.push(`/dashboard/mentor?subscription=success&plan=${manualPlan.id}`); }} />
+                                            <PaypalButton 
+                                               type="subscription" 
+                                               planId={manualPlan.id} 
+                                               currency={currency} 
+                                               trial={manualPlan.id === 'pro' && user?.hasUsedTrial !== true}
+                                               onSuccess={() => { onClose(); router.push(`/dashboard/mentor?subscription=success&plan=${manualPlan.id}`); }} 
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -363,79 +365,5 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                 </div>
             </motion.div>
         </div>
-    );
-}
-
-interface PlanCardProps {
-    id: string; name: string; price: string; amount: number; color: string;
-    icon: React.ReactNode; features: string[]; onSelect: () => void;
-    onManual: () => void; onPaypalSuccess: (data: PaypalSuccessDetails) => void;
-    loading: boolean; currency: string; t: (key: string) => string;
-    onStripeLocked: () => void;
-}
-
-function PlanCard({ id, name, price, color, icon, features, onManual, onPaypalSuccess, currency, t, onStripeLocked }: PlanCardProps) {
-    return (
-        <div style={{ border: `1.5px solid ${color}25`, background: '#fff', padding: '28px 24px', borderRadius: '24px', display: 'flex', flexDirection: 'column', transition: 'all 0.25s', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}
-            onMouseOver={e => (e.currentTarget.style.transform = 'translateY(-4px)', e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.1)')}
-            onMouseOut={e => (e.currentTarget.style.transform = 'translateY(0)', e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.04)')}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                <div style={{ background: `${color}15`, color: color, padding: '10px', borderRadius: '14px' }}>{icon}</div>
-                <div>
-                    <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#111' }}>{name}</h3>
-                    <div style={{ fontSize: '1.3rem', fontWeight: 800, color: color }}>{price} <span style={{ fontSize: '0.75rem', color: '#9ca3af', fontWeight: 500 }}>/mês</span></div>
-                </div>
-            </div>
-
-            <div style={{ marginBottom: '20px', flex: 1 }}>
-                {features.map((f: string) => (
-                    <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px', fontSize: '0.85rem', color: '#444' }}>
-                        <div style={{ minWidth: '18px', height: '18px', borderRadius: '50%', background: `${color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1px' }}>
-                            <Check size={11} color={color} strokeWidth={3} />
-                        </div>
-                        {f}
-                    </div>
-                ))}
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {/* Stripe (Locked) */}
-                <button 
-                    onClick={onStripeLocked}
-                    style={{ 
-                        width: '100%', height: '45px', 
-                        background: '#f8f8f8', color: '#999', 
-                        borderRadius: '8px', fontWeight: 700, 
-                        border: '1.5px dashed #ddd', 
-                        cursor: 'help', display: 'flex', 
-                        alignItems: 'center', justifyContent: 'center', 
-                        gap: '10px', fontSize: '0.85rem', transition: 'all 0.2s', padding: 0 
-                    }}
-                >
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <Lock size={14} opacity={0.5} />
-                        <span>Checkout Global (Stripe)</span>
-                    </div>
-                </button>
-
-                {/* PayPal */}
-                <div style={{ background: '#FFC439', borderRadius: '8px', overflow: 'hidden', height: '45px', position: 'relative' }}>
-                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', zIndex: 1, pointerEvents: 'none' }}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#003087"><path d="M20.067 8.478c.492.88.556 2.014.303 3.274-.744 3.713-3.005 6.045-7.054 6.045h-1.6c-.466 0-.846.347-.936.802l-.653 3.274c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l2.454-9.743c.09-.455.47-.802.936-.802h3.2c1.783 0 3.264-.09 4.316-.395.53-.151.782-.26 1.05-.53.284-.287.48-.686.586-1.124.162-.676.02-1.28-.432-1.74-.41-.424-1.07-.63-1.964-.63h-5.066c-.466 0-.846.347-.936.802l-1.306 6.548c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l1.636-6.548c.09-.455.49-.802.956-.802h6.14c1.9 0 3.4.45 4.31 1.34s1.21 2.09.82 3.65c-.09.36-.21.69-.37 1zm-1.12-5.46c-.52-.51-1.34-.78-2.45-.78h-6.14c-.97 0-1.83.67-2.02 1.62l-2.03 10.15c-.06.31.18.61.5.61h3.32c.3 0 .58-.22.63-.52l.65-3.27c.09-.46.49-.81.96-.81h1.59c3.9 0 6.07-2.12 6.81-5.83.43-2.14.07-3.7-.62-4.47z" /></svg>
-                    </div>
-                    <div style={{ position: 'relative', zIndex: 2 }}>
-                        <PaypalButton type="subscription" planId={id} currency={currency} onSuccess={onPaypalSuccess} />
-                    </div>
-                </div>
-
-                {/* Manual */}
-                <button onClick={onManual}
-                    style={{ width: '100%', height: '45px', background: '#333', color: '#fff', borderRadius: '8px', fontWeight: 800, border: '1px solid #444', cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.2s', padding: 0 }}
-                    onMouseOver={e => (e.currentTarget.style.background = '#1a1a1a')}
-                    onMouseOut={e => (e.currentTarget.style.background = '#333')}>
-                    {t('plans.manualUpgrade.mpesaTransfer')}
-                </button>
-            </div>
-        </div>
-    );
-}
+368:     );
+369: }

@@ -30,6 +30,84 @@ class PayPalService {
         }
     }
 
+    async createProduct(productData) {
+        try {
+            const token = await this.getAccessToken();
+            const response = await axios.post(
+                `${this.baseUrl}/v1/catalogs/products`,
+                productData,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('❌ PayPal Create Product Error:', error.response?.data || error.message);
+            throw error;
+        }
+    }
+
+    async createPlan(planData) {
+        try {
+            const token = await this.getAccessToken();
+            const response = await axios.post(
+                `${this.baseUrl}/v1/billing/plans`,
+                planData,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('❌ PayPal Create Plan Error:', error.response?.data || error.message);
+            throw error;
+        }
+    }
+
+    async createSubscription(subscriptionData) {
+        try {
+            const token = await this.getAccessToken();
+            const response = await axios.post(
+                `${this.baseUrl}/v1/billing/subscriptions`,
+                subscriptionData,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('❌ PayPal Create Subscription Error:', error.response?.data || error.message);
+            throw error;
+        }
+    }
+
+    async getSubscriptionDetails(subscriptionId) {
+        try {
+            const token = await this.getAccessToken();
+            const response = await axios.get(
+                `${this.baseUrl}/v1/billing/subscriptions/${subscriptionId}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('❌ PayPal Get Subscription Error:', error.response?.data || error.message);
+            throw error;
+        }
+    }
+
     async createOrder(orderData) {
         try {
             const token = await this.getAccessToken();

@@ -21,6 +21,11 @@ const UserSchema = new mongoose.Schema({
     },
     plan: { type: String, enum: ['free', 'pro', 'enterprise'], default: 'free' },
     status: { type: String, enum: ['active', 'blocked'], default: 'active' },
+    subscriptionStatus: { type: String, enum: ['none', 'trialing', 'active', 'expired', 'canceled'], default: 'none' },
+    subscriptionId: { type: String },
+    trialStartedAt: { type: Date },
+    trialEndedAt: { type: Date },
+    hasUsedTrial: { type: Boolean, default: false },
     stripeAccountId: { type: String },
     stripeOnboardingComplete: { type: Boolean, default: false },
     paypalEmail: { type: String, sparse: true }, // Added for PayPal payments
@@ -52,6 +57,10 @@ const UserSchema = new mongoose.Schema({
     lastLoginAt: { type: Date, default: Date.now },
     loginCount: { type: Number, default: 0 },
     completedMissions: [{ type: String }], // Track social follows, etc.
+    planExpiresAt: { type: Date }, // When the current paid/trial period ends
+    subscriptionWarningSentAt: { type: Date }, // To track 3/7 day warnings
+    lastExpirationEmailSentAt: { type: Date }, // To track when the "Expired" email was sent
+    lastMonthlyNudgeSentAt: { type: Date }, // To track the monthly Pro incentive nudge
     createdAt: { type: Date, default: Date.now }
 });
 

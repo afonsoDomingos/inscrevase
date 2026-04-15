@@ -5,6 +5,7 @@ const Form = require('../models/Form');
 const Lesson = require('../models/Lesson');
 const LessonProgress = require('../models/LessonProgress');
 const sendEmail = require('../utils/emailService');
+const whatsappService = require('./whatsappService');
 const {
     generatePendingApprovalEmail,
     generateReferralBonusEmail,
@@ -464,6 +465,130 @@ const initAutomations = () => {
             }
         } catch (err) {
             console.error('❌ [Automation] Mentor reactivation error:', err);
+        }
+    });
+    
+    // 10. Every 24 hours: Subscription Lifecycle Management
+    // Checks for plan expiration, reverts to free, and sends warnings (3/7 days)
+    cron.schedule('0 9 * * *', async () => {
+        console.log('🔍 [Automation] Running Subscription Lifecycle check...');
+        try {
+            const now = new Date();
+            const threeDaysFromNow = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+            const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+            const oneDayFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+            // 10.1: Revert Expired Subscriptions
+            const expiredUsers = await User.find({
+                plan: { $ne: 'free' },
+                planExpiresAt: { $lt: now }
+            });
+
+            for (const user of expiredUsers) {
+                console.log(`⏳ [Automation] Reverting user ${user.email} to FREE (Expired at ${user.planExpiresAt})`);
+                const oldPlan = user.plan;
+                
+                // Update User
+                user.plan = 'free';
+                user.subscriptionStatus = 'expired';
+                user.lastExpirationEmailSentAt = new Date();
+                await user.save();
+
+                // Send Expiration Email
+                const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/plans`;
+                const emailHtml = generateSubscriptionExpiredEmail(user.name, oldPlan, dashboardUrl);
+                
+                await sendEmail(user.email, `⏳ O seu plano ${oldPlan.toUpperCase()} expirou - Inscreva-se`, emailHtml);
+                
+                // --- WHATSAPP NOTIFICATION ---
+                if (user.whatsapp) {
+                    const waMsg = `Olá *${user.name.split(' ')[0]}*! 👋\n\nA sua assinatura *Inscreva-se ${oldPlan.charAt(0).toUpperCase() + oldPlan.slice(1)}* terminou e a sua conta foi revertida para o plano Free.\n\nPara recuperar o acesso a todas as ferramentas elite e taxas reduzidas, podes reativar o seu plano aqui:\n🔗 https://inscreva-se.com/planos\n\nVamos voltar ao topo? 📈`;
+                    whatsappService.sendMessage(user.whatsapp, waMsg).catch(e => console.error('WA Error (Expiration):', e.message));
+                }
+                
+                await logCommunication({
+                    recipientIds: [user._id],
+                    recipientEmails: [user.email],
+                    subject: `Aviso de Expiração: Plano ${oldPlan}`,
+                    content: `Utilizador revertido para Free automaticamente por expiração do período pago.`,
+                    status: 'sent'
+                });
+            }
+
+            // 10.2: Send Warnings (Urgent: 1, 3, 7 Days)
+            const warningsNeeded = await User.find({
+                plan: { $ne: 'free' },
+                planExpiresAt: { $gt: now, $lte: sevenDaysFromNow },
+                // Only send if we haven't sent a warning in the last 23 hours (to avoid duplicate on same day if job runs twice)
+                $or: [
+                    { subscriptionWarningSentAt: { $lt: new Date(now.getTime() - 23 * 60 * 60 * 1000) } },
+                    { subscriptionWarningSentAt: { $exists: false } }
+                ]
+            });
+
+            for (const user of warningsNeeded) {
+                const diffMs = user.planExpiresAt - now;
+                const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                
+                // Only send if it matches our targets: 7, 3 or 1 day
+                if ([1, 3, 7].includes(diffDays)) {
+                    const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/plans`;
+                    const emailHtml = generateSubscriptionWarningEmail(user.name, user.plan, diffDays, dashboardUrl);
+                    
+                    const subject = diffDays === 1 
+                        ? `⏱️ ÚLTIMAS 24H: A sua assinatura expira amanhã - Inscreva-se`
+                        : `⚠️ Atenção: A sua assinatura termina em ${diffDays} dias - Inscreva-se`;
+
+                    await sendEmail(user.email, subject, emailHtml);
+                    
+                    // --- WHATSAPP NOTIFICATION ---
+                    if (user.whatsapp) {
+                        const timeText = diffDays === 1 ? 'amanhã' : `em ${diffDays} dias`;
+                        const waMsg = `⚠️ *AVISO DE RENOVAÇÃO* - Inscreva-se\n\nOlá *${user.name.split(' ')[0]}*! Notamos que o seu plano *Pro* irá expirar *${timeText}*.\n\nPara evitar interrupções no seu perfil e nas suas taxas, garante que a sua renovação está em dia:\n🔗 https://inscreva-se.com/dashboard/plans\n\nContamos contigo! ⚡`;
+                        whatsappService.sendMessage(user.whatsapp, waMsg).catch(e => console.error('WA Error (Warning):', e.message));
+                    }
+                    
+                    user.subscriptionWarningSentAt = new Date();
+                    await user.save();
+                    console.log(`📡 [Automation] Sent ${diffDays}-day warning to ${user.email}`);
+                }
+            }
+
+            // 10.3: Monthly Pro Incentive Nudge (Every 30 days for Free mentors)
+            const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+            const freeMentorsToIncentivize = await User.find({
+                plan: 'free',
+                role: 'mentor',
+                lastLoginAt: { $gt: sevenDaysAgo }, // Only target active users
+                $or: [
+                    { lastMonthlyNudgeSentAt: { $lt: thirtyDaysAgo } },
+                    { lastMonthlyNudgeSentAt: { $exists: false } }
+                ]
+            }).limit(50); // Batch process for safety
+
+            console.log(`🎯 [Automation] Found ${freeMentorsToIncentivize.length} free mentors for monthly Pro incentive.`);
+
+            for (const user of freeMentorsToIncentivize) {
+                const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/plans`;
+                const emailHtml = generateUpgradeSuggestionEmail(user.name, dashboardUrl);
+                
+                await sendEmail(user.email, `📈 Leve os seus eventos ao próximo nível - Plano PRO Inscreva-se`, emailHtml);
+                
+                // --- WHATSAPP NOTIFICATION ---
+                if (user.whatsapp) {
+                    const waMsg = `🚀 *LEVE O SEU PERFIL AO PRÓXIMO NÍVEL*\n\nOlá *${user.name.split(' ')[0]}*! Sabia que os mentores *PRO* no Inscreva-se faturam, em média, *3x mais*?\n\nAtive agora o seu upgrade e ganhe taxas reduzidas e destaque prioritário:\n🔗 https://inscreva-se.com/planos\n\nVamos crescer juntos? 📈`;
+                    whatsappService.sendMessage(user.whatsapp, waMsg).catch(e => console.error('WA Error (Incentive):', e.message));
+                }
+                
+                user.lastMonthlyNudgeSentAt = new Date();
+                await user.save();
+                console.log(`📡 [Automation] Sent monthly Pro incentive to ${user.email}`);
+            }
+
+        } catch (err) {
+            console.error('❌ [Automation] Subscription Lifecycle error:', err);
         }
     });
 };

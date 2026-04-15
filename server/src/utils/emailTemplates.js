@@ -1412,6 +1412,225 @@ const generateMotivaPhaseLaunchEmail = (phase, rewardTitle, rewardValue) => {
     `;
 };
 
+const generateTrialWelcomeEmail = (name, planName, trialEndDate, dashboardUrl) => {
+    const accentColor = "#D4AF37";
+    const dateStr = new Date(trialEndDate).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, ${accentColor} 0%, #000000 100%); padding: 50px 20px; text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1;">
+                <h1 style="color: #ffffff; font-size: 24px; font-weight: 900; margin-top: 20px; letter-spacing: 2px; text-transform: uppercase; position: relative; z-index: 1;">Teste <span style="color: ${accentColor};">Pro</span> Iniciado! 💎</h1>
+            </div>
+
+            <div style="padding: 45px;">
+                <div style="background-color: #fcfcfc; padding: 35px; border-radius: 20px; border: 1px solid #f0f0f0; border-left: 5px solid ${accentColor};">
+                    <p style="font-size: 18px; color: #111; margin-top: 0; font-weight: 700;">Olá, ${name}!</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.7;">
+                        Seja bem-vindo ao próximo nível. O seu teste gratuito de 30 dias do plano <strong>PRO</strong> foi ativado com sucesso.
+                    </p>
+
+                    <div style="background: #ffffff; padding: 25px; border-radius: 16px; margin: 30px 0; border: 1px solid #f5f5f5; text-align: center;">
+                        <p style="margin: 0 0 5px 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">O seu trial termina em:</p>
+                        <p style="margin: 0; color: #000; font-weight: 800; font-size: 20px;">${dateStr}</p>
+                    </div>
+
+                    <p style="font-size: 15px; color: #666; line-height: 1.7;">
+                        Durante este período, tem acesso total a todas as funcionalidades premium, incluindo taxas reduzidas, IA avançada e destaque global. Aproveite este tempo para escalar os seus resultados!
+                    </p>
+                    
+                    <div style="text-align: center; margin: 40px 0 10px;">
+                        <a href="${dashboardUrl}" style="background: linear-gradient(135deg, ${accentColor} 0%, #000 100%); color: #ffffff; padding: 20px 45px; text-decoration: none; border-radius: 15px; font-weight: 900; font-size: 14px; display: inline-block; box-shadow: 0 10px 25px rgba(212,175,55,0.3); text-transform: uppercase; letter-spacing: 1px;">
+                            Explorar Recursos Pro
+                        </a>
+                    </div>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
+const generateTrialEndingReminderEmail = (name, planName, trialEndDate, dashboardUrl) => {
+    const accentColor = "#FFD700";
+    const dateStr = new Date(trialEndDate).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, ${accentColor} 0%, #000000 100%); padding: 50px 20px; text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1;">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 20px; letter-spacing: 2px; text-transform: uppercase; position: relative; z-index: 1;">O seu Trial <span style="color: ${accentColor};">está a terminar</span> ⏳</h1>
+            </div>
+
+            <div style="padding: 45px;">
+                <div style="background-color: #fffaf0; padding: 35px; border-radius: 20px; border: 1px solid #fdf2f2; border-left: 5px solid ${accentColor};">
+                    <p style="font-size: 18px; color: #111; margin-top: 0; font-weight: 700;">Olá, ${name}.</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.7;">
+                        Esperamos que esteja a adorar a experiência <strong>PRO</strong>. Lembramos que o seu período de teste gratuito termina em:
+                    </p>
+
+                    <div style="background: #ffffff; padding: 25px; border-radius: 16px; margin: 30px 0; border: 1px solid #fef3c7; text-align: center;">
+                        <p style="margin: 0; color: #92400e; font-weight: 900; font-size: 22px;">${dateStr}</p>
+                        <p style="margin: 5px 0 0 0; color: #b45309; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Cobrança automática após esta data</p>
+                    </div>
+
+                    <p style="font-size: 15px; color: #666; line-height: 1.7;">
+                        Se deseja continuar a desfrutar de todos os benefícios sem interrupção, não precisa de fazer nada. Caso contrário, pode cancelar a assinatura a qualquer momento antes de ${dateStr} através do seu portal de faturação.
+                    </p>
+                    
+                    <div style="text-align: center; margin: 40px 0 10px;">
+                        <a href="${dashboardUrl}" style="background: #000; color: #ffffff; padding: 20px 45px; text-decoration: none; border-radius: 15px; font-weight: 900; font-size: 14px; display: inline-block; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-transform: uppercase; letter-spacing: 1px;">
+                            Gerir Assinatura
+                        </a>
+                    </div>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
+const generateSubscriptionExpiredEmail = (name, planName, dashboardUrl) => {
+    const accentColor = "#6b7280"; // Gray for expired
+    const planLabel = planName.charAt(0).toUpperCase() + planName.slice(1);
+
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, ${accentColor} 0%, #000000 100%); padding: 50px 20px; text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1;">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 20px; letter-spacing: 2px; text-transform: uppercase; position: relative; z-index: 1;">A sua assinatura <span style="color: #fff; text-decoration: underline;">expirou</span> ⏳</h1>
+            </div>
+
+            <div style="padding: 45px;">
+                <div style="background-color: #f9fafb; padding: 35px; border-radius: 20px; border: 1px solid #f3f4f6; border-left: 5px solid ${accentColor};">
+                    <p style="font-size: 18px; color: #111; margin-top: 0; font-weight: 700;">Olá, ${name}.</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.7;">
+                        O período de acesso ao plano <strong>Inscreva-se ${planLabel}</strong> terminou. Por segurança e para manter o sistema organizado, a sua conta foi revertida para o plano <strong>Free</strong>.
+                    </p>
+
+                    <div style="background: #ffffff; padding: 25px; border-radius: 16px; margin: 30px 0; border: 1px solid #e5e7eb; text-align: center;">
+                        <p style="margin: 0; color: #374151; font-weight: 800; font-size: 14px; text-transform: uppercase;">Estado Atual</p>
+                        <p style="margin: 5px 0 0 0; color: #111; font-size: 24px; font-weight: 900;">Acesso Limitado (Free)</p>
+                    </div>
+
+                    <p style="font-size: 15px; color: #666; line-height: 1.7;">
+                        Não perca o seu momentum! Ao reativar o seu plano agora, recupera imediatamente todas as ferramentas avançadas, taxas reduzidas e o destaque premium no ecossistema. Vamos voltar ao topo?
+                    </p>
+                    
+                    <div style="text-align: center; margin: 40px 0 10px;">
+                        <a href="${dashboardUrl}" style="background: linear-gradient(135deg, #D4AF37 0%, #000 100%); color: #ffffff; padding: 20px 45px; text-decoration: none; border-radius: 15px; font-weight: 900; font-size: 14px; display: inline-block; box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2); text-transform: uppercase; letter-spacing: 1px;">
+                            Reativar Meu Plano Elite
+                        </a>
+                    </div>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
+const generateSubscriptionWarningEmail = (name, planName, daysRemaining, dashboardUrl) => {
+    const isUrgent = daysRemaining <= 3;
+    const accentColor = isUrgent ? "#ef4444" : "#f59e0b"; // Red for 3 days, Amber for 7
+    const planLabel = planName.charAt(0).toUpperCase() + planName.slice(1);
+
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, ${accentColor} 0%, #000000 100%); padding: 50px 20px; text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1;">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 20px; letter-spacing: 2px; text-transform: uppercase; position: relative; z-index: 1;">Aviso de <span style="color: #fff;">Renovação</span> ⚡</h1>
+            </div>
+
+            <div style="padding: 45px;">
+                <div style="background-color: ${isUrgent ? '#fffafb' : '#fffbeb'}; padding: 35px; border-radius: 20px; border: 1px solid ${isUrgent ? '#fee2e2' : '#fef3c7'}; border-left: 5px solid ${accentColor};">
+                    <p style="font-size: 18px; color: #111; margin-top: 0; font-weight: 700;">Olá, ${name}.</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.7;">
+                        Garantir a continuidade do seu trabalho é a nossa prioridade. Notamos que o seu plano <strong>Inscreva-se ${planLabel}</strong> irá expirar em:
+                    </p>
+
+                    <div style="background: #ffffff; padding: 25px; border-radius: 16px; margin: 30px 0; border: 1px solid ${isUrgent ? '#fee2e2' : '#fef3c7'}; text-align: center;">
+                        <p style="margin: 0; color: ${accentColor}; font-weight: 900; font-size: 32px;">${daysRemaining} ${daysRemaining === 1 ? 'Dia' : 'Dias'}</p>
+                        <p style="margin: 5px 0 0 0; color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Restantes de Acesso Elite</p>
+                    </div>
+
+                    <p style="font-size: 15px; color: #666; line-height: 1.7;">
+                        Para evitar a interrupção das suas ferramentas e a perda dos benefícios de taxa reduzida, certifique-se de que o seu método de pagamento está atualizado ou realize a renovação manual agora mesmo.
+                    </p>
+                    
+                    <div style="text-align: center; margin: 40px 0 10px;">
+                        <a href="${dashboardUrl}" style="background: #000; color: #ffffff; padding: 20px 45px; text-decoration: none; border-radius: 15px; font-weight: 900; font-size: 14px; display: inline-block; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-transform: uppercase; letter-spacing: 1px;">
+                            Confirmar Renovação
+                        </a>
+                    </div>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
+const generateUpgradeSuggestionEmail = (name, dashboardUrl) => {
+    const accentColor = "#D4AF37";
+
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, ${accentColor} 0%, #000000 100%); padding: 50px 20px; text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1;">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 20px; letter-spacing: 2px; text-transform: uppercase; position: relative; z-index: 1;">Suba ao Nível <span style="color: ${accentColor};">Elite</span> 📈</h1>
+            </div>
+
+            <div style="padding: 45px;">
+                <div style="background-color: #fcfaf0; padding: 35px; border-radius: 20px; border: 1px solid #fdf2f2; border-left: 5px solid ${accentColor};">
+                    <p style="font-size: 18px; color: #111; margin-top: 0; font-weight: 700;">Olá, ${name}.</p>
+                    
+                    <p style="font-size: 16px; color: #555; line-height: 1.7;">
+                        Vimos o seu progresso e acreditamos que está na hora de levar os seus eventos ao próximo nível. Sabia que os nossos mentores <strong>PRO</strong> faturam, em média, 3x mais?
+                    </p>
+
+                    <div style="background: #ffffff; padding: 25px; border-radius: 16px; margin: 30px 0; border: 1px solid #fef3c7;">
+                        <ul style="padding: 0; margin: 0; list-style: none;">
+                            <li style="margin-bottom: 12px; display: flex; align-items: center; color: #444; font-size: 14px;">
+                                <span style="color: ${accentColor}; margin-right: 10px; font-weight: bold;">✓</span> Taxas reduzidas para maximizar o seu lucro
+                            </li>
+                            <li style="margin-bottom: 12px; display: flex; align-items: center; color: #444; font-size: 14px;">
+                                <span style="color: ${accentColor}; margin-right: 10px; font-weight: bold;">✓</span> Destaque prioritário na nossa página principal
+                            </li>
+                            <li style="display: flex; align-items: center; color: #444; font-size: 14px;">
+                                <span style="color: ${accentColor}; margin-right: 10px; font-weight: bold;">✓</span> Certificados automáticos personalizados
+                            </li>
+                        </ul>
+                    </div>
+
+                    <p style="font-size: 15px; color: #666; line-height: 1.7;">
+                        Temos uma oferta especial para o seu primeiro upgrade. Que tal começar um trial gratuito de 30 dias e sentir a diferença?
+                    </p>
+                    
+                    <div style="text-align: center; margin: 40px 0 10px;">
+                        <a href="${dashboardUrl}" style="background: linear-gradient(135deg, ${accentColor} 0%, #000 100%); color: #ffffff; padding: 20px 45px; text-decoration: none; border-radius: 15px; font-weight: 900; font-size: 14px; display: inline-block; box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3); text-transform: uppercase; letter-spacing: 1px;">
+                            Ativar Meu Upgrade Grátis
+                        </a>
+                    </div>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
 module.exports = {
     generateWelcomeEmail,
     generateBasicEmail,
@@ -1436,6 +1655,11 @@ module.exports = {
     generateMotivaSubmissionEmail,
     generateMotivaApprovalEmail,
     generateMotivaPhaseLaunchEmail,
+    generateTrialWelcomeEmail,
+    generateTrialEndingReminderEmail,
+    generateSubscriptionExpiredEmail,
+    generateSubscriptionWarningEmail,
+    generateUpgradeSuggestionEmail,
     getSocialFooter,
     socialLinks
 };

@@ -22,10 +22,11 @@ interface PaypalButtonProps {
     submissionData?: Record<string, unknown>;
     currency: string;
     amount?: number;
+    trial?: boolean; // New prop
     onSuccess: (data: PaypalSuccessDetails) => void;
 }
 
-export default function PaypalButton({ type, planId, formId, submissionData, adData, currency, onSuccess }: PaypalButtonProps) {
+export default function PaypalButton({ type, planId, formId, submissionData, adData, currency, trial, onSuccess }: PaypalButtonProps) {
     // O SDK já está carregado via PayPalProviderWrapper no layout global
     const [{ isPending, isRejected }] = usePayPalScriptReducer();
 
@@ -42,9 +43,13 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
             }
 
             let body: Record<string, unknown> = {};
-            if (type === 'subscription') body = { plan: planId, currency };
-            else if (type === 'ad_checkout') body = { adData, currency };
-            else body = { formId, submissionData, currency };
+            if (type === 'subscription') {
+                body = { plan: planId, currency, trial };
+            } else if (type === 'ad_checkout') {
+                body = { adData, currency };
+            } else {
+                body = { formId, submissionData, currency };
+            }
 
             const response = await fetch(endpoint, {
                 method: "POST",
@@ -60,12 +65,18 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
                 throw new Error(`Server Error: ${response.status} - ${errorData}`);
             }
 
-            const order = await response.json();
-            if (!order.id) throw new Error("Could not create PayPal order. Empty ID returned.");
+            const result = await response.json();
+            
+            // If it's a recurring subscription, PayPal expects the subscription data
+            if (result.isRecurring) {
+                toast.dismiss(loadingToast);
+                return result.id; // This will go to createSubscription
+            }
+
+            if (!result.id) throw new Error("Could not create PayPal order/subscription. Empty ID returned.");
 
             toast.dismiss(loadingToast);
-            return order.id;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return result.id;
         } catch (err: any) {
             console.error('\n❌ Frontend PayPal Create Error:', err);
             toast.dismiss(loadingToast);
@@ -74,8 +85,19 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
         }
     };
 
-    const onApprove = async (data: { orderID: string }) => {
+    const onApprove = async (data: { orderID?: string; subscriptionID?: string }) => {
         try {
+            const payId = data.subscriptionID || data.orderID;
+            console.log('✅ PayPal onApprove Data:', data);
+
+            // For recurring subscriptions, the plan is already activated via webhook (ideally)
+            // or we can verify it here.
+            if (data.subscriptionID) {
+                toast.success("Subscrição iniciada com sucesso!");
+                onSuccess({ success: true, type: 'subscription', plan: planId });
+                return;
+            }
+
             const logType = type === 'ad_checkout' ? 'ad_purchase' : type as 'subscription' | 'event_registration';
             logService.logPaymentAttempt({
                 type: logType,
@@ -98,7 +120,6 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
 
             if (!response.ok) {
                 const errorData = await response.text();
-                const logType = type === 'ad_checkout' ? 'ad_purchase' : type as 'subscription' | 'event_registration';
                 logService.logPaymentAttempt({
                     type: logType,
                     method: 'paypal',
@@ -111,7 +132,6 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
             const details = (await response.json()) as PaypalSuccessDetails;
             if (details.success) {
                 toast.success("Pagamento confirmado via PayPal!");
-                const logType = type === 'ad_checkout' ? 'ad_purchase' : type as 'subscription' | 'event_registration';
                 logService.logPaymentAttempt({
                     type: logType,
                     method: 'paypal',
@@ -120,7 +140,6 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
                 });
                 onSuccess(details);
             } else {
-                const logType = type === 'ad_checkout' ? 'ad_purchase' : type as 'subscription' | 'event_registration';
                 logService.logPaymentAttempt({
                     type: logType,
                     method: 'paypal',
@@ -151,13 +170,12 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
                 fontWeight: 700,
                 gap: '8px'
             }}>
-                <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite', fontSize: '1rem' }}>⏳</span>
+                <span className="animate-spin" style={{ fontSize: '1rem' }}>⏳</span>
                 A carregar PayPal...
             </div>
         );
     }
 
-    // SDK falhou a carregar
     if (isRejected) {
         return (
             <div style={{
@@ -176,10 +194,14 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
         );
     }
 
+    // Toggle between createOrder and createSubscription based on whether it's a trial/recurring
+    const isRecurring = type === 'subscription' && trial;
+
     return (
         <PayPalButtons
             style={{ layout: "vertical", shape: "rect", height: 45 }}
-            createOrder={createOrder}
+            createOrder={!isRecurring ? createOrder : undefined}
+            createSubscription={isRecurring ? createOrder : undefined}
             onApprove={onApprove}
         />
     );

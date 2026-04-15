@@ -177,6 +177,14 @@ function MentorDashboardContent() {
         }));
     };
 
+    const getTrialDaysRemaining = () => {
+        if (!user?.trialEndedAt) return 0;
+        const end = new Date(user.trialEndedAt);
+        const now = new Date();
+        const diff = end.getTime() - now.getTime();
+        return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+    };
+
     const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'superadmin';
 
     const handleResendVerification = async () => {
@@ -790,7 +798,20 @@ function MentorDashboardContent() {
                                 <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{t('dashboard.settings.currentPlan')}</div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <Crown size={16} color={user.plan === 'enterprise' ? '#000' : '#FFD700'} />
-                                    <span style={{ fontWeight: 800, fontSize: '0.9rem', color: '#fff' }}>{user.plan || 'Free'}</span>
+                                    <span style={{ fontWeight: 800, fontSize: '0.9rem', color: '#fff' }}>
+                                        {user.plan || 'Free'}
+                                        {user.subscriptionStatus === 'trialing' && (
+                                            <span style={{ 
+                                                marginLeft: '8px', 
+                                                fontSize: '0.65rem', 
+                                                background: '#FFD700', 
+                                                color: '#000', 
+                                                padding: '2px 6px', 
+                                                borderRadius: '4px',
+                                                verticalAlign: 'middle'
+                                            }}>TRIAL</span>
+                                        )}
+                                    </span>
                                 </div>
                             </div>
                         )}
@@ -944,6 +965,67 @@ function MentorDashboardContent() {
                         >
                             {isResending ? <Loader2 className="animate-spin" size={16} /> : null}
                             {t('dashboard.resendEmail')}
+                        </button>
+                    </motion.div>
+                )}
+
+                {/* Trial Banner */}
+                {user && user.subscriptionStatus === 'trialing' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        style={{
+                            background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)',
+                            padding: '1.25rem 1.5rem',
+                            borderRadius: '16px',
+                            marginBottom: '2rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            boxShadow: '0 10px 30px rgba(212, 175, 55, 0.2)',
+                            color: '#000',
+                            border: '1px solid rgba(255, 255, 255, 0.2)'
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                            <div style={{ 
+                                background: 'rgba(0, 0, 0, 0.1)', 
+                                width: '40px', 
+                                height: '40px', 
+                                borderRadius: '50%', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center' 
+                            }}>
+                                <Crown size={22} />
+                            </div>
+                            <div>
+                                <h4 style={{ margin: 0, fontWeight: 900, fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                    Teste Gratuito Pro Ativo
+                                </h4>
+                                <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600, opacity: 0.8 }}>
+                                    Tens <b>{getTrialDaysRemaining()} dias</b> restantes para desfrutar de todas as funcionalidades premium.
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setActiveTab('plans')}
+                            style={{
+                                background: '#000',
+                                color: '#fff',
+                                border: 'none',
+                                padding: '0.7rem 1.5rem',
+                                borderRadius: '10px',
+                                fontWeight: 800,
+                                fontSize: '0.8rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        >
+                            GERIR PLANO
                         </button>
                     </motion.div>
                 )}

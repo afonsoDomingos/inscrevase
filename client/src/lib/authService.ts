@@ -37,6 +37,11 @@ export interface UserData {
     lastLoginAt?: string;
     loginCount?: number;
     paypalEmail?: string;
+    subscriptionStatus?: 'active' | 'trialing' | 'past_due' | 'canceled' | 'unpaid' | 'incomplete_expired';
+    subscriptionId?: string;
+    trialStartedAt?: string;
+    trialEndedAt?: string;
+    hasUsedTrial?: boolean;
 }
 
 export interface RegisterData {

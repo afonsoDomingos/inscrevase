@@ -20,7 +20,9 @@ const {
     generatePaymentRejectedEmail,
     generateAdminAdNotificationEmail,
     generateSubscriptionConfirmationEmail,
-    generatePaymentProofReceivedEmail
+    generatePaymentProofReceivedEmail,
+    generateTrialWelcomeEmail,
+    generateTrialEndingReminderEmail
 } = require('../utils/emailTemplates');
 const { logCommunication } = require('../utils/communicationLogger');
 
@@ -707,35 +709,72 @@ exports.handleWebhook = async (req, res) => {
             console.log('💎 [Stripe Webhook] Processing Subscription Session:', session.id);
             const userId = session.metadata.userId;
             const plan = session.metadata.plan;
+            const isTrial = session.metadata.isTrial === 'true';
 
             if (userId) {
                 const user = await User.findById(userId);
+                
+                // Fetch full subscription to get trial dates
+                const subscription = await stripe.subscriptions.retrieve(session.subscription);
+
                 const updateData = {
                     plan: plan,
                     canCreateEvents: true,
-                    stripeCustomerId: session.customer
+                    stripeCustomerId: session.customer,
+                    subscriptionId: session.subscription,
+                    subscriptionStatus: isTrial ? 'trialing' : 'active'
                 };
 
-                // Soberania de papel: Só mudamos se for participante
+                if (isTrial) {
+                    updateData.trialStartedAt = new Date();
+                    updateData.trialEndedAt = new Date(subscription.trial_end * 1000);
+                    updateData.planExpiresAt = updateData.trialEndedAt;
+                    updateData.hasUsedTrial = true;
+                } else {
+                    // Normal sub - set buffer of 31 days
+                    updateData.planExpiresAt = new Date(Date.now() + 31 * 24 * 60 * 60 * 1000);
+                }
+
+                // Role upgrade: Participant to Mentor
                 if (user && user.role === 'participant') {
                     updateData.role = 'mentor';
                 }
 
                 await User.findByIdAndUpdate(userId, updateData);
-                console.log(`✅ [Stripe Webhook] User ${userId} (${user?.role}) upgraded to ${plan}`);
+                console.log(`✅ [Stripe Webhook] User ${userId} (${user?.role}) upgraded to ${plan}. Trial: ${isTrial}`);
 
-                // Enviar e-mail de confirmação
+                // --- WHATSAPP NOTIFICATION ---
+                if (user && user.whatsapp) {
+                    const waMsg = isTrial 
+                        ? `💎 *BEM-VINDO AO TESTE GRATUITO* - Inscreva-se\n\nOlá *${user.name.split(' ')[0]}*! O seu plano *${plan.toUpperCase()}* (30 dias grátis) já está ativo no Stripe. 🎉\n\nJá podes começar a criar!\n🔗 https://inscreva-se.com/dashboard/mentor`
+                        : `✅ *ASSINATURA STRIPE ATIVADA* - Inscreva-se\n\nOlá *${user.name.split(' ')[0]}*! O seu plano *${plan.toUpperCase()}* já está ativo. 🎉\n\nBoas vendas! 📈`;
+                    whatsappService.sendMessage(user.whatsapp, waMsg).catch(e => console.error('WA Error (Stripe Act):', e.message));
+                }
+
+                // Enviar e-mail de confirmação (Trial vs Normal)
                 if (user && user.email) {
                     const dynamicPlans = await getDynamicPlanConfig();
                     const planConfig = dynamicPlans[plan] || PLANS.pro;
                     const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
-                    const emailHtml = generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl, planConfig.commissionRate);
-                    sendEmail(user.email, `Pagamento Confirmado: Bem-vindo ao plano ${plan.toUpperCase()}`, emailHtml);
+                    
+                    const emailHtml = isTrial 
+                        ? generateTrialWelcomeEmail(user.name, plan, subscription.trial_end * 1000, dashboardUrl)
+                        : generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl, planConfig.commissionRate);
+                    
+                    const subject = isTrial 
+                        ? `💎 O seu Teste Gratuito do Plano ${plan.toUpperCase()} começou!`
+                        : `Pagamento Confirmado: Bem-vindo ao plano ${plan.toUpperCase()}`;
+
+                    const commContent = isTrial
+                        ? `Teste gratuito de 30 dias do plano ${plan} iniciado.`
+                        : `Assinatura do plano ${plan} confirmada com sucesso via Stripe.`;
+
+                    sendEmail(user.email, subject, emailHtml);
                     await logCommunication({
                         recipientIds: [userId],
                         recipientEmails: [user.email],
-                        subject: `💎 Pagamento Confirmado: Plano ${plan.toUpperCase()}`,
-                        content: `Assinatura do plano ${plan} confirmada com sucesso via Stripe.`,
+                        subject: `💎 ${isTrial ? 'Trial Ativado' : 'Pagamento Confirmado'}: Plano ${plan.toUpperCase()}`,
+                        content: commContent,
                         status: 'sent'
                     });
                 }
@@ -813,7 +852,10 @@ exports.handleWebhook = async (req, res) => {
                 const updateData = {
                     plan: plan,
                     canCreateEvents: true,
-                    stripeCustomerId: invoice.customer
+                    stripeCustomerId: invoice.customer,
+                    subscriptionId: invoice.subscription,
+                    subscriptionStatus: 'active',
+                    planExpiresAt: new Date(Date.now() + 31 * 24 * 60 * 60 * 1000)
                 };
 
                 if (user && user.role === 'participant') {
@@ -879,7 +921,13 @@ exports.handleWebhook = async (req, res) => {
                 if (user && user.email) {
                     const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
                     const emailHtml = generatePaymentFailedEmail(user.name, plan, dashboardUrl);
-                    sendEmail(user.email, `Problema com o Pagamento: Plano ${plan.toUpperCase()}`, emailHtml);
+                    await sendEmail(user.email, `Problema com o Pagamento: Plano ${plan.toUpperCase()}`, emailHtml);
+                    
+                    // --- WHATSAPP NOTIFICATION ---
+                    if (user.whatsapp) {
+                        const waMsg = `❌ *ERRO NO PAGAMENTO* - Inscreva-se\n\nOlá *${user.name.split(' ')[0]}*! Notamos um problema ao processar o pagamento automático da sua assinatura *${plan.toUpperCase()}* no Stripe.\n\nPor favor, verifica o teu método de pagamento para evitar a interrupção do serviço:\n🔗 https://inscreva-se.com/dashboard/mentor`;
+                        whatsappService.sendMessage(user.whatsapp, waMsg).catch(e => console.error('WA Error (Stripe fail):', e.message));
+                    }
                     await logCommunication({
                         recipientIds: [userId],
                         recipientEmails: [user.email],
@@ -895,15 +943,27 @@ exports.handleWebhook = async (req, res) => {
         const subscription = event.data.object;
         const customerId = subscription.customer;
         const user = await User.findOne({ stripeCustomerId: customerId });
-        if (user) {
+        if (user && user.plan !== 'free') {
+            const oldPlan = user.plan;
             user.plan = 'free';
-            // Se for mentor, volta a ser participante. Se for Empresa/Especialista, mantém mas perde privilégios se necessário.
-            if (user.role === 'mentor') {
-                user.role = 'participant';
-            }
-            // canCreateEvents: false? Opcional dependendo da política
+            user.subscriptionStatus = 'cancelled';
+            user.planExpiresAt = new Date();
+            user.lastExpirationEmailSentAt = new Date();
             await user.save();
-            console.log(`User ${user._id} downgraded due to subscription cancellation. Role: ${user.role}`);
+            console.log(`User ${user.email} downgraded due to Stripe subscription deletion.`);
+
+            // Email & WhatsApp
+            try {
+                const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/plans`;
+                const { generateSubscriptionExpiredEmail } = require('../utils/emailTemplates');
+                const emailHtml = generateSubscriptionExpiredEmail(user.name, oldPlan, dashboardUrl);
+                await sendEmail(user.email, `Assinatura ${oldPlan.toUpperCase()} Terminada - Inscreva-se`, emailHtml);
+                
+                if (user.whatsapp) {
+                    const waMsg = `⏳ *ASSINATURA TERMINADA (STRIPE)* - Inscreva-se\n\nOlá *${user.name.split(' ')[0]}*! O seu plano *${oldPlan.toUpperCase()}* foi interrompido e a sua conta voltou ao plano Free.\n\nPodes reativar aqui:\n🔗 https://inscreva-se.com/planos`;
+                    whatsappService.sendMessage(user.whatsapp, waMsg).catch(e => console.error('WA Error:', e.message));
+                }
+            } catch (err) { console.error('Stripe webhook err:', err); }
         }
     } else if (event.type === 'account.updated') {
         const account = event.data.object;
@@ -911,6 +971,27 @@ exports.handleWebhook = async (req, res) => {
         if (user) {
             user.stripeOnboardingComplete = account.details_submitted && account.charges_enabled;
             await user.save();
+        }
+    } else if (event.type === 'customer.subscription.trial_will_end') {
+        const subscription = event.data.object;
+        const customerId = subscription.customer;
+        const user = await User.findOne({ stripeCustomerId: customerId });
+
+        if (user && user.email) {
+            const plan = subscription.metadata.plan || 'pro';
+            const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
+            const dateStr = new Date(subscription.trial_end * 1000).toLocaleDateString();
+
+            const emailHtml = generateTrialEndingReminderEmail(user.name, plan, subscription.trial_end * 1000, dashboardUrl);
+            sendEmail(user.email, `⏳ O seu Teste Gratuito do Plano ${plan.toUpperCase()} expira em breve`, emailHtml);
+            
+            await logCommunication({
+                recipientIds: [user._id.toString()],
+                recipientEmails: [user.email],
+                subject: `⏳ Lembrete: Fim do Trial do Plano ${plan.toUpperCase()}`,
+                content: `Aviso enviado 3 dias antes do fim do período de teste (${dateStr}).`,
+                status: 'sent'
+            });
         }
     }
 
@@ -1007,7 +1088,7 @@ exports.refundPayment = async (req, res) => {
 
 exports.createSubscription = async (req, res) => {
     try {
-        const { plan, currency = 'USD' } = req.body;
+        const { plan, currency = 'USD', trial = false } = req.body;
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -1036,6 +1117,9 @@ exports.createSubscription = async (req, res) => {
             }
         }
 
+        // Check if user is eligible for trial
+        const isEligibleForTrial = trial && !user.hasUsedTrial;
+
         const session = await stripe.checkout.sessions.create({
             mode: 'subscription',
             payment_method_types: ['card'],
@@ -1051,10 +1135,11 @@ exports.createSubscription = async (req, res) => {
                 quantity: 1,
             }],
             subscription_data: {
-                metadata: { userId: user._id.toString(), plan }
+                metadata: { userId: user._id.toString(), plan },
+                trial_period_days: isEligibleForTrial ? 30 : undefined
             },
-            metadata: { userId: user._id.toString(), plan },
-            success_url: `${process.env.CLIENT_URL}/assinatura/sucesso?plan=${plan}`,
+            metadata: { userId: user._id.toString(), plan, isTrial: isEligibleForTrial ? 'true' : 'false' },
+            success_url: `${process.env.CLIENT_URL}/assinatura/sucesso?plan=${plan}${isEligibleForTrial ? '&trial=true' : ''}`,
             cancel_url: `${process.env.CLIENT_URL}/dashboard/mentor?subscription=cancel`,
         });
 

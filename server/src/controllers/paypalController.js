@@ -9,20 +9,114 @@ const { getDynamicPlanConfig } = require('../utils/planConfigs');
 const { PLANS } = require('../config/stripe');
 const { getLatestRate } = require('../utils/currencyUtils');
 const sendEmail = require('../utils/emailService');
+const whatsappService = require('../services/whatsappService');
 const {
     generateSubscriptionConfirmationEmail,
-    generateEventPaymentConfirmationEmail
+    generateEventPaymentConfirmationEmail,
+    generateTrialWelcomeEmail // Added for trial support
 } = require('../utils/emailTemplates');
-
-// Initializers removed (using paypalService)
+const GlobalSettings = require('../models/GlobalSettings');
 
 /**
- * CREATE ORDER FOR PLAN UPGRADE (SUBSCRIPTION)
+ * HELPER: Ensure PayPal Product and Plan exist
+ */
+async function ensurePaypalPlan(planKey, currency, trialDays = 0) {
+    try {
+        const settingsKey = `paypal_plan_${planKey}_${currency}_t${trialDays}`;
+        const existingSetting = await GlobalSettings.findOne({ key: settingsKey });
+        
+        if (existingSetting && existingSetting.value) {
+            return existingSetting.value;
+        }
+
+        // 1. Create Product if not exists
+        const productKey = 'paypal_product_inscrevase';
+        let productId;
+        const prodSetting = await GlobalSettings.findOne({ key: productKey });
+        
+        if (prodSetting) {
+            productId = prodSetting.value;
+        } else {
+            const product = await paypalService.createProduct({
+                name: "Inscreva-se Pro",
+                description: "Assinatura Pro - Plataforma Inscreva-se",
+                type: "SERVICE",
+                category: "SOFTWARE"
+            });
+            productId = product.id;
+            await GlobalSettings.create({ key: productKey, value: productId });
+        }
+
+        // 2. Create Plan
+        const dynamicPlans = await getDynamicPlanConfig();
+        const planConfig = dynamicPlans[planKey] || dynamicPlans.pro || PLANS.pro;
+        
+        // Convert prices if needed (PayPal uses decimals)
+        let amount = planConfig.prices?.[currency] ? (planConfig.prices[currency] / 100) : (planConfig.price || 0);
+        if (currency === 'USD' && !amount) amount = 19.59; // Fallback
+
+        const billingCycles = [];
+        
+        // Trial Cycle
+        if (trialDays > 0) {
+            billingCycles.push({
+                frequency: { interval_unit: "DAY", interval_count: trialDays },
+                tenure_type: "TRIAL",
+                sequence: 1,
+                total_cycles: 1,
+                pricing_scheme: {
+                    fixed_price: { value: "0", currency_code: currency }
+                }
+            });
+        }
+
+        // Regular Cycle
+        billingCycles.push({
+            frequency: { 
+                interval_unit: planConfig.interval === 'year' ? "YEAR" : "MONTH", 
+                interval_count: 1 
+            },
+            tenure_type: "REGULAR",
+            sequence: trialDays > 0 ? 2 : 1,
+            total_cycles: 0, // Infinite
+            pricing_scheme: {
+                fixed_price: { value: amount.toFixed(2), currency_code: currency }
+            }
+        });
+
+        const plan = await paypalService.createPlan({
+            product_id: productId,
+            name: `${planConfig.name} - ${currency} ${trialDays > 0 ? `(${trialDays}d Trial)` : ''}`,
+            status: "ACTIVE",
+            billing_cycles: billingCycles,
+            payment_preferences: {
+                auto_bill_outstanding: true,
+                setup_fee: { value: "0", currency_code: currency },
+                setup_fee_failure_action: "CONTINUE",
+                payment_failure_threshold: 3
+            }
+        });
+
+        await GlobalSettings.create({ key: settingsKey, value: plan.id });
+        return plan.id;
+    } catch (error) {
+        console.error('❌ Error in ensurePaypalPlan:', error);
+        throw error;
+    }
+}
+
+/**
+ * CREATE ORDER FOR PLAN UPGRADE (SUBSCRIPTION) - LEGACY ONE-TIME
  */
 exports.createSubscriptionOrder = async (req, res) => {
     try {
-        const { plan, currency } = req.body;
+        const { plan, currency, trial } = req.body;
         const userId = req.user.id;
+
+        // If it's a trial, we MUST use recurring subscriptions
+        if (trial) {
+            return this.createRecurringSubscription(req, res);
+        }
 
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ message: 'User not found' });
@@ -36,11 +130,8 @@ exports.createSubscriptionOrder = async (req, res) => {
         if (currency === 'MZN' || currency === 'MT') {
             const mznPrice = planConfig.prices?.MZN ? (planConfig.prices.MZN / 100) : (planConfig.price || 0);
             const mznRate = await getLatestRate();
-            
-            // Convert to USD because PayPal doesn't support MZN
             finalAmount = mznPrice / mznRate;
             finalCurrency = 'USD';
-            console.log(`💱 PayPal Sub: Dynamically converted ${mznPrice} MZN to ${finalAmount.toFixed(2)} USD (at rate ${mznRate})`);
         } else {
             finalAmount = planConfig.prices ? (planConfig.prices[currency] / 100) : (planConfig.price || 0);
             if (!finalAmount && planConfig.prices?.USD) {
@@ -65,6 +156,47 @@ exports.createSubscriptionOrder = async (req, res) => {
         res.status(200).json(order);
     } catch (error) {
         console.error('❌ PayPal Create Subscription Order Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * NEW: CREATE RECURRING SUBSCRIPTION (FOR TRIALS)
+ */
+exports.createRecurringSubscription = async (req, res) => {
+    try {
+        const { plan, currency, trial } = req.body;
+        const userId = req.user.id;
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        // PayPal doesn't support MZN for subscriptions, fallback to USD
+        let finalCurrency = currency;
+        if (currency === 'MZN' || currency === 'MT') {
+            finalCurrency = 'USD';
+        }
+
+        const trialDays = (trial && !user.hasUsedTrial) ? 30 : 0;
+        const planId = await ensurePaypalPlan(plan, finalCurrency, trialDays);
+
+        const subscriptionData = {
+            plan_id: planId,
+            custom_id: JSON.stringify({ userId, plan, type: 'recurring_subscription', isTrial: trialDays > 0 }),
+            application_context: {
+                brand_name: "Inscreva-se",
+                user_action: "SUBSCRIBE_NOW",
+                return_url: `${process.env.CLIENT_URL}/dashboard/mentor?subscription=success`,
+                cancel_url: `${process.env.CLIENT_URL}/planos`
+            }
+        };
+
+        const subscription = await paypalService.createSubscription(subscriptionData);
+        
+        // Add a flag to tell the frontend it's a subscription, not an order
+        res.status(200).json({ ...subscription, isRecurring: true });
+    } catch (error) {
+        console.error('❌ PayPal Create Recurring Subscription Error:', error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -473,18 +605,124 @@ exports.captureOrder = async (req, res) => {
 exports.handleWebhook = async (req, res) => {
     try {
         const event = req.body;
+        const resource = event.resource;
+        
         console.log('📩 PayPal Webhook Received:', event.event_type);
 
         switch (event.event_type) {
-            case 'PAYMENT.CAPTURE.COMPLETED':
-                console.log('💰 Payment Captured Event');
+            case 'BILLING.SUBSCRIPTION.ACTIVATED': {
+                console.log('✅ Subscription Activated Event:', resource.id);
+                
+                const customId = resource.custom_id;
+                if (!customId) break;
+
+                const { userId, plan, isTrial } = JSON.parse(customId);
+                const user = await User.findById(userId);
+                
+                if (user) {
+                    const updateData = {
+                        plan: plan,
+                        subscriptionId: resource.id,
+                        subscriptionStatus: isTrial ? 'trialing' : 'active',
+                        canCreateEvents: true,
+                        // Set expiration buffer (31 days)
+                        planExpiresAt: new Date(Date.now() + 31 * 24 * 60 * 60 * 1000)
+                    };
+
+                    if (isTrial) {
+                        updateData.trialStartedAt = new Date();
+                        updateData.trialEndedAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+                        updateData.planExpiresAt = updateData.trialEndedAt;
+                        updateData.hasUsedTrial = true;
+                    }
+
+                    if (user.role === 'participant') {
+                        updateData.role = 'mentor';
+                    }
+
+                    await User.findByIdAndUpdate(userId, updateData);
+                    console.log(`👤 User ${userId} upgraded to ${plan} via PayPal Subscription ${isTrial ? '(Trial)' : ''}`);
+
+                    // --- WHATSAPP NOTIFICATION ---
+                    if (user.whatsapp) {
+                        const waMsg = isTrial 
+                            ? `💎 *BEM-VINDO AO TESTE GRATUITO* - Inscreva-se\n\nOlá *${user.name.split(' ')[0]}*! O seu plano *${plan.toUpperCase()}* (30 dias grátis) já está ativo. 🎉\n\nJá podes criar eventos ilimitados e usar todas as ferramentas Pro!\n🔗 https://inscreva-se.com/dashboard/mentor`
+                            : `✅ *ASSINATURA ATIVADA* - Inscreva-se\n\nOlá *${user.name.split(' ')[0]}*! O seu pagamento foi confirmado e o plano *${plan.toUpperCase()}* está ativo. 🎉\n\nBoas vendas! 📈`;
+                        whatsappService.sendMessage(user.whatsapp, waMsg).catch(e => console.error('WA Error (PayPal Act):', e.message));
+                    }
+
+                    // 📧 Send Confirmation Email
+                    try {
+                        const dynamicPlans = await getDynamicPlanConfig();
+                        const planConfig = dynamicPlans[plan] || PLANS.pro;
+                        const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
+                        
+                        let emailHtml;
+                        if (isTrial) {
+                            emailHtml = generateTrialWelcomeEmail(user.name, plan, updateData.trialEndedAt, dashboardUrl);
+                        } else {
+                            emailHtml = generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl, planConfig.commissionRate);
+                        }
+
+                        await sendEmail(user.email, isTrial ? `Bem-vindo ao Teste Gratuito do Plano ${plan.toUpperCase()}` : `Pagamento Confirmado: Plano ${plan.toUpperCase()}`, emailHtml);
+                    } catch (err) {
+                        console.error('⚠️ Email error in PayPal webhook:', err);
+                    }
+                }
                 break;
-            case 'BILLING.SUBSCRIPTION.ACTIVATED':
-                console.log('✅ Subscription Activated Event');
+            }
+
+            case 'BILLING.SUBSCRIPTION.PAYMENT.SUCCEEDED': {
+                console.log('💰 Subscription Payment Succeeded:', resource.id);
+                // Extend planExpiresAt by another 31 days
+                const subscribedUser = await User.findOne({ subscriptionId: resource.id });
+                if (subscribedUser) {
+                    subscribedUser.planExpiresAt = new Date(Date.now() + 31 * 24 * 60 * 60 * 1000);
+                    subscribedUser.subscriptionStatus = 'active';
+                    await subscribedUser.save();
+                    console.log(`✅ Extended planExpiresAt for user ${subscribedUser.email} due to successful payment.`);
+                }
                 break;
+            }
+
             case 'BILLING.SUBSCRIPTION.CANCELLED':
-                console.log('❌ Subscription Cancelled Event');
+            case 'BILLING.SUBSCRIPTION.EXPIRED':
+            case 'BILLING.SUBSCRIPTION.SUSPENDED': {
+                console.log('❌ Subscription Stopped:', resource.id, event.event_type);
+                const user = await User.findOne({ subscriptionId: resource.id });
+                
+                if (user && user.plan !== 'free') {
+                    const oldPlan = user.plan;
+                    user.plan = 'free';
+                    user.subscriptionStatus = event.event_type.toLowerCase().split('.').pop(); // 'cancelled' or 'expired'
+                    user.planExpiresAt = new Date();
+                    user.lastExpirationEmailSentAt = new Date();
+                    await user.save();
+
+                    console.log(`👤 User ${user.email} reverted to FREE due to PayPal ${event.event_type}`);
+
+                    // --- WHATSAPP NOTIFICATION ---
+                    if (user.whatsapp) {
+                        const waMsg = `⏳ *ASSINATURA TERMINADA* - Inscreva-se\n\nOlá *${user.name.split(' ')[0]}*! O seu plano *${oldPlan.toUpperCase()}* via PayPal foi interrompido e a sua conta voltou ao plano Free.\n\nPodes reativar a qualquer momento aqui:\n🔗 https://inscreva-se.com/planos`;
+                        whatsappService.sendMessage(user.whatsapp, waMsg).catch(e => console.error('WA Error (PayPal Cancel):', e.message));
+                    }
+
+                    // 📧 Send Expiration Email
+                    try {
+                        const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/plans`;
+                        const emailHtml = generateSubscriptionExpiredEmail(user.name, oldPlan, dashboardUrl);
+                        await sendEmail(user.email, `Assinatura ${oldPlan.toUpperCase()} Terminada - Inscreva-se`, emailHtml);
+                    } catch (err) {
+                        console.error('⚠️ Email error in PayPal cancellation webhook:', err);
+                    }
+                }
                 break;
+            }
+
+            case 'PAYMENT.CAPTURE.COMPLETED':
+                console.log('💰 One-time Payment Captured Event');
+                break;
+
             default:
                 console.log('ℹ️ Unhandled event type:', event.event_type);
         }
