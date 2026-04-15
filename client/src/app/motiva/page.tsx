@@ -224,7 +224,7 @@ export default function MotivaPrototype() {
       <Navbar />
 
       {/* Hero Section */}
-      <section style={{ 
+      <section className="motiva-hero-section" style={{ 
         padding: '160px 20px 80px', 
         textAlign: 'center',
         background: 'radial-gradient(circle at top, rgba(212, 175, 55, 0.15) 0%, #050505 60%)'
@@ -343,15 +343,20 @@ export default function MotivaPrototype() {
                 </div>
                 
                 <div style={{ position: 'relative', height: '450px', background: '#000' }}>
-                  <video 
-                    src={entry.videoUrl} 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} 
-                    muted 
-                    loop 
-                    onMouseOver={(e) => e.currentTarget.play()}
-                    onMouseOut={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
-                    poster={entry.videoUrl.replace(/\.[^/.]+$/, ".jpg")} // Basic Cloudinary auto-thumb trick
-                  />
+                    <video 
+                      src={entry.videoUrl} 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} 
+                      muted 
+                      loop 
+                      playsInline
+                      onClick={(e) => {
+                        if (e.currentTarget.paused) e.currentTarget.play();
+                        else e.currentTarget.pause();
+                      }}
+                      onMouseOver={(e) => e.currentTarget.play()}
+                      onMouseOut={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                      poster={entry.videoUrl.replace(/\.[^/.]+$/, ".jpg")} // Basic Cloudinary auto-thumb trick
+                    />
                   <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
                     <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Play size={24} color="#fff" fill="#fff" />
@@ -436,8 +441,8 @@ export default function MotivaPrototype() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#888' }}><Trophy size={16} /> Verificado pelos Admins</div>
                     </div>
                     {hist.winner && (
-                      <div style={{ display: 'flex', padding: '30px', gap: '30px', alignItems: 'center' }}>
-                        <div style={{ position: 'relative', width: '200px', height: '350px', borderRadius: '15px', overflow: 'hidden', background: '#222', flexShrink: 0 }}>
+                      <div className="motiva-winner-card-body" style={{ display: 'flex', padding: '30px', gap: '30px', alignItems: 'center' }}>
+                        <div style={{ position: 'relative', width: '200px', height: '350px', borderRadius: '15px', overflow: 'hidden', background: '#222', flexShrink: 0, margin: '0 auto' }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={hist.winner.videoUrl} alt={hist.winner.videoTitle} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
