@@ -553,7 +553,7 @@ export default function MotivaPrototype() {
                   <p style={{ color: '#666', fontSize: '0.9rem' }}>Preencha os dados abaixo para submeter o seu vídeo ao júri.</p>
                 </div>
                 
-                <div style={{ flex: 1, opacity: videoPreviewUrl ? 1 : 0.4, pointerEvents: videoPreviewUrl ? 'auto' : 'none' }}>
+                <div style={{ flex: 1, opacity: 1, pointerEvents: 'auto' }}>
                   <div className="motiva-input-group">
                     <label><Type size={16} /> Título ou Frase de Impacto</label>
                     <input 
@@ -572,7 +572,7 @@ export default function MotivaPrototype() {
                       type="text" 
                       value={contactName} 
                       onChange={(e) => setContactName(e.target.value)} 
-                      placeholder="Como queres ser identificado no prémio..." 
+                      placeholder="Afonso Domingos" 
                       className="motiva-input"
                     />
                   </div>
@@ -594,7 +594,7 @@ export default function MotivaPrototype() {
                       type="email" 
                       value={contactEmail} 
                       onChange={(e) => setContactEmail(e.target.value)} 
-                      placeholder="Para receberes a notificação de aprovação..." 
+                      placeholder="nome@gmail.com" 
                       className="motiva-input"
                     />
                   </div>

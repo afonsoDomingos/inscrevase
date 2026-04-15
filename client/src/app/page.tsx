@@ -1289,33 +1289,13 @@ export default function Home() {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0, opacity: 0, y: 50 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            style={{
-              position: 'fixed',
-              bottom: '40px',
-              right: '30px',
-              zIndex: 9999,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center'
-            }}
+            className="motiva-floating-btn"
           >
             <Link href="/motiva" style={{ textDecoration: 'none' }}>
               <motion.div 
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                style={{
-                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                  padding: '12px 24px',
-                  borderRadius: '50px',
-                  color: '#000',
-                  fontWeight: 900,
-                  fontSize: '1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  boxShadow: '0 10px 30px rgba(255, 215, 0, 0.4)',
-                  border: '2px solid rgba(255, 255, 255, 0.5)'
-                }}
+                className="motiva-btn-content"
               >
                 <Trophy size={20} />
                 <span style={{ textTransform: 'uppercase', letterSpacing: '1px' }}>Prémio Motiva</span>
@@ -1324,6 +1304,47 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <style jsx>{`
+        .motiva-floating-btn {
+          position: fixed;
+          bottom: 40px;
+          right: 30px;
+          z-index: 9999;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .motiva-btn-content {
+          background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+          padding: 12px 24px;
+          border-radius: 50px;
+          color: #000;
+          font-weight: 900;
+          font-size: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+          border: 2px solid rgba(255, 255, 255, 0.5);
+          transition: all 0.3s ease;
+        }
+        @media (max-width: 768px) {
+          .motiva-floating-btn {
+            bottom: 20px;
+            right: 20px;
+          }
+          .motiva-btn-content {
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            gap: 6px;
+          }
+          .motiva-btn-content :global(svg) {
+            width: 16px !important;
+            height: 16px !important;
+          }
+        }
+      `}</style>
 
     </main >
   );
