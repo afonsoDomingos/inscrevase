@@ -13,6 +13,9 @@ interface UserDataExtended extends UserData {
         paypalSubscriptionId?: string;
     };
     paypalSubscriptionId?: string;
+    paymentMethod?: string;
+    subscriptionStatus?: string;
+    planExpiresAt?: string | Date;
 }
 
 interface SubscriptionStatusProps {
@@ -21,6 +24,7 @@ interface SubscriptionStatusProps {
 
 export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
     const [loading, setLoading] = useState(false);
+    const u = user as UserDataExtended;
 
     const handleManageStripe = async () => {
         setLoading(true);
@@ -37,9 +41,9 @@ export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
 
     const handleCancelPaypal = async () => {
         // Find subscription ID from user meta or similar. 
-        // In this implementation, we can try to get it if user has it stored, or ask user.
+        // In this implementation, we can try to get it if user has it stored, or ask u.
         // Usually recurring PayPal users have a subscriptionId in their metadata after success.
-        const u = user as UserDataExtended;
+
         const subId = u.paymentMetadata?.subscriptionId || u.paypalSubscriptionId;
 
         if (!subId) {
@@ -63,10 +67,10 @@ export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
         }
     };
 
-    if (user.plan === 'free') return null;
+    if (u.plan === 'free') return null;
 
-    const isStripe = user.paymentMethod === 'stripe';
-    const isPaypal = user.paymentMethod === 'paypal';
+    const isStripe = u.paymentMethod === 'stripe';
+    const isPaypal = u.paymentMethod === 'paypal';
 
     return (
         <motion.div 
@@ -96,11 +100,11 @@ export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
                     </div>
                     <div>
                         <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff' }}>
-                            Plano {user.plan.toUpperCase()}
+                            Plano {u.plan.toUpperCase()}
                         </h3>
                         <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
-                            Status: <span style={{ color: user.subscriptionStatus === 'active' ? '#4ade80' : '#fbbf24' }}>
-                                {user.subscriptionStatus === 'active' ? 'Ativa' : 'Pendente / Cancelada'}
+                            Status: <span style={{ color: u.subscriptionStatus === 'active' ? '#4ade80' : '#fbbf24' }}>
+                                {u.subscriptionStatus === 'active' ? 'Ativa' : 'Pendente / Cancelada'}
                             </span>
                         </p>
                     </div>
@@ -109,7 +113,7 @@ export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
                 <div style={{ textAlign: 'right' }}>
                     <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>Expira em</p>
                     <p style={{ fontSize: '1rem', fontWeight: 700, color: '#FFD700' }}>
-                        {user.planExpiresAt ? new Date(user.planExpiresAt).toLocaleDateString() : 'N/A'}
+                        {u.planExpiresAt ? new Date(u.planExpiresAt).toLocaleDateString() : 'N/A'}
                     </p>
                 </div>
             </div>
@@ -155,7 +159,7 @@ export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
                     </button>
                 )}
 
-                {!isStripe && !isPaypal && user.plan !== 'free' && (
+                {!isStripe && !isPaypal && u.plan !== 'free' && (
                     <div style={{ 
                         flex: 1, padding: '10px', borderRadius: '10px', 
                         background: 'rgba(255, 215, 0, 0.05)', border: '1px dashed rgba(255, 215, 0, 0.2)',
@@ -168,7 +172,7 @@ export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
                 )}
             </div>
 
-            {user.subscriptionStatus === 'cancelled' && (
+            {u.subscriptionStatus === 'cancelled' && (
                 <div style={{ 
                     marginTop: '0.5rem', padding: '12px', borderRadius: '10px', 
                     background: 'rgba(251, 191, 36, 0.1)', border: '1px solid rgba(251, 191, 36, 0.2)',
@@ -176,7 +180,7 @@ export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
                 }}>
                     <AlertCircle size={18} color="#fbbf24" style={{ marginTop: '2px' }} />
                     <p style={{ fontSize: '0.8rem', color: '#fbbf24', lineHeight: 1.4 }}>
-                        A sua renovação automática foi cancelada. O seu acesso Premium terminará a <strong>{user.planExpiresAt ? new Date(user.planExpiresAt).toLocaleDateString() : 'breve'}</strong>.
+                        A sua renovação automática foi cancelada. O seu acesso Premium terminará a <strong>{u.planExpiresAt ? new Date(u.planExpiresAt).toLocaleDateString() : 'breve'}</strong>.
                     </p>
                 </div>
             )}
