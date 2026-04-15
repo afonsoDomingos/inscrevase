@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Crown, Settings, XCircle, ExternalLink, Loader2, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Crown, Settings, XCircle, Loader2, ShieldCheck, AlertCircle } from 'lucide-react';
 import { subscriptionService } from '@/lib/subscriptionService';
 import { toast } from 'sonner';
 import { UserData } from '@/lib/authService';
@@ -10,9 +10,9 @@ import { UserData } from '@/lib/authService';
 interface SubscriptionStatusProps {
     user: UserData;
     t: (key: string) => string;
-}
 
-export default function SubscriptionStatus({ user, t }: SubscriptionStatusProps) {
+
+export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
     const [loading, setLoading] = useState(false);
 
     const handleManageStripe = async () => {

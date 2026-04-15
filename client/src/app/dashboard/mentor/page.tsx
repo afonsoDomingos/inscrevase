@@ -1297,7 +1297,7 @@ function MentorDashboardContent() {
                 <AnimatePresence mode="wait">
                     {activeTab === 'overview' && (
                         <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                            {user && <SubscriptionStatus user={user} t={t} />}
+                            {user && <SubscriptionStatus user={user} />}
                             <div id="mentor-stats-grid" className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'} mb-8`}>
                                 <StatCard
                                     icon={<Users className="gold-text" />}
