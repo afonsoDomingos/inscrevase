@@ -49,7 +49,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
         if (!user) {
             window.location.href = `/entrar?redirect=${encodeURIComponent(window.location.pathname)}&plan=${id}&method=manual`;
         } else {
-            setSelectedManualPlan({ id, amount: getPlanPrice(id) });
+            setSelectedManualPlan({ id, amount: getPlanPrice(id as 'pro' | 'enterprise') });
             setIsUpgradeModalOpen(true);
         }
     };
