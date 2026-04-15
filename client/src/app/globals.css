@@ -1105,13 +1105,6 @@ h6 {
 }
 
 
-  .motiva-winner-card-body {
-    flex-direction: column !important;
-    text-align: center !important;
-    padding: 20px !important;
-    gap: 20px !important;
-  }
-}
 
   .edit-event-sidebar {
     padding: 1rem;
