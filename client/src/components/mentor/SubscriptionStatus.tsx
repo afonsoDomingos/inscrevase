@@ -158,7 +158,7 @@ export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
                     </button>
                 )}
 
-                {!isStripe && !isPaypal && u.plan !== 'free' && (
+                {!isStripe && !isPaypal && (
                     <div style={{ 
                         flex: 1, padding: '10px', borderRadius: '10px', 
                         background: 'rgba(255, 215, 0, 0.05)', border: '1px dashed rgba(255, 215, 0, 0.2)',
