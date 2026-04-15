@@ -547,6 +547,34 @@ export default function MotivaPrototype() {
                 ) : (
                   <div className="motiva-upload-video-container">
                     <video ref={videoRef} src={videoPreviewUrl} controls controlsList="nodownload" />
+                    <button 
+                      onClick={() => {
+                        setVideoPreviewUrl('');
+                        setVideoFile(null);
+                        setTextOverlay('');
+                      }}
+                      style={{ 
+                        position: 'absolute', 
+                        top: '15px', 
+                        left: '15px', 
+                        background: 'rgba(0,0,0,0.7)', 
+                        backdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(255,255,255,0.2)', 
+                        color: '#fff', 
+                        padding: '8px 12px', 
+                        borderRadius: '30px', 
+                        cursor: 'pointer', 
+                        zIndex: 10, 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '6px', 
+                        fontSize: '0.75rem', 
+                        fontWeight: 700,
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <X size={14} /> TROCAR VÍDEO
+                    </button>
                     {textOverlay && (
                       <div style={{ position: 'absolute', top: '20%', left: '10%', right: '10%', textAlign: 'center', color: '#fff', fontSize: '1.5rem', fontWeight: 900, textShadow: '2px 2px 8px rgba(0,0,0,1)', zIndex: 5, pointerEvents: 'none', lineHeight: 1.1, textTransform: 'uppercase' }}>
                         {textOverlay}
