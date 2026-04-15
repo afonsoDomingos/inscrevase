@@ -1305,50 +1305,6 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <style jsx>{`
-        .motiva-floating-btn {
-          position: fixed;
-          bottom: 40px;
-          right: 30px;
-          z-index: 9999;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-        .motiva-btn-content {
-          background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-          padding: 12px 24px;
-          border-radius: 50px;
-          color: #000;
-          font-weight: 900;
-          font-size: 1rem;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
-          border: 2px solid rgba(255, 255, 255, 0.5);
-          transition: all 0.3s ease;
-        }
-        @media (max-width: 768px) {
-          .motiva-floating-btn {
-            bottom: 20px;
-            right: 20px;
-          }
-          .motiva-btn-content {
-            padding: 6px 12px !important;
-            font-size: 0.65rem !important;
-            gap: 4px !important;
-            border-width: 1px !important;
-          }
-          .motiva-btn-content :global(svg) {
-            width: 14px !important;
-            height: 14px !important;
-          }
-          .motiva-btn-content span {
-            letter-spacing: 0.5px !important;
-          }
-        }
-      `}</style>
 
     </main >
   );
