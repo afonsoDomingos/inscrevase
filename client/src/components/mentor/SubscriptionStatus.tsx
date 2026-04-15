@@ -99,7 +99,7 @@ export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
                     </div>
                     <div>
                         <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff' }}>
-                            Plano {u.plan.toUpperCase()}
+                            Plano {u.plan?.toUpperCase() || 'FREE'}
                         </h3>
                         <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
                             Status: <span style={{ color: u.subscriptionStatus === 'active' ? '#4ade80' : '#fbbf24' }}>
