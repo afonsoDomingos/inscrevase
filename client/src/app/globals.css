@@ -1245,7 +1245,7 @@ h6 {
 
 .motiva-upload-modal-right {
   width: 380px;
-  padding: 40px 30px;
+  padding: 30px 25px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -1253,7 +1253,7 @@ h6 {
 }
 
 .motiva-input-group {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .motiva-input-group label {
@@ -1268,7 +1268,7 @@ h6 {
 
 .motiva-input {
   width: 100%;
-  padding: 14px;
+  padding: 10px 14px;
   border-radius: 12px;
   border: 1px solid #222;
   background: #000;

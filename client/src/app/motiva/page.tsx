@@ -129,7 +129,17 @@ export default function MotivaPrototype() {
   };
 
   const submitVideo = async () => {
-    if (!contestData || !videoFile) return;
+    if (!videoFile) {
+      toast.info('Por favor, faça primeiro o upload do seu vídeo motivacional antes de publicar! ✨', {
+        style: {
+          background: '#111',
+          color: '#FFD700',
+          border: '1px solid #FFD700'
+        }
+      });
+      return;
+    }
+    if (!contestData) return;
     
     setIsUploading(true);
     try {
@@ -548,9 +558,9 @@ export default function MotivaPrototype() {
 
               {/* Editor Tools (Right side) */}
               <div className="motiva-upload-modal-right">
-                <div style={{ marginBottom: '30px' }}>
-                  <h3 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#FFD700', letterSpacing: '-0.5px', marginBottom: '8px' }}>Finalizar Candidatura</h3>
-                  <p style={{ color: '#666', fontSize: '0.9rem' }}>Preencha os dados abaixo para submeter o seu vídeo ao júri.</p>
+                <div style={{ marginBottom: '20px' }}>
+                  <h3 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#FFD700', letterSpacing: '-0.5px', marginBottom: '4px' }}>Finalizar Candidatura</h3>
+                  <p style={{ color: '#666', fontSize: '0.85rem' }}>Preencha os dados abaixo para submeter o seu vídeo ao júri.</p>
                 </div>
                 
                 <div style={{ flex: 1, opacity: 1, pointerEvents: 'auto' }}>
@@ -599,10 +609,10 @@ export default function MotivaPrototype() {
                     />
                   </div>
 
-                  <div style={{ background: 'rgba(255,215,0,0.05)', padding: '16px', borderRadius: '12px', marginBottom: '25px', border: '1px solid rgba(255,215,0,0.1)' }}>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                      <Info size={18} color="#FFD700" style={{ flexShrink: 0 }} />
-                      <p style={{ fontSize: '0.8rem', color: '#aaa', lineHeight: 1.4 }}>
+                  <div style={{ background: 'rgba(255,215,0,0.05)', padding: '12px 16px', borderRadius: '12px', marginBottom: '15px', border: '1px solid rgba(255,215,0,0.1)' }}>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <Info size={16} color="#FFD700" style={{ flexShrink: 0, marginTop: '2px' }} />
+                      <p style={{ fontSize: '0.75rem', color: '#aaa', lineHeight: 1.4 }}>
                         Ao publicar, o seu vídeo será analisado pela nossa equipa. Se aprovado, entrará no ranking oficial da <strong style={{color: '#fff'}}>Fase {contestData?.phase}</strong>.
                       </p>
                     </div>
@@ -611,16 +621,16 @@ export default function MotivaPrototype() {
 
                 <button 
                   onClick={submitVideo}
-                  disabled={!videoPreviewUrl || isUploading}
+                  disabled={isUploading}
                   style={{
-                    padding: '16px',
+                    padding: '14px',
                     borderRadius: '50px',
-                    background: (!videoPreviewUrl || isUploading) ? '#333' : '#FFD700',
-                    color: (!videoPreviewUrl || isUploading) ? '#888' : '#000',
+                    background: isUploading ? '#333' : '#FFD700',
+                    color: isUploading ? '#888' : '#000',
                     fontWeight: 800,
-                    fontSize: '1rem',
+                    fontSize: '0.95rem',
                     border: 'none',
-                    cursor: (!videoPreviewUrl || isUploading) ? 'not-allowed' : 'pointer',
+                    cursor: isUploading ? 'not-allowed' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
