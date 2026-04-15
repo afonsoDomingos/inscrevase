@@ -86,7 +86,7 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
         }
     };
 
-    const onApprove = async (data: { orderID?: string; subscriptionID?: string }) => {
+    const onApprove = async (data: { orderID?: string; subscriptionID?: string | null }) => {
         try {
             console.log('✅ PayPal onApprove Data:', data);
 
