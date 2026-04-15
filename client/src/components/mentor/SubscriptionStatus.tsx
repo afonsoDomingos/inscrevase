@@ -7,6 +7,14 @@ import { subscriptionService } from '@/lib/subscriptionService';
 import { toast } from 'sonner';
 import { UserData } from '@/lib/authService';
 
+interface UserDataExtended extends UserData {
+    paymentMetadata?: {
+        subscriptionId?: string;
+        paypalSubscriptionId?: string;
+    };
+    paypalSubscriptionId?: string;
+}
+
 interface SubscriptionStatusProps {
     user: UserData;
 }
@@ -31,7 +39,7 @@ export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
         // Find subscription ID from user meta or similar. 
         // In this implementation, we can try to get it if user has it stored, or ask user.
         // Usually recurring PayPal users have a subscriptionId in their metadata after success.
-        const u = user as any;
+        const u = user as UserDataExtended;
         const subId = u.paymentMetadata?.subscriptionId || u.paypalSubscriptionId;
 
         if (!subId) {
