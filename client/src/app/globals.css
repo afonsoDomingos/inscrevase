@@ -1278,6 +1278,10 @@ h6 {
   font-size: 0.95rem;
 }
 
+.motiva-input::placeholder {
+  color: #444;
+}
+
 .motiva-input:focus {
   border-color: #FFD700;
   box-shadow: 0 0 0 1px #FFD700;
@@ -1436,5 +1440,6 @@ h6 {
   }
   .motiva-btn-content span {
     letter-spacing: 0.5px !important;
+    font-weight: 700 !important;
   }
 }
