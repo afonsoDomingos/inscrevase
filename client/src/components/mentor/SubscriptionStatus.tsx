@@ -31,7 +31,8 @@ export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
         // Find subscription ID from user meta or similar. 
         // In this implementation, we can try to get it if user has it stored, or ask user.
         // Usually recurring PayPal users have a subscriptionId in their metadata after success.
-        const subId = user.paymentMetadata?.subscriptionId || user.paymentMetadata?.paypalSubscriptionId;
+        const u = user as any;
+        const subId = u.paymentMetadata?.subscriptionId || u.paypalSubscriptionId;
 
         if (!subId) {
             toast.info("Para cancelar no PayPal, aceda ao seu painel PayPal em 'Pagamentos Automáticos'.");
