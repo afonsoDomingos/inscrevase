@@ -365,5 +365,5 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
                 </div>
             </motion.div>
         </div>
-368:     );
-369: }
+    );
+}
