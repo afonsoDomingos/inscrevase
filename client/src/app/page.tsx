@@ -1335,13 +1335,17 @@ export default function Home() {
             right: 20px;
           }
           .motiva-btn-content {
-            padding: 8px 16px;
-            font-size: 0.75rem;
-            gap: 6px;
+            padding: 6px 12px !important;
+            font-size: 0.65rem !important;
+            gap: 4px !important;
+            border-width: 1px !important;
           }
           .motiva-btn-content :global(svg) {
-            width: 16px !important;
-            height: 16px !important;
+            width: 14px !important;
+            height: 14px !important;
+          }
+          .motiva-btn-content span {
+            letter-spacing: 0.5px !important;
           }
         }
       `}</style>
