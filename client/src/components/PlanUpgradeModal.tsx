@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, Crown, Loader2, Upload, ChevronDown, Globe, AlertCircle, Copy } from 'lucide-react';
+import { X, Loader2, Upload, ChevronDown, Globe, AlertCircle, Copy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -37,7 +37,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
     initialManualPlan?: { id: string, amount: number } | null
 }) {
     const router = useRouter();
-    const [, setLoading] = useState<string | null>(null);
+    // State simplified for lint
     const [manualPlan, setManualPlan] = useState<{ id: string, amount: number } | null>(initialManualPlan || null);
     const [uploading, setUploading] = useState(false);
     const [manualMethods, setManualMethods] = useState<ManualPaymentMethod[]>([]);
