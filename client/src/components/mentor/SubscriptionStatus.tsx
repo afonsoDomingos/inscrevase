@@ -14,7 +14,6 @@ interface UserDataExtended extends UserData {
     };
     paypalSubscriptionId?: string;
     paymentMethod?: string;
-    subscriptionStatus?: string;
     planExpiresAt?: string | Date;
 }
 
