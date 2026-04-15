@@ -77,17 +77,17 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
 
             toast.dismiss(loadingToast);
             return result.id;
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const error = err as Error;
             console.error('\n❌ Frontend PayPal Create Error:', err);
             toast.dismiss(loadingToast);
-            toast.error(`Erro ao iniciar PayPal: ${err.message || 'Verifique a ligação'}`);
+            toast.error(`Erro ao iniciar PayPal: ${error.message || 'Verifique a ligação'}`);
             throw err;
         }
     };
 
     const onApprove = async (data: { orderID?: string; subscriptionID?: string }) => {
         try {
-            const payId = data.subscriptionID || data.orderID;
             console.log('✅ PayPal onApprove Data:', data);
 
             // For recurring subscriptions, the plan is already activated via webhook (ideally)

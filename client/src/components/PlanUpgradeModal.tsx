@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, Crown, Sparkles, Loader2, Upload, ChevronDown, Globe, AlertCircle, Copy, Lock } from 'lucide-react';
+import { Check, X, Crown, Loader2, Upload, ChevronDown, Globe, AlertCircle, Copy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useCurrency } from '@/context/CurrencyContext';
 import { useTranslate } from '@/context/LanguageContext';
 import { formService } from '@/lib/formService';
 import { toast } from 'sonner';
-import { logService } from '@/lib/logService';
-import PaypalButton, { PaypalSuccessDetails } from './common/PaypalButton';
+
+import PaypalButton from './common/PaypalButton';
 import Image from 'next/image';
 import PlanCard from './common/PlanCard';
 
@@ -37,7 +37,7 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
     initialManualPlan?: { id: string, amount: number } | null
 }) {
     const router = useRouter();
-    const [loading, setLoading] = useState<string | null>(null);
+    const [, setLoading] = useState<string | null>(null);
     const [manualPlan, setManualPlan] = useState<{ id: string, amount: number } | null>(initialManualPlan || null);
     const [uploading, setUploading] = useState(false);
     const [manualMethods, setManualMethods] = useState<ManualPaymentMethod[]>([]);
@@ -95,36 +95,36 @@ export default function PlanUpgradeModal({ isOpen, onClose, initialManualPlan }:
         ? []
         : manualMethods.filter(m => m.country === selectedCountry);
 
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<{ hasUsedTrial?: boolean } | null>(null);
 
     useEffect(() => {
         const u = localStorage.getItem('user');
         if (u) setUser(JSON.parse(u));
     }, []);
 
-    const handleUpgradeStripe = async (plan: string, trial: boolean = false) => {
-        try {
-            setLoading(trial ? `${plan}-trial` : plan);
-            const token = Cookies.get('token');
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/subscription/create`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ plan, currency, trial })
-            });
-            const data = await response.json();
-            if (data.url) {
-                window.location.href = data.url;
-            } else {
-                toast.error(data.message || 'Erro ao iniciar assinatura');
-            }
-        } catch (error) {
-            console.error('Upgrade error:', error);
-            setLoading(null);
-            toast.error(t('plans.manualUpgrade.stripeError'));
-        } finally {
-            setLoading(null);
-        }
-    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     const handleManualUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files?.[0] || !manualPlan) return;
