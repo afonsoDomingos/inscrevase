@@ -9,8 +9,7 @@ import { UserData } from '@/lib/authService';
 
 interface SubscriptionStatusProps {
     user: UserData;
-    t: (key: string) => string;
-
+}
 
 export default function SubscriptionStatus({ user }: SubscriptionStatusProps) {
     const [loading, setLoading] = useState(false);
