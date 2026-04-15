@@ -151,6 +151,26 @@ class PayPalService {
             throw error;
         }
     }
+
+    async cancelSubscription(subscriptionId, reason = "Cancelled by user") {
+        try {
+            const token = await this.getAccessToken();
+            const response = await axios.post(
+                `${this.baseUrl}/v1/billing/subscriptions/${subscriptionId}/cancel`,
+                { reason },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.status === 204;
+        } catch (error) {
+            console.error('❌ PayPal Cancel Subscription Error:', error.response?.data || error.message);
+            throw error;
+        }
+    }
 }
 
 module.exports = new PayPalService();
