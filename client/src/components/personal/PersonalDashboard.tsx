@@ -605,17 +605,6 @@ export default function PersonalDashboard() {
         }
     };
 
-    const handleDeleteSaving = async (id: string) => {
-        if (!window.confirm("Eliminar este registo de poupança?")) return;
-        try {
-            await personalService.deleteSaving(id);
-            toast.success("Registo removido.");
-            fetchData();
-        } catch (error) {
-            toast.error("Erro ao eliminar");
-        }
-    };
-
     const renderSmartAlerts = () => {
         const alerts = [];
         const lateCount = tasks.filter(t => t.status === 'late').length;
