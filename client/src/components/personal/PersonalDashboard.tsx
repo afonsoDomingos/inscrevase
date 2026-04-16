@@ -196,7 +196,7 @@ interface ProjectFormState {
 
 interface AISuggestion {
     action: 'add_task' | 'add_transaction' | 'add_client';
-    data: any;
+    data: Partial<PersonalTask> | Partial<PersonalTransaction> | Partial<PersonalClient>;
 }
 
 /* ─── Main component ─── */
