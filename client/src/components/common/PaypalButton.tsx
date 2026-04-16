@@ -38,7 +38,9 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
         if (isRecurring && options.intent !== 'subscription') {
             console.log('🔄 Resetting PayPal SDK for Subscription mode...');
             dispatch({
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 type: "resetOptions" as any,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 value: {
                     ...options,
                     intent: "subscription",
@@ -48,7 +50,9 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
         } else if (!isRecurring && options.intent === 'subscription') {
             console.log('🔄 Resetting PayPal SDK for Capture mode...');
             dispatch({
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 type: "resetOptions" as any,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 value: {
                     ...options,
                     intent: "capture",
