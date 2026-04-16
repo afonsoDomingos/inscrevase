@@ -224,7 +224,6 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
 
     // Toggle between createOrder and createSubscription based on whether it's a trial/recurring
     // All subscriptions should be recurring to support the automated lifecycle system
-    const isRecurring = type === 'subscription';
 
     return (
         <PayPalButtons
