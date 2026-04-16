@@ -512,13 +512,13 @@ export default function PersonalDashboard() {
         setAiLoading(true);
         try {
             if (suggestion.action === 'add_task') {
-                await personalService.addTask(suggestion.data);
+                await personalService.addTask(suggestion.data as Partial<PersonalTask>);
                 toast.success("Tarefa criada por IA!");
             } else if (suggestion.action === 'add_transaction') {
-                await personalService.addTransaction(suggestion.data);
+                await personalService.addTransaction(suggestion.data as Partial<PersonalTransaction>);
                 toast.success("Transação registada por IA!");
             } else if (suggestion.action === 'add_client') {
-                await personalService.addClient(suggestion.data);
+                await personalService.addClient(suggestion.data as Partial<PersonalClient>);
                 toast.success("Cliente registado por IA!");
             }
             setAiMessages(prev => [...prev, { role: 'bot', content: "Concluído com sucesso! ✅" }]);
