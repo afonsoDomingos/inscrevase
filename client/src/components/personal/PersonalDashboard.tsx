@@ -681,6 +681,15 @@ export default function PersonalDashboard() {
                 description: savingForm.description || '',
                 linkedTransactionId: savingForm.linkedTransactionId || undefined
             });
+            toast.success("Poupança registada com sucesso!");
+            setIsAddSavingOpen(false);
+            setSavingForm({ amount: '', account: '', date: new Date().toISOString().split('T')[0], description: '', linkedTransactionId: '' });
+            fetchData();
+        } catch (error) {
+            toast.error("Erro ao guardar poupança");
+        }
+    };
+
     const btnPrimary: React.CSSProperties = {
         display: 'inline-flex', alignItems: 'center', gap: '8px',
         padding: '10px 20px', background: '#000',
