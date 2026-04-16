@@ -81,9 +81,9 @@ exports.addTask = async (req, res) => {
             user: req.user.id,
             title,
             description,
-            deadline,
+            deadline: deadline ? deadline : null,
             priority: priority || 'medium',
-            project: project || null
+            project: project ? project : null
         });
 
         await task.save();
@@ -154,7 +154,7 @@ exports.addProject = async (req, res) => {
             description,
             totalBudget: totalBudget || 0,
             currency: currency || 'MZN',
-            deadline
+            deadline: deadline ? deadline : null
         });
 
         await project.save();
