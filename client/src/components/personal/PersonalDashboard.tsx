@@ -203,6 +203,16 @@ interface SavingFormState {
     linkedTransactionId: string;
 }
 
+const DASHBOARD_TABS = [
+    { id: 'overview' as ViewMode, label: 'Resumo Geral', icon: Activity },
+    { id: 'finance' as ViewMode, label: 'Finanças', icon: Wallet },
+    { id: 'savings' as ViewMode, label: 'Poupança', icon: PiggyBank },
+    { id: 'tasks' as ViewMode, label: 'Tarefas', icon: Target },
+    { id: 'projects' as ViewMode, label: 'Projetos', icon: Briefcase },
+    { id: 'clients' as ViewMode, label: 'Clientes', icon: Users },
+    { id: 'reports' as ViewMode, label: 'Análises', icon: BarChart3 },
+];
+
 interface AISuggestion {
     action: 'add_task' | 'add_transaction' | 'add_client';
     data: any;
@@ -686,19 +696,10 @@ export default function PersonalDashboard() {
         display: 'inline-flex', transition: 'all 0.2s'
     };
 
-    const tabs = [
-        { id: 'overview' as ViewMode, label: 'Resumo Geral', icon: Activity },
-        { id: 'finance' as ViewMode, label: 'Finanças', icon: Wallet },
-        { id: 'savings' as ViewMode, label: 'Poupança', icon: PiggyBank },
-        { id: 'tasks' as ViewMode, label: 'Tarefas', icon: Target },
-        { id: 'projects' as ViewMode, label: 'Projetos', icon: Briefcase },
-        { id: 'clients' as ViewMode, label: 'Clientes', icon: Users },
-        { id: 'reports' as ViewMode, label: 'Análises', icon: BarChart3 },
-    ];
-
     const allCategories = Array.from(new Set([...DEFAULT_CATEGORIES, ...transactions.map(t => t.category)]));
 
-    return <div 
+    return (
+        <div 
             id="personal-dashboard-root"
             style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', color: 'var(--foreground)' }}
         >
@@ -829,8 +830,8 @@ export default function PersonalDashboard() {
             <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '2rem', overflowX: 'auto', paddingBottom: '8px' }}>
                 {/* ── Tesla Minimalist Tabs ── */}
                 <div style={{ display: 'flex', borderBottom: '1px solid #eee', width: '100%', gap: '2rem' }}>
-                    {tabs.map(tab => (
-                        <button key={tab.id} onClick={() => setViewMode(tab.id)} style={{
+                    {DASHBOARD_TABS.map(tab => (
+                        <button key={tab.id} onClick={() => setViewMode(tab.id as ViewMode)} style={{
                             padding: '12px 0', 
                             background: 'transparent',
                             color: viewMode === tab.id ? '#000' : 'var(--text-muted)',
@@ -1606,7 +1607,8 @@ export default function PersonalDashboard() {
                 </Modal>
             )}
 
-        </div>;
+        </div>
+    );
 }
 
 function StatCard({ icon: Icon, label, value, color, secondary }: { icon: any, label: string, value: string | number, color: string, secondary?: string }) {
