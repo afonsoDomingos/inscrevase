@@ -590,11 +590,13 @@ export default function PersonalDashboard() {
         );
     };
 
-    if (loading) return (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px', gap: '12px', color: '#FFD700', fontSize: '1.1rem', fontWeight: 600 }}>
-            <Activity size={24} style={{ animation: 'spin 1s linear infinite' }} /> Carregando Workspace...
-        </div>
-    );
+    if (loading) {
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px', gap: '12px', color: '#FFD700', fontSize: '1.1rem', fontWeight: 600 }}>
+                <Activity size={24} style={{ animation: 'spin 1s linear infinite' }} /> Carregando Workspace...
+            </div>
+        );
+    }
 
     const btnPrimary: React.CSSProperties = {
         display: 'inline-flex', alignItems: 'center', gap: '8px',
@@ -603,20 +605,20 @@ export default function PersonalDashboard() {
         cursor: 'pointer', fontSize: '0.85rem', transition: 'all 0.2s', letterSpacing: '0.5px',
         whiteSpace: 'nowrap', boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
     };
-    
+
     const iconBtnStyle: React.CSSProperties = {
         padding: '6px', background: 'var(--background)', border: '1px solid var(--border)',
         borderRadius: '8px', color: 'var(--text-muted)', cursor: 'pointer',
         display: 'inline-flex', transition: 'all 0.2s'
     };
 
-    const tabs: { id: ViewMode; label: string; icon: LucideIcon }[] = [
-        { id: 'overview', label: 'Resumo Geral', icon: Activity },
-        { id: 'finance', label: 'Finanças', icon: Wallet },
-        { id: 'tasks', label: 'Tarefas', icon: Target },
-        { id: 'projects', label: 'Projetos', icon: Briefcase },
-        { id: 'clients', label: 'Clientes', icon: Users },
-        { id: 'reports', label: 'Análises', icon: BarChart3 },
+    const tabs = [
+        { id: 'overview' as ViewMode, label: 'Resumo Geral', icon: Activity },
+        { id: 'finance' as ViewMode, label: 'Finanças', icon: Wallet },
+        { id: 'tasks' as ViewMode, label: 'Tarefas', icon: Target },
+        { id: 'projects' as ViewMode, label: 'Projetos', icon: Briefcase },
+        { id: 'clients' as ViewMode, label: 'Clientes', icon: Users },
+        { id: 'reports' as ViewMode, label: 'Análises', icon: BarChart3 },
     ];
 
     const allCategories = Array.from(new Set([...DEFAULT_CATEGORIES, ...transactions.map(t => t.category)]));
