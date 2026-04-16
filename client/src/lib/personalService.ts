@@ -36,6 +36,18 @@ export interface PersonalProject {
     currency: string;
     deadline?: string;
     progress?: number;
+    client?: string | PersonalClient;
+}
+
+export interface PersonalClient {
+    _id: string;
+    name: string;
+    type: 'individual' | 'company';
+    email?: string;
+    phone?: string;
+    address?: string;
+    taxId?: string;
+    notes?: string;
 }
 
 export const personalService = {
@@ -68,7 +80,6 @@ export const personalService = {
         });
         return res.data;
     },
-
     updateTransaction: async (id: string, data: Partial<PersonalTransaction>) => {
         const token = authService.getToken();
         const res = await axios.patch(`${API_URL}/personal/finance/${id}`, data, {
@@ -139,6 +150,36 @@ export const personalService = {
     deleteProject: async (id: string) => {
         const token = authService.getToken();
         const res = await axios.delete(`${API_URL}/personal/projects/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data;
+    },
+
+    // --- CLIENTS ---
+    getClients: async (): Promise<PersonalClient[]> => {
+        const token = authService.getToken();
+        const res = await axios.get(`${API_URL}/personal/clients`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.clients;
+    },
+    addClient: async (data: Partial<PersonalClient>) => {
+        const token = authService.getToken();
+        const res = await axios.post(`${API_URL}/personal/clients`, data, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.client;
+    },
+    updateClient: async (id: string, data: Partial<PersonalClient>) => {
+        const token = authService.getToken();
+        const res = await axios.patch(`${API_URL}/personal/clients/${id}`, data, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.client;
+    },
+    deleteClient: async (id: string) => {
+        const token = authService.getToken();
+        const res = await axios.delete(`${API_URL}/personal/clients/${id}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         return res.data;

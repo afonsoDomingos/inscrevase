@@ -38,6 +38,10 @@ const personalProjectSchema = new mongoose.Schema({
     },
     deadline: {
         type: Date
+    },
+    client: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PersonalClient'
     }
 }, { timestamps: true });
 

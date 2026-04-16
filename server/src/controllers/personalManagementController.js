@@ -1,12 +1,13 @@
 const PersonalFinance = require('../models/PersonalFinance');
 const PersonalTask = require('../models/PersonalTask');
 const PersonalProject = require('../models/PersonalProject');
+const PersonalClient = require('../models/PersonalClient');
 
 // --- FINANCE ---
 
 exports.addTransaction = async (req, res) => {
     try {
-        const { type, category, amount, currency, description, date, isRecurring, status, project } = req.body;
+        const { type, category, amount, currency, description, date, isRecurring, status, project, client } = req.body;
         
         const transaction = new PersonalFinance({
             user: req.user.id,
@@ -18,7 +19,8 @@ exports.addTransaction = async (req, res) => {
             date: date || new Date(),
             isRecurring: isRecurring || false,
             status: status || 'paid',
-            project: project || null
+            project: project ? project : undefined,
+            client: client ? client : undefined
         });
 
         await transaction.save();
@@ -50,12 +52,13 @@ exports.deleteTransaction = async (req, res) => {
 
 exports.updateTransaction = async (req, res) => {
     try {
-        const { type, category, amount, currency, description, date, project } = req.body;
+        const { type, category, amount, currency, description, date, project, client } = req.body;
         const transaction = await PersonalFinance.findOneAndUpdate(
             { _id: req.params.id, user: req.user.id },
             { 
                 type, category, amount, currency, description, date,
-                project: project ? project : null
+                project: project ? project : undefined,
+                client: client ? client : undefined
             },
             { new: true, runValidators: true }
         );
@@ -98,10 +101,10 @@ exports.addTask = async (req, res) => {
         const task = new PersonalTask({
             user: req.user.id,
             title,
-            description,
-            deadline: deadline ? deadline : null,
+            description: description || undefined,
+            deadline: deadline ? deadline : undefined,
             priority: priority || 'medium',
-            project: project ? project : null
+            project: project ? project : undefined
         });
 
         await task.save();
@@ -166,8 +169,8 @@ exports.updateTask = async (req, res) => {
             { _id: req.params.id, user: req.user.id },
             { 
                 title, description, priority,
-                deadline: deadline ? deadline : null,
-                project: project ? project : null
+                deadline: deadline ? deadline : undefined,
+                project: project ? project : undefined
             },
             { new: true, runValidators: true }
         );
@@ -183,7 +186,7 @@ exports.updateTask = async (req, res) => {
 
 exports.addProject = async (req, res) => {
     try {
-        const { name, description, totalBudget, currency, deadline } = req.body;
+        const { name, description, totalBudget, currency, deadline, client } = req.body;
         
         const project = new PersonalProject({
             user: req.user.id,
@@ -191,7 +194,8 @@ exports.addProject = async (req, res) => {
             description,
             totalBudget: totalBudget || 0,
             currency: currency || 'MZN',
-            deadline: deadline ? deadline : null
+            deadline: deadline ? deadline : undefined,
+            client: client ? client : undefined
         });
 
         await project.save();
@@ -230,12 +234,13 @@ exports.getProjects = async (req, res) => {
 
 exports.updateProject = async (req, res) => {
     try {
-        const { name, description, totalBudget, currency, deadline } = req.body;
+        const { name, description, totalBudget, currency, deadline, client } = req.body;
         const project = await PersonalProject.findOneAndUpdate(
             { _id: req.params.id, user: req.user.id },
             { 
                 name, description, totalBudget, currency, 
-                deadline: deadline ? deadline : null
+                deadline: deadline ? deadline : undefined,
+                client: client ? client : undefined
             },
             { new: true, runValidators: true }
         );
@@ -251,6 +256,53 @@ exports.deleteProject = async (req, res) => {
         await PersonalProject.findOneAndDelete({ _id: req.params.id, user: req.user.id });
         // NOTE: we are not cascading deletion, might want to if required, but usually keeping finances/tasks isolated is ok or manually deleted.
         res.status(200).json({ success: true, message: 'Project deleted' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// --- CLIENTS ---
+
+exports.addClient = async (req, res) => {
+    try {
+        const client = new PersonalClient({
+            ...req.body,
+            user: req.user.id
+        });
+        await client.save();
+        res.status(201).json({ success: true, client });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.getClients = async (req, res) => {
+    try {
+        const clients = await PersonalClient.find({ user: req.user.id }).sort({ name: 1 });
+        res.status(200).json({ success: true, clients });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.updateClient = async (req, res) => {
+    try {
+        const client = await PersonalClient.findOneAndUpdate(
+            { _id: req.params.id, user: req.user.id },
+            req.body,
+            { new: true, runValidators: true }
+        );
+        if (!client) return res.status(404).json({ success: false, message: 'Client not found' });
+        res.status(200).json({ success: true, client });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.deleteClient = async (req, res) => {
+    try {
+        await PersonalClient.findOneAndDelete({ _id: req.params.id, user: req.user.id });
+        res.status(200).json({ success: true, message: 'Client deleted' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

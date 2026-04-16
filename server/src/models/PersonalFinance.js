@@ -47,6 +47,10 @@ const personalFinanceSchema = new mongoose.Schema({
         type: String,
         enum: ['paid', 'pending'],
         default: 'paid'
+    },
+    client: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PersonalClient'
     }
 }, { timestamps: true });
 

@@ -26,4 +26,10 @@ router.post('/projects', personalManagementController.addProject);
 router.patch('/projects/:id', personalManagementController.updateProject);
 router.delete('/projects/:id', personalManagementController.deleteProject);
 
+// --- CLIENTS ---
+router.get('/clients', personalManagementController.getClients);
+router.post('/clients', personalManagementController.addClient);
+router.patch('/clients/:id', personalManagementController.updateClient);
+router.delete('/clients/:id', personalManagementController.deleteClient);
+
 module.exports = router;

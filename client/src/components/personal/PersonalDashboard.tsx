@@ -5,13 +5,13 @@ import {
     Wallet, TrendingUp, Target, 
     CheckCircle, Clock, Plus, Activity, X,
     Folder, AlertTriangle, ArrowUpRight, ArrowDownRight,
-    Trash2, Edit3, MoreHorizontal
+    Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase
 } from 'lucide-react';
-import { personalService, PersonalTransaction, PersonalTask, PersonalProject } from '@/lib/personalService';
+import { personalService, PersonalTransaction, PersonalTask, PersonalProject, PersonalClient } from '@/lib/personalService';
 import { useCurrency } from '@/context/CurrencyContext';
 import { toast } from 'sonner';
 
-type ViewMode = 'overview' | 'finance' | 'tasks' | 'projects';
+type ViewMode = 'overview' | 'finance' | 'tasks' | 'projects' | 'clients';
 
 /* ─── Shared styled sub-components ─── */
 
@@ -41,11 +41,12 @@ const labelStyle: React.CSSProperties = {
 
 const fieldWrap: React.CSSProperties = { marginBottom: '1.1rem' };
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children, description }: { label: string; children: React.ReactNode; description?: string }) {
     return (
         <div style={fieldWrap}>
             <label style={labelStyle}>{label}</label>
             {children}
+            {description && <p style={{ margin: '4px 0 0', fontSize: '0.7rem', color: 'var(--text-muted)' }}>{description}</p>}
         </div>
     );
 }
@@ -91,8 +92,8 @@ function StyledSelect(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
 }
 
 /* ─── Modal wrapper ─── */
-function Modal({ title, onClose, onSubmit, children }: {
-    title: string; onClose: () => void; onSubmit: (e: React.FormEvent) => void; children: React.ReactNode;
+function Modal({ title, onClose, onSubmit, children, submitLabel = "Guardar Alterações" }: {
+    title: string; onClose: () => void; onSubmit: (e: React.FormEvent) => void; children: React.ReactNode; submitLabel?: string;
 }) {
     return (
         <div style={{
@@ -102,10 +103,11 @@ function Modal({ title, onClose, onSubmit, children }: {
             padding: '1rem'
         }}>
             <form onSubmit={onSubmit} style={{
-                width: '100%', maxWidth: '460px',
+                width: '100%', maxWidth: '500px',
+                maxHeight: '90vh', overflowY: 'auto',
                 background: 'var(--paper)',
                 border: '1px solid var(--border)',
-                borderRadius: '20px',
+                borderRadius: '24px',
                 padding: '2rem',
                 boxShadow: '0 30px 60px rgba(0,0,0,0.15)',
                 position: 'relative',
@@ -129,7 +131,7 @@ function Modal({ title, onClose, onSubmit, children }: {
                 {children}
 
                 <button type="submit" style={{
-                    width: '100%', marginTop: '0.5rem', padding: '14px',
+                    width: '100%', marginTop: '1rem', padding: '14px',
                     background: 'linear-gradient(135deg, #FFD700, #B8860B)',
                     border: 'none', borderRadius: '12px',
                     color: '#000', fontWeight: 800, fontSize: '0.95rem',
@@ -138,12 +140,14 @@ function Modal({ title, onClose, onSubmit, children }: {
                     onMouseOver={e => (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)'}
                     onMouseOut={e => (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'}
                 >
-                    Guardar Alterações
+                    {submitLabel}
                 </button>
             </form>
         </div>
     );
 }
+
+const DEFAULT_CATEGORIES = ['Serviços', 'Licenças', 'Impostos', 'Marketing', 'Infraestrutura', 'Branding', 'Consultoria', 'Vendas', 'Outros'];
 
 /* ─── Main component ─── */
 export default function PersonalDashboard() {
@@ -155,37 +159,47 @@ export default function PersonalDashboard() {
     const [transactions, setTransactions] = useState<PersonalTransaction[]>([]);
     const [tasks, setTasks] = useState<PersonalTask[]>([]);
     const [projects, setProjects] = useState<PersonalProject[]>([]);
+    const [clients, setClients] = useState<PersonalClient[]>([]);
 
     const [isAddTxOpen, setIsAddTxOpen] = useState(false);
     const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
     const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
+    const [isAddClientOpen, setIsAddClientOpen] = useState(false);
 
     // Edit states
     const [editingTxId, setEditingTxId] = useState<string | null>(null);
     const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
     const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+    const [editingClientId, setEditingClientId] = useState<string | null>(null);
 
-    const defaultTxForm = { type: 'income', category: '', amount: '', description: '', date: '' };
-    const defaultTaskForm = { title: '', deadline: '', priority: 'medium' };
-    const defaultProjectForm = { name: '', totalBudget: '', description: '', deadline: '' };
+    const defaultTxForm = { type: 'income', category: '', amount: '', description: '', date: '', project: '', client: '' };
+    const defaultTaskForm = { title: '', deadline: '', priority: 'medium', project: '' };
+    const defaultProjectForm = { name: '', totalBudget: '', description: '', deadline: '', client: '' };
+    const defaultClientForm = { name: '', type: 'individual', email: '', phone: '', address: '', taxId: '', notes: '' };
 
     const [txForm, setTxForm] = useState(defaultTxForm);
     const [taskForm, setTaskForm] = useState(defaultTaskForm);
     const [projectForm, setProjectForm] = useState(defaultProjectForm);
+    const [clientForm, setClientForm] = useState<any>(defaultClientForm);
+
+    const [showNewCategory, setShowNewCategory] = useState(false);
+    const [newCategoryName, setNewCategoryName] = useState('');
 
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [sum, txs, tsks, projs] = await Promise.all([
+            const [sum, txs, tsks, projs, cls] = await Promise.all([
                 personalService.getFinanceSummary(),
                 personalService.getTransactions(),
                 personalService.getTasks(),
-                personalService.getProjects()
+                personalService.getProjects(),
+                personalService.getClients()
             ]);
             setSummary(sum);
             setTransactions(txs);
             setTasks(tsks);
             setProjects(projs);
+            setClients(cls);
         } catch (error) {
             console.error(error);
             toast.error("Erro ao carregar dados do Workspace");
@@ -200,7 +214,13 @@ export default function PersonalDashboard() {
     const handleAddTx = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const payload = { ...txForm, amount: Number(txForm.amount), type: txForm.type as 'income' | 'expense' };
+            const finalCategory = showNewCategory ? newCategoryName : txForm.category;
+            const payload = { 
+                ...txForm, 
+                category: finalCategory,
+                amount: Number(txForm.amount), 
+                type: txForm.type as 'income' | 'expense' 
+            };
             if (editingTxId) {
                 await personalService.updateTransaction(editingTxId, payload);
                 toast.success("Transação atualizada!");
@@ -225,12 +245,15 @@ export default function PersonalDashboard() {
 
     const openEditTx = (tx: PersonalTransaction) => {
         setEditingTxId(tx._id);
+        const projectVal = typeof tx.project === 'object' ? tx.project?._id : tx.project;
         setTxForm({ 
             type: tx.type, 
             category: tx.category, 
             amount: tx.amount.toString(), 
             description: tx.description,
-            date: tx.date ? new Date(tx.date).toISOString().split('T')[0] : ''
+            date: tx.date ? new Date(tx.date).toISOString().split('T')[0] : '',
+            project: (projectVal as string) || '',
+            client: '' // Finance model update might need this populated if we want it pre-filled
         });
         setIsAddTxOpen(true);
     };
@@ -239,6 +262,8 @@ export default function PersonalDashboard() {
         setIsAddTxOpen(false);
         setEditingTxId(null);
         setTxForm(defaultTxForm);
+        setShowNewCategory(false);
+        setNewCategoryName('');
     };
 
     // --- TASK HANDLERS ---
@@ -270,10 +295,12 @@ export default function PersonalDashboard() {
 
     const openEditTask = (task: PersonalTask) => {
         setEditingTaskId(task._id);
+        const projectVal = typeof task.project === 'object' ? task.project?._id : task.project;
         setTaskForm({
             title: task.title,
             deadline: task.deadline ? new Date(task.deadline).toISOString().split('T')[0] : '',
-            priority: task.priority
+            priority: task.priority,
+            project: (projectVal as string) || ''
         });
         setIsAddTaskOpen(true);
     };
@@ -295,7 +322,13 @@ export default function PersonalDashboard() {
     const handleAddProject = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const payload = { name: projectForm.name, totalBudget: Number(projectForm.totalBudget), description: projectForm.description, deadline: projectForm.deadline };
+            const payload = { 
+                name: projectForm.name, 
+                totalBudget: Number(projectForm.totalBudget), 
+                description: projectForm.description, 
+                deadline: projectForm.deadline,
+                client: projectForm.client 
+            };
             if(editingProjectId) {
                 await personalService.updateProject(editingProjectId, payload);
                 toast.success("Projecto atualizado!");
@@ -320,11 +353,13 @@ export default function PersonalDashboard() {
 
     const openEditProject = (proj: PersonalProject) => {
         setEditingProjectId(proj._id);
+        const clientVal = typeof proj.client === 'object' ? proj.client?._id : proj.client;
         setProjectForm({
             name: proj.name,
             totalBudget: proj.totalBudget.toString(),
             description: proj.description || '',
-            deadline: proj.deadline ? new Date(proj.deadline).toISOString().split('T')[0] : ''
+            deadline: proj.deadline ? new Date(proj.deadline).toISOString().split('T')[0] : '',
+            client: (clientVal as string) || ''
         });
         setIsAddProjectOpen(true);
     };
@@ -333,6 +368,44 @@ export default function PersonalDashboard() {
         setIsAddProjectOpen(false);
         setEditingProjectId(null);
         setProjectForm(defaultProjectForm);
+    };
+
+    // --- CLIENT HANDLERS ---
+    const handleAddClient = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            if(editingClientId) {
+                await personalService.updateClient(editingClientId, clientForm);
+                toast.success("Cliente atualizado!");
+            } else {
+                await personalService.addClient(clientForm);
+                toast.success("Cliente registado!");
+            }
+            closeClientModal();
+            fetchData();
+        } catch { toast.error("Erro ao guardar cliente"); }
+    };
+
+    const handleDeleteClient = async (id: string) => {
+        if (confirm('Eliminar este cliente também o removerá de referências futuras. Continuar?')) {
+            try {
+                await personalService.deleteClient(id);
+                toast.success("Cliente removido");
+                fetchData();
+            } catch { toast.error("Erro ao eliminar cliente"); }
+        }
+    };
+
+    const openEditClient = (cl: PersonalClient) => {
+        setEditingClientId(cl._id);
+        setClientForm(cl);
+        setIsAddClientOpen(true);
+    };
+
+    const closeClientModal = () => {
+        setIsAddClientOpen(false);
+        setEditingClientId(null);
+        setClientForm(defaultClientForm);
     };
 
 
@@ -359,36 +432,41 @@ export default function PersonalDashboard() {
         display: 'inline-flex', transition: 'all 0.2s'
     };
 
-    const tabs: { id: ViewMode; label: string }[] = [
-        { id: 'overview', label: 'Visão Geral' },
-        { id: 'finance', label: 'Finanças' },
-        { id: 'tasks', label: 'Tarefas' },
-        { id: 'projects', label: 'Projetos' },
+    const tabs: { id: ViewMode; label: string; icon: any }[] = [
+        { id: 'overview', label: 'Visão Geral', icon: Activity },
+        { id: 'finance', label: 'Finanças', icon: Wallet },
+        { id: 'tasks', label: 'Tarefas', icon: Target },
+        { id: 'projects', label: 'Projetos', icon: Briefcase },
+        { id: 'clients', label: 'Clientes', icon: Users },
     ];
+
+    // Build categories for select
+    const allCategories = Array.from(new Set([...DEFAULT_CATEGORIES, ...transactions.map(t => t.category)]));
 
     return (
         <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', color: 'var(--foreground)' }}>
 
             {/* ── Header ── */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1.5rem' }}>
                 <div>
                     <h1 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: 'var(--font-playfair)' }}>
                         <Activity color="#FFD700" size={32} /> Workspace <span style={{ fontWeight: 300, opacity: 0.5 }}>360</span>
                     </h1>
-                    <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.95rem' }}>O seu hub central de gestão financeira, produtividade e projetos.</p>
+                    <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.95rem' }}>Gestão profissional de finanças, tarefas, projectos e clientes.</p>
                 </div>
 
                 {/* ── Tabs ── */}
-                <div style={{ display: 'flex', background: 'var(--paper)', border: '1px solid var(--border)', padding: '6px', borderRadius: '14px', gap: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+                <div style={{ display: 'flex', background: 'var(--paper)', border: '1px solid var(--border)', padding: '6px', borderRadius: '16px', gap: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)', overflowX: 'auto', maxWidth: '100%' }}>
                     {tabs.map(tab => (
                         <button key={tab.id} onClick={() => setViewMode(tab.id)} style={{
-                            padding: '10px 20px', borderRadius: '10px',
+                            padding: '10px 18px', borderRadius: '12px',
                             background: viewMode === tab.id ? 'linear-gradient(135deg,#FFD700,#B8860B)' : 'transparent',
                             color: viewMode === tab.id ? '#000' : 'var(--text-muted)',
                             fontWeight: viewMode === tab.id ? 800 : 600,
-                            border: 'none', cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.9rem'
+                            border: 'none', cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.85rem',
+                            display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap'
                         }}>
-                            {tab.label}
+                            <tab.icon size={16} /> {tab.label}
                         </button>
                     ))}
                 </div>
@@ -398,70 +476,76 @@ export default function PersonalDashboard() {
             {viewMode === 'overview' && (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
                     {/* Balance card */}
-                    <div style={{ background: 'linear-gradient(135deg,#1a1a2e,#16213e)', border: '1px solid rgba(255,215,0,0.2)', borderRadius: '20px', padding: '1.75rem', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
-                        <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '120px', height: '120px', background: 'rgba(255,215,0,0.05)', borderRadius: '50%' }} />
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#FFD700', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    <div style={{ background: 'linear-gradient(135deg,#1a1a2e,#16213e)', border: '1px solid rgba(255,215,0,0.2)', borderRadius: '24px', padding: '2rem', position: 'relative', overflow: 'hidden', boxShadow: '0 15px 35px rgba(0,0,0,0.15)' }}>
+                        <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '140px', height: '140px', background: 'rgba(255,215,0,0.05)', borderRadius: '50%' }} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#FFD700', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
                             <Wallet size={18} /> Saldo Disponível
                         </div>
-                        <div style={{ fontSize: '3rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', marginBottom: '1.5rem', color: summary.balance >= 0 ? '#fff' : '#ef4444' }}>
+                        <div style={{ fontSize: '3.2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', marginBottom: '1.5rem', color: summary.balance >= 0 ? '#fff' : '#ef4444' }}>
                             {formatPrice(summary.balance, 'MZN')}
                         </div>
-                        <div style={{ display: 'flex', gap: '20px', background: 'rgba(255,255,255,0.05)', padding: '12px 16px', borderRadius: '12px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981', fontSize: '0.95rem', fontWeight: 700 }}>
-                                <ArrowUpRight size={16} /> {formatPrice(summary.income, 'MZN')}
+                        <div style={{ display: 'flex', gap: '24px', background: 'rgba(255,255,255,0.05)', padding: '16px 20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10b981', fontSize: '1rem', fontWeight: 700 }}>
+                                <ArrowUpRight size={18} /> {formatPrice(summary.income, 'MZN')}
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ef4444', fontSize: '0.95rem', fontWeight: 700 }}>
-                                <ArrowDownRight size={16} /> {formatPrice(summary.expense, 'MZN')}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#ef4444', fontSize: '1rem', fontWeight: 700 }}>
+                                <ArrowDownRight size={18} /> {formatPrice(summary.expense, 'MZN')}
                             </div>
                         </div>
                     </div>
 
                     {/* Tasks card */}
-                    <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '20px', padding: '1.75rem', boxShadow: '0 8px 24px rgba(0,0,0,0.03)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#FFD700', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            <Target size={18} /> Progresso de Tarefas
+                    <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '24px', padding: '2rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#FFD700', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+                            <Target size={18} /> Resumo de Produtividade
                         </div>
-                        <div style={{ display: 'flex', gap: '24px', marginBottom: '1.5rem' }}>
+                        <div style={{ display: 'flex', gap: '30px', marginBottom: '1.5rem' }}>
                             {[
-                                { label: 'Pendentes', count: tasks.filter(t => t.status === 'pending' || t.status === 'in_progress').length, color: '#f59e0b' },
-                                { label: 'Atrasadas', count: tasks.filter(t => t.status === 'late').length, color: '#ef4444' },
-                                { label: 'Concluídas', count: tasks.filter(t => t.status === 'completed').length, color: '#10b981' },
+                                { label: 'Em Aberto', count: tasks.filter(t => t.status === 'pending' || t.status === 'in_progress').length, color: '#f59e0b' },
+                                { label: 'Atraso', count: tasks.filter(t => t.status === 'late').length, color: '#ef4444' },
+                                { label: 'Feto', count: tasks.filter(t => t.status === 'completed').length, color: '#10b981' },
                             ].map(item => (
                                 <div key={item.label}>
-                                    <div style={{ fontSize: '2.5rem', fontWeight: 900, color: item.color, lineHeight: 1 }}>{item.count}</div>
-                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '6px' }}>{item.label}</div>
+                                    <div style={{ fontSize: '2.8rem', fontWeight: 900, color: item.color, lineHeight: 1 }}>{item.count}</div>
+                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '8px' }}>{item.label}</div>
                                 </div>
                             ))}
                         </div>
-                        {/* mini progress bar */}
                         {tasks.length > 0 ? (
-                            <div style={{ height: '8px', background: 'var(--background)', borderRadius: '4px', overflow: 'hidden' }}>
-                                <div style={{ height: '100%', width: `${Math.round((tasks.filter(t => t.status === 'completed').length / tasks.length) * 100)}%`, background: 'linear-gradient(90deg,#10b981,#059669)', transition: 'width 0.5s', borderRadius: '4px' }} />
+                            <div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 800, marginBottom: '8px', color: 'var(--text-muted)' }}>
+                                    <span>CONCLUÍDAS</span><span>{Math.round((tasks.filter(t => t.status === 'completed').length / tasks.length) * 100)}%</span>
+                                </div>
+                                <div style={{ height: '10px', background: 'var(--background)', borderRadius: '5px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                                    <div style={{ height: '100%', width: `${Math.round((tasks.filter(t => t.status === 'completed').length / tasks.length) * 100)}%`, background: 'linear-gradient(90deg,#10b981,#059669)', transition: 'width 0.8s ease' }} />
+                                </div>
                             </div>
                         ) : (
-                            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Sem tarefas registadas.</div>
+                            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>Nenhuma tarefa agendada.</p>
                         )}
                     </div>
 
-                    {/* Projects card */}
-                    <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '20px', padding: '1.75rem', boxShadow: '0 8px 24px rgba(0,0,0,0.03)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#FFD700', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            <Folder size={18} /> Projetos Activos
+                    {/* Entities Summary */}
+                    <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '24px', padding: '2rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem', color: '#FFD700', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+                            <Activity size={18} /> Entidades & Gestão
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                            <div style={{ fontSize: '4rem', fontWeight: 900, color: 'var(--foreground)', lineHeight: 1 }}>
-                                {projects.filter(p => p.status === 'active').length}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', background: 'var(--background)', padding: '15px', borderRadius: '16px' }}>
+                                <div style={{ background: 'rgba(255,215,0,0.1)', color: '#FFD700', padding: '10px', borderRadius: '12px' }}><Briefcase size={20}/></div>
+                                <div>
+                                    <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>{projects.length}</div>
+                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>PROJECTOS</div>
+                                </div>
                             </div>
-                            <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem', fontWeight: 600 }}>
-                                de {projects.length} totais<br/>registados
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', background: 'var(--background)', padding: '15px', borderRadius: '16px' }}>
+                                <div style={{ background: 'rgba(59,130,246,0.1)', color: '#3b82f6', padding: '10px', borderRadius: '12px' }}><Users size={20}/></div>
+                                <div>
+                                    <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>{clients.length}</div>
+                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>CLIENTES</div>
+                                </div>
                             </div>
                         </div>
-                        
-                        {projects.length > 0 && projects.filter(p => p.status === 'active').length === 0 && (
-                            <div style={{ marginTop: '1.5rem', padding: '10px 14px', background: 'var(--background)', borderRadius: '10px', fontSize: '0.85rem', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
-                                Todos os projectos estão concluídos ou pendentes.
-                            </div>
-                        )}
                     </div>
                 </div>
             )}
@@ -470,22 +554,20 @@ export default function PersonalDashboard() {
             {viewMode === 'finance' && (
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Histórico de Transações</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Gestão Financeira</h2>
                         <button onClick={() => setIsAddTxOpen(true)} style={btnPrimary}>
-                            <Plus size={18} /> Nova Transação
+                            <Plus size={18} /> Registar Transação
                         </button>
                     </div>
 
-                    <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                    <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
                         {transactions.length === 0 ? (
                             <div style={{ padding: '6rem 2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                                <div style={{ background: 'var(--background)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyItems: 'center', margin: '0 auto 1.5rem', border: '1px solid var(--border)' }}>
-                                    <TrendingUp size={32} style={{ opacity: 0.5, margin: '0 auto' }} />
-                                </div>
-                                <h3 style={{ margin: '0 0 0.5rem 0', fontWeight: 800, fontSize: '1.2rem', color: 'var(--foreground)' }}>Nenhuma transação</h3>
-                                <p style={{ margin: 0, fontSize: '0.95rem' }}>Ainda não registrou fluxos financeiros.</p>
-                                <button onClick={() => setIsAddTxOpen(true)} style={{ ...btnPrimary, marginTop: '1.5rem', background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)', boxShadow: 'none' }}>
-                                    Adicionar a Primeira
+                                <TrendingUp size={48} style={{ opacity: 0.2, marginBottom: '1.5rem' }} />
+                                <h3 style={{ margin: '0 0 0.5rem 0', fontWeight: 800, fontSize: '1.3rem', color: 'var(--foreground)' }}>Sem Movimentações</h3>
+                                <p style={{ margin: 0 }}>Comece a registar ganhos e despesas para ver o seu saldo.</p>
+                                <button onClick={() => setIsAddTxOpen(true)} style={{ ...btnPrimary, marginTop: '2rem', background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)', boxShadow: 'none' }}>
+                                    Adicionar Primeiro Registo
                                 </button>
                             </div>
                         ) : (
@@ -493,28 +575,34 @@ export default function PersonalDashboard() {
                                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                     <thead>
                                         <tr style={{ background: 'var(--background)', borderBottom: '1px solid var(--border)' }}>
-                                            {['Data', 'Descrição', 'Categoria', 'Valor', 'Ações'].map(h => (
-                                                <th key={h} style={{ padding: '16px 24px', textAlign: h === 'Valor' ? 'right' : h === 'Ações' ? 'center' : 'left', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-muted)' }}>{h}</th>
+                                            {['Data', 'Descrição', 'Categoria', 'Valor', 'Status', 'Ações'].map(h => (
+                                                <th key={h} style={{ padding: '18px 24px', textAlign: h === 'Valor' ? 'right' : (h === 'Ações' || h === 'Status') ? 'center' : 'left', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text-muted)' }}>{h}</th>
                                             ))}
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {transactions.map((tx, i) => (
-                                            <tr key={tx._id} style={{ borderBottom: '1px solid var(--border)', background: i % 2 === 0 ? 'transparent' : 'var(--background)' }}>
-                                                <td style={{ padding: '16px 24px', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500 }}>{new Date(tx.date).toLocaleDateString('pt-PT')}</td>
-                                                <td style={{ padding: '16px 24px', fontWeight: 700, color: 'var(--foreground)' }}>{tx.description}</td>
-                                                <td style={{ padding: '16px 24px' }}>
-                                                    <span style={{ padding: '4px 12px', borderRadius: '20px', background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.2)', fontSize: '0.8rem', color: '#B8860B', fontWeight: 800 }}>
-                                                        {tx.category}
-                                                    </span>
+                                            <tr key={tx._id} style={{ borderBottom: '1px solid var(--border)', background: i % 2 === 0 ? 'transparent' : 'var(--background)', transition: 'background 0.2s' }}>
+                                                <td style={{ padding: '18px 24px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>{new Date(tx.date).toLocaleDateString('pt-PT')}</td>
+                                                <td style={{ padding: '18px 24px', fontWeight: 700 }}>
+                                                    {tx.description}
+                                                    {tx.project && <div style={{ fontSize: '0.7rem', opacity: 0.5, fontWeight: 500 }}>📁 {(tx.project as any).name || 'Projecto'}</div>}
                                                 </td>
-                                                <td style={{ padding: '16px 24px', textAlign: 'right', fontWeight: 900, color: tx.type === 'income' ? '#10b981' : '#ef4444', fontSize: '1.1rem' }}>
+                                                <td style={{ padding: '18px 24px' }}>
+                                                    <span style={{ padding: '4px 12px', borderRadius: '12px', background: 'rgba(255,215,0,0.1)', color: '#B8860B', fontSize: '0.75rem', fontWeight: 800 }}>{tx.category}</span>
+                                                </td>
+                                                <td style={{ padding: '18px 24px', textAlign: 'right', fontWeight: 900, color: tx.type === 'income' ? '#10b981' : '#ef4444', fontSize: '1.05rem' }}>
                                                     {tx.type === 'income' ? '+' : '−'} {formatPrice(tx.amount, tx.currency)}
                                                 </td>
-                                                <td style={{ padding: '16px 24px', textAlign: 'center' }}>
+                                                <td style={{ padding: '18px 24px', textAlign: 'center' }}>
+                                                    <span style={{ fontSize: '0.7rem', padding: '3px 8px', borderRadius: '8px', border: '1px solid var(--border)', fontWeight: 700, textTransform: 'uppercase', color: tx.status === 'paid' ? '#10b981' : '#f59e0b' }}>
+                                                        {tx.status === 'paid' ? 'Pago' : 'Pendente'}
+                                                    </span>
+                                                </td>
+                                                <td style={{ padding: '18px 24px', textAlign: 'center' }}>
                                                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                                                        <button onClick={() => openEditTx(tx)} style={iconBtnStyle} title="Editar"><Edit3 size={16} /></button>
-                                                        <button onClick={() => handleDeleteTx(tx._id)} style={{...iconBtnStyle, color: '#ef4444'}} title="Eliminar"><Trash2 size={16} /></button>
+                                                        <button onClick={() => openEditTx(tx)} style={iconBtnStyle} title="Editar"><Edit3 size={15} /></button>
+                                                        <button onClick={() => handleDeleteTx(tx._id)} style={{...iconBtnStyle, color: '#ef4444'}} title="Eliminar"><Trash2 size={15} /></button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -531,79 +619,73 @@ export default function PersonalDashboard() {
             {viewMode === 'tasks' && (
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Lista de Tarefas</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Tarefas & Deadline</h2>
                         <button onClick={() => setIsAddTaskOpen(true)} style={btnPrimary}>
-                            <Plus size={18} /> Nova Tarefa
+                            <Plus size={18} /> Criar Tarefa
                         </button>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {tasks.length === 0 ? (
-                            <div style={{ padding: '6rem 2rem', textAlign: 'center', color: 'var(--text-muted)', background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '20px' }}>
-                                <div style={{ background: 'var(--background)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyItems: 'center', margin: '0 auto 1.5rem', border: '1px solid var(--border)' }}>
-                                    <CheckCircle size={32} style={{ opacity: 0.5, margin: '0 auto' }} />
-                                </div>
-                                <h3 style={{ margin: '0 0 0.5rem 0', fontWeight: 800, fontSize: '1.2rem', color: 'var(--foreground)' }}>Parabéns!</h3>
-                                <p style={{ margin: 0, fontSize: '0.95rem' }}>Nenhuma tarefa pendente na sua lista.</p>
-                                <button onClick={() => setIsAddTaskOpen(true)} style={{ ...btnPrimary, marginTop: '1.5rem', background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)', boxShadow: 'none' }}>
-                                    Agendar Trabalho
+                            <div style={{ padding: '6rem 2rem', textAlign: 'center', background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '24px' }}>
+                                <CheckCircle size={48} style={{ opacity: 0.15, marginBottom: '1.5rem', color: '#10b981' }} />
+                                <h3 style={{ margin: '0', fontWeight: 800, fontSize: '1.3rem' }}>Nada para fazer?</h3>
+                                <p style={{ color: 'var(--text-muted)' }}>Comece a planear os seus objetivos de curto-prazo.</p>
+                                <button onClick={() => setIsAddTaskOpen(true)} style={{ ...btnPrimary, marginTop: '2rem', background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)', boxShadow: 'none' }}>
+                                    Adicionar Tarefa
                                 </button>
                             </div>
                         ) : tasks.map(task => (
                             <div key={task._id} style={{
-                                display: 'flex', alignItems: 'center', justifyItems: 'space-between',
-                                padding: '1.25rem 1.5rem',
-                                background: 'var(--paper)',
-                                border: '1px solid var(--border)',
-                                borderLeft: `5px solid ${task.status === 'late' ? '#ef4444' : task.status === 'completed' ? '#10b981' : '#FFD700'}`,
-                                borderRadius: '16px',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
-                                transition: 'transform 0.2s, box-shadow 0.2s'
-                            }}
-                            onMouseOver={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 24px rgba(0,0,0,0.06)'; }}
-                            onMouseOut={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 12px rgba(0,0,0,0.02)'; }}
-                            >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1, minWidth: 0 }}>
-                                    <button onClick={() => toggleTaskStatus(task._id, task.status)} style={{
-                                        background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0,
-                                        color: task.status === 'completed' ? '#10b981' : 'var(--text-muted)',
-                                        transition: 'color 0.2s, transform 0.2s'
-                                    }}
-                                    onMouseOver={e => (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.1)'}
-                                    onMouseOut={e => (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'}
-                                    >
-                                        <CheckCircle size={28} fill={task.status === 'completed' ? 'rgba(16,185,129,0.15)' : 'none'} />
-                                    </button>
-                                    <div style={{ minWidth: 0 }}>
-                                        <div style={{
-                                            fontWeight: 800, fontSize: '1.05rem', color: 'var(--foreground)',
-                                            textDecoration: task.status === 'completed' ? 'line-through' : 'none',
-                                            opacity: task.status === 'completed' ? 0.5 : 1,
-                                            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
-                                        }}>
-                                            {task.title}
-                                        </div>
+                                display: 'flex', alignItems: 'center',
+                                padding: '1.5rem', background: 'var(--paper)', border: '1px solid var(--border)',
+                                borderLeft: `6px solid ${task.status === 'late' ? '#ef4444' : task.status === 'completed' ? '#10b981' : '#FFD700'}`,
+                                borderRadius: '20px', transition: 'all 0.2s',
+                                boxShadow: '0 4px 15px rgba(0,0,0,0.02)'
+                            }}>
+                                <button onClick={() => toggleTaskStatus(task._id, task.status)} style={{
+                                    background: 'transparent', border: 'none', cursor: 'pointer', marginRight: '20px',
+                                    color: task.status === 'completed' ? '#10b981' : 'var(--border)',
+                                    transition: 'color 0.2s'
+                                }}>
+                                    <CheckCircle size={30} fill={task.status === 'completed' ? 'rgba(16,185,129,0.1)' : 'none'} />
+                                </button>
+
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{
+                                        fontWeight: 800, fontSize: '1.1rem',
+                                        textDecoration: task.status === 'completed' ? 'line-through' : 'none',
+                                        opacity: task.status === 'completed' ? 0.5 : 1,
+                                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+                                    }}>
+                                        {task.title}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '15px', marginTop: '6px', flexWrap: 'wrap' }}>
                                         {task.deadline && (
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: task.status === 'late' ? '#ef4444' : 'var(--text-muted)', marginTop: '4px', fontWeight: 600 }}>
-                                                {task.status === 'late' && <AlertTriangle size={14} />}
-                                                <Clock size={14} /> Prazo: {new Date(task.deadline).toLocaleDateString('pt-PT')}
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: task.status === 'late' ? '#ef4444' : 'var(--text-muted)', fontWeight: 600 }}>
+                                                <Clock size={14} /> Até {new Date(task.deadline).toLocaleDateString('pt-PT')}
+                                            </div>
+                                        )}
+                                        {task.project && (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                                                <Briefcase size={14} /> {(task.project as any).name}
                                             </div>
                                         )}
                                     </div>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: '20px' }}>
                                     <span style={{
-                                        flexShrink: 0, fontSize: '0.75rem', fontWeight: 900, padding: '5px 12px', borderRadius: '20px',
-                                        background: `${priorityColor(task.priority)}18`,
-                                        color: priorityColor(task.priority),
-                                        border: `1px solid ${priorityColor(task.priority)}40`,
-                                        textTransform: 'uppercase', letterSpacing: '0.5px'
+                                        fontSize: '0.7rem', fontWeight: 900, padding: '4px 10px', borderRadius: '12px',
+                                        background: `${priorityColor(task.priority)}15`,
+                                        color: priorityColor(task.priority), border: `1px solid ${priorityColor(task.priority)}30`,
+                                        textTransform: 'uppercase'
                                     }}>
                                         {priorityLabel(task.priority)}
                                     </span>
                                     <div style={{ display: 'flex', gap: '6px' }}>
-                                        <button onClick={() => openEditTask(task)} style={iconBtnStyle} title="Editar"><Edit3 size={15} /></button>
-                                        <button onClick={() => handleDeleteTask(task._id)} style={{...iconBtnStyle, color: '#ef4444'}} title="Eliminar"><Trash2 size={15} /></button>
+                                        <button onClick={() => openEditTask(task)} style={iconBtnStyle}><Edit3 size={15} /></button>
+                                        <button onClick={() => handleDeleteTask(task._id)} style={{...iconBtnStyle, color: '#ef4444'}}><Trash2 size={15} /></button>
                                     </div>
                                 </div>
                             </div>
@@ -616,62 +698,56 @@ export default function PersonalDashboard() {
             {viewMode === 'projects' && (
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Projetos</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Meus Projectos</h2>
                         <button onClick={() => setIsAddProjectOpen(true)} style={btnPrimary}>
-                            <Plus size={18} /> Novo Projeto
+                            <Plus size={18} /> Abrir Projecto
                         </button>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '1.5rem' }}>
                         {projects.length === 0 ? (
-                            <div style={{ gridColumn: '1/-1', padding: '6rem 2rem', textAlign: 'center', color: 'var(--text-muted)', background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '20px' }}>
-                                <div style={{ background: 'var(--background)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyItems: 'center', margin: '0 auto 1.5rem', border: '1px solid var(--border)' }}>
-                                    <Folder size={32} style={{ opacity: 0.5, margin: '0 auto' }} />
-                                </div>
-                                <h3 style={{ margin: '0 0 0.5rem 0', fontWeight: 800, fontSize: '1.2rem', color: 'var(--foreground)' }}>Nenhum Projecto</h3>
-                                <p style={{ margin: 0, fontSize: '0.95rem' }}>Pode associar tarefas e finanças a um projecto macro.</p>
-                                <button onClick={() => setIsAddProjectOpen(true)} style={{ ...btnPrimary, marginTop: '1.5rem', background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)', boxShadow: 'none' }}>
-                                    Criar o Primeiro
+                            <div style={{ gridColumn: '1/-1', padding: '6rem 2rem', textAlign: 'center', background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '24px' }}>
+                                <Briefcase size={48} style={{ opacity: 0.1, marginBottom: '1.5rem' }} />
+                                <h3 style={{ margin: 0, fontWeight: 800 }}>Sem Projectos Ativos</h3>
+                                <p style={{ color: 'var(--text-muted)' }}>Crie projectos para agrupar tarefas e monitorar lucros.</p>
+                                <button onClick={() => setIsAddProjectOpen(true)} style={{ ...btnPrimary, marginTop: '2rem', background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)', boxShadow: 'none' }}>
+                                    Criar Primeiro Projeto
                                 </button>
                             </div>
                         ) : projects.map(proj => (
-                            <div key={proj._id} style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '20px', padding: '1.75rem', position: 'relative', overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.03)' }}>
-                                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg,#FFD700,#B8860B)' }} />
-
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', gap: '8px' }}>
-                                    <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 900, color: 'var(--foreground)' }}>{proj.name}</h3>
-                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                        <span style={{
-                                            fontSize: '0.7rem', padding: '4px 10px', borderRadius: '20px', fontWeight: 900,
-                                            background: proj.status === 'active' ? 'rgba(16,185,129,0.1)' : 'var(--background)',
-                                            color: proj.status === 'active' ? '#10b981' : 'var(--text-muted)',
-                                            border: `1px solid ${proj.status === 'active' ? 'rgba(16,185,129,0.3)' : 'var(--border)'}`,
-                                            textTransform: 'uppercase', letterSpacing: '0.5px'
-                                        }}>
-                                            {proj.status}
-                                        </span>
-                                        <button onClick={() => openEditProject(proj)} style={{...iconBtnStyle, padding: '4px'}} title="Editar"><Edit3 size={14} /></button>
-                                        <button onClick={() => handleDeleteProject(proj._id)} style={{...iconBtnStyle, padding: '4px', color: '#ef4444'}} title="Eliminar"><Trash2 size={14} /></button>
+                            <div key={proj._id} style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '24px', padding: '2rem', position: 'relative', overflow: 'hidden' }}>
+                                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '5px', background: 'linear-gradient(90deg,#FFD700,#B8860B)' }} />
+                                
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+                                    <div style={{ minWidth: 0 }}>
+                                        <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{proj.name}</h3>
+                                        {proj.client && <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, marginTop: '4px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                            <Users size={12}/> {(proj.client as any).name}
+                                        </div>}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <button onClick={() => openEditProject(proj)} style={iconBtnStyle}><Edit3 size={15} /></button>
+                                        <button onClick={() => handleDeleteProject(proj._id)} style={{...iconBtnStyle, color: '#ef4444'}}><Trash2 size={15} /></button>
                                     </div>
                                 </div>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem', background: 'var(--background)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
-                                        <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Orçamento Fechado</span>
-                                        <span style={{ fontWeight: 800, color: 'var(--foreground)' }}>{formatPrice(proj.totalBudget, proj.currency)}</span>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '1.5rem' }}>
+                                    <div style={{ background: 'var(--background)', padding: '12px', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase' }}>Valor Total</div>
+                                        <div style={{ fontSize: '1rem', fontWeight: 900 }}>{formatPrice(proj.totalBudget, proj.currency)}</div>
                                     </div>
-                                    <div style={{ height: '1px', background: 'var(--border)' }} />
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
-                                        <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Já Faturado</span>
-                                        <span style={{ fontWeight: 900, color: '#10b981' }}>{formatPrice(proj.receivedAmount, proj.currency)}</span>
+                                    <div style={{ background: 'var(--background)', padding: '12px', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase' }}>Faturado</div>
+                                        <div style={{ fontSize: '1rem', fontWeight: 900, color: '#10b981' }}>{formatPrice(proj.receivedAmount, proj.currency)}</div>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 800, marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                        <span>Tarefas Concluídas</span><span style={{ color: 'var(--foreground)' }}>{proj.progress ?? 0}%</span>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 800, marginBottom: '8px' }}>
+                                        <span style={{ color: 'var(--text-muted)' }}>PROGRESSO</span>
+                                        <span style={{ color: '#FFD700' }}>{proj.progress ?? 0}%</span>
                                     </div>
-                                    <div style={{ height: '8px', background: 'var(--background)', borderRadius: '4px', overflow: 'hidden' }}>
+                                    <div style={{ height: '8px', background: 'var(--background)', borderRadius: '4px', border: '1px solid var(--border)', overflow: 'hidden' }}>
                                         <div style={{ height: '100%', width: `${proj.progress ?? 0}%`, background: 'linear-gradient(90deg,#FFD700,#B8860B)', borderRadius: '4px', transition: 'width 0.6s ease' }} />
                                     </div>
                                 </div>
@@ -681,61 +757,201 @@ export default function PersonalDashboard() {
                 </div>
             )}
 
+            {/* ── CLIENTS ── */}
+            {viewMode === 'clients' && (
+                <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Base de Clientes</h2>
+                        <button onClick={() => setIsAddClientOpen(true)} style={btnPrimary}>
+                            <Plus size={18} /> Novo Cliente
+                        </button>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                        {clients.length === 0 ? (
+                            <div style={{ gridColumn: '1/-1', padding: '6rem 2rem', textAlign: 'center', background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '24px' }}>
+                                <Users size={48} style={{ opacity: 0.1, marginBottom: '1.5rem' }} />
+                                <h3 style={{ margin: 0, fontWeight: 800 }}>Nenhum Cliente Registo</h3>
+                                <p style={{ color: 'var(--text-muted)' }}>Registe clientes para associar a projectos e facturação.</p>
+                                <button onClick={() => setIsAddClientOpen(true)} style={{ ...btnPrimary, marginTop: '2rem', background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)', boxShadow: 'none' }}>
+                                    Adicionar Cliente
+                                </button>
+                            </div>
+                        ) : clients.map(cl => (
+                            <div key={cl._id} style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '20px', padding: '1.5rem', transition: 'all 0.2s', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div style={{ background: cl.type === 'company' ? 'rgba(59,130,246,0.1)' : 'rgba(139,92,246,0.1)', color: cl.type === 'company' ? '#3b82f6' : '#8b5cf6', padding: '10px', borderRadius: '12px' }}>
+                                            {cl.type === 'company' ? <Building size={20}/> : <User size={20}/>}
+                                        </div>
+                                        <div>
+                                            <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>{cl.name}</div>
+                                            <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', opacity: 0.5 }}>{cl.type === 'company' ? 'Empresa' : 'Individual'}</div>
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                        <button onClick={() => openEditClient(cl)} style={iconBtnStyle}><Edit3 size={15} /></button>
+                                        <button onClick={() => handleDeleteClient(cl._id)} style={{...iconBtnStyle, color: '#ef4444'}}><Trash2 size={15} /></button>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '1rem' }}>
+                                    {cl.email && <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: 'var(--text-muted)' }}><Mail size={14}/> {cl.email}</div>}
+                                    {cl.phone && <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: 'var(--text-muted)' }}><Phone size={14}/> {cl.phone}</div>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* ── MODALS ── */}
+            
+            {/* Finance Modal */}
             {isAddTxOpen && (
-                <Modal title={editingTxId ? "Editar Transação" : "Nova Transação Financeira"} onClose={closeTxModal} onSubmit={handleAddTx}>
-                    <Field label="Natureza do Registo">
-                        <StyledSelect value={txForm.type} onChange={e => setTxForm({ ...txForm, type: e.target.value })}>
-                            <option value="income">Entrada (Ganho Financeiro)</option>
-                            <option value="expense">Saída (Despesa / Custo)</option>
-                        </StyledSelect>
+                <Modal 
+                    title={editingTxId ? "Editar Transação" : "Nova Transação Financeira"} 
+                    onClose={closeTxModal} 
+                    onSubmit={handleAddTx}
+                >
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <Field label="Natureza">
+                            <StyledSelect value={txForm.type} onChange={e => setTxForm({ ...txForm, type: e.target.value })}>
+                                <option value="income">Entrada (Ganho)</option>
+                                <option value="expense">Saída (Gasto)</option>
+                            </StyledSelect>
+                        </Field>
+                        <Field label="Data">
+                            <StyledInput type="date" value={txForm.date} onChange={e => setTxForm({ ...txForm, date: e.target.value })} />
+                        </Field>
+                    </div>
+
+                    <Field label="Descrição">
+                        <StyledInput placeholder="Ex: Pagamento Mentoria Abril" required value={txForm.description} onChange={e => setTxForm({ ...txForm, description: e.target.value })} />
                     </Field>
-                    <Field label="Data da Transação">
-                        <StyledInput type="date" value={txForm.date} onChange={e => setTxForm({ ...txForm, date: e.target.value })} />
+
+                    <Field label="Categoria">
+                        {!showNewCategory ? (
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <StyledSelect 
+                                    value={txForm.category} 
+                                    onChange={e => {
+                                        if (e.target.value === 'NEW') setShowNewCategory(true);
+                                        else setTxForm({ ...txForm, category: e.target.value });
+                                    }}
+                                    required
+                                >
+                                    <option value="">Seleccionar Categoria...</option>
+                                    {allCategories.map(c => <option key={c} value={c}>{c}</option>)}
+                                    <option value="NEW">+ Criar Nova Categoria...</option>
+                                </StyledSelect>
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <StyledInput 
+                                    placeholder="Nome da Categoria..." 
+                                    autoFocus
+                                    value={newCategoryName} 
+                                    onChange={e => setNewCategoryName(e.target.value)} 
+                                />
+                                <button type="button" onClick={() => setShowNewCategory(false)} style={{...iconBtnStyle, padding: '12px'}}><X size={18}/></button>
+                            </div>
+                        )}
                     </Field>
-                    <Field label="Descrição da Transação">
-                        <StyledInput placeholder="Ex: Sessão de Mentoria com Cliente X" required value={txForm.description} onChange={e => setTxForm({ ...txForm, description: e.target.value })} />
-                    </Field>
-                    <Field label="Categoria da Transação">
-                        <StyledInput placeholder="Ex: Serviços, Licenças, Impostos..." required value={txForm.category} onChange={e => setTxForm({ ...txForm, category: e.target.value })} />
-                    </Field>
-                    <Field label="Valor Exacto (MZN)">
-                        <StyledInput type="number" placeholder="0.00" required min="0" step="0.01" value={txForm.amount} onChange={e => setTxForm({ ...txForm, amount: e.target.value })} />
-                    </Field>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <Field label="Valor (MZN)">
+                            <StyledInput type="number" placeholder="0.00" required min="0" step="0.01" value={txForm.amount} onChange={e => setTxForm({ ...txForm, amount: e.target.value })} />
+                        </Field>
+                        <Field label="Projecto (Opcional)">
+                            <StyledSelect value={txForm.project} onChange={e => setTxForm({ ...txForm, project: e.target.value })}>
+                                <option value="">Sem Projecto</option>
+                                {projects.map(p => <option key={p._id} value={p._id}>{p.name}</option>)}
+                            </StyledSelect>
+                        </Field>
+                    </div>
                 </Modal>
             )}
 
+            {/* Task Modal */}
             {isAddTaskOpen && (
-                <Modal title={editingTaskId ? "Editar Tarefa" : "Nova Tarefa a Adicionar"} onClose={closeTaskModal} onSubmit={handleAddTask}>
-                    <Field label="O Que Precisa de Fazer?">
-                        <StyledInput placeholder="Ex: Entregar planeamento da semana 3..." required value={taskForm.title} onChange={e => setTaskForm({ ...taskForm, title: e.target.value })} />
+                <Modal title={editingTaskId ? "Editar Tarefa" : "Nova Tarefa"} onClose={closeTaskModal} onSubmit={handleAddTask}>
+                    <Field label="O que fazer?">
+                        <StyledInput placeholder="Título da tarefa..." required value={taskForm.title} onChange={e => setTaskForm({ ...taskForm, title: e.target.value })} />
                     </Field>
-                    <Field label="Prazo Final de Entrega">
-                        <StyledInput type="date" value={taskForm.deadline} onChange={e => setTaskForm({ ...taskForm, deadline: e.target.value })} />
-                    </Field>
-                    <Field label="Nível de Prioridade">
-                        <StyledSelect value={taskForm.priority} onChange={e => setTaskForm({ ...taskForm, priority: e.target.value })}>
-                            <option value="low">Baixa — Pode Esperar</option>
-                            <option value="medium">Média — Normal</option>
-                            <option value="high">Alta — Urgente!</option>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <Field label="Prazo">
+                            <StyledInput type="date" value={taskForm.deadline} onChange={e => setTaskForm({ ...taskForm, deadline: e.target.value })} />
+                        </Field>
+                        <Field label="Prioridade">
+                            <StyledSelect value={taskForm.priority} onChange={e => setTaskForm({ ...taskForm, priority: e.target.value })}>
+                                <option value="low">Baixa</option>
+                                <option value="medium">Média</option>
+                                <option value="high">Alta</option>
+                            </StyledSelect>
+                        </Field>
+                    </div>
+                    <Field label="Projecto Associado">
+                        <StyledSelect value={taskForm.project} onChange={e => setTaskForm({ ...taskForm, project: e.target.value })}>
+                            <option value="">Tarefa Independente</option>
+                            {projects.map(p => <option key={p._id} value={p._id}>{p.name}</option>)}
                         </StyledSelect>
                     </Field>
                 </Modal>
             )}
 
+            {/* Project Modal */}
             {isAddProjectOpen && (
-                <Modal title={editingProjectId ? "Editar Projeto" : "Abrir Novo Projeto"} onClose={closeProjectModal} onSubmit={handleAddProject}>
-                    <Field label="Nome do Projeto ou Cliente">
-                        <StyledInput placeholder="Ex: Consultoria de Marketing Brand X" required value={projectForm.name} onChange={e => setProjectForm({ ...projectForm, name: e.target.value })} />
+                <Modal title={editingProjectId ? "Editar Projeto" : "Abrir Projeto"} onClose={closeProjectModal} onSubmit={handleAddProject}>
+                    <Field label="Nome do Projeto">
+                        <StyledInput placeholder="Ex: Campanha MUV 2026" required value={projectForm.name} onChange={e => setProjectForm({ ...projectForm, name: e.target.value })} />
                     </Field>
-                    <Field label="Contexto / Descrição Breve">
-                        <StyledInput placeholder="Rebranding e optimização de funil..." value={projectForm.description} onChange={e => setProjectForm({ ...projectForm, description: e.target.value })} />
+                    <Field label="Cliente Responsável">
+                        <StyledSelect value={projectForm.client} onChange={e => setProjectForm({ ...projectForm, client: e.target.value })}>
+                            <option value="">Seleccionar Cliente...</option>
+                            {clients.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+                        </StyledSelect>
                     </Field>
-                    <Field label="Valor Orçamentado e Fechado (MZN)">
-                        <StyledInput type="number" placeholder="0.00" min="0" step="0.01" value={projectForm.totalBudget} onChange={e => setProjectForm({ ...projectForm, totalBudget: e.target.value })} />
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <Field label="Orçamento (MZN)">
+                            <StyledInput type="number" placeholder="0.00" value={projectForm.totalBudget} onChange={e => setProjectForm({ ...projectForm, totalBudget: e.target.value })} />
+                        </Field>
+                        <Field label="Data Limite">
+                            <StyledInput type="date" value={projectForm.deadline} onChange={e => setProjectForm({ ...projectForm, deadline: e.target.value })} />
+                        </Field>
+                    </div>
+                    <Field label="Breve Contexto">
+                        <StyledInput placeholder="Notas sobre o projecto..." value={projectForm.description} onChange={e => setProjectForm({ ...projectForm, description: e.target.value })} />
                     </Field>
-                    <Field label="Prazo Final de Entrega">
-                        <StyledInput type="date" value={projectForm.deadline} onChange={e => setProjectForm({ ...projectForm, deadline: e.target.value })} />
+                </Modal>
+            )}
+
+            {/* Client Modal */}
+            {isAddClientOpen && (
+                <Modal title={editingClientId ? "Editar Cliente" : "Registar Cliente"} onClose={closeClientModal} onSubmit={handleAddClient}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <Field label="Tipo de Cliente">
+                            <StyledSelect value={clientForm.type} onChange={e => setClientForm({ ...clientForm, type: e.target.value })}>
+                                <option value="individual">Pessoa Individual</option>
+                                <option value="company">Empresa / Entidade</option>
+                            </StyledSelect>
+                        </Field>
+                        <Field label="NIF / NUIT (Opcional)">
+                            <StyledInput placeholder="000 000 000" value={clientForm.taxId} onChange={e => setClientForm({ ...clientForm, taxId: e.target.value })} />
+                        </Field>
+                    </div>
+                    <Field label="Nome Completo / Firma">
+                        <StyledInput placeholder="Nome do cliente..." required value={clientForm.name} onChange={e => setClientForm({ ...clientForm, name: e.target.value })} />
+                    </Field>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <Field label="E-mail">
+                            <StyledInput type="email" placeholder="email@exemplo.com" value={clientForm.email} onChange={e => setClientForm({ ...clientForm, email: e.target.value })} />
+                        </Field>
+                        <Field label="Telemóvel">
+                            <StyledInput placeholder="+258..." value={clientForm.phone} onChange={e => setClientForm({ ...clientForm, phone: e.target.value })} />
+                        </Field>
+                    </div>
+                    <Field label="Notas Adicionais">
+                        <StyledInput placeholder="Localização, preferências..." value={clientForm.notes} onChange={e => setClientForm({ ...clientForm, notes: e.target.value })} />
                     </Field>
                 </Modal>
             )}
