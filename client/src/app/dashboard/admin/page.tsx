@@ -52,8 +52,9 @@ import Image from 'next/image';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
 import Tooltip from '@/components/common/Tooltip';
+import PersonalDashboard from '@/components/personal/PersonalDashboard';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts' | 'books' | 'whatsapp' | 'vacancies' | 'motiva';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts' | 'books' | 'whatsapp' | 'vacancies' | 'motiva' | 'workspace';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -81,7 +82,7 @@ function AdminDashboardContent() {
     // Handle tab switching from URL
     useEffect(() => {
         const tab = searchParams.get('tab');
-        if (tab && (['overview', 'users', 'forms', 'submissions', 'support', 'finance', 'newsletter', 'blog', 'lessons', 'ads', 'referrals', 'smartlinks', 'settings', 'marketing', 'payouts', 'books', 'whatsapp', 'vacancies', 'motiva'].includes(tab))) {
+        if (tab && (['overview', 'users', 'forms', 'submissions', 'support', 'finance', 'newsletter', 'blog', 'lessons', 'ads', 'referrals', 'smartlinks', 'settings', 'marketing', 'payouts', 'books', 'whatsapp', 'vacancies', 'motiva', 'workspace'].includes(tab))) {
             setActiveTab(tab as Tab);
             
             // Auto expand relevant sections if needed
@@ -413,6 +414,7 @@ function AdminDashboardContent() {
             title: t('dashboard.navigation') || 'Geral',
             items: [
                 { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={18} /> },
+                { id: 'workspace', label: 'Workspace 360', icon: <Briefcase size={18} /> },
                 { id: 'lessons', label: t('academy.title') || 'Aulas', icon: <Video size={18} /> },
                 { id: 'users', label: t('dashboard.users'), icon: <Users size={18} /> },
             ]
@@ -1943,6 +1945,12 @@ function AdminDashboardContent() {
                         <ErrorBoundary>
                             <MotivaManager />
                         </ErrorBoundary>
+                    )}
+
+                    {activeTab === 'workspace' && (
+                        <motion.div key="workspace" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+                            <PersonalDashboard />
+                        </motion.div>
                     )}
 
                     {activeTab === 'settings' && user.role === 'SuperAdmin' && (
