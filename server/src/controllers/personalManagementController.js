@@ -51,23 +51,14 @@ exports.deleteTransaction = async (req, res) => {
 exports.getFinanceSummary = async (req, res) => {
     try {
         const userId = req.user.id;
-        // Agregação simples para saldo
-        const summary = await PersonalFinance.aggregate([
-            { $match: { user: require('mongoose').Types.ObjectId(userId) } },
-            {
-                $group: {
-                    _id: '$type',
-                    total: { $sum: '$amount' }
-                }
-            }
-        ]);
+        const transactions = await PersonalFinance.find({ user: userId });
 
         let income = 0;
         let expense = 0;
 
-        summary.forEach(item => {
-            if (item._id === 'income') income = item.total;
-            if (item._id === 'expense') expense = item.total;
+        transactions.forEach(tx => {
+            if (tx.type === 'income') income += tx.amount;
+            if (tx.type === 'expense') expense += tx.amount;
         });
 
         res.status(200).json({
