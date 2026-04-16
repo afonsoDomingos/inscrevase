@@ -207,7 +207,9 @@ exports.addProject = async (req, res) => {
 
 exports.getProjects = async (req, res) => {
     try {
-        const projects = await PersonalProject.find({ user: req.user.id }).sort({ createdAt: -1 });
+        const projects = await PersonalProject.find({ user: req.user.id })
+            .populate('client', 'name')
+            .sort({ createdAt: -1 });
         
         // Populate tasks and finances dynamically to calculate realistic values
         const projectsWithStats = await Promise.all(projects.map(async (project) => {
