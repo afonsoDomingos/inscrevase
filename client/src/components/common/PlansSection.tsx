@@ -132,7 +132,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                     ]}
                     onManualSelect={() => {}}
                     onSuccess={() => {}}
-                    isCurrentPlan={user?.plan === 'free' || (user && !user.plan)}
+                    isCurrentPlan={!!(user?.plan === 'free' || (user && !user.plan))}
                     t={t}
                 />
 
@@ -154,7 +154,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                     ]}
                     onManualSelect={() => handleManualSelect('pro')}
                     onSuccess={handleSuccess}
-                    isCurrentPlan={user?.plan === 'pro'}
+                    isCurrentPlan={!!(user?.plan === 'pro')}
                     t={t}
                 />
 
@@ -175,7 +175,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                     ]}
                     onManualSelect={() => handleManualSelect('enterprise')}
                     onSuccess={handleSuccess}
-                    isCurrentPlan={user?.plan === 'enterprise'}
+                    isCurrentPlan={!!(user?.plan === 'enterprise')}
                     t={t}
                 />
             </div>
