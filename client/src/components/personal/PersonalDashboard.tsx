@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-    Wallet, TrendingUp, TrendingDown, Target, 
+    Wallet, TrendingUp, Target, 
     CheckCircle, Clock, Plus, Activity, X,
     Folder, AlertTriangle, ArrowUpRight, ArrowDownRight
 } from 'lucide-react';
