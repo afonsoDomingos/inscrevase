@@ -19,6 +19,7 @@ interface PlanCardProps {
     isEnterprise?: boolean;
     canUseTrial?: boolean;
     trialPrice?: number;
+    isCurrentPlan?: boolean;
     onManualSelect: () => void;
     onSuccess: () => void;
     t: (key: string) => string;
@@ -26,7 +27,7 @@ interface PlanCardProps {
 
 export default function PlanCard({
     id, name, description, price, amount, currency, features, bgImage, 
-    recommended, isEnterprise, canUseTrial, onManualSelect, onSuccess, t
+    recommended, isEnterprise, canUseTrial, isCurrentPlan, onManualSelect, onSuccess, t
 }: PlanCardProps) {
     const { formatPrice } = useCurrency();
 
@@ -73,6 +74,20 @@ export default function PlanCard({
                 }}>
                     <Zap size={10} fill="#000" />
                     {t('plans.trialBadge')}
+                </div>
+            )}
+            
+            {isCurrentPlan && (
+                <div style={{ 
+                    position: 'absolute', top: '15px', left: '15px', 
+                    background: 'rgba(52, 211, 153, 0.2)', color: '#10b981', padding: '4px 12px', 
+                    borderRadius: '6px', fontSize: '0.7rem', fontWeight: 900, 
+                    textTransform: 'uppercase', zIndex: 10,
+                    border: '1px solid #10b981',
+                    display: 'flex', alignItems: 'center', gap: '5px'
+                }}>
+                    <CheckCircle size={10} />
+                    {t('plans.currentPlan')}
                 </div>
             )}
 
@@ -125,64 +140,77 @@ export default function PlanCard({
             </ul>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', position: 'relative', zIndex: 2 }}>
-                {id !== 'free' && (
+                {isCurrentPlan ? (
+                    <div style={{ 
+                        width: '100%', padding: '15px', 
+                        borderRadius: '12px', background: 'rgba(52, 211, 153, 0.1)', 
+                        border: '1px solid #10b981', color: '#10b981', 
+                        fontWeight: 800, textAlign: 'center', fontSize: '0.9rem',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
+                    }}>
+                        <CheckCircle size={18} />
+                        {t('plans.currentActive')}
+                    </div>
+                ) : (
                     <>
-                        {/* Stripe Locked Mockup */}
-                        <div 
-                            onClick={() => toast.info("Checkout via Stripe temporariamente indisponível. Por favor, use o PayPal para pagar com seu cartão – é seguro e instantâneo!")}
+                        {id !== 'free' && (
+                            <>
+                                {/* Stripe Locked Mockup */}
+                                <div 
+                                    onClick={() => toast.info("Checkout via Stripe temporariamente indisponível. Por favor, use o PayPal para pagar com seu cartão – é seguro e instantâneo!")}
+                                    style={{ 
+                                        width: '100%', height: '52px', 
+                                        background: 'rgba(255,255,255,0.05)', 
+                                        color: '#999', borderRadius: '12px', 
+                                        fontWeight: 800, border: '1px dashed rgba(255,255,255,0.2)', 
+                                        cursor: 'help', display: 'flex', 
+                                        alignItems: 'center', justifyContent: 'center', 
+                                        gap: '10px', padding: 0
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center', opacity: 0.4 }}>
+                                        <Lock size={14} />
+                                        <span style={{ fontSize: '0.85rem' }}>Cartão Débito/Crédito</span>
+                                    </div>
+                                </div>
+
+                                {/* PayPal with Trial Logic */}
+                                <div style={{ background: '#FFC439', borderRadius: '12px', height: '52px', overflow: 'hidden', position: 'relative' }}>
+                                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', zIndex: 1, pointerEvents: 'none' }}>
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="#003087"><path d="M20.067 8.478c.492.88.556 2.014.303 3.274-.744 3.713-3.005 6.045-7.054 6.045h-1.6c-.466 0-.846.347-.936.802l-.653 3.274c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l2.454-9.743c.09-.455.47-.802.936-.802h3.2c1.783 0 3.264-.09 4.316-.395.53-.151.782-.26 1.05-.53.284-.287.48-.686.586-1.124.162-.676.02-1.28-.432-1.74-.41-.424-1.07-.63-1.964-.63h-5.066c-.466 0-.846.347-.936.802l-1.306 6.548c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l1.636-6.548c.09-.455.49-.802.956-.802h6.14c1.9 0 3.4.45 4.31 1.34s1.21 2.09.82 3.65c-.09.36-.21.69-.37 1zm-1.12-5.46c-.52-.51-1.34-.78-2.45-.78h-6.14c-.97 0-1.83.67-2.02 1.62l-2.03 10.15c-.06.31.18.61.5.61h3.32c.3 0 .58-.22.63-.52l.65-3.27c.09-.46.49-.81.96-.81h1.59c3.9 0 6.07-2.12 6.81-5.83.43-2.14.07-3.7-.62-4.47z" /></svg>
+                                    </div>
+                                    <div style={{ position: 'relative', zIndex: 2 }}>
+                                        <PaypalButton
+                                            type="subscription"
+                                            planId={id}
+                                            currency={currency}
+                                            trial={id === 'pro' && canUseTrial}
+                                            onSuccess={onSuccess}
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {/* Manual Transfer Button */}
+                        <button
+                            onClick={onManualSelect}
                             style={{ 
                                 width: '100%', height: '52px', 
-                                background: 'rgba(255,255,255,0.05)', 
-                                color: '#999', borderRadius: '12px', 
-                                fontWeight: 800, border: '1px dashed rgba(255,255,255,0.2)', 
-                                cursor: 'help', display: 'flex', 
-                                alignItems: 'center', justifyContent: 'center', 
-                                gap: '10px', padding: 0
+                                borderRadius: '12px', background: 'rgba(255,255,255,0.08)', 
+                                border: '1px solid rgba(255,255,255,0.15)', color: '#fff', 
+                                fontWeight: 700, cursor: 'pointer', display: 'flex', 
+                                alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' 
                             }}
+                            onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
+                            onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
                         >
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', opacity: 0.4 }}>
-                                <Lock size={14} />
-                                <span style={{ fontSize: '0.85rem' }}>Cartão Débito/Crédito</span>
-                            </div>
-                        </div>
-
-                        {/* PayPal with Trial Logic */}
-                        <div style={{ background: '#FFC439', borderRadius: '12px', height: '52px', overflow: 'hidden', position: 'relative' }}>
-                            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', zIndex: 1, pointerEvents: 'none' }}>
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="#003087"><path d="M20.067 8.478c.492.88.556 2.014.303 3.274-.744 3.713-3.005 6.045-7.054 6.045h-1.6c-.466 0-.846.347-.936.802l-.653 3.274c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l2.454-9.743c.09-.455.47-.802.936-.802h3.2c1.783 0 3.264-.09 4.316-.395.53-.151.782-.26 1.05-.53.284-.287.48-.686.586-1.124.162-.676.02-1.28-.432-1.74-.41-.424-1.07-.63-1.964-.63h-5.066c-.466 0-.846.347-.936.802l-1.306 6.548c-.03.146-.157.247-.303.247h-3.32c-.244 0-.414-.236-.356-.474l1.636-6.548c.09-.455.49-.802.956-.802h6.14c1.9 0 3.4.45 4.31 1.34s1.21 2.09.82 3.65c-.09.36-.21.69-.37 1zm-1.12-5.46c-.52-.51-1.34-.78-2.45-.78h-6.14c-.97 0-1.83.67-2.02 1.62l-2.03 10.15c-.06.31.18.61.5.61h3.32c.3 0 .58-.22.63-.52l.65-3.27c.09-.46.49-.81.96-.81h1.59c3.9 0 6.07-2.12 6.81-5.83.43-2.14.07-3.7-.62-4.47z" /></svg>
-                            </div>
-                            <div style={{ position: 'relative', zIndex: 2 }}>
-                                <PaypalButton
-                                    type="subscription"
-                                    planId={id}
-                                    currency={currency}
-                                    trial={id === 'pro' && canUseTrial}
-                                    onSuccess={onSuccess}
-                                />
-                            </div>
-                        </div>
+                            {t('plans.alternativePayment')}
+                        </button>
                     </>
                 )}
 
-                {/* Manual Transfer Button */}
-                {id !== 'free' && (
-                    <button
-                        onClick={onManualSelect}
-                        style={{ 
-                            width: '100%', height: '52px', 
-                            borderRadius: '12px', background: 'rgba(255,255,255,0.08)', 
-                            border: '1px solid rgba(255,255,255,0.15)', color: '#fff', 
-                            fontWeight: 700, cursor: 'pointer', display: 'flex', 
-                            alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' 
-                        }}
-                        onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
-                        onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-                    >
-                        {t('plans.alternativePayment')}
-                    </button>
-                )}
-
-                {id === 'free' && (
+                {id === 'free' && !isCurrentPlan && (
                     <button
                         disabled
                         style={{ 
@@ -193,7 +221,7 @@ export default function PlanCard({
                             alignItems: 'center', justifyContent: 'center'
                         }}
                     >
-                        {t('plans.currentPlan')}
+                        {t('plans.currentActive')}
                     </button>
                 )}
             </div>
