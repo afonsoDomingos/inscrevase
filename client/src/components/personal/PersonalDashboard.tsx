@@ -218,6 +218,91 @@ interface AISuggestion {
     data: any;
 }
 
+const SmartAlerts = ({ summary, tasks, transactions, savings, formatPrice }: any) => {
+    const alerts = [];
+    const lateCount = tasks.filter((t: any) => t.status === 'late').length;
+    const pendingValue = transactions.filter((t: any) => t.status === 'pending').reduce((a: any, b: any) => a + b.amount, 0);
+
+    if (summary.balance < 0) {
+        alerts.push({ 
+            type: 'danger', 
+            title: 'Fluxo de Caixa Negativo', 
+            msg: `As suas despesas superaram os ganhos em ${formatPrice(Math.abs(summary.balance))}. Considere rever os custos.` 
+        });
+    }
+    if (lateCount > 0) {
+        alerts.push({ 
+            type: 'warning', 
+            title: 'Eficiência sob Risco', 
+            msg: `Tem ${lateCount} tarefas em atraso. Isto pode comprometer a entrega dos seus projectos.` 
+        });
+    }
+    if (summary.income > 0 && summary.income > summary.expense * 2) {
+        alerts.push({ 
+            type: 'success', 
+            title: 'Excelente Desempenho!', 
+            msg: 'O seu faturamento está robusto e muito acima das despesas. Ótimo trabalho de gestão!' 
+        });
+    }
+    if (pendingValue > 0) {
+        alerts.push({ 
+            type: 'info', 
+            title: 'Valores a Receber', 
+            msg: `Existem ${formatPrice(pendingValue)} em pagamentos pendentes. É um bom momento para cobrar clientes.` 
+        });
+    }
+
+    const totalSaved = savings.reduce((a: any, b: any) => a + b.amount, 0);
+    const savingsRate = summary.income > 0 ? (totalSaved / summary.income) : 0;
+
+    if (summary.income > 0 && savingsRate < 0.15) {
+        alerts.push({
+            type: 'warning',
+            title: 'Atenção à Poupança',
+            msg: `A sua taxa de poupança actual é de ${(savingsRate * 100).toFixed(1)}%. Recomendamos atingir os 20% para garantir estabilidade a longo prazo.`
+        });
+    }
+
+    if (summary.balance > 10000 && savingsRate < 0.05) {
+        alerts.push({
+            type: 'info',
+            title: 'Liquidez Ociosa',
+            msg: 'Tem um saldo positivo considerável. Considere mover uma parte para a sua conta de poupança ou investimentos.'
+        });
+    }
+
+    if (savingsRate > 0.25) {
+        alerts.push({
+            type: 'success',
+            title: 'Reserva Robusta!',
+            msg: `Incrível! Superou a meta de 25% de poupança. O seu futuro financeiro está a ser construído com alicerces fortes.`
+        });
+    }
+
+    if (alerts.length === 0) return null;
+
+    return (
+        <div style={{ marginBottom: '2.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+            {alerts.map((a, i) => (
+                <div key={i} style={{ 
+                    background: '#fff',
+                    border: '1px solid #eee',
+                    borderRadius: '12px', padding: '1.2rem', display: 'flex', gap: '12px',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                }}>
+                    <div style={{ color: a.type === 'danger' ? '#ff4444' : a.type === 'warning' ? '#ffb000' : a.type === 'success' ? '#00ff41' : '#3b82f6' }}>
+                        {a.type === 'danger' || a.type === 'warning' ? <AlertTriangle size={18}/> : <Sparkles size={18}/>}
+                    </div>
+                    <div>
+                        <div style={{ fontWeight: 800, fontSize: '0.75rem', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9 }}>{a.title}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.5', fontWeight: 500 }}>{a.msg}</div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+};
+
 /* ─── Main component ─── */
 export default function PersonalDashboard() {
     const { formatPrice } = useCurrency();
@@ -596,101 +681,6 @@ export default function PersonalDashboard() {
                 description: savingForm.description || '',
                 linkedTransactionId: savingForm.linkedTransactionId || undefined
             });
-            toast.success("Poupança registada com sucesso!");
-            setIsAddSavingOpen(false);
-            setSavingForm({ amount: '', account: '', date: new Date().toISOString().split('T')[0], description: '', linkedTransactionId: '' });
-            fetchData();
-        } catch (error) {
-            toast.error("Erro ao guardar poupança");
-        }
-    };
-
-    const renderSmartAlerts = () => {
-        const alerts = [];
-        const lateCount = tasks.filter(t => t.status === 'late').length;
-        const pendingValue = transactions.filter(t => t.status === 'pending').reduce((a, b) => a + b.amount, 0);
-
-        if (summary.balance < 0) {
-            alerts.push({ 
-                type: 'danger', 
-                title: 'Fluxo de Caixa Negativo', 
-                msg: `As suas despesas superaram os ganhos em ${formatPrice(Math.abs(summary.balance))}. Considere rever os custos.` 
-            });
-        }
-        if (lateCount > 0) {
-            alerts.push({ 
-                type: 'warning', 
-                title: 'Eficiência sob Risco', 
-                msg: `Tem ${lateCount} tarefas em atraso. Isto pode comprometer a entrega dos seus projectos.` 
-            });
-        }
-        if (summary.income > 0 && summary.income > summary.expense * 2) {
-            alerts.push({ 
-                type: 'success', 
-                title: 'Excelente Desempenho!', 
-                msg: 'O seu faturamento está robusto e muito acima das despesas. Ótimo trabalho de gestão!' 
-            });
-        }
-        if (pendingValue > 0) {
-            alerts.push({ 
-                type: 'info', 
-                title: 'Valores a Receber', 
-                msg: `Existem ${formatPrice(pendingValue)} em pagamentos pendentes. É um bom momento para cobrar clientes.` 
-            });
-        }
-
-        // --- Savings Specific Alerts ---
-        const totalSaved = savings.reduce((a, b) => a + b.amount, 0);
-        const savingsRate = summary.income > 0 ? (totalSaved / summary.income) : 0;
-
-        if (summary.income > 0 && savingsRate < 0.15) {
-            alerts.push({
-                type: 'warning',
-                title: 'Atenção à Poupança',
-                msg: `A sua taxa de poupança actual é de ${(savingsRate * 100).toFixed(1)}%. Recomendamos atingir os 20% para garantir estabilidade a longo prazo.`
-            });
-        }
-
-        if (summary.balance > 10000 && savingsRate < 0.05) {
-            alerts.push({
-                type: 'info',
-                title: 'Liquidez Ociosa',
-                msg: 'Tem um saldo positivo considerável. Considere mover uma parte para a sua conta de poupança ou investimentos.'
-            });
-        }
-
-        if (savingsRate > 0.25) {
-            alerts.push({
-                type: 'success',
-                title: 'Reserva Robusta!',
-                msg: `Incrível! Superou a meta de 25% de poupança. O seu futuro financeiro está a ser construído com alicerces fortes.`
-            });
-        }
-
-        if (alerts.length === 0) return null;
-
-        return (
-            <div style={{ marginBottom: '2.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
-                {alerts.map((a, i) => (
-                    <div key={i} style={{ 
-                        background: '#fff',
-                        border: '1px solid #eee',
-                        borderRadius: '12px', padding: '1.2rem', display: 'flex', gap: '12px',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
-                    }}>
-                        <div style={{ color: a.type === 'danger' ? '#ff4444' : a.type === 'warning' ? '#ffb000' : a.type === 'success' ? '#00ff41' : '#3b82f6' }}>
-                            {a.type === 'danger' || a.type === 'warning' ? <AlertTriangle size={18}/> : <Sparkles size={18}/>}
-                        </div>
-                        <div>
-                            <div style={{ fontWeight: 800, fontSize: '0.75rem', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9 }}>{a.title}</div>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.5', fontWeight: 500 }}>{a.msg}</div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        );
-    };
-
     const btnPrimary: React.CSSProperties = {
         display: 'inline-flex', alignItems: 'center', gap: '8px',
         padding: '10px 20px', background: '#000',
@@ -869,7 +859,13 @@ export default function PersonalDashboard() {
                     {/* Smart Insights */}
                     <div style={{ marginBottom: '1rem' }}>
                         <h3 style={{ fontSize: '0.8rem', fontWeight: 800, color: '#FFD700', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem' }}>Insights Inteligentes</h3>
-                        {renderSmartAlerts()}
+                        <SmartAlerts 
+                            summary={summary} 
+                            tasks={tasks} 
+                            transactions={transactions} 
+                            savings={savings} 
+                            formatPrice={formatPrice} 
+                        />
                     </div>
 
                     {/* ── TESLA THEMED OVERVIEW CARDS ── */}
