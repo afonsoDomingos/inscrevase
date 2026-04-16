@@ -18,8 +18,8 @@ const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: '12px 16px',
     borderRadius: '12px',
-    border: '1.5px solid rgba(255,215,0,0.25)',
-    background: 'rgba(255,255,255,0.04)',
+    border: '1.5px solid var(--border)',
+    background: 'var(--background)',
     color: 'var(--foreground)',
     fontSize: '0.95rem',
     outline: 'none',
@@ -34,7 +34,7 @@ const labelStyle: React.CSSProperties = {
     fontWeight: 700,
     textTransform: 'uppercase',
     letterSpacing: '1px',
-    color: 'rgba(255,215,0,0.7)',
+    color: 'var(--text-muted)',
     marginBottom: '6px',
 };
 
@@ -56,7 +56,7 @@ function StyledInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
             {...props}
             style={{
                 ...inputStyle,
-                borderColor: focused ? '#FFD700' : 'rgba(255,215,0,0.25)',
+                borderColor: focused ? '#FFD700' : 'var(--border)',
                 boxShadow: focused ? '0 0 0 3px rgba(255,215,0,0.1)' : 'none',
                 ...props.style
             }}
@@ -74,7 +74,7 @@ function StyledSelect(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
             style={{
                 ...inputStyle,
                 cursor: 'pointer',
-                borderColor: focused ? '#FFD700' : 'rgba(255,215,0,0.25)',
+                borderColor: focused ? '#FFD700' : 'var(--border)',
                 boxShadow: focused ? '0 0 0 3px rgba(255,215,0,0.1)' : 'none',
                 appearance: 'none',
                 backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FFD700' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
@@ -97,30 +97,30 @@ function Modal({ title, onClose, onSubmit, children }: {
         <div style={{
             position: 'fixed', inset: 0, zIndex: 9999,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)',
+            background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)',
             padding: '1rem'
         }}>
             <form onSubmit={onSubmit} style={{
                 width: '100%', maxWidth: '460px',
-                background: '#1a1a1a',
-                border: '1px solid rgba(255,215,0,0.2)',
+                background: 'var(--paper)',
+                border: '1px solid var(--border)',
                 borderRadius: '20px',
                 padding: '2rem',
-                boxShadow: '0 30px 60px rgba(0,0,0,0.6)',
+                boxShadow: '0 30px 60px rgba(0,0,0,0.15)',
                 position: 'relative',
             }}>
                 {/* Gold accent top line */}
-                <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: '2px', background: 'linear-gradient(90deg, transparent, #FFD700, transparent)', borderRadius: '1px' }} />
+                <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: '3px', background: 'linear-gradient(90deg, transparent, #FFD700, transparent)', borderRadius: '3px 3px 0 0' }} />
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.75rem' }}>
-                    <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#fff', fontFamily: 'var(--font-playfair)' }}>{title}</h3>
+                    <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: 'var(--foreground)', fontFamily: 'var(--font-playfair)' }}>{title}</h3>
                     <button type="button" onClick={onClose} style={{
-                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                        borderRadius: '10px', color: '#aaa', cursor: 'pointer', padding: '6px',
+                        background: 'var(--background)', border: '1px solid var(--border)',
+                        borderRadius: '10px', color: 'var(--text-muted)', cursor: 'pointer', padding: '6px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s'
                     }}
-                        onMouseOver={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,0,0,0.1)'; (e.currentTarget as HTMLButtonElement).style.color = '#ef4444'; }}
-                        onMouseOut={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.color = '#aaa'; }}
+                        onMouseOver={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239, 68, 68, 0.1)'; (e.currentTarget as HTMLButtonElement).style.color = '#ef4444'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(239, 68, 68, 0.2)'; }}
+                        onMouseOut={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--background)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; }}
                     >
                         <X size={18} />
                     </button>
@@ -241,7 +241,7 @@ export default function PersonalDashboard() {
         padding: '10px 20px', background: 'linear-gradient(135deg, #FFD700, #B8860B)',
         border: 'none', borderRadius: '10px', color: '#000', fontWeight: 800,
         cursor: 'pointer', fontSize: '0.9rem', transition: 'all 0.2s', letterSpacing: '0.3px',
-        whiteSpace: 'nowrap'
+        whiteSpace: 'nowrap', boxShadow: '0 4px 10px rgba(184, 134, 11, 0.25)'
     };
 
     const tabs: { id: ViewMode; label: string }[] = [
@@ -255,23 +255,23 @@ export default function PersonalDashboard() {
         <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', color: 'var(--foreground)' }}>
 
             {/* ── Header ── */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: 'var(--font-playfair)' }}>
-                        <Activity color="#FFD700" /> Workspace <span style={{ fontWeight: 300, opacity: 0.5 }}>360</span>
+                    <h1 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: 'var(--font-playfair)' }}>
+                        <Activity color="#FFD700" size={32} /> Workspace <span style={{ fontWeight: 300, opacity: 0.5 }}>360</span>
                     </h1>
                     <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.95rem' }}>O seu hub central de gestão financeira, produtividade e projetos.</p>
                 </div>
 
                 {/* ── Tabs ── */}
-                <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,215,0,0.1)', padding: '5px', borderRadius: '14px', gap: '4px' }}>
+                <div style={{ display: 'flex', background: 'var(--paper)', border: '1px solid var(--border)', padding: '6px', borderRadius: '14px', gap: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
                     {tabs.map(tab => (
                         <button key={tab.id} onClick={() => setViewMode(tab.id)} style={{
-                            padding: '8px 18px', borderRadius: '10px',
+                            padding: '10px 20px', borderRadius: '10px',
                             background: viewMode === tab.id ? 'linear-gradient(135deg,#FFD700,#B8860B)' : 'transparent',
-                            color: viewMode === tab.id ? '#000' : 'rgba(255,255,255,0.5)',
-                            fontWeight: viewMode === tab.id ? 800 : 500,
-                            border: 'none', cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.88rem'
+                            color: viewMode === tab.id ? '#000' : 'var(--text-muted)',
+                            fontWeight: viewMode === tab.id ? 800 : 600,
+                            border: 'none', cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.9rem'
                         }}>
                             {tab.label}
                         </button>
@@ -281,58 +281,72 @@ export default function PersonalDashboard() {
 
             {/* ── OVERVIEW ── */}
             {viewMode === 'overview' && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
                     {/* Balance card */}
-                    <div style={{ background: 'linear-gradient(135deg,#1a1a2e,#16213e)', border: '1px solid rgba(255,215,0,0.2)', borderRadius: '20px', padding: '1.75rem', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ background: 'linear-gradient(135deg,#1a1a2e,#16213e)', border: '1px solid rgba(255,215,0,0.2)', borderRadius: '20px', padding: '1.75rem', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
                         <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '120px', height: '120px', background: 'rgba(255,215,0,0.05)', borderRadius: '50%' }} />
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem', color: '#FFD700', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            <Wallet size={16} /> Saldo Disponível
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#FFD700', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                            <Wallet size={18} /> Saldo Disponível
                         </div>
-                        <div style={{ fontSize: '2.5rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', marginBottom: '1.25rem', color: summary.balance >= 0 ? '#fff' : '#ef4444' }}>
+                        <div style={{ fontSize: '3rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', marginBottom: '1.5rem', color: summary.balance >= 0 ? '#fff' : '#ef4444' }}>
                             {formatPrice(summary.balance, 'MZN')}
                         </div>
-                        <div style={{ display: 'flex', gap: '20px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981', fontSize: '0.85rem', fontWeight: 600 }}>
-                                <ArrowUpRight size={14} /> {formatPrice(summary.income, 'MZN')}
+                        <div style={{ display: 'flex', gap: '20px', background: 'rgba(255,255,255,0.05)', padding: '12px 16px', borderRadius: '12px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981', fontSize: '0.95rem', fontWeight: 700 }}>
+                                <ArrowUpRight size={16} /> {formatPrice(summary.income, 'MZN')}
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ef4444', fontSize: '0.85rem', fontWeight: 600 }}>
-                                <ArrowDownRight size={14} /> {formatPrice(summary.expense, 'MZN')}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ef4444', fontSize: '0.95rem', fontWeight: 700 }}>
+                                <ArrowDownRight size={16} /> {formatPrice(summary.expense, 'MZN')}
                             </div>
                         </div>
                     </div>
 
                     {/* Tasks card */}
-                    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', padding: '1.75rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.25rem', color: '#FFD700', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            <Target size={16} /> Progresso de Tarefas
+                    <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '20px', padding: '1.75rem', boxShadow: '0 8px 24px rgba(0,0,0,0.03)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#FFD700', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                            <Target size={18} /> Progresso de Tarefas
                         </div>
-                        <div style={{ display: 'flex', gap: '24px', marginBottom: '1.25rem' }}>
+                        <div style={{ display: 'flex', gap: '24px', marginBottom: '1.5rem' }}>
                             {[
                                 { label: 'Pendentes', count: tasks.filter(t => t.status === 'pending' || t.status === 'in_progress').length, color: '#f59e0b' },
                                 { label: 'Atrasadas', count: tasks.filter(t => t.status === 'late').length, color: '#ef4444' },
                                 { label: 'Concluídas', count: tasks.filter(t => t.status === 'completed').length, color: '#10b981' },
                             ].map(item => (
                                 <div key={item.label}>
-                                    <div style={{ fontSize: '2rem', fontWeight: 900, color: item.color }}>{item.count}</div>
-                                    <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</div>
+                                    <div style={{ fontSize: '2.5rem', fontWeight: 900, color: item.color, lineHeight: 1 }}>{item.count}</div>
+                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '6px' }}>{item.label}</div>
                                 </div>
                             ))}
                         </div>
                         {/* mini progress bar */}
-                        {tasks.length > 0 && (
-                            <div style={{ height: '5px', background: 'rgba(255,255,255,0.08)', borderRadius: '3px', overflow: 'hidden' }}>
-                                <div style={{ height: '100%', width: `${Math.round((tasks.filter(t => t.status === 'completed').length / tasks.length) * 100)}%`, background: 'linear-gradient(90deg,#10b981,#059669)', transition: 'width 0.5s' }} />
+                        {tasks.length > 0 ? (
+                            <div style={{ height: '8px', background: 'var(--background)', borderRadius: '4px', overflow: 'hidden' }}>
+                                <div style={{ height: '100%', width: `${Math.round((tasks.filter(t => t.status === 'completed').length / tasks.length) * 100)}%`, background: 'linear-gradient(90deg,#10b981,#059669)', transition: 'width 0.5s', borderRadius: '4px' }} />
                             </div>
+                        ) : (
+                            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Sem tarefas registadas.</div>
                         )}
                     </div>
 
                     {/* Projects card */}
-                    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', padding: '1.75rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.25rem', color: '#FFD700', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            <Folder size={16} /> Projetos Activos
+                    <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '20px', padding: '1.75rem', boxShadow: '0 8px 24px rgba(0,0,0,0.03)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#FFD700', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                            <Folder size={18} /> Projetos Activos
                         </div>
-                        <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>{projects.filter(p => p.status === 'active').length}</div>
-                        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>de {projects.length} projectos totais</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                            <div style={{ fontSize: '4rem', fontWeight: 900, color: 'var(--foreground)', lineHeight: 1 }}>
+                                {projects.filter(p => p.status === 'active').length}
+                            </div>
+                            <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem', fontWeight: 600 }}>
+                                de {projects.length} totais<br/>registados
+                            </div>
+                        </div>
+                        
+                        {projects.length > 0 && projects.filter(p => p.status === 'active').length === 0 && (
+                            <div style={{ marginTop: '1.5rem', padding: '10px 14px', background: 'var(--background)', borderRadius: '10px', fontSize: '0.85rem', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
+                                Todos os projectos estão concluídos ou pendentes.
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
@@ -341,44 +355,52 @@ export default function PersonalDashboard() {
             {viewMode === 'finance' && (
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800 }}>Histórico de Transações</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Histórico de Transações</h2>
                         <button onClick={() => setIsAddTxOpen(true)} style={btnPrimary}>
-                            <Plus size={16} /> Nova Transação
+                            <Plus size={18} /> Nova Transação
                         </button>
                     </div>
 
-                    <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '20px', overflow: 'hidden' }}>
+                    <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
                         {transactions.length === 0 ? (
-                            <div style={{ padding: '4rem', textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>
-                                <TrendingUp size={40} style={{ marginBottom: '1rem', opacity: 0.3 }} />
-                                <p style={{ margin: 0 }}>Nenhuma transação registrada ainda.</p>
+                            <div style={{ padding: '6rem 2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                                <div style={{ background: 'var(--background)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyItems: 'center', margin: '0 auto 1.5rem', border: '1px solid var(--border)' }}>
+                                    <TrendingUp size={32} style={{ opacity: 0.5, margin: '0 auto' }} />
+                                </div>
+                                <h3 style={{ margin: '0 0 0.5rem 0', fontWeight: 800, fontSize: '1.2rem', color: 'var(--foreground)' }}>Nenhuma transação</h3>
+                                <p style={{ margin: 0, fontSize: '0.95rem' }}>Ainda não registrou fluxos financeiros.</p>
+                                <button onClick={() => setIsAddTxOpen(true)} style={{ ...btnPrimary, marginTop: '1.5rem', background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)', boxShadow: 'none' }}>
+                                    Adicionar a Primeira
+                                </button>
                             </div>
                         ) : (
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                <thead>
-                                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                                        {['Data', 'Descrição', 'Categoria', 'Valor'].map(h => (
-                                            <th key={h} style={{ padding: '14px 20px', textAlign: h === 'Valor' ? 'right' : 'left', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(255,215,0,0.6)' }}>{h}</th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {transactions.map((tx, i) => (
-                                        <tr key={tx._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)' }}>
-                                            <td style={{ padding: '14px 20px', color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>{new Date(tx.date).toLocaleDateString('pt-PT')}</td>
-                                            <td style={{ padding: '14px 20px', fontWeight: 600 }}>{tx.description}</td>
-                                            <td style={{ padding: '14px 20px' }}>
-                                                <span style={{ padding: '3px 10px', borderRadius: '20px', background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.2)', fontSize: '0.78rem', color: '#FFD700', fontWeight: 700 }}>
-                                                    {tx.category}
-                                                </span>
-                                            </td>
-                                            <td style={{ padding: '14px 20px', textAlign: 'right', fontWeight: 800, color: tx.type === 'income' ? '#10b981' : '#ef4444', fontSize: '1rem' }}>
-                                                {tx.type === 'income' ? '+' : '−'} {formatPrice(tx.amount, tx.currency)}
-                                            </td>
+                            <div style={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                    <thead>
+                                        <tr style={{ background: 'var(--background)', borderBottom: '1px solid var(--border)' }}>
+                                            {['Data', 'Descrição', 'Categoria', 'Valor'].map(h => (
+                                                <th key={h} style={{ padding: '16px 24px', textAlign: h === 'Valor' ? 'right' : 'left', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-muted)' }}>{h}</th>
+                                            ))}
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {transactions.map((tx, i) => (
+                                            <tr key={tx._id} style={{ borderBottom: '1px solid var(--border)', background: i % 2 === 0 ? 'transparent' : 'var(--background)' }}>
+                                                <td style={{ padding: '16px 24px', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500 }}>{new Date(tx.date).toLocaleDateString('pt-PT')}</td>
+                                                <td style={{ padding: '16px 24px', fontWeight: 700, color: 'var(--foreground)' }}>{tx.description}</td>
+                                                <td style={{ padding: '16px 24px' }}>
+                                                    <span style={{ padding: '4px 12px', borderRadius: '20px', background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.2)', fontSize: '0.8rem', color: '#B8860B', fontWeight: 800 }}>
+                                                        {tx.category}
+                                                    </span>
+                                                </td>
+                                                <td style={{ padding: '16px 24px', textAlign: 'right', fontWeight: 900, color: tx.type === 'income' ? '#10b981' : '#ef4444', fontSize: '1.1rem' }}>
+                                                    {tx.type === 'income' ? '+' : '−'} {formatPrice(tx.amount, tx.currency)}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -388,56 +410,69 @@ export default function PersonalDashboard() {
             {viewMode === 'tasks' && (
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800 }}>Minhas Tarefas</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Lista de Tarefas</h2>
                         <button onClick={() => setIsAddTaskOpen(true)} style={btnPrimary}>
-                            <Plus size={16} /> Nova Tarefa
+                            <Plus size={18} /> Nova Tarefa
                         </button>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {tasks.length === 0 ? (
-                            <div style={{ padding: '4rem', textAlign: 'center', color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '20px' }}>
-                                <CheckCircle size={40} style={{ marginBottom: '1rem', opacity: 0.3 }} />
-                                <p style={{ margin: 0 }}>Nenhuma tarefa ainda. Oba!</p>
+                            <div style={{ padding: '6rem 2rem', textAlign: 'center', color: 'var(--text-muted)', background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '20px' }}>
+                                <div style={{ background: 'var(--background)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyItems: 'center', margin: '0 auto 1.5rem', border: '1px solid var(--border)' }}>
+                                    <CheckCircle size={32} style={{ opacity: 0.5, margin: '0 auto' }} />
+                                </div>
+                                <h3 style={{ margin: '0 0 0.5rem 0', fontWeight: 800, fontSize: '1.2rem', color: 'var(--foreground)' }}>Parabéns!</h3>
+                                <p style={{ margin: 0, fontSize: '0.95rem' }}>Nenhuma tarefa pendente na sua lista.</p>
+                                <button onClick={() => setIsAddTaskOpen(true)} style={{ ...btnPrimary, marginTop: '1.5rem', background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)', boxShadow: 'none' }}>
+                                    Agendar Trabalho
+                                </button>
                             </div>
                         ) : tasks.map(task => (
                             <div key={task._id} style={{
-                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                padding: '1rem 1.5rem',
-                                background: 'rgba(255,255,255,0.02)',
-                                border: '1px solid rgba(255,255,255,0.06)',
-                                borderLeft: `4px solid ${task.status === 'late' ? '#ef4444' : task.status === 'completed' ? '#10b981' : 'rgba(255,215,0,0.3)'}`,
-                                borderRadius: '14px',
-                                transition: 'border-color 0.2s',
-                                gap: '1rem'
-                            }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1, minWidth: 0 }}>
+                                display: 'flex', alignItems: 'center', justifyItems: 'space-between',
+                                padding: '1.25rem 1.5rem',
+                                background: 'var(--paper)',
+                                border: '1px solid var(--border)',
+                                borderLeft: `5px solid ${task.status === 'late' ? '#ef4444' : task.status === 'completed' ? '#10b981' : '#FFD700'}`,
+                                borderRadius: '16px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+                                transition: 'transform 0.2s, box-shadow 0.2s',
+                                cursor: 'pointer'
+                            }}
+                            onMouseOver={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 24px rgba(0,0,0,0.06)'; }}
+                            onMouseOut={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 12px rgba(0,0,0,0.02)'; }}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1, minWidth: 0 }}>
                                     <button onClick={() => toggleTaskStatus(task._id, task.status)} style={{
                                         background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0,
-                                        color: task.status === 'completed' ? '#10b981' : 'rgba(255,255,255,0.2)',
-                                        transition: 'color 0.2s'
-                                    }}>
-                                        <CheckCircle size={26} fill={task.status === 'completed' ? 'rgba(16,185,129,0.15)' : 'none'} />
+                                        color: task.status === 'completed' ? '#10b981' : 'var(--text-muted)',
+                                        transition: 'color 0.2s, transform 0.2s'
+                                    }}
+                                    onMouseOver={e => (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.1)'}
+                                    onMouseOut={e => (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'}
+                                    >
+                                        <CheckCircle size={28} fill={task.status === 'completed' ? 'rgba(16,185,129,0.15)' : 'none'} />
                                     </button>
                                     <div style={{ minWidth: 0 }}>
                                         <div style={{
-                                            fontWeight: 700, fontSize: '1rem',
+                                            fontWeight: 800, fontSize: '1.05rem', color: 'var(--foreground)',
                                             textDecoration: task.status === 'completed' ? 'line-through' : 'none',
-                                            opacity: task.status === 'completed' ? 0.45 : 1,
+                                            opacity: task.status === 'completed' ? 0.5 : 1,
                                             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
                                         }}>
                                             {task.title}
                                         </div>
                                         {task.deadline && (
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', color: task.status === 'late' ? '#ef4444' : 'rgba(255,255,255,0.35)', marginTop: '3px' }}>
-                                                {task.status === 'late' && <AlertTriangle size={11} />}
-                                                <Clock size={11} /> Prazo: {new Date(task.deadline).toLocaleDateString('pt-PT')}
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: task.status === 'late' ? '#ef4444' : 'var(--text-muted)', marginTop: '4px', fontWeight: 600 }}>
+                                                {task.status === 'late' && <AlertTriangle size={14} />}
+                                                <Clock size={14} /> Prazo: {new Date(task.deadline).toLocaleDateString('pt-PT')}
                                             </div>
                                         )}
                                     </div>
                                 </div>
                                 <span style={{
-                                    flexShrink: 0, fontSize: '0.72rem', fontWeight: 800, padding: '4px 10px', borderRadius: '20px',
+                                    flexShrink: 0, fontSize: '0.75rem', fontWeight: 900, padding: '5px 12px', borderRadius: '20px',
                                     background: `${priorityColor(task.priority)}18`,
                                     color: priorityColor(task.priority),
                                     border: `1px solid ${priorityColor(task.priority)}40`,
@@ -455,52 +490,59 @@ export default function PersonalDashboard() {
             {viewMode === 'projects' && (
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800 }}>Meus Projetos</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Projetos</h2>
                         <button onClick={() => setIsAddProjectOpen(true)} style={btnPrimary}>
-                            <Plus size={16} /> Novo Projeto
+                            <Plus size={18} /> Novo Projeto
                         </button>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.25rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
                         {projects.length === 0 ? (
-                            <div style={{ gridColumn: '1/-1', padding: '4rem', textAlign: 'center', color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '20px' }}>
-                                <Folder size={40} style={{ marginBottom: '1rem', opacity: 0.3 }} />
-                                <p style={{ margin: 0 }}>Comece organizando os seus trabalhos em projectos.</p>
+                            <div style={{ gridColumn: '1/-1', padding: '6rem 2rem', textAlign: 'center', color: 'var(--text-muted)', background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '20px' }}>
+                                <div style={{ background: 'var(--background)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyItems: 'center', margin: '0 auto 1.5rem', border: '1px solid var(--border)' }}>
+                                    <Folder size={32} style={{ opacity: 0.5, margin: '0 auto' }} />
+                                </div>
+                                <h3 style={{ margin: '0 0 0.5rem 0', fontWeight: 800, fontSize: '1.2rem', color: 'var(--foreground)' }}>Nenhum Projecto</h3>
+                                <p style={{ margin: 0, fontSize: '0.95rem' }}>Pode associar tarefas e finanças a um projecto macro.</p>
+                                <button onClick={() => setIsAddProjectOpen(true)} style={{ ...btnPrimary, marginTop: '1.5rem', background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)', boxShadow: 'none' }}>
+                                    Criar o Primeiro
+                                </button>
                             </div>
                         ) : projects.map(proj => (
-                            <div key={proj._id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', padding: '1.5rem', position: 'relative', overflow: 'hidden' }}>
-                                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'linear-gradient(90deg,#FFD700,#B8860B)' }} />
+                            <div key={proj._id} style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '20px', padding: '1.75rem', position: 'relative', overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.03)' }}>
+                                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg,#FFD700,#B8860B)' }} />
 
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem', gap: '8px' }}>
-                                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{proj.name}</h3>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', gap: '8px' }}>
+                                    <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 900, color: 'var(--foreground)' }}>{proj.name}</h3>
                                     <span style={{
-                                        flexShrink: 0, fontSize: '0.65rem', padding: '3px 9px', borderRadius: '20px', fontWeight: 800,
-                                        background: proj.status === 'active' ? 'rgba(16,185,129,0.15)' : 'rgba(255,215,0,0.1)',
-                                        color: proj.status === 'active' ? '#10b981' : '#FFD700',
-                                        border: `1px solid ${proj.status === 'active' ? 'rgba(16,185,129,0.3)' : 'rgba(255,215,0,0.3)'}`,
+                                        flexShrink: 0, fontSize: '0.7rem', padding: '4px 10px', borderRadius: '20px', fontWeight: 900,
+                                        background: proj.status === 'active' ? 'rgba(16,185,129,0.1)' : 'var(--background)',
+                                        color: proj.status === 'active' ? '#10b981' : 'var(--text-muted)',
+                                        border: `1px solid ${proj.status === 'active' ? 'rgba(16,185,129,0.3)' : 'var(--border)'}`,
                                         textTransform: 'uppercase', letterSpacing: '0.5px'
                                     }}>
                                         {proj.status}
                                     </span>
                                 </div>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '1.25rem' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                                        <span style={{ color: 'rgba(255,255,255,0.4)' }}>Orçamento</span>
-                                        <span style={{ fontWeight: 700 }}>{formatPrice(proj.totalBudget, proj.currency)}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem', background: 'var(--background)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
+                                        <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Orçamento Fechado</span>
+                                        <span style={{ fontWeight: 800, color: 'var(--foreground)' }}>{formatPrice(proj.totalBudget, proj.currency)}</span>
                                     </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                                        <span style={{ color: 'rgba(255,255,255,0.4)' }}>Recebido</span>
-                                        <span style={{ fontWeight: 700, color: '#10b981' }}>{formatPrice(proj.receivedAmount, proj.currency)}</span>
+                                    <div style={{ height: '1px', background: 'var(--border)' }} />
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
+                                        <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Já Faturado</span>
+                                        <span style={{ fontWeight: 900, color: '#10b981' }}>{formatPrice(proj.receivedAmount, proj.currency)}</span>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', fontWeight: 700, marginBottom: '6px', color: 'rgba(255,255,255,0.5)' }}>
-                                        <span>Progresso de tarefas</span><span>{proj.progress ?? 0}%</span>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 800, marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                        <span>Tarefas Concluídas</span><span style={{ color: 'var(--foreground)' }}>{proj.progress ?? 0}%</span>
                                     </div>
-                                    <div style={{ height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '3px', overflow: 'hidden' }}>
-                                        <div style={{ height: '100%', width: `${proj.progress ?? 0}%`, background: 'linear-gradient(90deg,#FFD700,#B8860B)', borderRadius: '3px', transition: 'width 0.6s ease' }} />
+                                    <div style={{ height: '8px', background: 'var(--background)', borderRadius: '4px', overflow: 'hidden' }}>
+                                        <div style={{ height: '100%', width: `${proj.progress ?? 0}%`, background: 'linear-gradient(90deg,#FFD700,#B8860B)', borderRadius: '4px', transition: 'width 0.6s ease' }} />
                                     </div>
                                 </div>
                             </div>
@@ -511,52 +553,52 @@ export default function PersonalDashboard() {
 
             {/* ── MODALS ── */}
             {isAddTxOpen && (
-                <Modal title="Nova Transação" onClose={() => setIsAddTxOpen(false)} onSubmit={handleAddTx}>
-                    <Field label="Tipo">
+                <Modal title="Nova Transação Financeira" onClose={() => setIsAddTxOpen(false)} onSubmit={handleAddTx}>
+                    <Field label="Natureza do Registo">
                         <StyledSelect value={txForm.type} onChange={e => setTxForm({ ...txForm, type: e.target.value })}>
-                            <option value="income">📈 Entrada (Receita)</option>
-                            <option value="expense">📉 Saída (Despesa)</option>
+                            <option value="income">Entrada (Ganho Financeiro)</option>
+                            <option value="expense">Saída (Despesa / Custo)</option>
                         </StyledSelect>
                     </Field>
-                    <Field label="Descrição">
-                        <StyledInput placeholder="Ex: Venda de Mentoria" required value={txForm.description} onChange={e => setTxForm({ ...txForm, description: e.target.value })} />
+                    <Field label="Descrição da Transação">
+                        <StyledInput placeholder="Ex: Sessão de Mentoria com Cliente X" required value={txForm.description} onChange={e => setTxForm({ ...txForm, description: e.target.value })} />
                     </Field>
-                    <Field label="Categoria">
-                        <StyledInput placeholder="Ex: Vendas, Subscrições..." required value={txForm.category} onChange={e => setTxForm({ ...txForm, category: e.target.value })} />
+                    <Field label="Categoria da Transação">
+                        <StyledInput placeholder="Ex: Serviços, Licenças, Impostos..." required value={txForm.category} onChange={e => setTxForm({ ...txForm, category: e.target.value })} />
                     </Field>
-                    <Field label="Valor (MZN)">
+                    <Field label="Valor Exacto (MZN)">
                         <StyledInput type="number" placeholder="0.00" required min="0" step="0.01" value={txForm.amount} onChange={e => setTxForm({ ...txForm, amount: e.target.value })} />
                     </Field>
                 </Modal>
             )}
 
             {isAddTaskOpen && (
-                <Modal title="Nova Tarefa" onClose={() => setIsAddTaskOpen(false)} onSubmit={handleAddTask}>
-                    <Field label="O que precisa ser feito?">
-                        <StyledInput placeholder="Ex: Entregar proposta ao cliente..." required value={taskForm.title} onChange={e => setTaskForm({ ...taskForm, title: e.target.value })} />
+                <Modal title="Nova Tarefa a Adicionar" onClose={() => setIsAddTaskOpen(false)} onSubmit={handleAddTask}>
+                    <Field label="O Que Precisa de Fazer?">
+                        <StyledInput placeholder="Ex: Entregar planeamento da semana 3..." required value={taskForm.title} onChange={e => setTaskForm({ ...taskForm, title: e.target.value })} />
                     </Field>
-                    <Field label="Prazo (opcional)">
+                    <Field label="Prazo Final de Entrega">
                         <StyledInput type="date" value={taskForm.deadline} onChange={e => setTaskForm({ ...taskForm, deadline: e.target.value })} />
                     </Field>
-                    <Field label="Prioridade">
+                    <Field label="Nível de Prioridade">
                         <StyledSelect value={taskForm.priority} onChange={e => setTaskForm({ ...taskForm, priority: e.target.value })}>
-                            <option value="low">🟢 Baixa</option>
-                            <option value="medium">🟡 Média</option>
-                            <option value="high">🔴 Alta</option>
+                            <option value="low">Baixa — Pode Esperar</option>
+                            <option value="medium">Média — Normal</option>
+                            <option value="high">Alta — Urgente!</option>
                         </StyledSelect>
                     </Field>
                 </Modal>
             )}
 
             {isAddProjectOpen && (
-                <Modal title="Novo Projecto" onClose={() => setIsAddProjectOpen(false)} onSubmit={handleAddProject}>
-                    <Field label="Nome do Projecto">
-                        <StyledInput placeholder="Ex: Consultoria Brand X" required value={projectForm.name} onChange={e => setProjectForm({ ...projectForm, name: e.target.value })} />
+                <Modal title="Abrir Novo Projeto" onClose={() => setIsAddProjectOpen(false)} onSubmit={handleAddProject}>
+                    <Field label="Nome do Projeto ou Cliente">
+                        <StyledInput placeholder="Ex: Consultoria de Marketing Brand X" required value={projectForm.name} onChange={e => setProjectForm({ ...projectForm, name: e.target.value })} />
                     </Field>
-                    <Field label="Descrição (opcional)">
-                        <StyledInput placeholder="Breve descrição do trabalho..." value={projectForm.description} onChange={e => setProjectForm({ ...projectForm, description: e.target.value })} />
+                    <Field label="Contexto / Descrição Breve">
+                        <StyledInput placeholder="Rebranding e optimização de funil..." value={projectForm.description} onChange={e => setProjectForm({ ...projectForm, description: e.target.value })} />
                     </Field>
-                    <Field label="Orçamento Total (MZN)">
+                    <Field label="Valor Orçamentado e Fechado (MZN)">
                         <StyledInput type="number" placeholder="0.00" min="0" step="0.01" value={projectForm.totalBudget} onChange={e => setProjectForm({ ...projectForm, totalBudget: e.target.value })} />
                     </Field>
                 </Modal>
