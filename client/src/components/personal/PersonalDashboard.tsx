@@ -533,6 +533,63 @@ export default function PersonalDashboard() {
     const priorityColor = (p: string) => p === 'high' ? '#ef4444' : p === 'medium' ? '#f59e0b' : '#6b7280';
     const priorityLabel = (p: string) => p === 'high' ? 'Alta' : p === 'medium' ? 'Média' : 'Baixa';
 
+    const renderSmartAlerts = () => {
+        const alerts = [];
+        const lateCount = tasks.filter(t => t.status === 'late').length;
+        const pendingValue = transactions.filter(t => t.status === 'pending').reduce((a, b) => a + b.amount, 0);
+
+        if (summary.balance < 0) {
+            alerts.push({ 
+                type: 'danger', 
+                title: 'Fluxo de Caixa Negativo', 
+                msg: `As suas despesas superaram os ganhos em ${formatPrice(Math.abs(summary.balance))}. Considere rever os custos.` 
+            });
+        }
+        if (lateCount > 0) {
+            alerts.push({ 
+                type: 'warning', 
+                title: 'Eficiência sob Risco', 
+                msg: `Tem ${lateCount} tarefas em atraso. Isto pode comprometer a entrega dos seus projectos.` 
+            });
+        }
+        if (summary.income > 0 && summary.income > summary.expense * 2) {
+            alerts.push({ 
+                type: 'success', 
+                title: 'Excelente Desempenho!', 
+                msg: 'O seu faturamento está robusto e muito acima das despesas. Ótimo trabalho de gestão!' 
+            });
+        }
+        if (pendingValue > 0) {
+            alerts.push({ 
+                type: 'info', 
+                title: 'Valores a Receber', 
+                msg: `Existem ${formatPrice(pendingValue)} em pagamentos pendentes. É um bom momento para cobrar clientes.` 
+            });
+        }
+
+        if (alerts.length === 0) return null;
+
+        return (
+            <div style={{ marginBottom: '2.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+                {alerts.map((a, i) => (
+                    <div key={i} style={{ 
+                        background: a.type === 'danger' ? 'rgba(239,68,68,0.1)' : a.type === 'warning' ? 'rgba(245,158,11,0.1)' : a.type === 'success' ? 'rgba(255,215,0,0.1)' : 'rgba(59,130,246,0.1)',
+                        border: `1px solid ${a.type === 'danger' ? '#ef4444' : a.type === 'warning' ? '#f59e0b' : a.type === 'success' ? '#FFD700' : '#3b82f6'}`,
+                        borderRadius: '20px', padding: '1.25rem', display: 'flex', gap: '15px'
+                    }}>
+                        <div style={{ color: a.type === 'danger' ? '#ef4444' : a.type === 'warning' ? '#f59e0b' : a.type === 'success' ? '#FFD700' : '#3b82f6' }}>
+                            {a.type === 'danger' || a.type === 'warning' ? <AlertTriangle size={20}/> : <Sparkles size={20}/>}
+                        </div>
+                        <div>
+                            <div style={{ fontWeight: 800, fontSize: '0.85rem', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{a.title}</div>
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>{a.msg}</div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
     if (loading) return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px', gap: '12px', color: '#FFD700', fontSize: '1.1rem', fontWeight: 600 }}>
             <Activity size={24} style={{ animation: 'spin 1s linear infinite' }} /> Carregando Workspace...
@@ -598,7 +655,14 @@ export default function PersonalDashboard() {
 
             {/* ── OVERVIEW ── */}
             {viewMode === 'overview' && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                <>
+                    {/* Smart Insights */}
+                    <div style={{ marginBottom: '1rem' }}>
+                        <h3 style={{ fontSize: '0.8rem', fontWeight: 800, color: '#FFD700', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem' }}>Insights Inteligentes</h3>
+                        {renderSmartAlerts()}
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
                     {/* Balance card */}
                     <div style={{ background: 'linear-gradient(135deg,#1a1a2e,#16213e)', border: '1px solid rgba(255,215,0,0.2)', borderRadius: '24px', padding: '2rem', position: 'relative', overflow: 'hidden', boxShadow: '0 15px 35px rgba(0,0,0,0.15)' }}>
                         <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '140px', height: '140px', background: 'rgba(255,215,0,0.05)', borderRadius: '50%' }} />
