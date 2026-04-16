@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
     Wallet, TrendingUp, Target, 
     CheckCircle, Clock, Plus, Activity, X,
-    Folder, AlertTriangle, ArrowUpRight, ArrowDownRight,
+    ArrowUpRight, ArrowDownRight,
     Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase,
     BarChart3, PieChart as PieIcon, Calendar, Filter
 } from 'lucide-react';
@@ -18,6 +18,19 @@ import { toast } from 'sonner';
 
 type ViewMode = 'overview' | 'finance' | 'tasks' | 'projects' | 'clients' | 'reports';
 type Timeframe = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
+interface ReportData {
+    chartData: Array<{ date: string; income: number; expense: number }>;
+    categories: Array<{ name: string; value: number }>;
+    summary: {
+        totalIncome: number;
+        totalExpense: number;
+        taskStats: {
+            completed: number;
+            total: number;
+        };
+    };
+}
 
 /* ─── Shared styled sub-components ─── */
 
@@ -168,7 +181,7 @@ export default function PersonalDashboard() {
     const [clients, setClients] = useState<PersonalClient[]>([]);
 
     // Report State
-    const [reportData, setReportData] = useState<any>(null);
+    const [reportData, setReportData] = useState<ReportData | null>(null);
     const [reportTimeframe, setReportTimeframe] = useState<Timeframe>('monthly');
     const [reportLoading, setReportLoading] = useState(false);
 
@@ -191,7 +204,7 @@ export default function PersonalDashboard() {
     const [txForm, setTxForm] = useState(defaultTxForm);
     const [taskForm, setTaskForm] = useState(defaultTaskForm);
     const [projectForm, setProjectForm] = useState(defaultProjectForm);
-    const [clientForm, setClientForm] = useState<any>(defaultClientForm);
+    const [clientForm, setClientForm] = useState<Partial<PersonalClient>>(defaultClientForm);
 
     const [showNewCategory, setShowNewCategory] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
@@ -643,7 +656,7 @@ export default function PersonalDashboard() {
                                     <ResponsiveContainer width="100%" height={250}>
                                         <PieChart>
                                             <Pie data={reportData.categories} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                                                {reportData.categories.map((entry: any, index: number) => (
+                                                {reportData.categories.map((_entry: { name: string; value: number }, index: number) => (
                                                     <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                                                 ))}
                                             </Pie>
@@ -651,7 +664,7 @@ export default function PersonalDashboard() {
                                         </PieChart>
                                     </ResponsiveContainer>
                                     <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                        {reportData.categories.map((c: any, i: number) => (
+                                        {reportData.categories.map((c: { name: string; value: number }, i: number) => (
                                             <div key={c.name} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 600 }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                     <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: PIE_COLORS[i % PIE_COLORS.length] }} />
@@ -704,7 +717,7 @@ export default function PersonalDashboard() {
                                                 <td style={{ padding: '18px 24px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>{new Date(tx.date).toLocaleDateString('pt-PT')}</td>
                                                 <td style={{ padding: '18px 24px', fontWeight: 700 }}>
                                                     {tx.description}
-                                                    {tx.project && <div style={{ fontSize: '0.7rem', opacity: 0.5, fontWeight: 500 }}>📁 {(tx.project as any).name || 'Projecto'}</div>}
+                                                    {tx.project && <div style={{ fontSize: '0.7rem', opacity: 0.5, fontWeight: 500 }}>📁 {(tx.project as PersonalProject).name || 'Projecto'}</div>}
                                                 </td>
                                                 <td style={{ padding: '18px 24px' }}>
                                                     <span style={{ padding: '4px 12px', borderRadius: '12px', background: 'rgba(255,215,0,0.1)', color: '#B8860B', fontSize: '0.75rem', fontWeight: 800 }}>{tx.category}</span>
@@ -786,7 +799,7 @@ export default function PersonalDashboard() {
                                         )}
                                         {task.project && (
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                                                <Briefcase size={14} /> {(task.project as any).name}
+                                                <Briefcase size={14} /> {(task.project as PersonalProject).name}
                                             </div>
                                         )}
                                     </div>
@@ -840,7 +853,7 @@ export default function PersonalDashboard() {
                                     <div style={{ minWidth: 0 }}>
                                         <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{proj.name}</h3>
                                         {proj.client && <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, marginTop: '4px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                            <Users size={12}/> {(proj.client as any).name}
+                                            <Users size={12}/> {(proj.client as PersonalClient).name}
                                         </div>}
                                     </div>
                                     <div style={{ display: 'flex', gap: '8px' }}>
