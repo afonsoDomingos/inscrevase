@@ -616,36 +616,6 @@ export default function PersonalDashboard() {
         }
     };
 
-    const handleAddSaving = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            await personalService.addSaving({
-                amount: parseFloat(savingForm.amount),
-                account: savingForm.account,
-                date: savingForm.date,
-                description: savingForm.description,
-                linkedTransactionId: savingForm.linkedTransactionId || undefined
-            });
-            toast.success("Poupança registada!");
-            setIsAddSavingOpen(false);
-            setSavingForm({ amount: '', account: '', date: new Date().toISOString().split('T')[0], description: '', linkedTransactionId: '' });
-            fetchData();
-        } catch (error) {
-            toast.error("Erro ao registar poupança");
-        }
-    };
-
-    const handleDeleteSaving = async (id: string) => {
-        if (!window.confirm("ELiminar esta poupança?")) return;
-        try {
-            await personalService.deleteSaving(id);
-            toast.success("Eliminado!");
-            fetchData();
-        } catch (error) {
-            toast.error("Erro ao eliminar");
-        }
-    };
-
     const confirmAISuggestion = async (suggestion: AISuggestion) => {
         setAiLoading(true);
         try {
