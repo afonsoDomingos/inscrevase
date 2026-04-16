@@ -13,7 +13,8 @@ export interface PersonalTransaction {
     date: string;
     isRecurring: boolean;
     status: 'paid' | 'pending';
-    project?: { _id: string; name: string };
+    project?: string | { _id: string; name: string };
+    client?: string | { _id: string; name: string };
 }
 
 export interface PersonalTask {
@@ -23,7 +24,7 @@ export interface PersonalTask {
     deadline?: string;
     status: 'pending' | 'in_progress' | 'completed' | 'late';
     priority: 'low' | 'medium' | 'high';
-    project?: { _id: string; name: string };
+    project?: string | { _id: string; name: string };
 }
 
 export interface PersonalProject {
