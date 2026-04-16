@@ -197,10 +197,10 @@ export default function PersonalDashboard() {
     const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
     const [editingClientId, setEditingClientId] = useState<string | null>(null);
 
-    const defaultTxForm = { type: 'income', category: '', amount: '', description: '', date: '', project: '', client: '' };
-    const defaultTaskForm = { title: '', deadline: '', priority: 'medium', project: '' };
+    const defaultTxForm = { type: 'income' as const, category: '', amount: '', description: '', date: '', project: '', client: '' };
+    const defaultTaskForm = { title: '', deadline: '', priority: 'medium' as const, project: '' };
     const defaultProjectForm = { name: '', totalBudget: '', description: '', deadline: '', client: '' };
-    const defaultClientForm = { name: '', type: 'individual', email: '', phone: '', address: '', taxId: '', notes: '' };
+    const defaultClientForm = { name: '', type: 'individual' as const, email: '', phone: '', address: '', taxId: '', notes: '' };
 
     const [txForm, setTxForm] = useState(defaultTxForm);
     const [taskForm, setTaskForm] = useState(defaultTaskForm);
@@ -949,7 +949,7 @@ export default function PersonalDashboard() {
                 >
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                         <Field label="Natureza">
-                            <StyledSelect value={txForm.type} onChange={e => setTxForm({ ...txForm, type: e.target.value })}>
+                            <StyledSelect value={txForm.type} onChange={e => setTxForm({ ...txForm, type: e.target.value as 'income' | 'expense' })}>
                                 <option value="income">Entrada (Ganho)</option>
                                 <option value="expense">Saída (Gasto)</option>
                             </StyledSelect>
@@ -1017,7 +1017,7 @@ export default function PersonalDashboard() {
                             <StyledInput type="date" value={taskForm.deadline} onChange={e => setTaskForm({ ...taskForm, deadline: e.target.value })} />
                         </Field>
                         <Field label="Prioridade">
-                            <StyledSelect value={taskForm.priority} onChange={e => setTaskForm({ ...taskForm, priority: e.target.value })}>
+                            <StyledSelect value={taskForm.priority} onChange={e => setTaskForm({ ...taskForm, priority: e.target.value as 'low' | 'medium' | 'high' })}>
                                 <option value="low">Baixa</option>
                                 <option value="medium">Média</option>
                                 <option value="high">Alta</option>
@@ -1064,7 +1064,7 @@ export default function PersonalDashboard() {
                 <Modal title={editingClientId ? "Editar Cliente" : "Registar Cliente"} onClose={closeClientModal} onSubmit={handleAddClient}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                         <Field label="Tipo de Cliente">
-                            <StyledSelect value={clientForm.type} onChange={e => setClientForm({ ...clientForm, type: e.target.value })}>
+                            <StyledSelect value={clientForm.type} onChange={e => setClientForm({ ...clientForm, type: e.target.value as 'individual' | 'company' })}>
                                 <option value="individual">Pessoa Individual</option>
                                 <option value="company">Empresa / Entidade</option>
                             </StyledSelect>
