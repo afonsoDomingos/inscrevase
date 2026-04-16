@@ -484,11 +484,11 @@ export default function PersonalDashboard() {
 
             {/* ── Header ── */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1.5rem' }}>
-                <div>
-                    <h1 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: 'var(--font-playfair)' }}>
+                <div style={{ flex: '1', minWidth: '300px' }}>
+                    <h1 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', fontWeight: 900, marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: 'var(--font-playfair)' }}>
                         <Activity color="#FFD700" size={32} /> Workspace <span style={{ fontWeight: 300, opacity: 0.5 }}>360</span>
                     </h1>
-                    <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '1rem', lineHeight: '1.6', maxWidth: '600px' }}>
+                    <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.95rem', lineHeight: '1.6', maxWidth: '600px' }}>
                         O seu centro de controlo pessoal para organizar **projectos**, gerir **finanças**, acompanhar **tarefas** e manter a sua base de **clientes** num único lugar.
                     </p>
                 </div>
@@ -614,29 +614,29 @@ export default function PersonalDashboard() {
                         <div style={{ padding: '6rem', textAlign: 'center', color: '#FFD700' }}><Activity className="spin" size={32}/></div>
                     ) : reportData && (
                         <>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-                                <div style={{ background: 'var(--paper)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border)' }}>
-                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>Entradas</div>
-                                    <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#10b981' }}>{formatPrice(reportData.summary.totalIncome, 'MZN')}</div>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                                <div style={{ background: 'var(--paper)', padding: '1.25rem', borderRadius: '24px', border: '1px solid var(--border)' }}>
+                                    <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>Entradas</div>
+                                    <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#10b981' }}>{formatPrice(reportData.summary.totalIncome, 'MZN')}</div>
                                 </div>
-                                <div style={{ background: 'var(--paper)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border)' }}>
-                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>Saídas</div>
-                                    <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#ef4444' }}>{formatPrice(reportData.summary.totalExpense, 'MZN')}</div>
+                                <div style={{ background: 'var(--paper)', padding: '1.25rem', borderRadius: '24px', border: '1px solid var(--border)' }}>
+                                    <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>Saídas</div>
+                                    <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#ef4444' }}>{formatPrice(reportData.summary.totalExpense, 'MZN')}</div>
                                 </div>
-                                <div style={{ background: 'var(--paper)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border)' }}>
-                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>Lucro Projetado</div>
-                                    <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#FFD700' }}>{formatPrice(reportData.summary.totalIncome - reportData.summary.totalExpense, 'MZN')}</div>
+                                <div style={{ background: 'var(--paper)', padding: '1.25rem', borderRadius: '24px', border: '1px solid var(--border)' }}>
+                                    <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>Lucro Projetado</div>
+                                    <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#FFD700' }}>{formatPrice(reportData.summary.totalIncome - reportData.summary.totalExpense, 'MZN')}</div>
                                 </div>
-                                <div style={{ background: 'var(--paper)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border)' }}>
-                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>Eficiência de Tarefas</div>
-                                    <div style={{ fontSize: '1.8rem', fontWeight: 900 }}>{reportData.summary.taskStats.total > 0 ? Math.round((reportData.summary.taskStats.completed/reportData.summary.taskStats.total)*100) : 0}%</div>
+                                <div style={{ background: 'var(--paper)', padding: '1.25rem', borderRadius: '24px', border: '1px solid var(--border)' }}>
+                                    <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>Eficiência</div>
+                                    <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>{reportData.summary.taskStats.total > 0 ? Math.round((reportData.summary.taskStats.completed/reportData.summary.taskStats.total)*100) : 0}%</div>
                                 </div>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem', flexWrap: 'wrap' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
                                 {/* Revenue Chart */}
-                                <div style={{ background: 'var(--paper)', padding: '2rem', borderRadius: '24px', border: '1px solid var(--border)', minHeight: '400px' }}>
-                                    <h3 style={{ margin: '0 0 2rem 0', fontSize: '1.1rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '10px' }}><TrendingUp size={18} color="#FFD700"/> Fluxo de Caixa</h3>
+                                <div style={{ background: 'var(--paper)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border)', minHeight: '350px' }}>
+                                    <h3 style={{ margin: '0 0 1.5rem 0', fontSize: '1.1rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '10px' }}><TrendingUp size={18} color="#FFD700"/> Fluxo de Caixa</h3>
                                     <ResponsiveContainer width="100%" height={300}>
                                         <AreaChart data={reportData.chartData}>
                                             <defs>
@@ -654,8 +654,8 @@ export default function PersonalDashboard() {
                                 </div>
 
                                 {/* Categories Chart */}
-                                <div style={{ background: 'var(--paper)', padding: '2rem', borderRadius: '24px', border: '1px solid var(--border)', minHeight: '400px' }}>
-                                    <h3 style={{ margin: '0 0 2rem 0', fontSize: '1.1rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '10px' }}><PieIcon size={18} color="#FFD700"/> Categorias</h3>
+                                <div style={{ background: 'var(--paper)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border)', minHeight: '350px' }}>
+                                    <h3 style={{ margin: '0 0 1.5rem 0', fontSize: '1.1rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '10px' }}><PieIcon size={18} color="#FFD700"/> Categorias</h3>
                                     <ResponsiveContainer width="100%" height={250}>
                                         <PieChart>
                                             <Pie data={reportData.categories} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
