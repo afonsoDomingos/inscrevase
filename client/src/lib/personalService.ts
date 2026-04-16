@@ -51,6 +51,15 @@ export interface PersonalClient {
     notes?: string;
 }
 
+export interface PersonalSaving {
+    _id: string;
+    amount: number;
+    account: string;
+    date: string;
+    description?: string;
+    linkedTransactionId?: string;
+}
+
 export const personalService = {
     // --- FINANCE ---
     getFinanceSummary: async () => {
@@ -74,19 +83,28 @@ export const personalService = {
         });
         return res.data.transaction;
     },
-    deleteTransaction: async (id: string) => {
+    // ... rest of finance ...
+
+    // --- SAVINGS ---
+    getSavings: async (): Promise<PersonalSaving[]> => {
         const token = authService.getToken();
-        const res = await axios.delete(`${API_URL}/personal/finance/${id}`, {
+        const res = await axios.get(`${API_URL}/personal/savings`, {
             headers: { Authorization: `Bearer ${token}` }
         });
-        return res.data;
+        return res.data.savings;
     },
-    updateTransaction: async (id: string, data: Partial<PersonalTransaction>) => {
+    addSaving: async (data: Partial<PersonalSaving>) => {
         const token = authService.getToken();
-        const res = await axios.patch(`${API_URL}/personal/finance/${id}`, data, {
+        const res = await axios.post(`${API_URL}/personal/savings`, data, {
             headers: { Authorization: `Bearer ${token}` }
         });
-        return res.data.transaction;
+        return res.data.saving;
+    },
+    deleteSaving: async (id: string) => {
+        const token = authService.getToken();
+        await axios.delete(`${API_URL}/personal/savings/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
     },
 
     // --- TASKS ---
@@ -97,6 +115,23 @@ export const personalService = {
         });
         return res.data.tasks;
     },
+    // ... earlier methods ...
+    updateTransaction: async (id: string, data: Partial<PersonalTransaction>) => {
+        const token = authService.getToken();
+        const res = await axios.patch(`${API_URL}/personal/finance/${id}`, data, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.transaction;
+    },
+    deleteTransaction: async (id: string) => {
+        const token = authService.getToken();
+        const res = await axios.delete(`${API_URL}/personal/finance/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data;
+    },
+
+    // --- TASKS ---
     addTask: async (data: Partial<PersonalTask>) => {
         const token = authService.getToken();
         const res = await axios.post(`${API_URL}/personal/tasks`, data, {

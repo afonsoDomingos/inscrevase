@@ -6,17 +6,18 @@ import {
     CheckCircle, Clock, Plus, Activity, X,
     ArrowUpRight, ArrowDownRight,
     Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase,
-    BarChart3, PieChart as PieIcon, Sparkles, Send, Bot, AlertTriangle
+    BarChart3, PieChart as PieIcon, Sparkles, Send, Bot, AlertTriangle,
+    ShieldCheck, PiggyBank
 } from 'lucide-react';
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
     PieChart, Pie, Cell
 } from 'recharts';
-import { personalService, PersonalTransaction, PersonalTask, PersonalProject, PersonalClient } from '@/lib/personalService';
+import { personalService, PersonalTransaction, PersonalTask, PersonalProject, PersonalClient, PersonalSaving } from '@/lib/personalService';
 import { useCurrency } from '@/context/CurrencyContext';
 import { toast } from 'sonner';
 
-type ViewMode = 'overview' | 'finance' | 'tasks' | 'projects' | 'clients' | 'reports';
+type ViewMode = 'overview' | 'finance' | 'tasks' | 'projects' | 'clients' | 'reports' | 'savings';
 type Timeframe = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
 interface ReportData {
@@ -194,10 +195,15 @@ interface ProjectFormState {
     client: string;
 }
 
-interface AISuggestion {
-    action: 'add_task' | 'add_transaction' | 'add_client';
-    data: Partial<PersonalTask> | Partial<PersonalTransaction> | Partial<PersonalClient>;
+interface SavingFormState {
+    amount: string;
+    account: string;
+    date: string;
+    description: string;
+    linkedTransactionId: string;
 }
+
+interface AISuggestion {
 
 /* ─── Main component ─── */
 export default function PersonalDashboard() {
@@ -210,6 +216,7 @@ export default function PersonalDashboard() {
     const [tasks, setTasks] = useState<PersonalTask[]>([]);
     const [projects, setProjects] = useState<PersonalProject[]>([]);
     const [clients, setClients] = useState<PersonalClient[]>([]);
+    const [savings, setSavings] = useState<PersonalSaving[]>([]);
 
     // Report State
     const [reportData, setReportData] = useState<ReportData | null>(null);
@@ -220,6 +227,7 @@ export default function PersonalDashboard() {
     const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
     const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
     const [isAddClientOpen, setIsAddClientOpen] = useState(false);
+    const [isAddSavingOpen, setIsAddSavingOpen] = useState(false);
 
     // Edit states
     const [editingTxId, setEditingTxId] = useState<string | null>(null);
@@ -238,6 +246,7 @@ export default function PersonalDashboard() {
     const [taskForm, setTaskForm] = useState<TaskFormState>(defaultTaskForm);
     const [projectForm, setProjectForm] = useState<ProjectFormState>(defaultProjectForm);
     const [clientForm, setClientForm] = useState<Partial<PersonalClient>>(defaultClientForm);
+    const [savingForm, setSavingForm] = useState<SavingFormState>({ amount: '', account: '', date: new Date().toISOString().split('T')[0], description: '', linkedTransactionId: '' });
 
     const [showNewCategory, setShowNewCategory] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
@@ -250,18 +259,20 @@ export default function PersonalDashboard() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [sum, txs, tsks, projs, cls] = await Promise.all([
+            const [sum, txs, tsks, projs, cls, svs] = await Promise.all([
                 personalService.getFinanceSummary(),
                 personalService.getTransactions(),
                 personalService.getTasks(),
                 personalService.getProjects(),
-                personalService.getClients()
+                personalService.getClients(),
+                personalService.getSavings()
             ]);
             setSummary(sum);
             setTransactions(txs);
             setTasks(tsks);
             setProjects(projs);
             setClients(cls);
+            setSavings(svs);
         } catch (error) {
             console.error(error);
             toast.error("Erro ao carregar dados do Workspace");
@@ -507,6 +518,36 @@ export default function PersonalDashboard() {
         }
     };
 
+    const handleAddSaving = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await personalService.addSaving({
+                amount: parseFloat(savingForm.amount),
+                account: savingForm.account,
+                date: savingForm.date,
+                description: savingForm.description,
+                linkedTransactionId: savingForm.linkedTransactionId || undefined
+            });
+            toast.success("Poupança registada!");
+            setIsAddSavingOpen(false);
+            setSavingForm({ amount: '', account: '', date: new Date().toISOString().split('T')[0], description: '', linkedTransactionId: '' });
+            fetchData();
+        } catch (error) {
+            toast.error("Erro ao registar poupança");
+        }
+    };
+
+    const handleDeleteSaving = async (id: string) => {
+        if (!window.confirm("ELiminar esta poupança?")) return;
+        try {
+            await personalService.deleteSaving(id);
+            toast.success("Eliminado!");
+            fetchData();
+        } catch (error) {
+            toast.error("Erro ao eliminar");
+        }
+    };
+
     const confirmAISuggestion = async (suggestion: AISuggestion) => {
         setAiLoading(true);
         try {
@@ -531,6 +572,36 @@ export default function PersonalDashboard() {
 
     const priorityColor = (p: string) => p === 'high' ? '#ef4444' : p === 'medium' ? '#f59e0b' : '#6b7280';
     const priorityLabel = (p: string) => p === 'high' ? 'Alta' : p === 'medium' ? 'Média' : 'Baixa';
+
+    const handleAddSaving = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await personalService.addSaving({
+                amount: parseFloat(savingForm.amount),
+                account: savingForm.account,
+                date: savingForm.date,
+                description: savingForm.description || '',
+                linkedTransactionId: savingForm.linkedTransactionId || undefined
+            });
+            toast.success("Poupança registada com sucesso!");
+            setIsAddSavingOpen(false);
+            setSavingForm({ amount: '', account: '', date: new Date().toISOString().split('T')[0], description: '', linkedTransactionId: '' });
+            fetchData();
+        } catch (error) {
+            toast.error("Erro ao guardar poupança");
+        }
+    };
+
+    const handleDeleteSaving = async (id: string) => {
+        if (!window.confirm("Eliminar este registo de poupança?")) return;
+        try {
+            await personalService.deleteSaving(id);
+            toast.success("Registo removido.");
+            fetchData();
+        } catch (error) {
+            toast.error("Erro ao eliminar");
+        }
+    };
 
     const renderSmartAlerts = () => {
         const alerts = [];
@@ -615,6 +686,7 @@ export default function PersonalDashboard() {
     const tabs = [
         { id: 'overview' as ViewMode, label: 'Resumo Geral', icon: Activity },
         { id: 'finance' as ViewMode, label: 'Finanças', icon: Wallet },
+        { id: 'savings' as ViewMode, label: 'Poupança', icon: PiggyBank },
         { id: 'tasks' as ViewMode, label: 'Tarefas', icon: Target },
         { id: 'projects' as ViewMode, label: 'Projetos', icon: Briefcase },
         { id: 'clients' as ViewMode, label: 'Clientes', icon: Users },
@@ -885,6 +957,33 @@ export default function PersonalDashboard() {
                             </div>
                         </div>
 
+                        {/* 4. SAVINGS STATUS */}
+                        <div style={{ 
+                            background: 'var(--paper)', 
+                            padding: '1.5rem', 
+                            borderRadius: '16px', 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            justifyContent: 'space-between',
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.02)',
+                            border: '1px solid var(--border)'
+                        }}>
+                            <div>
+                                <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <ShieldCheck size={14} color="#10b981" /> Liquidez Estratégica
+                                </div>
+                                <div style={{ fontSize: '2.4rem', fontWeight: 700, letterSpacing: '-1px' }}>
+                                    {formatPrice(savings.reduce((a, b) => a + b.amount, 0), 'MZN')}
+                                </div>
+                            </div>
+                            
+                            <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+                                <div style={{ fontSize: '0.75rem', fontWeight: 600 }}>
+                                    Taxa de Poupança: <span style={{ color: '#10b981' }}>{summary.income > 0 ? ((savings.reduce((a, b) => a + b.amount, 0) / summary.income) * 100).toFixed(1) : 0}%</span>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </>
@@ -1047,6 +1146,84 @@ export default function PersonalDashboard() {
                                 </table>
                             </div>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* ── SAVINGS (POUPANÇA) ── */}
+            {viewMode === 'savings' && (
+                <div style={{ animation: 'fadeIn 0.4s ease' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+                        <div>
+                            <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Gestão de Poupança</h2>
+                            <p style={{ margin: '4px 0 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>Controle as suas reservas e planeie o seu futuro financeiro.</p>
+                        </div>
+                        <button onClick={() => setIsAddSavingOpen(true)} style={btnPrimary}>
+                            <Plus size={18} /> Nova Alocação
+                        </button>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                            <div style={{ background: '#000', color: '#fff', padding: '2rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', opacity: 0.6 }}>
+                                    <ShieldCheck size={20} /> <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Escudo Financeiro</span>
+                                </div>
+                                <div style={{ fontSize: '2.8rem', fontWeight: 800, letterSpacing: '-1px' }}>
+                                    {formatPrice(savings.reduce((a, b) => a + b.amount, 0), 'MZN')}
+                                </div>
+                                <div style={{ marginTop: '1rem', fontSize: '0.85rem', opacity: 0.7, lineHeight: '1.6' }}>
+                                    Património total alocado em contas de poupança e reservas estratégicas.
+                                </div>
+                            </div>
+                            
+                            <div style={{ background: 'var(--paper)', padding: '1.5rem', borderRadius: '20px', border: '1px solid var(--border)' }}>
+                                <h4 style={{ margin: '0 0 1rem 0', fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', opacity: 0.5 }}>Dica de Saúde Profissional</h4>
+                                <p style={{ margin: 0, fontSize: '0.85rem', lineHeight: '1.6', color: 'var(--text-muted)' }}>
+                                    Tente poupar pelo menos 20% de cada entrada (receita) que recebe. Vincular a poupança directamente a uma entrada ajuda-o a manter a disciplina.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '24px', overflow: 'hidden' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <thead>
+                                    <tr style={{ background: 'var(--background)', borderBottom: '1px solid var(--border)' }}>
+                                        <th style={{ padding: '18px 24px', textAlign: 'left', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Data</th>
+                                        <th style={{ padding: '18px 24px', textAlign: 'left', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Conta / Destino</th>
+                                        <th style={{ padding: '18px 24px', textAlign: 'right', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Valor</th>
+                                        <th style={{ padding: '18px 24px', textAlign: 'center' }}></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {savings.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={4} style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
+                                                Nenhum registo de poupança efectuado ainda.
+                                            </td>
+                                        </tr>
+                                    ) : savings.map(s => (
+                                        <tr key={s._id} style={{ borderBottom: '1px solid var(--border)' }}>
+                                            <td style={{ padding: '18px 24px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>{new Date(s.date).toLocaleDateString()}</td>
+                                            <td style={{ padding: '18px 24px' }}>
+                                                <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{s.account}</div>
+                                                {s.linkedTransactionId && (
+                                                    <div style={{ fontSize: '0.7rem', color: '#10b981', fontWeight: 600, marginTop: '2px' }}>
+                                                        Linked: {transactions.find(t => t._id === s.linkedTransactionId)?.description || 'Original Entry'}
+                                                    </div>
+                                                )}
+                                            </td>
+                                            <td style={{ padding: '18px 24px', textAlign: 'right', fontWeight: 800 }}>{formatPrice(s.amount, 'MZN')}</td>
+                                            <td style={{ padding: '18px 24px', textAlign: 'center' }}>
+                                                <button onClick={() => handleDeleteSaving(s._id)} style={{ padding: '8px', color: '#ef4444', background: 'transparent', border: 'none', cursor: 'pointer', opacity: 0.5 }}>
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             )}
@@ -1363,6 +1540,34 @@ export default function PersonalDashboard() {
                     </div>
                     <Field label="Breve Contexto">
                         <StyledInput placeholder="Notas sobre o projecto..." value={projectForm.description} onChange={e => setProjectForm({ ...projectForm, description: e.target.value })} />
+                    </Field>
+                </Modal>
+            )}
+
+            {/* Savings Modal */}
+            {isAddSavingOpen && (
+                <Modal title="Registar Nova Poupança" onClose={() => setIsAddSavingOpen(false)} onSubmit={handleAddSaving}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <Field label="Valor da Poupança">
+                            <StyledInput type="number" step="0.01" placeholder="0.00" required value={savingForm.amount} onChange={e => setSavingForm({ ...savingForm, amount: e.target.value })} />
+                        </Field>
+                        <Field label="Data">
+                            <StyledInput type="date" required value={savingForm.date} onChange={e => setSavingForm({ ...savingForm, date: e.target.value })} />
+                        </Field>
+                    </div>
+                    <Field label="Conta de Destino">
+                        <StyledInput placeholder="Ex: Conta Activa, Investimento, Cofre..." required value={savingForm.account} onChange={e => setSavingForm({ ...savingForm, account: e.target.value })} />
+                    </Field>
+                    <Field label="Vincular a uma Entrada (Opcional)">
+                        <StyledSelect value={savingForm.linkedTransactionId} onChange={e => setSavingForm({ ...savingForm, linkedTransactionId: e.target.value })}>
+                            <option value="">Nenhuma entrada específica</option>
+                            {transactions.filter(t => t.type === 'income').map(tx => (
+                                <option key={tx._id} value={tx._id}>{new Date(tx.date).toLocaleDateString()} - {tx.description} ({formatPrice(tx.amount)})</option>
+                            ))}
+                        </StyledSelect>
+                    </Field>
+                    <Field label="Descrição Extra">
+                        <StyledInput placeholder="Motivo ou nota adicional..." value={savingForm.description} onChange={e => setSavingForm({ ...savingForm, description: e.target.value })} />
                     </Field>
                 </Modal>
             )}
