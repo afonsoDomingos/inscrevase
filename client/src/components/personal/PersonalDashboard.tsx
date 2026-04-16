@@ -1,20 +1,21 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     Wallet, TrendingUp, Target, 
     CheckCircle, Clock, Plus, Activity, X,
     ArrowUpRight, ArrowDownRight,
     Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase,
-    BarChart3, PieChart as PieIcon, Calendar, Filter
+    BarChart3, PieChart as PieIcon
 } from 'lucide-react';
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-    PieChart, Pie, Cell, BarChart, Bar, Legend
+    PieChart, Pie, Cell
 } from 'recharts';
 import { personalService, PersonalTransaction, PersonalTask, PersonalProject, PersonalClient } from '@/lib/personalService';
 import { useCurrency } from '@/context/CurrencyContext';
 import { toast } from 'sonner';
+import { LucideIcon } from 'lucide-react';
 
 type ViewMode = 'overview' | 'finance' | 'tasks' | 'projects' | 'clients' | 'reports';
 type Timeframe = 'daily' | 'weekly' | 'monthly' | 'yearly';
@@ -466,7 +467,7 @@ export default function PersonalDashboard() {
         display: 'inline-flex', transition: 'all 0.2s'
     };
 
-    const tabs: { id: ViewMode; label: string; icon: any }[] = [
+    const tabs: { id: ViewMode; label: string; icon: LucideIcon }[] = [
         { id: 'overview', label: 'Resumo Geral', icon: Activity },
         { id: 'finance', label: 'Finanças', icon: Wallet },
         { id: 'tasks', label: 'Tarefas', icon: Target },
