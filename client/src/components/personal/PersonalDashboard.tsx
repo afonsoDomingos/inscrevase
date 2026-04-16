@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import React, { useState, useEffect } from 'react';
 import { 
     Wallet, TrendingUp, TrendingDown, Target, 
     CheckCircle, Clock, Plus, Activity 
