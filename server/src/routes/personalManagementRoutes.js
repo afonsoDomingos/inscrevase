@@ -35,4 +35,7 @@ router.delete('/clients/:id', personalManagementController.deleteClient);
 // --- REPORTS ---
 router.get('/reports', personalManagementController.getReportData);
 
+// --- AI ASSISTANT ---
+router.post('/ai/process', protect, personalManagementController.processAICommand);
+
 module.exports = router;

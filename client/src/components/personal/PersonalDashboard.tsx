@@ -6,7 +6,7 @@ import {
     CheckCircle, Clock, Plus, Activity, X,
     ArrowUpRight, ArrowDownRight,
     Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase,
-    BarChart3, PieChart as PieIcon
+    BarChart3, PieChart as PieIcon, Sparkles, Send, Bot, MessageSquare
 } from 'lucide-react';
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -236,6 +236,12 @@ export default function PersonalDashboard() {
 
     const [showNewCategory, setShowNewCategory] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
+
+    // AI Assistant State
+    const [isAIOpen, setIsAIOpen] = useState(false);
+    const [aiInput, setAiInput] = useState('');
+    const [aiMessages, setAiMessages] = useState<{ role: 'user' | 'bot'; content: string; suggestion?: any }[]>([]);
+    const [aiLoading, setAiLoading] = useState(false);
 
     const fetchData = async () => {
         setLoading(true);
@@ -470,6 +476,53 @@ export default function PersonalDashboard() {
         setClientForm(defaultClientForm);
     };
 
+    // --- AI ASSISTANT HANDLERS ---
+    const handleAISend = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!aiInput.trim()) return;
+
+        const userMsg = aiInput;
+        setAiMessages(prev => [...prev, { role: 'user', content: userMsg }]);
+        setAiInput('');
+        setAiLoading(true);
+
+        try {
+            const res = await personalService.processAICommand(userMsg);
+            if (res.success) {
+                setAiMessages(prev => [...prev, { 
+                    role: 'bot', 
+                    content: res.message,
+                    suggestion: res.action ? { action: res.action, data: res.data } : null 
+                }]);
+            }
+        } catch {
+            setAiMessages(prev => [...prev, { role: 'bot', content: "Desculpe, tive um problema ao processar isso. Tente novamente." }]);
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
+    const confirmAISuggestion = async (suggestion: any) => {
+        setAiLoading(true);
+        try {
+            if (suggestion.action === 'add_task') {
+                await personalService.addTask(suggestion.data);
+                toast.success("Tarefa criada por IA!");
+            } else if (suggestion.action === 'add_transaction') {
+                await personalService.addTransaction(suggestion.data);
+                toast.success("Transação registada por IA!");
+            } else if (suggestion.action === 'add_client') {
+                await personalService.addClient(suggestion.data);
+                toast.success("Cliente registado por IA!");
+            }
+            setAiMessages(prev => [...prev, { role: 'bot', content: "Concluído com sucesso! ✅" }]);
+            fetchData();
+        } catch {
+            toast.error("Erro ao executar ação da IA");
+        } finally {
+            setAiLoading(false);
+        }
+    };
 
     const priorityColor = (p: string) => p === 'high' ? '#ef4444' : p === 'medium' ? '#f59e0b' : '#6b7280';
     const priorityLabel = (p: string) => p === 'high' ? 'Alta' : p === 'medium' ? 'Média' : 'Baixa';
@@ -1115,6 +1168,96 @@ export default function PersonalDashboard() {
                         <StyledInput placeholder="Localização, preferências..." value={clientForm.notes} onChange={e => setClientForm({ ...clientForm, notes: e.target.value })} />
                     </Field>
                 </Modal>
+            )}
+
+            {/* ── AI ASSISTANT PANEL ── */}
+            <button 
+                onClick={() => {
+                    setIsAIOpen(!isAIOpen);
+                    if (aiMessages.length === 0) {
+                        setAiMessages([{ role: 'bot', content: "Olá! Sou o seu Assistente 360. Como posso ajudar com a sua gestão hoje?" }]);
+                    }
+                }}
+                style={{
+                    position: 'fixed', bottom: '30px', right: '30px', zIndex: 999,
+                    width: '60px', height: '60px', borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #FFD700, #B8860B)',
+                    color: '#000', border: 'none', cursor: 'pointer',
+                    boxShadow: '0 10px 25px rgba(184, 134, 11, 0.4)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                }}
+                onMouseOver={e => (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.1) rotate(12deg)'}
+                onMouseOut={e => (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1) rotate(0)'}
+            >
+                {isAIOpen ? <X size={28}/> : <Sparkles size={28}/>}
+            </button>
+
+            {isAIOpen && (
+                <div style={{
+                    position: 'fixed', bottom: '100px', right: '30px', zIndex: 999,
+                    width: '380px', height: '500px', maxWidth: 'calc(100vw - 60px)',
+                    background: 'var(--paper)', border: '1px solid var(--border)',
+                    borderRadius: '24px', boxShadow: '0 20px 50px rgba(0,0,0,0.2)',
+                    display: 'flex', flexDirection: 'column', overflow: 'hidden',
+                    animation: 'slideUp 0.3s ease-out'
+                }}>
+                    <div style={{ padding: '1.25rem', background: 'var(--background)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ background: 'rgba(255,215,0,0.1)', color: '#FFD700', padding: '8px', borderRadius: '12px' }}><Bot size={20}/></div>
+                        <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>Assistente Inteligente</div>
+                    </div>
+
+                    <div style={{ flex: 1, padding: '1.25rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {aiMessages.map((msg, i) => (
+                            <div key={i} style={{ 
+                                alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                                maxWidth: '85%', padding: '12px 16px', borderRadius: '16px',
+                                background: msg.role === 'user' ? 'linear-gradient(135deg, #FFD700, #B8860B)' : 'var(--background)',
+                                color: msg.role === 'user' ? '#000' : 'var(--foreground)',
+                                fontSize: '0.85rem', fontWeight: msg.role === 'user' ? 700 : 500,
+                                border: msg.role === 'user' ? 'none' : '1px solid var(--border)',
+                                boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
+                            }}>
+                                {msg.content}
+                                {msg.suggestion && (
+                                    <button 
+                                        onClick={() => confirmAISuggestion(msg.suggestion)}
+                                        style={{
+                                            display: 'block', width: '100%', marginTop: '12px',
+                                            padding: '8px', background: '#FFD700', color: '#000',
+                                            border: 'none', borderRadius: '8px', fontWeight: 800,
+                                            cursor: 'pointer', fontSize: '0.75rem'
+                                        }}
+                                    >
+                                        Confirmar Ação
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        {aiLoading && <div style={{ alignSelf: 'flex-start', color: '#FFD700' }}><Activity size={18} className="spin"/></div>}
+                    </div>
+
+                    <form onSubmit={handleAISend} style={{ padding: '1rem', borderTop: '1px solid var(--border)', background: 'var(--background)' }}>
+                        <div style={{ position: 'relative' }}>
+                            <input 
+                                placeholder="Eescreva algo..." 
+                                value={aiInput}
+                                onChange={e => setAiInput(e.target.value)}
+                                style={{
+                                    width: '100%', padding: '12px 45px 12px 16px', borderRadius: '12px',
+                                    background: 'var(--paper)', border: '1px solid var(--border)',
+                                    color: 'var(--foreground)', fontSize: '0.85rem', outline: 'none'
+                                }}
+                            />
+                            <button type="submit" style={{
+                                position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)',
+                                background: 'transparent', border: 'none', color: '#FFD700', cursor: 'pointer'
+                            }}>
+                                <Send size={18}/>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             )}
 
         </div>

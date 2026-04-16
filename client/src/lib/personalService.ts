@@ -193,5 +193,12 @@ export const personalService = {
             headers: { Authorization: `Bearer ${token}` }
         });
         return res.data.report;
+    },
+    processAICommand: async (text: string) => {
+        const token = authService.getToken();
+        const res = await axios.post(`${API_URL}/personal/ai/process`, { text }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data;
     }
 };

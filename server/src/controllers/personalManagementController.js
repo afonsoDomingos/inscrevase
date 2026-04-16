@@ -369,3 +369,59 @@ exports.deleteClient = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// --- AI ASSISTANT ---
+
+exports.processAICommand = async (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) return res.status(400).json({ success: false, message: 'Texto é obrigatório' });
+
+        const prompt = text.toLowerCase();
+        let action = null;
+        let data = {};
+        let message = '';
+
+        // Simple Smart Parser (Can be replaced/extended with OpenAI/Gemini later)
+        // Intent: Add Task
+        if (prompt.includes('tarefa') || prompt.includes('fazer')) {
+            action = 'add_task';
+            const titleMatch = text.match(/(?:tarefa|fazer)\s+(?:de|para)?\s*([^.,?!]+)/i);
+            data = {
+                title: titleMatch ? titleMatch[1].trim() : 'Nova Tarefa',
+                priority: prompt.includes('urgente') || prompt.includes('alta') ? 'high' : 'medium'
+            };
+            message = `Percebi que quer adicionar uma tarefa: "${data.title}". Confirmar?`;
+        }
+        // Intent: Add Transaction
+        else if (prompt.includes('ganhei') || prompt.includes('recebi') || prompt.includes('gastei') || prompt.includes('paguei')) {
+            action = 'add_transaction';
+            const isIncome = prompt.includes('ganhei') || prompt.includes('recebi');
+            const amountMatch = text.match(/(\d+(?:[.,]\d+)?)/);
+            data = {
+                type: isIncome ? 'income' : 'expense',
+                amount: amountMatch ? parseFloat(amountMatch[1].replace(',', '.')) : 0,
+                description: text,
+                category: 'Geral'
+            };
+            message = `Vou registar uma ${data.type === 'income' ? 'entrada' : 'saída'} de ${data.amount} MZN. Confirmar?`;
+        }
+        // Intent: Add Client
+        else if (prompt.includes('cliente') || prompt.includes('empresa')) {
+            action = 'add_client';
+            const nameMatch = text.match(/(?:cliente|empresa)\s+([^.,?!]+)/i);
+            data = {
+                name: nameMatch ? nameMatch[1].trim() : 'Novo Cliente',
+                type: prompt.includes('empresa') ? 'company' : 'individual'
+            };
+            message = `Deseja registar o cliente "${data.name}"?`;
+        }
+        else {
+            message = "Ainda estou a aprender! Tente algo como: 'Adicionar tarefa de design' ou 'Recebi 5000 MZN'.";
+        }
+
+        res.status(200).json({ success: true, action, data, message });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
