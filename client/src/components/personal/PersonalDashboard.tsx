@@ -15,7 +15,6 @@ import {
 import { personalService, PersonalTransaction, PersonalTask, PersonalProject, PersonalClient } from '@/lib/personalService';
 import { useCurrency } from '@/context/CurrencyContext';
 import { toast } from 'sonner';
-import { LucideIcon } from 'lucide-react';
 
 type ViewMode = 'overview' | 'finance' | 'tasks' | 'projects' | 'clients' | 'reports';
 type Timeframe = 'daily' | 'weekly' | 'monthly' | 'yearly';
@@ -168,6 +167,7 @@ function Modal({ title, onClose, onSubmit, children, submitLabel = "Guardar Alte
 }
 
 const DEFAULT_CATEGORIES = ['Serviços', 'Licenças', 'Impostos', 'Marketing', 'Infraestrutura', 'Branding', 'Consultoria', 'Vendas', 'Outros'];
+const PIE_COLORS = ['#FFD700', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b', '#06b6d4', '#ec4899'];
 
 interface TxFormState {
     type: 'income' | 'expense';
@@ -622,10 +622,11 @@ export default function PersonalDashboard() {
     ];
 
     const allCategories = Array.from(new Set([...DEFAULT_CATEGORIES, ...transactions.map(t => t.category)]));
-    const PIE_COLORS = ['#FFD700', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b', '#06b6d4', '#ec4899'];
 
-    return (
-        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', color: 'var(--foreground)' }}>
+    return <div 
+            id="personal-dashboard-root"
+            style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', color: 'var(--foreground)' }}
+        >
 
             {/* ── Header ── */}
             <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1.5rem', background: 'var(--paper)', padding: '1.5rem 2rem', borderRadius: '16px', border: '1px solid var(--border)' }}>
@@ -694,7 +695,7 @@ export default function PersonalDashboard() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        {aiLoading ? <Activity size={20} className="spin" /> : <><Send size={20} /> Analisar</>}
+                        {aiLoading ? <Activity size={20} className="spin" /> : <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Send size={20} /> Analisar</span>}
                     </button>
                 </form>
 
@@ -1397,8 +1398,7 @@ export default function PersonalDashboard() {
                 </Modal>
             )}
 
-        </div>
-    );
+        </div>;
 }
 
 function StatCard({ icon: Icon, label, value, color, secondary }: { icon: any, label: string, value: string | number, color: string, secondary?: string }) {
