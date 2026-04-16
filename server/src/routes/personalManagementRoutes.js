@@ -10,16 +10,20 @@ router.use(authMiddleware);
 router.get('/finance/summary', personalManagementController.getFinanceSummary);
 router.get('/finance', personalManagementController.getTransactions);
 router.post('/finance', personalManagementController.addTransaction);
+router.patch('/finance/:id', personalManagementController.updateTransaction);
 router.delete('/finance/:id', personalManagementController.deleteTransaction);
 
 // --- TASKS ---
 router.get('/tasks', personalManagementController.getTasks);
 router.post('/tasks', personalManagementController.addTask);
-router.patch('/tasks/:id', personalManagementController.updateTaskStatus);
+router.patch('/tasks/:id/status', personalManagementController.updateTaskStatus);
+router.patch('/tasks/:id', personalManagementController.updateTask);
 router.delete('/tasks/:id', personalManagementController.deleteTask);
 
 // --- PROJECTS ---
 router.get('/projects', personalManagementController.getProjects);
 router.post('/projects', personalManagementController.addProject);
+router.patch('/projects/:id', personalManagementController.updateProject);
+router.delete('/projects/:id', personalManagementController.deleteProject);
 
 module.exports = router;

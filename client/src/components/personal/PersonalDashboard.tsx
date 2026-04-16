@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { 
     Wallet, TrendingUp, Target, 
     CheckCircle, Clock, Plus, Activity, X,
-    Folder, AlertTriangle, ArrowUpRight, ArrowDownRight
+    Folder, AlertTriangle, ArrowUpRight, ArrowDownRight,
+    Trash2, Edit3, MoreHorizontal
 } from 'lucide-react';
 import { personalService, PersonalTransaction, PersonalTask, PersonalProject } from '@/lib/personalService';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -109,7 +110,6 @@ function Modal({ title, onClose, onSubmit, children }: {
                 boxShadow: '0 30px 60px rgba(0,0,0,0.15)',
                 position: 'relative',
             }}>
-                {/* Gold accent top line */}
                 <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: '3px', background: 'linear-gradient(90deg, transparent, #FFD700, transparent)', borderRadius: '3px 3px 0 0' }} />
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.75rem' }}>
@@ -138,7 +138,7 @@ function Modal({ title, onClose, onSubmit, children }: {
                     onMouseOver={e => (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)'}
                     onMouseOut={e => (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'}
                 >
-                    Confirmar
+                    Guardar Alterações
                 </button>
             </form>
         </div>
@@ -160,9 +160,18 @@ export default function PersonalDashboard() {
     const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
     const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
 
-    const [txForm, setTxForm] = useState({ type: 'income', category: '', amount: '', description: '' });
-    const [taskForm, setTaskForm] = useState({ title: '', deadline: '', priority: 'medium' });
-    const [projectForm, setProjectForm] = useState({ name: '', totalBudget: '', description: '' });
+    // Edit states
+    const [editingTxId, setEditingTxId] = useState<string | null>(null);
+    const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+    const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+
+    const defaultTxForm = { type: 'income', category: '', amount: '', description: '', date: '' };
+    const defaultTaskForm = { title: '', deadline: '', priority: 'medium' };
+    const defaultProjectForm = { name: '', totalBudget: '', description: '', deadline: '' };
+
+    const [txForm, setTxForm] = useState(defaultTxForm);
+    const [taskForm, setTaskForm] = useState(defaultTaskForm);
+    const [projectForm, setProjectForm] = useState(defaultProjectForm);
 
     const fetchData = async () => {
         setLoading(true);
@@ -187,45 +196,145 @@ export default function PersonalDashboard() {
 
     useEffect(() => { fetchData(); }, []);
 
+    // --- FINANCE HANDLERS ---
     const handleAddTx = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await personalService.addTransaction({ ...txForm, amount: Number(txForm.amount), type: txForm.type as 'income' | 'expense' });
-            toast.success("Transação adicionada!");
-            setIsAddTxOpen(false);
-            setTxForm({ type: 'income', category: '', amount: '', description: '' });
+            const payload = { ...txForm, amount: Number(txForm.amount), type: txForm.type as 'income' | 'expense' };
+            if (editingTxId) {
+                await personalService.updateTransaction(editingTxId, payload);
+                toast.success("Transação atualizada!");
+            } else {
+                await personalService.addTransaction(payload);
+                toast.success("Transação registada!");
+            }
+            closeTxModal();
             fetchData();
-        } catch { toast.error("Erro ao adicionar transação"); }
+        } catch { toast.error("Erro ao guardar transação"); }
     };
 
+    const handleDeleteTx = async (id: string) => {
+        if (confirm('Tem a certeza que deseja eliminar este registo financeiro?')) {
+            try {
+                await personalService.deleteTransaction(id);
+                toast.success("Transação eliminada");
+                fetchData();
+            } catch { toast.error("Erro ao eliminar transação"); }
+        }
+    };
+
+    const openEditTx = (tx: PersonalTransaction) => {
+        setEditingTxId(tx._id);
+        setTxForm({ 
+            type: tx.type, 
+            category: tx.category, 
+            amount: tx.amount.toString(), 
+            description: tx.description,
+            date: tx.date ? new Date(tx.date).toISOString().split('T')[0] : ''
+        });
+        setIsAddTxOpen(true);
+    };
+
+    const closeTxModal = () => {
+        setIsAddTxOpen(false);
+        setEditingTxId(null);
+        setTxForm(defaultTxForm);
+    };
+
+    // --- TASK HANDLERS ---
     const handleAddTask = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await personalService.addTask({ ...taskForm, priority: taskForm.priority as 'low' | 'medium' | 'high' });
-            toast.success("Tarefa adicionada!");
-            setIsAddTaskOpen(false);
-            setTaskForm({ title: '', deadline: '', priority: 'medium' });
+            const payload = { ...taskForm, priority: taskForm.priority as 'low' | 'medium' | 'high' };
+            if(editingTaskId) {
+                await personalService.updateTask(editingTaskId, payload);
+                toast.success("Tarefa atualizada!");
+            } else {
+                await personalService.addTask(payload);
+                toast.success("Tarefa adicionada!");
+            }
+            closeTaskModal();
             fetchData();
-        } catch { toast.error("Erro ao adicionar tarefa"); }
+        } catch { toast.error("Erro ao guardar tarefa"); }
+    };
+
+    const handleDeleteTask = async (id: string) => {
+        if (confirm('Tem a certeza que deseja eliminar esta tarefa?')) {
+            try {
+                await personalService.deleteTask(id);
+                toast.success("Tarefa eliminada");
+                fetchData();
+            } catch { toast.error("Erro ao eliminar tarefa"); }
+        }
+    };
+
+    const openEditTask = (task: PersonalTask) => {
+        setEditingTaskId(task._id);
+        setTaskForm({
+            title: task.title,
+            deadline: task.deadline ? new Date(task.deadline).toISOString().split('T')[0] : '',
+            priority: task.priority
+        });
+        setIsAddTaskOpen(true);
+    };
+
+    const closeTaskModal = () => {
+        setIsAddTaskOpen(false);
+        setEditingTaskId(null);
+        setTaskForm(defaultTaskForm);
     };
 
     const toggleTaskStatus = async (id: string, currentStatus: string) => {
         try {
             await personalService.updateTaskStatus(id, currentStatus === 'completed' ? 'pending' : 'completed');
             fetchData();
-        } catch { toast.error("Erro ao atualizar tarefa"); }
+        } catch { toast.error("Erro ao atualizar status"); }
     };
 
+    // --- PROJECT HANDLERS ---
     const handleAddProject = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await personalService.addProject({ name: projectForm.name, totalBudget: Number(projectForm.totalBudget), description: projectForm.description });
-            toast.success("Projeto criado!");
-            setIsAddProjectOpen(false);
-            setProjectForm({ name: '', totalBudget: '', description: '' });
+            const payload = { name: projectForm.name, totalBudget: Number(projectForm.totalBudget), description: projectForm.description, deadline: projectForm.deadline };
+            if(editingProjectId) {
+                await personalService.updateProject(editingProjectId, payload);
+                toast.success("Projecto atualizado!");
+            } else {
+                await personalService.addProject(payload);
+                toast.success("Projeto criado!");
+            }
+            closeProjectModal();
             fetchData();
-        } catch { toast.error("Erro ao criar projeto"); }
+        } catch { toast.error("Erro ao guardar projeto"); }
     };
+
+    const handleDeleteProject = async (id: string) => {
+        if (confirm('Atenção: Tem a certeza que deseja eliminar este projecto permanentemente?')) {
+            try {
+                await personalService.deleteProject(id);
+                toast.success("Projeto eliminado");
+                fetchData();
+            } catch { toast.error("Erro ao eliminar projeto"); }
+        }
+    };
+
+    const openEditProject = (proj: PersonalProject) => {
+        setEditingProjectId(proj._id);
+        setProjectForm({
+            name: proj.name,
+            totalBudget: proj.totalBudget.toString(),
+            description: proj.description || '',
+            deadline: proj.deadline ? new Date(proj.deadline).toISOString().split('T')[0] : ''
+        });
+        setIsAddProjectOpen(true);
+    };
+
+    const closeProjectModal = () => {
+        setIsAddProjectOpen(false);
+        setEditingProjectId(null);
+        setProjectForm(defaultProjectForm);
+    };
+
 
     const priorityColor = (p: string) => p === 'high' ? '#ef4444' : p === 'medium' ? '#f59e0b' : '#6b7280';
     const priorityLabel = (p: string) => p === 'high' ? 'Alta' : p === 'medium' ? 'Média' : 'Baixa';
@@ -242,6 +351,12 @@ export default function PersonalDashboard() {
         border: 'none', borderRadius: '10px', color: '#000', fontWeight: 800,
         cursor: 'pointer', fontSize: '0.9rem', transition: 'all 0.2s', letterSpacing: '0.3px',
         whiteSpace: 'nowrap', boxShadow: '0 4px 10px rgba(184, 134, 11, 0.25)'
+    };
+    
+    const iconBtnStyle: React.CSSProperties = {
+        padding: '6px', background: 'var(--background)', border: '1px solid var(--border)',
+        borderRadius: '8px', color: 'var(--text-muted)', cursor: 'pointer',
+        display: 'inline-flex', transition: 'all 0.2s'
     };
 
     const tabs: { id: ViewMode; label: string }[] = [
@@ -378,8 +493,8 @@ export default function PersonalDashboard() {
                                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                     <thead>
                                         <tr style={{ background: 'var(--background)', borderBottom: '1px solid var(--border)' }}>
-                                            {['Data', 'Descrição', 'Categoria', 'Valor'].map(h => (
-                                                <th key={h} style={{ padding: '16px 24px', textAlign: h === 'Valor' ? 'right' : 'left', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-muted)' }}>{h}</th>
+                                            {['Data', 'Descrição', 'Categoria', 'Valor', 'Ações'].map(h => (
+                                                <th key={h} style={{ padding: '16px 24px', textAlign: h === 'Valor' ? 'right' : h === 'Ações' ? 'center' : 'left', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-muted)' }}>{h}</th>
                                             ))}
                                         </tr>
                                     </thead>
@@ -395,6 +510,12 @@ export default function PersonalDashboard() {
                                                 </td>
                                                 <td style={{ padding: '16px 24px', textAlign: 'right', fontWeight: 900, color: tx.type === 'income' ? '#10b981' : '#ef4444', fontSize: '1.1rem' }}>
                                                     {tx.type === 'income' ? '+' : '−'} {formatPrice(tx.amount, tx.currency)}
+                                                </td>
+                                                <td style={{ padding: '16px 24px', textAlign: 'center' }}>
+                                                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                                                        <button onClick={() => openEditTx(tx)} style={iconBtnStyle} title="Editar"><Edit3 size={16} /></button>
+                                                        <button onClick={() => handleDeleteTx(tx._id)} style={{...iconBtnStyle, color: '#ef4444'}} title="Eliminar"><Trash2 size={16} /></button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
@@ -437,8 +558,7 @@ export default function PersonalDashboard() {
                                 borderLeft: `5px solid ${task.status === 'late' ? '#ef4444' : task.status === 'completed' ? '#10b981' : '#FFD700'}`,
                                 borderRadius: '16px',
                                 boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
-                                transition: 'transform 0.2s, box-shadow 0.2s',
-                                cursor: 'pointer'
+                                transition: 'transform 0.2s, box-shadow 0.2s'
                             }}
                             onMouseOver={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 24px rgba(0,0,0,0.06)'; }}
                             onMouseOut={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 12px rgba(0,0,0,0.02)'; }}
@@ -471,15 +591,21 @@ export default function PersonalDashboard() {
                                         )}
                                     </div>
                                 </div>
-                                <span style={{
-                                    flexShrink: 0, fontSize: '0.75rem', fontWeight: 900, padding: '5px 12px', borderRadius: '20px',
-                                    background: `${priorityColor(task.priority)}18`,
-                                    color: priorityColor(task.priority),
-                                    border: `1px solid ${priorityColor(task.priority)}40`,
-                                    textTransform: 'uppercase', letterSpacing: '0.5px'
-                                }}>
-                                    {priorityLabel(task.priority)}
-                                </span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <span style={{
+                                        flexShrink: 0, fontSize: '0.75rem', fontWeight: 900, padding: '5px 12px', borderRadius: '20px',
+                                        background: `${priorityColor(task.priority)}18`,
+                                        color: priorityColor(task.priority),
+                                        border: `1px solid ${priorityColor(task.priority)}40`,
+                                        textTransform: 'uppercase', letterSpacing: '0.5px'
+                                    }}>
+                                        {priorityLabel(task.priority)}
+                                    </span>
+                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                        <button onClick={() => openEditTask(task)} style={iconBtnStyle} title="Editar"><Edit3 size={15} /></button>
+                                        <button onClick={() => handleDeleteTask(task._id)} style={{...iconBtnStyle, color: '#ef4444'}} title="Eliminar"><Trash2 size={15} /></button>
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -514,15 +640,19 @@ export default function PersonalDashboard() {
 
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', gap: '8px' }}>
                                     <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 900, color: 'var(--foreground)' }}>{proj.name}</h3>
-                                    <span style={{
-                                        flexShrink: 0, fontSize: '0.7rem', padding: '4px 10px', borderRadius: '20px', fontWeight: 900,
-                                        background: proj.status === 'active' ? 'rgba(16,185,129,0.1)' : 'var(--background)',
-                                        color: proj.status === 'active' ? '#10b981' : 'var(--text-muted)',
-                                        border: `1px solid ${proj.status === 'active' ? 'rgba(16,185,129,0.3)' : 'var(--border)'}`,
-                                        textTransform: 'uppercase', letterSpacing: '0.5px'
-                                    }}>
-                                        {proj.status}
-                                    </span>
+                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                        <span style={{
+                                            fontSize: '0.7rem', padding: '4px 10px', borderRadius: '20px', fontWeight: 900,
+                                            background: proj.status === 'active' ? 'rgba(16,185,129,0.1)' : 'var(--background)',
+                                            color: proj.status === 'active' ? '#10b981' : 'var(--text-muted)',
+                                            border: `1px solid ${proj.status === 'active' ? 'rgba(16,185,129,0.3)' : 'var(--border)'}`,
+                                            textTransform: 'uppercase', letterSpacing: '0.5px'
+                                        }}>
+                                            {proj.status}
+                                        </span>
+                                        <button onClick={() => openEditProject(proj)} style={{...iconBtnStyle, padding: '4px'}} title="Editar"><Edit3 size={14} /></button>
+                                        <button onClick={() => handleDeleteProject(proj._id)} style={{...iconBtnStyle, padding: '4px', color: '#ef4444'}} title="Eliminar"><Trash2 size={14} /></button>
+                                    </div>
                                 </div>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem', background: 'var(--background)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
@@ -553,12 +683,15 @@ export default function PersonalDashboard() {
 
             {/* ── MODALS ── */}
             {isAddTxOpen && (
-                <Modal title="Nova Transação Financeira" onClose={() => setIsAddTxOpen(false)} onSubmit={handleAddTx}>
+                <Modal title={editingTxId ? "Editar Transação" : "Nova Transação Financeira"} onClose={closeTxModal} onSubmit={handleAddTx}>
                     <Field label="Natureza do Registo">
                         <StyledSelect value={txForm.type} onChange={e => setTxForm({ ...txForm, type: e.target.value })}>
                             <option value="income">Entrada (Ganho Financeiro)</option>
                             <option value="expense">Saída (Despesa / Custo)</option>
                         </StyledSelect>
+                    </Field>
+                    <Field label="Data da Transação">
+                        <StyledInput type="date" value={txForm.date} onChange={e => setTxForm({ ...txForm, date: e.target.value })} />
                     </Field>
                     <Field label="Descrição da Transação">
                         <StyledInput placeholder="Ex: Sessão de Mentoria com Cliente X" required value={txForm.description} onChange={e => setTxForm({ ...txForm, description: e.target.value })} />
@@ -573,7 +706,7 @@ export default function PersonalDashboard() {
             )}
 
             {isAddTaskOpen && (
-                <Modal title="Nova Tarefa a Adicionar" onClose={() => setIsAddTaskOpen(false)} onSubmit={handleAddTask}>
+                <Modal title={editingTaskId ? "Editar Tarefa" : "Nova Tarefa a Adicionar"} onClose={closeTaskModal} onSubmit={handleAddTask}>
                     <Field label="O Que Precisa de Fazer?">
                         <StyledInput placeholder="Ex: Entregar planeamento da semana 3..." required value={taskForm.title} onChange={e => setTaskForm({ ...taskForm, title: e.target.value })} />
                     </Field>
@@ -591,7 +724,7 @@ export default function PersonalDashboard() {
             )}
 
             {isAddProjectOpen && (
-                <Modal title="Abrir Novo Projeto" onClose={() => setIsAddProjectOpen(false)} onSubmit={handleAddProject}>
+                <Modal title={editingProjectId ? "Editar Projeto" : "Abrir Novo Projeto"} onClose={closeProjectModal} onSubmit={handleAddProject}>
                     <Field label="Nome do Projeto ou Cliente">
                         <StyledInput placeholder="Ex: Consultoria de Marketing Brand X" required value={projectForm.name} onChange={e => setProjectForm({ ...projectForm, name: e.target.value })} />
                     </Field>
@@ -600,6 +733,9 @@ export default function PersonalDashboard() {
                     </Field>
                     <Field label="Valor Orçamentado e Fechado (MZN)">
                         <StyledInput type="number" placeholder="0.00" min="0" step="0.01" value={projectForm.totalBudget} onChange={e => setProjectForm({ ...projectForm, totalBudget: e.target.value })} />
+                    </Field>
+                    <Field label="Prazo Final de Entrega">
+                        <StyledInput type="date" value={projectForm.deadline} onChange={e => setProjectForm({ ...projectForm, deadline: e.target.value })} />
                     </Field>
                 </Modal>
             )}

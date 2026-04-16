@@ -48,6 +48,24 @@ exports.deleteTransaction = async (req, res) => {
     }
 };
 
+exports.updateTransaction = async (req, res) => {
+    try {
+        const { type, category, amount, currency, description, date, project } = req.body;
+        const transaction = await PersonalFinance.findOneAndUpdate(
+            { _id: req.params.id, user: req.user.id },
+            { 
+                type, category, amount, currency, description, date,
+                project: project ? project : null
+            },
+            { new: true, runValidators: true }
+        );
+        if (!transaction) return res.status(404).json({ success: false, message: 'Transaction not found' });
+        res.status(200).json({ success: true, transaction });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 exports.getFinanceSummary = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -141,6 +159,25 @@ exports.deleteTask = async (req, res) => {
     }
 };
 
+exports.updateTask = async (req, res) => {
+    try {
+        const { title, description, deadline, priority, project } = req.body;
+        const task = await PersonalTask.findOneAndUpdate(
+            { _id: req.params.id, user: req.user.id },
+            { 
+                title, description, priority,
+                deadline: deadline ? deadline : null,
+                project: project ? project : null
+            },
+            { new: true, runValidators: true }
+        );
+        if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
+        res.status(200).json({ success: true, task });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 
 // --- PROJECTS ---
 
@@ -186,6 +223,34 @@ exports.getProjects = async (req, res) => {
         }));
 
         res.status(200).json({ success: true, projects: projectsWithStats });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.updateProject = async (req, res) => {
+    try {
+        const { name, description, totalBudget, currency, deadline } = req.body;
+        const project = await PersonalProject.findOneAndUpdate(
+            { _id: req.params.id, user: req.user.id },
+            { 
+                name, description, totalBudget, currency, 
+                deadline: deadline ? deadline : null
+            },
+            { new: true, runValidators: true }
+        );
+        if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
+        res.status(200).json({ success: true, project });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.deleteProject = async (req, res) => {
+    try {
+        await PersonalProject.findOneAndDelete({ _id: req.params.id, user: req.user.id });
+        // NOTE: we are not cascading deletion, might want to if required, but usually keeping finances/tasks isolated is ok or manually deleted.
+        res.status(200).json({ success: true, message: 'Project deleted' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

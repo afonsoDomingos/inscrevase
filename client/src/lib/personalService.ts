@@ -69,6 +69,14 @@ export const personalService = {
         return res.data;
     },
 
+    updateTransaction: async (id: string, data: Partial<PersonalTransaction>) => {
+        const token = authService.getToken();
+        const res = await axios.patch(`${API_URL}/personal/finance/${id}`, data, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.transaction;
+    },
+
     // --- TASKS ---
     getTasks: async (): Promise<PersonalTask[]> => {
         const token = authService.getToken();
@@ -84,9 +92,16 @@ export const personalService = {
         });
         return res.data.task;
     },
+    updateTask: async (id: string, data: Partial<PersonalTask>) => {
+        const token = authService.getToken();
+        const res = await axios.patch(`${API_URL}/personal/tasks/${id}`, data, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.task;
+    },
     updateTaskStatus: async (id: string, status: string) => {
         const token = authService.getToken();
-        const res = await axios.patch(`${API_URL}/personal/tasks/${id}`, { status }, {
+        const res = await axios.patch(`${API_URL}/personal/tasks/${id}/status`, { status }, {
             headers: { Authorization: `Bearer ${token}` }
         });
         return res.data.task;
@@ -113,5 +128,19 @@ export const personalService = {
             headers: { Authorization: `Bearer ${token}` }
         });
         return res.data.project;
+    },
+    updateProject: async (id: string, data: Partial<PersonalProject>) => {
+        const token = authService.getToken();
+        const res = await axios.patch(`${API_URL}/personal/projects/${id}`, data, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.project;
+    },
+    deleteProject: async (id: string) => {
+        const token = authService.getToken();
+        const res = await axios.delete(`${API_URL}/personal/projects/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data;
     }
 };
