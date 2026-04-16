@@ -35,7 +35,12 @@ router.delete('/clients/:id', personalManagementController.deleteClient);
 // --- REPORTS ---
 router.get('/reports', personalManagementController.getReportData);
 
+// --- SAVINGS ---
+router.get('/savings', personalManagementController.getSavings);
+router.post('/savings', personalManagementController.addSaving);
+router.delete('/savings/:id', personalManagementController.deleteSaving);
+
 // --- AI ASSISTANT ---
-router.post('/ai/process', protect, personalManagementController.processAICommand);
+router.post('/ai/process', personalManagementController.processAICommand);
 
 module.exports = router;

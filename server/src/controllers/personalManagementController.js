@@ -2,6 +2,7 @@ const PersonalFinance = require('../models/PersonalFinance');
 const PersonalTask = require('../models/PersonalTask');
 const PersonalProject = require('../models/PersonalProject');
 const PersonalClient = require('../models/PersonalClient');
+const PersonalSaving = require('../models/PersonalSaving');
 
 // --- FINANCE ---
 
@@ -424,6 +425,46 @@ exports.processAICommand = async (req, res) => {
         }
 
         res.status(200).json({ success: true, action, data, message });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// --- SAVINGS ---
+
+exports.getSavings = async (req, res) => {
+    try {
+        const savings = await PersonalSaving.find({ user: req.user.id }).sort({ date: -1 });
+        res.status(200).json({ success: true, savings });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.addSaving = async (req, res) => {
+    try {
+        const { amount, account, date, description, linkedTransactionId } = req.body;
+        const saving = new PersonalSaving({
+            user: req.user.id,
+            amount,
+            account,
+            date: date || new Date(),
+            description: description || '',
+            linkedTransactionId: linkedTransactionId || null
+        });
+        await saving.save();
+        res.status(201).json({ success: true, saving });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.deleteSaving = async (req, res) => {
+    try {
+        const saving = await PersonalSaving.findOne({ _id: req.params.id, user: req.user.id });
+        if (!saving) return res.status(404).json({ success: false, message: 'Registo não encontrado.' });
+        await saving.deleteOne();
+        res.status(200).json({ success: true, message: 'Eliminado com sucesso.' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
