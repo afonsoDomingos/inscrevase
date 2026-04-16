@@ -23,7 +23,8 @@ const GlobalSettings = require('../models/GlobalSettings');
  */
 async function ensurePaypalPlan(planKey, currency, trialDays = 0) {
     try {
-        const settingsKey = `paypal_plan_${planKey}_${currency}_t${trialDays}`;
+        const mode = process.env.PAYPAL_MODE || 'sandbox';
+        const settingsKey = `paypal_plan_${planKey}_${currency}_t${trialDays}_${mode}`;
         const existingSetting = await GlobalSettings.findOne({ key: settingsKey });
         
         if (existingSetting && existingSetting.value) {
@@ -31,7 +32,7 @@ async function ensurePaypalPlan(planKey, currency, trialDays = 0) {
         }
 
         // 1. Create Product if not exists
-        const productKey = 'paypal_product_inscrevase';
+        const productKey = `paypal_product_inscrevase_${mode}`;
         let productId;
         const prodSetting = await GlobalSettings.findOne({ key: productKey });
         
