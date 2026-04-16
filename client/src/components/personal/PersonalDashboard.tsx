@@ -569,19 +569,20 @@ export default function PersonalDashboard() {
         if (alerts.length === 0) return null;
 
         return (
-            <div style={{ marginBottom: '2.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+            <div style={{ marginBottom: '2.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
                 {alerts.map((a, i) => (
                     <div key={i} style={{ 
-                        background: a.type === 'danger' ? 'rgba(239,68,68,0.1)' : a.type === 'warning' ? 'rgba(245,158,11,0.1)' : a.type === 'success' ? 'rgba(255,215,0,0.1)' : 'rgba(59,130,246,0.1)',
-                        border: `1px solid ${a.type === 'danger' ? '#ef4444' : a.type === 'warning' ? '#f59e0b' : a.type === 'success' ? '#FFD700' : '#3b82f6'}`,
-                        borderRadius: '20px', padding: '1.25rem', display: 'flex', gap: '15px'
+                        background: '#fff',
+                        border: '1px solid #eee',
+                        borderRadius: '12px', padding: '1.2rem', display: 'flex', gap: '12px',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
                     }}>
-                        <div style={{ color: a.type === 'danger' ? '#ef4444' : a.type === 'warning' ? '#f59e0b' : a.type === 'success' ? '#FFD700' : '#3b82f6' }}>
-                            {a.type === 'danger' || a.type === 'warning' ? <AlertTriangle size={20}/> : <Sparkles size={20}/>}
+                        <div style={{ color: a.type === 'danger' ? '#ff4444' : a.type === 'warning' ? '#ffb000' : a.type === 'success' ? '#00ff41' : '#3b82f6' }}>
+                            {a.type === 'danger' || a.type === 'warning' ? <AlertTriangle size={18}/> : <Sparkles size={18}/>}
                         </div>
                         <div>
-                            <div style={{ fontWeight: 800, fontSize: '0.85rem', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{a.title}</div>
-                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>{a.msg}</div>
+                            <div style={{ fontWeight: 800, fontSize: '0.75rem', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9 }}>{a.title}</div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.5', fontWeight: 500 }}>{a.msg}</div>
                         </div>
                     </div>
                 ))}
@@ -597,16 +598,18 @@ export default function PersonalDashboard() {
 
     const btnPrimary: React.CSSProperties = {
         display: 'inline-flex', alignItems: 'center', gap: '8px',
-        padding: '10px 20px', background: 'linear-gradient(135deg, #FFD700, #B8860B)',
-        border: 'none', borderRadius: '10px', color: '#000', fontWeight: 800,
-        cursor: 'pointer', fontSize: '0.9rem', transition: 'all 0.2s', letterSpacing: '0.3px',
-        whiteSpace: 'nowrap', boxShadow: '0 4px 10px rgba(184, 134, 11, 0.25)'
+        padding: '10px 20px', background: '#000',
+        border: 'none', borderRadius: '8px', color: '#fff', fontWeight: 800,
+        cursor: 'pointer', fontSize: '0.85rem', transition: 'all 0.2s', letterSpacing: '0.5px',
+        whiteSpace: 'nowrap', boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
     };
     
     const iconBtnStyle: React.CSSProperties = {
         padding: '6px', background: 'var(--background)', border: '1px solid var(--border)',
         borderRadius: '8px', color: 'var(--text-muted)', cursor: 'pointer',
         display: 'inline-flex', transition: 'all 0.2s'
+    };
+
     const tabs: { id: ViewMode; label: string; icon: LucideIcon }[] = [
         { id: 'overview', label: 'Resumo Geral', icon: Activity },
         { id: 'finance', label: 'Finanças', icon: Wallet },
@@ -623,22 +626,18 @@ export default function PersonalDashboard() {
         <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', color: 'var(--foreground)' }}>
 
             {/* ── Header ── */}
-            <div style={{ marginBottom: '3rem', position: 'relative', background: 'var(--paper)', padding: '2.5rem', borderRadius: '32px', border: '1px solid var(--border)', boxShadow: '0 20px 40px rgba(0,0,0,0.05)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '1.5rem' }}>
-                    <div style={{ background: 'linear-gradient(135deg, #FFD700, #B8860B)', padding: '16px', borderRadius: '20px', color: '#000', boxShadow: '0 10px 20px rgba(184,134,11,0.3)' }}>
-                        <Activity size={32} />
-                    </div>
-                    <div>
-                        <h1 style={{ fontSize: 'clamp(2rem, 6vw, 3.2rem)', fontWeight: 900, margin: 0, fontFamily: 'var(--font-playfair)', letterSpacing: '-1.5px', color: 'var(--foreground)' }}>
-                            Saúde Profissional
-                        </h1>
-                        <div style={{ height: '6px', width: '80px', background: 'var(--gold-gradient)', borderRadius: '3px', marginTop: '8px' }} />
-                    </div>
+            <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1.5rem', background: 'var(--paper)', padding: '1.5rem 2rem', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                <div style={{ background: '#000', padding: '10px', borderRadius: '10px', color: '#fff' }}>
+                    <Activity size={24} />
                 </div>
-                
-                <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '1.1rem', lineHeight: '1.6', maxWidth: '700px', fontWeight: 500 }}>
-                    O seu ecossistema de gestão inteligente. Monitorize projectos, controle finanças e otimize a sua performance com precisão.
-                </p>
+                <div>
+                    <h1 style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0, letterSpacing: '-1px' }}>
+                        Saúde <span style={{ fontWeight: 400, opacity: 0.5 }}>Profissional</span>
+                    </h1>
+                    <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.85rem', fontWeight: 500 }}>
+                        Ecosistema de gestão inteligente e performance.
+                    </p>
+                </div>
             </div>
 
             {/* ── Smart Command Center (AI) ── */}
@@ -749,19 +748,22 @@ export default function PersonalDashboard() {
                 )}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '2.5rem', overflowX: 'auto', paddingBottom: '10px' }}>
-                {/* ── Tabs ── */}
-                <div style={{ display: 'flex', background: 'var(--paper)', border: '1px solid var(--border)', padding: '6px', borderRadius: '20px', gap: '6px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '2rem', overflowX: 'auto', paddingBottom: '8px' }}>
+                {/* ── Tesla Minimalist Tabs ── */}
+                <div style={{ display: 'flex', borderBottom: '1px solid #eee', width: '100%', gap: '2rem' }}>
                     {tabs.map(tab => (
                         <button key={tab.id} onClick={() => setViewMode(tab.id)} style={{
-                            padding: '10px 18px', borderRadius: '12px',
-                            background: viewMode === tab.id ? 'linear-gradient(135deg,#FFD700,#B8860B)' : 'transparent',
+                            padding: '12px 0', 
+                            background: 'transparent',
                             color: viewMode === tab.id ? '#000' : 'var(--text-muted)',
-                            fontWeight: viewMode === tab.id ? 800 : 600,
-                            border: 'none', cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.85rem',
-                            display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap'
+                            fontWeight: 800,
+                            border: 'none',
+                            borderBottom: viewMode === tab.id ? '2px solid #000' : '2px solid transparent',
+                            cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.8rem',
+                            display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap',
+                            textTransform: 'uppercase', letterSpacing: '1px'
                         }}>
-                            <tab.icon size={16} /> {tab.label}
+                            <tab.icon size={14} /> {tab.label}
                         </button>
                     ))}
                 </div>
@@ -776,78 +778,110 @@ export default function PersonalDashboard() {
                         {renderSmartAlerts()}
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
-                    {/* Balance card */}
-                    <div style={{ background: 'linear-gradient(135deg,#1a1a2e,#16213e)', border: '1px solid rgba(255,215,0,0.2)', borderRadius: '24px', padding: '2rem', position: 'relative', overflow: 'hidden', boxShadow: '0 15px 35px rgba(0,0,0,0.15)' }}>
-                        <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '140px', height: '140px', background: 'rgba(255,215,0,0.05)', borderRadius: '50%' }} />
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#FFD700', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-                            <Wallet size={18} /> Saldo Disponível
-                        </div>
-                        <div style={{ fontSize: '3.2rem', fontWeight: 900, fontFamily: 'var(--font-playfair)', marginBottom: '1.5rem', color: summary.balance >= 0 ? '#fff' : '#ef4444' }}>
-                            {formatPrice(summary.balance, 'MZN')}
-                        </div>
-                        <div style={{ display: 'flex', gap: '24px', background: 'rgba(255,255,255,0.05)', padding: '16px 20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10b981', fontSize: '1rem', fontWeight: 700 }}>
-                                <ArrowUpRight size={18} /> {formatPrice(summary.income, 'MZN')}
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#ef4444', fontSize: '1rem', fontWeight: 700 }}>
-                                <ArrowDownRight size={18} /> {formatPrice(summary.expense, 'MZN')}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Tasks card */}
-                    <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '24px', padding: '2rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', color: '#FFD700', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-                            <Target size={18} /> Resumo de Produtividade
-                        </div>
-                        <div style={{ display: 'flex', gap: '30px', marginBottom: '1.5rem' }}>
-                            {[
-                                { label: 'Em Aberto', count: tasks.filter(t => t.status === 'pending' || t.status === 'in_progress').length, color: '#f59e0b' },
-                                { label: 'Atraso', count: tasks.filter(t => t.status === 'late').length, color: '#ef4444' },
-                                { label: 'Feito', count: tasks.filter(t => t.status === 'completed').length, color: '#10b981' },
-                            ].map(item => (
-                                <div key={item.label}>
-                                    <div style={{ fontSize: '2.8rem', fontWeight: 900, color: item.color, lineHeight: 1 }}>{item.count}</div>
-                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '8px' }}>{item.label}</div>
-                                </div>
-                            ))}
-                        </div>
-                        {tasks.length > 0 ? (
+                    {/* ── TESLA THEMED OVERVIEW CARDS ── */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.2rem' }}>
+                        
+                        {/* 1. FINANCIAL HEALTH (Balance) */}
+                        <div style={{ 
+                            background: '#0a0a0a', 
+                            color: '#fff', 
+                            padding: '1.5rem', 
+                            borderRadius: '16px', 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            justifyContent: 'space-between',
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                            border: '1px solid rgba(255,255,255,0.05)'
+                        }}>
                             <div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 800, marginBottom: '8px', color: 'var(--text-muted)' }}>
-                                    <span>CONCLUÍDAS</span><span>{Math.round((tasks.filter(t => t.status === 'completed').length / tasks.length) * 100)}%</span>
+                                <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <Wallet size={14} /> Liquidez Total
                                 </div>
-                                <div style={{ height: '10px', background: 'var(--background)', borderRadius: '5px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                                    <div style={{ height: '100%', width: `${Math.round((tasks.filter(t => t.status === 'completed').length / tasks.length) * 100)}%`, background: 'linear-gradient(90deg,#10b981,#059669)', transition: 'width 0.8s ease' }} />
+                                <div style={{ fontSize: '2.4rem', fontWeight: 700, letterSpacing: '-1px', color: summary.balance >= 0 ? '#fff' : '#ff4444' }}>
+                                    {formatPrice(summary.balance, 'MZN')}
                                 </div>
                             </div>
-                        ) : (
-                            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>Nenhuma tarefa agendada.</p>
-                        )}
-                    </div>
+                            
+                            <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', fontWeight: 800 }}>Entradas</div>
+                                    <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#00ff41' }}>+{formatPrice(summary.income, 'MZN').split(',')[0]}</div>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', fontWeight: 800 }}>Saídas</div>
+                                    <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#ff4444' }}>-{formatPrice(summary.expense, 'MZN').split(',')[0]}</div>
+                                </div>
+                            </div>
+                        </div>
 
-                    {/* Entities Summary */}
-                    <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '24px', padding: '2rem', boxShadow: '0 8px 30px rgba(0,0,0,0.04)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem', color: '#FFD700', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-                            <Activity size={18} /> Entidades & Gestão
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', background: 'var(--background)', padding: '15px', borderRadius: '16px' }}>
-                                <div style={{ background: 'rgba(255,215,0,0.1)', color: '#FFD700', padding: '10px', borderRadius: '12px' }}><Briefcase size={20}/></div>
-                                <div>
-                                    <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>{projects.length}</div>
-                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>PROJECTOS</div>
+                        {/* 2. PRODUCTIVITY (Tasks) */}
+                        <div style={{ 
+                            background: '#fff', 
+                            color: '#000', 
+                            padding: '1.5rem', 
+                            borderRadius: '16px', 
+                            border: '1px solid #e5e5e5',
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            justifyContent: 'space-between'
+                        }}>
+                            <div>
+                                <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <Target size={14} /> Performance Operacional
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
+                                    {[
+                                        { label: 'Aberto', val: tasks.filter(t => t.status === 'pending' || t.status === 'in_progress').length, color: '#000' },
+                                        { label: 'Atraso', val: tasks.filter(t => t.status === 'late').length, color: '#ff4444' },
+                                        { label: 'Concluído', val: tasks.filter(t => t.status === 'completed').length, color: '#000', opacity: 0.4 },
+                                    ].map(it => (
+                                        <div key={it.label}>
+                                            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: it.color, opacity: it.opacity }}>{it.val}</div>
+                                            <div style={{ fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase', marginTop: '4px' }}>{it.label}</div>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', background: 'var(--background)', padding: '15px', borderRadius: '16px' }}>
-                                <div style={{ background: 'rgba(59,130,246,0.1)', color: '#3b82f6', padding: '10px', borderRadius: '12px' }}><Users size={20}/></div>
-                                <div>
-                                    <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>{clients.length}</div>
-                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>CLIENTES</div>
+                            
+                            <div style={{ marginTop: '1.5rem' }}>
+                                <div style={{ height: '4px', width: '100%', background: '#f0f0f0', borderRadius: '2px', overflow: 'hidden' }}>
+                                    <div style={{ height: '100%', width: `${tasks.length ? Math.round((tasks.filter(t => t.status === 'completed').length / tasks.length) * 100) : 0}%`, background: '#000', transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' }} />
+                                </div>
+                                <div style={{ fontSize: '0.65rem', fontWeight: 800, textAlign: 'right', marginTop: '6px' }}>
+                                    {tasks.length ? Math.round((tasks.filter(t => t.status === 'completed').length / tasks.length) * 100) : 0}% EFICIÊNCIA
                                 </div>
                             </div>
                         </div>
+
+                        {/* 3. MANAGEMENT (Entities) */}
+                        <div style={{ 
+                            background: '#f8f8f8', 
+                            color: '#000', 
+                            padding: '1.5rem', 
+                            borderRadius: '16px', 
+                            border: '1px solid #eee',
+                            display: 'flex', 
+                            flexDirection: 'column'
+                        }}>
+                            <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <Activity size={14} /> Ativos em Gestão
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '0.8rem 1rem', borderRadius: '12px', border: '1px solid #eee' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', fontWeight: 600 }}>
+                                        <Briefcase size={16} opacity={0.5} /> Projetos
+                                    </div>
+                                    <span style={{ fontSize: '1.1rem', fontWeight: 800 }}>{projects.length}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '0.8rem 1rem', borderRadius: '12px', border: '1px solid #eee' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', fontWeight: 600 }}>
+                                        <Users size={16} opacity={0.5} /> Clientes
+                                    </div>
+                                    <span style={{ fontSize: '1.1rem', fontWeight: 800 }}>{clients.length}</span>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </>
@@ -1369,46 +1403,26 @@ function StatCard({ icon: Icon, label, value, color, secondary }: { icon: any, l
     return (
         <div style={{ 
             background: 'var(--paper)', 
-            border: '1px solid var(--border)', 
-            borderRadius: '24px', 
-            padding: '1.5rem', 
+            border: '1px solid #eee', 
+            borderRadius: '12px', 
+            padding: '1.2rem', 
             display: 'flex', 
             flexDirection: 'column', 
-            gap: '1rem', 
-            boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
-            position: 'relative',
-            overflow: 'hidden'
+            gap: '0.5rem',
+            transition: 'all 0.2s ease'
         }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div style={{ 
-                    padding: '12px', 
-                    borderRadius: '16px', 
-                    background: `${color}10`, 
-                    color: color,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}>
-                    <Icon size={24} />
-                </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</div>
+                <div style={{ color: color, opacity: 0.8 }}><Icon size={16} /></div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                <div style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-0.5px' }}>{value}</div>
                 {secondary && (
-                    <div style={{ 
-                        fontSize: '0.7rem', 
-                        fontWeight: 800, 
-                        color: secondary.startsWith('+') ? '#10b981' : '#ef4444',
-                        background: secondary.startsWith('+') ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
-                        padding: '4px 8px',
-                        borderRadius: '8px'
-                    }}>
+                    <span style={{ fontSize: '0.65rem', fontWeight: 800, color: secondary.startsWith('+') ? '#00ff41' : '#ff4444' }}>
                         {secondary}
-                    </div>
+                    </span>
                 )}
             </div>
-            <div>
-                <p style={{ margin: 0, fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</p>
-                <h3 style={{ margin: '4px 0 0 0', fontSize: '1.75rem', fontWeight: 900 }}>{value}</h3>
-            </div>
-            <div style={{ position: 'absolute', bottom: '-20px', right: '-20px', width: '80px', height: '80px', background: `${color}05`, borderRadius: '50%' }} />
         </div>
     );
 }
