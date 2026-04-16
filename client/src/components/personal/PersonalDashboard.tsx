@@ -1298,7 +1298,7 @@ export default function PersonalDashboard() {
                                 {msg.content}
                                 {msg.suggestion && (
                                     <button 
-                                        onClick={() => confirmAISuggestion(msg.suggestion)}
+                                        onClick={() => confirmAISuggestion(msg.suggestion!)}
                                         style={{
                                             display: 'block', width: '100%', marginTop: '12px',
                                             padding: '8px', background: '#FFD700', color: '#000',
