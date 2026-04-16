@@ -1,11 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
 import { 
     Wallet, TrendingUp, TrendingDown, Target, 
-    CheckCircle, Clock, AlertCircle, Plus, 
-    Trash2, Briefcase, ChevronRight, Activity 
+    CheckCircle, Clock, Plus, Activity 
 } from 'lucide-react';
 import { personalService, PersonalTransaction, PersonalTask, PersonalProject } from '@/lib/personalService';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -71,7 +70,7 @@ export default function PersonalDashboard() {
             setIsAddTxOpen(false);
             setTxForm({ type: 'income', category: '', amount: '', description: '' });
             fetchData();
-        } catch (error) {
+        } catch (_error) {
             toast.error("Erro ao adicionar transação");
         }
     };
@@ -87,7 +86,7 @@ export default function PersonalDashboard() {
             setIsAddTaskOpen(false);
             setTaskForm({ title: '', deadline: '', priority: 'medium' });
             fetchData();
-        } catch (error) {
+        } catch (_error) {
             toast.error("Erro ao adicionar tarefa");
         }
     };
@@ -97,7 +96,7 @@ export default function PersonalDashboard() {
         try {
             await personalService.updateTaskStatus(id, newStatus);
             fetchData(); // reload
-        } catch (error) {
+        } catch (_error) {
             toast.error("Erro ao atualizar tarefa");
         }
     };
@@ -113,7 +112,7 @@ export default function PersonalDashboard() {
             setIsAddProjectOpen(false);
             setProjectForm({ name: '', totalBudget: '' });
             fetchData();
-        } catch (error) {
+        } catch (_error) {
             toast.error("Erro ao criar projeto");
         }
     };
