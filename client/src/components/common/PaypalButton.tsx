@@ -38,22 +38,22 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
         if (isRecurring && options.intent !== 'subscription') {
             console.log('🔄 Resetting PayPal SDK for Subscription mode...');
             dispatch({
-                type: "resetOptions",
+                type: "resetOptions" as any,
                 value: {
                     ...options,
                     intent: "subscription",
                     vault: true,
-                },
+                } as any,
             });
         } else if (!isRecurring && options.intent === 'subscription') {
             console.log('🔄 Resetting PayPal SDK for Capture mode...');
             dispatch({
-                type: "resetOptions",
+                type: "resetOptions" as any,
                 value: {
                     ...options,
                     intent: "capture",
                     vault: false,
-                },
+                } as any,
             });
         }
     }, [isRecurring, options, dispatch]);
