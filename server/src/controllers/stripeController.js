@@ -1275,7 +1275,9 @@ exports.confirmTransactionPayment = async (req, res) => {
             const user = await User.findById(transaction.user._id);
             const updateData = {
                 plan: plan.toLowerCase(),
-                canCreateEvents: true
+                canCreateEvents: true,
+                subscriptionStatus: 'active',
+                planExpiresAt: new Date(Date.now() + 31 * 24 * 60 * 60 * 1000) // 31 days for buffer
             };
 
             if (user && user.role === 'participant') {
