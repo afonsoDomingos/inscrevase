@@ -183,5 +183,14 @@ export const personalService = {
             headers: { Authorization: `Bearer ${token}` }
         });
         return res.data;
+    },
+
+    // --- REPORTS ---
+    getReportData: async (timeframe: string) => {
+        const token = authService.getToken();
+        const res = await axios.get(`${API_URL}/personal/reports?timeframe=${timeframe}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.report;
     }
 };

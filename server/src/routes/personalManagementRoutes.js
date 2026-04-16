@@ -32,4 +32,7 @@ router.post('/clients', personalManagementController.addClient);
 router.patch('/clients/:id', personalManagementController.updateClient);
 router.delete('/clients/:id', personalManagementController.deleteClient);
 
+// --- REPORTS ---
+router.get('/reports', personalManagementController.getReportData);
+
 module.exports = router;

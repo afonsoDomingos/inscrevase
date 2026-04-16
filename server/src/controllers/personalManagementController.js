@@ -254,8 +254,70 @@ exports.updateProject = async (req, res) => {
 exports.deleteProject = async (req, res) => {
     try {
         await PersonalProject.findOneAndDelete({ _id: req.params.id, user: req.user.id });
-        // NOTE: we are not cascading deletion, might want to if required, but usually keeping finances/tasks isolated is ok or manually deleted.
         res.status(200).json({ success: true, message: 'Project deleted' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// --- REPORTS ---
+
+exports.getReportData = async (req, res) => {
+    try {
+        const { timeframe } = req.query; // daily, weekly, monthly, yearly
+        const userId = req.user.id;
+        
+        let dateFilter = {};
+        const now = new Date();
+        
+        if (timeframe === 'daily') {
+            const startOfDay = new Date(now.setHours(0,0,0,0));
+            dateFilter = { date: { $gte: startOfDay } };
+        } else if (timeframe === 'weekly') {
+            const startOfWeek = new Date(now.setDate(now.getDate() - 7));
+            dateFilter = { date: { $gte: startOfWeek } };
+        } else if (timeframe === 'monthly') {
+            const startOfMonth = new Date(now.setMonth(now.getMonth() - 1));
+            dateFilter = { date: { $gte: startOfMonth } };
+        } else if (timeframe === 'yearly') {
+            const startOfYear = new Date(now.setFullYear(now.getFullYear() - 1));
+            dateFilter = { date: { $gte: startOfYear } };
+        }
+
+        const transactions = await PersonalFinance.find({ user: userId, ...dateFilter }).sort({ date: 1 });
+        const tasks = await PersonalTask.find({ user: userId }); // We usually want all task stats for comparison
+        
+        // Group transactions by date for the chart
+        const chartData = transactions.reduce((acc, tx) => {
+            const dateStr = new Date(tx.date).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' });
+            if (!acc[dateStr]) acc[dateStr] = { date: dateStr, income: 0, expense: 0 };
+            if (tx.type === 'income') acc[dateStr].income += tx.amount;
+            else acc[dateStr].expense += tx.amount;
+            return acc;
+        }, {});
+
+        // Category distribution
+        const categoryData = transactions.reduce((acc, tx) => {
+            if (!acc[tx.category]) acc[tx.category] = 0;
+            acc[tx.category] += tx.amount;
+            return acc;
+        }, {});
+
+        res.status(200).json({ 
+            success: true, 
+            report: {
+                chartData: Object.values(chartData),
+                categories: Object.entries(categoryData).map(([name, value]) => ({ name, value })),
+                summary: {
+                    totalIncome: transactions.filter(t => t.type === 'income').reduce((a, b) => a + b.amount, 0),
+                    totalExpense: transactions.filter(t => t.type === 'expense').reduce((a, b) => a + b.amount, 0),
+                    taskStats: {
+                        completed: tasks.filter(t => t.status === 'completed').length,
+                        total: tasks.length
+                    }
+                }
+            } 
+        });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

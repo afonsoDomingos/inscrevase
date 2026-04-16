@@ -1,17 +1,23 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
     Wallet, TrendingUp, Target, 
     CheckCircle, Clock, Plus, Activity, X,
     Folder, AlertTriangle, ArrowUpRight, ArrowDownRight,
-    Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase
+    Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase,
+    BarChart3, PieChart as PieIcon, Calendar, Filter
 } from 'lucide-react';
+import { 
+    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+    PieChart, Pie, Cell, BarChart, Bar, Legend
+} from 'recharts';
 import { personalService, PersonalTransaction, PersonalTask, PersonalProject, PersonalClient } from '@/lib/personalService';
 import { useCurrency } from '@/context/CurrencyContext';
 import { toast } from 'sonner';
 
-type ViewMode = 'overview' | 'finance' | 'tasks' | 'projects' | 'clients';
+type ViewMode = 'overview' | 'finance' | 'tasks' | 'projects' | 'clients' | 'reports';
+type Timeframe = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
 /* ─── Shared styled sub-components ─── */
 
@@ -161,6 +167,11 @@ export default function PersonalDashboard() {
     const [projects, setProjects] = useState<PersonalProject[]>([]);
     const [clients, setClients] = useState<PersonalClient[]>([]);
 
+    // Report State
+    const [reportData, setReportData] = useState<any>(null);
+    const [reportTimeframe, setReportTimeframe] = useState<Timeframe>('monthly');
+    const [reportLoading, setReportLoading] = useState(false);
+
     const [isAddTxOpen, setIsAddTxOpen] = useState(false);
     const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
     const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
@@ -208,7 +219,17 @@ export default function PersonalDashboard() {
         }
     };
 
+    const fetchReport = async (tf: Timeframe) => {
+        setReportLoading(true);
+        try {
+            const data = await personalService.getReportData(tf);
+            setReportData(data);
+        } catch { toast.error("Erro ao carregar relatórios"); }
+        finally { setReportLoading(false); }
+    };
+
     useEffect(() => { fetchData(); }, []);
+    useEffect(() => { if (viewMode === 'reports') fetchReport(reportTimeframe); }, [viewMode, reportTimeframe]);
 
     // --- FINANCE HANDLERS ---
     const handleAddTx = async (e: React.FormEvent) => {
@@ -253,7 +274,7 @@ export default function PersonalDashboard() {
             description: tx.description,
             date: tx.date ? new Date(tx.date).toISOString().split('T')[0] : '',
             project: (projectVal as string) || '',
-            client: '' // Finance model update might need this populated if we want it pre-filled
+            client: '' 
         });
         setIsAddTxOpen(true);
     };
@@ -438,10 +459,11 @@ export default function PersonalDashboard() {
         { id: 'tasks', label: 'Tarefas', icon: Target },
         { id: 'projects', label: 'Projetos', icon: Briefcase },
         { id: 'clients', label: 'Clientes', icon: Users },
+        { id: 'reports', label: 'Relatórios', icon: BarChart3 },
     ];
 
-    // Build categories for select
     const allCategories = Array.from(new Set([...DEFAULT_CATEGORIES, ...transactions.map(t => t.category)]));
+    const PIE_COLORS = ['#FFD700', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b', '#06b6d4', '#ec4899'];
 
     return (
         <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', color: 'var(--foreground)' }}>
@@ -503,7 +525,7 @@ export default function PersonalDashboard() {
                             {[
                                 { label: 'Em Aberto', count: tasks.filter(t => t.status === 'pending' || t.status === 'in_progress').length, color: '#f59e0b' },
                                 { label: 'Atraso', count: tasks.filter(t => t.status === 'late').length, color: '#ef4444' },
-                                { label: 'Feto', count: tasks.filter(t => t.status === 'completed').length, color: '#10b981' },
+                                { label: 'Feito', count: tasks.filter(t => t.status === 'completed').length, color: '#10b981' },
                             ].map(item => (
                                 <div key={item.label}>
                                     <div style={{ fontSize: '2.8rem', fontWeight: 900, color: item.color, lineHeight: 1 }}>{item.count}</div>
@@ -547,6 +569,102 @@ export default function PersonalDashboard() {
                             </div>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* ── REPORTS ── */}
+            {viewMode === 'reports' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                        <div>
+                            <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Análise de Performance</h2>
+                            <p style={{ margin: '4px 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>Relatórios detalhados com inteligência financeira.</p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px', background: 'var(--paper)', border: '1px solid var(--border)', padding: '4px', borderRadius: '12px' }}>
+                            {(['daily', 'weekly', 'monthly', 'yearly'] as Timeframe[]).map(tf => (
+                                <button key={tf} onClick={() => setReportTimeframe(tf)} style={{
+                                    padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                                    background: reportTimeframe === tf ? '#FFD700' : 'transparent',
+                                    color: reportTimeframe === tf ? '#000' : 'var(--text-muted)',
+                                    fontWeight: 700, fontSize: '0.8rem', textTransform: 'capitalize', transition: 'all 0.2s'
+                                }}>
+                                    {tf === 'daily' ? 'Hoje' : tf === 'weekly' ? 'Semana' : tf === 'monthly' ? 'Mês' : 'Ano'}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {reportLoading ? (
+                        <div style={{ padding: '6rem', textAlign: 'center', color: '#FFD700' }}><Activity className="spin" size={32}/></div>
+                    ) : reportData && (
+                        <>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                                <div style={{ background: 'var(--paper)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border)' }}>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>Entradas</div>
+                                    <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#10b981' }}>{formatPrice(reportData.summary.totalIncome, 'MZN')}</div>
+                                </div>
+                                <div style={{ background: 'var(--paper)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border)' }}>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>Saídas</div>
+                                    <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#ef4444' }}>{formatPrice(reportData.summary.totalExpense, 'MZN')}</div>
+                                </div>
+                                <div style={{ background: 'var(--paper)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border)' }}>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>Lucro Projetado</div>
+                                    <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#FFD700' }}>{formatPrice(reportData.summary.totalIncome - reportData.summary.totalExpense, 'MZN')}</div>
+                                </div>
+                                <div style={{ background: 'var(--paper)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border)' }}>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>Eficiência de Tarefas</div>
+                                    <div style={{ fontSize: '1.8rem', fontWeight: 900 }}>{reportData.summary.taskStats.total > 0 ? Math.round((reportData.summary.taskStats.completed/reportData.summary.taskStats.total)*100) : 0}%</div>
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem', flexWrap: 'wrap' }}>
+                                {/* Revenue Chart */}
+                                <div style={{ background: 'var(--paper)', padding: '2rem', borderRadius: '24px', border: '1px solid var(--border)', minHeight: '400px' }}>
+                                    <h3 style={{ margin: '0 0 2rem 0', fontSize: '1.1rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '10px' }}><TrendingUp size={18} color="#FFD700"/> Fluxo de Caixa</h3>
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <AreaChart data={reportData.chartData}>
+                                            <defs>
+                                                <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/><stop offset="95%" stopColor="#10b981" stopOpacity={0}/></linearGradient>
+                                                <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/><stop offset="95%" stopColor="#ef4444" stopOpacity={0}/></linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+                                            <XAxis dataKey="date" stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} />
+                                            <YAxis stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => `${v/1000}k`} />
+                                            <Tooltip contentStyle={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '12px' }} />
+                                            <Area type="monotone" dataKey="income" stroke="#10b981" fillOpacity={1} fill="url(#colorIncome)" strokeWidth={3} />
+                                            <Area type="monotone" dataKey="expense" stroke="#ef4444" fillOpacity={1} fill="url(#colorExpense)" strokeWidth={3} />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
+
+                                {/* Categories Chart */}
+                                <div style={{ background: 'var(--paper)', padding: '2rem', borderRadius: '24px', border: '1px solid var(--border)', minHeight: '400px' }}>
+                                    <h3 style={{ margin: '0 0 2rem 0', fontSize: '1.1rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '10px' }}><PieIcon size={18} color="#FFD700"/> Categorias</h3>
+                                    <ResponsiveContainer width="100%" height={250}>
+                                        <PieChart>
+                                            <Pie data={reportData.categories} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                                                {reportData.categories.map((entry: any, index: number) => (
+                                                    <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                    <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        {reportData.categories.map((c: any, i: number) => (
+                                            <div key={c.name} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 600 }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: PIE_COLORS[i % PIE_COLORS.length] }} />
+                                                    {c.name}
+                                                </div>
+                                                <span>{formatPrice(c.value, 'MZN')}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
             )}
 
@@ -771,7 +889,7 @@ export default function PersonalDashboard() {
                         {clients.length === 0 ? (
                             <div style={{ gridColumn: '1/-1', padding: '6rem 2rem', textAlign: 'center', background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '24px' }}>
                                 <Users size={48} style={{ opacity: 0.1, marginBottom: '1.5rem' }} />
-                                <h3 style={{ margin: 0, fontWeight: 800 }}>Nenhum Cliente Registo</h3>
+                                <h3 style={{ margin: 0, fontWeight: 800 }}>Nenhum Cliente Registado</h3>
                                 <p style={{ color: 'var(--text-muted)' }}>Registe clientes para associar a projectos e facturação.</p>
                                 <button onClick={() => setIsAddClientOpen(true)} style={{ ...btnPrimary, marginTop: '2rem', background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)', boxShadow: 'none' }}>
                                     Adicionar Cliente
