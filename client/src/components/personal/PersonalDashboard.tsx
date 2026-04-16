@@ -467,12 +467,12 @@ export default function PersonalDashboard() {
     };
 
     const tabs: { id: ViewMode; label: string; icon: any }[] = [
-        { id: 'overview', label: 'Visão Geral', icon: Activity },
+        { id: 'overview', label: 'Resumo Geral', icon: Activity },
         { id: 'finance', label: 'Finanças', icon: Wallet },
         { id: 'tasks', label: 'Tarefas', icon: Target },
         { id: 'projects', label: 'Projetos', icon: Briefcase },
         { id: 'clients', label: 'Clientes', icon: Users },
-        { id: 'reports', label: 'Relatórios', icon: BarChart3 },
+        { id: 'reports', label: 'Análises', icon: BarChart3 },
     ];
 
     const allCategories = Array.from(new Set([...DEFAULT_CATEGORIES, ...transactions.map(t => t.category)]));
@@ -487,7 +487,9 @@ export default function PersonalDashboard() {
                     <h1 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: 'var(--font-playfair)' }}>
                         <Activity color="#FFD700" size={32} /> Workspace <span style={{ fontWeight: 300, opacity: 0.5 }}>360</span>
                     </h1>
-                    <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.95rem' }}>Gestão profissional de finanças, tarefas, projectos e clientes.</p>
+                    <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '1rem', lineHeight: '1.6', maxWidth: '600px' }}>
+                        O seu centro de controlo pessoal para organizar **projectos**, gerir **finanças**, acompanhar **tarefas** e manter a sua base de **clientes** num único lugar.
+                    </p>
                 </div>
 
                 {/* ── Tabs ── */}
@@ -685,7 +687,7 @@ export default function PersonalDashboard() {
             {viewMode === 'finance' && (
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Gestão Financeira</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Minhas Finanças</h2>
                         <button onClick={() => setIsAddTxOpen(true)} style={btnPrimary}>
                             <Plus size={18} /> Registar Transação
                         </button>
@@ -750,7 +752,7 @@ export default function PersonalDashboard() {
             {viewMode === 'tasks' && (
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Tarefas & Deadline</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Minhas Tarefas</h2>
                         <button onClick={() => setIsAddTaskOpen(true)} style={btnPrimary}>
                             <Plus size={18} /> Criar Tarefa
                         </button>
@@ -831,7 +833,7 @@ export default function PersonalDashboard() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                         <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Meus Projectos</h2>
                         <button onClick={() => setIsAddProjectOpen(true)} style={btnPrimary}>
-                            <Plus size={18} /> Abrir Projecto
+                            <Plus size={18} /> Novo Projecto
                         </button>
                     </div>
 
@@ -892,9 +894,9 @@ export default function PersonalDashboard() {
             {viewMode === 'clients' && (
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Base de Clientes</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Meus Clientes</h2>
                         <button onClick={() => setIsAddClientOpen(true)} style={btnPrimary}>
-                            <Plus size={18} /> Novo Cliente
+                            <Plus size={18} /> Registar Cliente
                         </button>
                     </div>
 
