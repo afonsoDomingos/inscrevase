@@ -33,14 +33,12 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
 
     const isRecurring = type === 'subscription';
 
-    // Ensure the PayPal script is loaded with the correct intent for subscriptions
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     useEffect(() => {
         if (isRecurring && options.intent !== 'subscription') {
             console.log('🔄 Resetting PayPal SDK for Subscription mode...');
             dispatch({
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 type: "resetOptions" as any,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 value: {
                     ...options,
                     intent: "subscription",
@@ -50,9 +48,7 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
         } else if (!isRecurring && options.intent === 'subscription') {
             console.log('🔄 Resetting PayPal SDK for Capture mode...');
             dispatch({
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 type: "resetOptions" as any,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 value: {
                     ...options,
                     intent: "capture",
@@ -61,6 +57,7 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
             });
         }
     }, [isRecurring, options, dispatch]);
+    /* eslint-enable @typescript-eslint/no-explicit-any */
 
     const createOrder = async () => {
         const loadingToast = toast.loading("Preparando ambiente seguro PayPal...", { duration: 25000 });
