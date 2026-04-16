@@ -34,6 +34,7 @@ exports.getTransactions = async (req, res) => {
     try {
         const transactions = await PersonalFinance.find({ user: req.user.id })
             .populate('project', 'name')
+            .populate('client', 'name')
             .sort({ date: -1 });
         res.status(200).json({ success: true, transactions });
     } catch (error) {

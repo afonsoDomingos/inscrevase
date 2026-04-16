@@ -314,6 +314,7 @@ export default function PersonalDashboard() {
     const openEditTx = (tx: PersonalTransaction) => {
         setEditingTxId(tx._id);
         const projectVal = typeof tx.project === 'object' ? tx.project?._id : tx.project;
+        const clientVal = typeof tx.client === 'object' ? tx.client?._id : tx.client;
         setTxForm({ 
             type: tx.type, 
             category: tx.category, 
@@ -321,7 +322,7 @@ export default function PersonalDashboard() {
             description: tx.description,
             date: tx.date ? new Date(tx.date).toISOString().split('T')[0] : '',
             project: (projectVal as string) || '',
-            client: '' 
+            client: (clientVal as string) || ''
         });
         setIsAddTxOpen(true);
     };
@@ -1072,14 +1073,20 @@ export default function PersonalDashboard() {
                         )}
                     </Field>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                         <Field label="Valor (MZN)">
                             <StyledInput type="number" placeholder="0.00" required min="0" step="0.01" value={txForm.amount} onChange={e => setTxForm({ ...txForm, amount: e.target.value })} />
                         </Field>
-                        <Field label="Projecto (Opcional)">
+                        <Field label="Projecto">
                             <StyledSelect value={txForm.project} onChange={e => setTxForm({ ...txForm, project: e.target.value })}>
-                                <option value="">Sem Projecto</option>
+                                <option value="">Nenhum</option>
                                 {projects.map(p => <option key={p._id} value={p._id}>{p.name}</option>)}
+                            </StyledSelect>
+                        </Field>
+                        <Field label="Cliente">
+                            <StyledSelect value={txForm.client} onChange={e => setTxForm({ ...txForm, client: e.target.value })}>
+                                <option value="">Nenhum</option>
+                                {clients.map(cl => <option key={cl._id} value={cl._id}>{cl.name}</option>)}
                             </StyledSelect>
                         </Field>
                     </div>
