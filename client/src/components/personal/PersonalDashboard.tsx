@@ -6,7 +6,7 @@ import {
     CheckCircle, Clock, Plus, Activity, X,
     ArrowUpRight, ArrowDownRight,
     Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase,
-    BarChart3, PieChart as PieIcon, Sparkles, Send, Bot, MessageSquare
+    BarChart3, PieChart as PieIcon, Sparkles, Send, Bot
 } from 'lucide-react';
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -194,6 +194,11 @@ interface ProjectFormState {
     client: string;
 }
 
+interface AISuggestion {
+    action: 'add_task' | 'add_transaction' | 'add_client';
+    data: any;
+}
+
 /* ─── Main component ─── */
 export default function PersonalDashboard() {
     const { formatPrice } = useCurrency();
@@ -240,7 +245,7 @@ export default function PersonalDashboard() {
     // AI Assistant State
     const [isAIOpen, setIsAIOpen] = useState(false);
     const [aiInput, setAiInput] = useState('');
-    const [aiMessages, setAiMessages] = useState<{ role: 'user' | 'bot'; content: string; suggestion?: any }[]>([]);
+    const [aiMessages, setAiMessages] = useState<{ role: 'user' | 'bot'; content: string; suggestion?: AISuggestion | null }[]>([]);
     const [aiLoading, setAiLoading] = useState(false);
 
     const fetchData = async () => {
@@ -503,7 +508,7 @@ export default function PersonalDashboard() {
         }
     };
 
-    const confirmAISuggestion = async (suggestion: any) => {
+    const confirmAISuggestion = async (suggestion: AISuggestion) => {
         setAiLoading(true);
         try {
             if (suggestion.action === 'add_task') {
