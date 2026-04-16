@@ -132,7 +132,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                     ]}
                     onManualSelect={() => {}}
                     onSuccess={() => {}}
-                    isCurrentPlan={user?.plan === 'free' || (!user?.plan && id === 'free')}
+                    isCurrentPlan={user?.plan === 'free' || (user && !user.plan)}
                     t={t}
                 />
 
