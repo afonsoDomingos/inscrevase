@@ -6,7 +6,7 @@ import {
     CheckCircle, Clock, Plus, Activity, X,
     ArrowUpRight, ArrowDownRight,
     Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase,
-    BarChart3, PieChart as PieIcon, Sparkles, Send, Bot
+    BarChart3, PieChart as PieIcon, Sparkles, Send, Bot, AlertTriangle
 } from 'lucide-react';
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
