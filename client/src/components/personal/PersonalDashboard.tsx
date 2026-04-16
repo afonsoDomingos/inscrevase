@@ -33,7 +33,7 @@ interface ReportData {
     };
 }
 
-/* ─── Shared styled sub-components ─── */
+/* --- Shared styled sub-components --- */
 
 const inputStyle: React.CSSProperties = {
     width: '100%',
@@ -111,7 +111,7 @@ function StyledSelect(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
     );
 }
 
-/* ─── Modal wrapper ─── */
+/* --- Modal wrapper --- */
 function Modal({ title, onClose, onSubmit, children, submitLabel = "Guardar Alterações" }: {
     title: string; onClose: () => void; onSubmit: (e: React.FormEvent) => void; children: React.ReactNode; submitLabel?: string;
 }) {
@@ -691,14 +691,6 @@ export default function PersonalDashboard() {
         );
     };
 
-    if (loading) {
-        return (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px', gap: '12px', color: '#FFD700', fontSize: '1.1rem', fontWeight: 600 }}>
-                <Activity size={24} style={{ animation: 'spin 1s linear infinite' }} /> Carregando Workspace...
-            </div>
-        );
-    }
-
     const btnPrimary: React.CSSProperties = {
         display: 'inline-flex', alignItems: 'center', gap: '8px',
         padding: '10px 20px', background: '#000',
@@ -720,6 +712,12 @@ export default function PersonalDashboard() {
             id="personal-dashboard-root"
             style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', color: 'var(--foreground)' }}
         >
+            {loading ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px', gap: '12px', color: '#FFD700', fontSize: '1.1rem', fontWeight: 600 }}>
+                    <Activity size={24} style={{ animation: 'spin 1s linear infinite' }} /> Carregando Workspace...
+                </div>
+            ) : (
+                <>
 
             {/* ── Header ── */}
             <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1.5rem', background: 'var(--paper)', padding: '1.5rem 2rem', borderRadius: '16px', border: '1px solid var(--border)' }}>
@@ -1624,6 +1622,7 @@ export default function PersonalDashboard() {
                 </Modal>
             )}
 
+            </>)}
         </div>
     );
 }
