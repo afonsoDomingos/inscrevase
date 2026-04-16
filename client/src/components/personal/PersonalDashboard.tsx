@@ -650,6 +650,34 @@ export default function PersonalDashboard() {
             });
         }
 
+        // --- Savings Specific Alerts ---
+        const totalSaved = savings.reduce((a, b) => a + b.amount, 0);
+        const savingsRate = summary.income > 0 ? (totalSaved / summary.income) : 0;
+
+        if (summary.income > 0 && savingsRate < 0.15) {
+            alerts.push({
+                type: 'warning',
+                title: 'Atenção à Poupança',
+                msg: `A sua taxa de poupança actual é de ${(savingsRate * 100).toFixed(1)}%. Recomendamos atingir os 20% para garantir estabilidade a longo prazo.`
+            });
+        }
+
+        if (summary.balance > 10000 && savingsRate < 0.05) {
+            alerts.push({
+                type: 'info',
+                title: 'Liquidez Ociosa',
+                msg: 'Tem um saldo positivo considerável. Considere mover uma parte para a sua conta de poupança ou investimentos.'
+            });
+        }
+
+        if (savingsRate > 0.25) {
+            alerts.push({
+                type: 'success',
+                title: 'Reserva Robusta!',
+                msg: `Incrível! Superou a meta de 25% de poupança. O seu futuro financeiro está a ser construído com alicerces fortes.`
+            });
+        }
+
         if (alerts.length === 0) return null;
 
         return (
