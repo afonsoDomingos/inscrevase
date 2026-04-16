@@ -149,12 +149,7 @@ function MentorDashboardContent() {
     const [isLabActive, setIsLabActive] = useState(false);
     const [libraryBooks, setLibraryBooks] = useState<BookModel[]>([]);
     const [libraryLoading, setLibraryLoading] = useState(false);
-    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-        'main': true,
-        'management': true,
-        'growth': true,
-        'support': true
-    });
+    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
 
     // Handle initial tab and changes from URL
     useEffect(() => {
@@ -744,7 +739,7 @@ function MentorDashboardContent() {
                             )}
 
                             <AnimatePresence initial={false}>
-                                {(isSidebarCollapsed || expandedSections[section.title]) && (
+                                {(isSidebarCollapsed || expandedSections[section.title] !== false) && (
                                     <motion.div
                                         initial={isSidebarCollapsed ? false : { height: 0, opacity: 0 }}
                                         animate={{ height: 'auto', opacity: 1 }}
