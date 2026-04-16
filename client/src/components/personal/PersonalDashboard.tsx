@@ -243,7 +243,6 @@ export default function PersonalDashboard() {
     const [newCategoryName, setNewCategoryName] = useState('');
 
     // AI Assistant State
-    const [isAIOpen, setIsAIOpen] = useState(false);
     const [aiInput, setAiInput] = useState('');
     const [aiMessages, setAiMessages] = useState<{ role: 'user' | 'bot'; content: string; suggestion?: AISuggestion | null }[]>([]);
     const [aiLoading, setAiLoading] = useState(false);
@@ -640,6 +639,114 @@ export default function PersonalDashboard() {
                 <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '1.1rem', lineHeight: '1.6', maxWidth: '700px', fontWeight: 500 }}>
                     O seu ecossistema de gestão inteligente. Monitorize projectos, controle finanças e otimize a sua performance com precisão.
                 </p>
+            </div>
+
+            {/* ── Smart Command Center (AI) ── */}
+            <div style={{ 
+                marginBottom: '3rem', 
+                background: 'linear-gradient(135deg,rgba(0,0,0,0.8), rgba(20,20,20,0.9))', 
+                padding: '2rem', 
+                borderRadius: '24px', 
+                border: '1px solid rgba(255,215,0,0.3)',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                position: 'relative',
+                overflow: 'hidden'
+            }}>
+                <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '200px', height: '200px', background: 'rgba(255,215,0,0.03)', borderRadius: '50%', filter: 'blur(40px)' }} />
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
+                    <Sparkles size={20} color="#FFD700" />
+                    <span style={{ color: '#FFD700', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Consultor de Saúde Profissional IA</span>
+                </div>
+
+                <form onSubmit={handleAISend} style={{ position: 'relative', display: 'flex', gap: '10px' }}>
+                    <input 
+                        placeholder="Como posso otimizar a sua gestão hoje? (Ex: 'Registar 500€ do Cliente X' ou 'Nova tarefa: Revisão de contrato')" 
+                        value={aiInput}
+                        onChange={e => setAiInput(e.target.value)}
+                        style={{
+                            flex: 1,
+                            padding: '1.2rem 1.5rem',
+                            background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(255,215,0,0.2)',
+                            borderRadius: '16px',
+                            color: '#fff',
+                            fontSize: '1rem',
+                            outline: 'none',
+                            transition: 'all 0.3s',
+                            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
+                        }}
+                    />
+                    <button 
+                        disabled={aiLoading}
+                        style={{
+                            padding: '0 2rem',
+                            background: 'var(--gold-gradient)',
+                            border: 'none',
+                            borderRadius: '16px',
+                            color: '#000',
+                            fontWeight: 800,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        {aiLoading ? <Activity size={20} className="spin" /> : <><Send size={20} /> Analisar</>}
+                    </button>
+                </form>
+
+                {/* AI Results/Suggestions Display */}
+                {aiMessages.length > 0 && aiMessages[aiMessages.length-1].role === 'bot' && (
+                    <div style={{ marginTop: '1.5rem', borderTop: '1px solid rgba(255,215,0,0.1)', paddingTop: '1.5rem' }}>
+                        <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
+                            <div style={{ background: 'rgba(255,215,0,0.1)', color: '#FFD700', padding: '10px', borderRadius: '12px' }}>
+                                <Bot size={22} />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <p style={{ margin: 0, color: '#fff', fontSize: '0.95rem', lineHeight: '1.6' }}>{aiMessages[aiMessages.length-1].content}</p>
+                                {aiMessages[aiMessages.length-1].suggestion && (
+                                    <div style={{ marginTop: '1rem', display: 'flex', gap: '10px' }}>
+                                        <button 
+                                            onClick={() => confirmAISuggestion(aiMessages[aiMessages.length-1].suggestion!)}
+                                            style={{
+                                                padding: '10px 20px',
+                                                background: '#10b981',
+                                                color: '#fff',
+                                                border: 'none',
+                                                borderRadius: '10px',
+                                                fontWeight: 800,
+                                                fontSize: '0.85rem',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px'
+                                            }}
+                                        >
+                                            <CheckCircle size={16} /> Confirmar Execução
+                                        </button>
+                                        <button 
+                                            onClick={() => setAiMessages(prev => prev.slice(0, -1))}
+                                            style={{
+                                                padding: '10px 20px',
+                                                background: 'rgba(255,255,255,0.05)',
+                                                color: '#fff',
+                                                border: '1px solid rgba(255,255,255,0.1)',
+                                                borderRadius: '10px',
+                                                fontWeight: 600,
+                                                fontSize: '0.85rem',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '2.5rem', overflowX: 'auto', paddingBottom: '10px' }}>
@@ -1254,96 +1361,54 @@ export default function PersonalDashboard() {
                 </Modal>
             )}
 
-            {/* ── AI ASSISTANT PANEL ── */}
-            <button 
-                onClick={() => {
-                    setIsAIOpen(!isAIOpen);
-                    if (aiMessages.length === 0) {
-                        setAiMessages([{ role: 'bot', content: "Olá! Sou o seu Assistente 360. Como posso ajudar com a sua gestão hoje?" }]);
-                    }
-                }}
-                style={{
-                    position: 'fixed', bottom: '30px', right: '30px', zIndex: 999,
-                    width: '60px', height: '60px', borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #FFD700, #B8860B)',
-                    color: '#000', border: 'none', cursor: 'pointer',
-                    boxShadow: '0 10px 25px rgba(184, 134, 11, 0.4)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-                }}
-                onMouseOver={e => (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.1) rotate(12deg)'}
-                onMouseOut={e => (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1) rotate(0)'}
-            >
-                {isAIOpen ? <X size={28}/> : <Sparkles size={28}/>}
-            </button>
+        </div>
+    );
+}
 
-            {isAIOpen && (
-                <div style={{
-                    position: 'fixed', bottom: '100px', right: '30px', zIndex: 999,
-                    width: '380px', height: '500px', maxWidth: 'calc(100vw - 60px)',
-                    background: 'var(--paper)', border: '1px solid var(--border)',
-                    borderRadius: '24px', boxShadow: '0 20px 50px rgba(0,0,0,0.2)',
-                    display: 'flex', flexDirection: 'column', overflow: 'hidden',
-                    animation: 'slideUp 0.3s ease-out'
+function StatCard({ icon: Icon, label, value, color, secondary }: { icon: any, label: string, value: string | number, color: string, secondary?: string }) {
+    return (
+        <div style={{ 
+            background: 'var(--paper)', 
+            border: '1px solid var(--border)', 
+            borderRadius: '24px', 
+            padding: '1.5rem', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: '1rem', 
+            boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
+            position: 'relative',
+            overflow: 'hidden'
+        }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ 
+                    padding: '12px', 
+                    borderRadius: '16px', 
+                    background: `${color}10`, 
+                    color: color,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                 }}>
-                    <div style={{ padding: '1.25rem', background: 'var(--background)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ background: 'rgba(255,215,0,0.1)', color: '#FFD700', padding: '8px', borderRadius: '12px' }}><Bot size={20}/></div>
-                        <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>Assistente Inteligente</div>
-                    </div>
-
-                    <div style={{ flex: 1, padding: '1.25rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {aiMessages.map((msg, i) => (
-                            <div key={i} style={{ 
-                                alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                                maxWidth: '85%', padding: '12px 16px', borderRadius: '16px',
-                                background: msg.role === 'user' ? 'linear-gradient(135deg, #FFD700, #B8860B)' : 'var(--background)',
-                                color: msg.role === 'user' ? '#000' : 'var(--foreground)',
-                                fontSize: '0.85rem', fontWeight: msg.role === 'user' ? 700 : 500,
-                                border: msg.role === 'user' ? 'none' : '1px solid var(--border)',
-                                boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
-                            }}>
-                                {msg.content}
-                                {msg.suggestion && (
-                                    <button 
-                                        onClick={() => confirmAISuggestion(msg.suggestion!)}
-                                        style={{
-                                            display: 'block', width: '100%', marginTop: '12px',
-                                            padding: '8px', background: '#FFD700', color: '#000',
-                                            border: 'none', borderRadius: '8px', fontWeight: 800,
-                                            cursor: 'pointer', fontSize: '0.75rem'
-                                        }}
-                                    >
-                                        Confirmar Ação
-                                    </button>
-                                )}
-                            </div>
-                        ))}
-                        {aiLoading && <div style={{ alignSelf: 'flex-start', color: '#FFD700' }}><Activity size={18} className="spin"/></div>}
-                    </div>
-
-                    <form onSubmit={handleAISend} style={{ padding: '1rem', borderTop: '1px solid var(--border)', background: 'var(--background)' }}>
-                        <div style={{ position: 'relative' }}>
-                            <input 
-                                placeholder="Eescreva algo..." 
-                                value={aiInput}
-                                onChange={e => setAiInput(e.target.value)}
-                                style={{
-                                    width: '100%', padding: '12px 45px 12px 16px', borderRadius: '12px',
-                                    background: 'var(--paper)', border: '1px solid var(--border)',
-                                    color: 'var(--foreground)', fontSize: '0.85rem', outline: 'none'
-                                }}
-                            />
-                            <button type="submit" style={{
-                                position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)',
-                                background: 'transparent', border: 'none', color: '#FFD700', cursor: 'pointer'
-                            }}>
-                                <Send size={18}/>
-                            </button>
-                        </div>
-                    </form>
+                    <Icon size={24} />
                 </div>
-            )}
-
+                {secondary && (
+                    <div style={{ 
+                        fontSize: '0.7rem', 
+                        fontWeight: 800, 
+                        color: secondary.startsWith('+') ? '#10b981' : '#ef4444',
+                        background: secondary.startsWith('+') ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
+                        padding: '4px 8px',
+                        borderRadius: '8px'
+                    }}>
+                        {secondary}
+                    </div>
+                )}
+            </div>
+            <div>
+                <p style={{ margin: 0, fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</p>
+                <h3 style={{ margin: '4px 0 0 0', fontSize: '1.75rem', fontWeight: 900 }}>{value}</h3>
+            </div>
+            <div style={{ position: 'absolute', bottom: '-20px', right: '-20px', width: '80px', height: '80px', background: `${color}05`, borderRadius: '50%' }} />
         </div>
     );
 }
