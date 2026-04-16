@@ -13,7 +13,8 @@ const whatsappService = require('../services/whatsappService');
 const {
     generateSubscriptionConfirmationEmail,
     generateEventPaymentConfirmationEmail,
-    generateTrialWelcomeEmail // Added for trial support
+    generateTrialWelcomeEmail, // Added for trial support
+    generateSubscriptionExpiredEmail // Added for cancellation support
 } = require('../utils/emailTemplates');
 const GlobalSettings = require('../models/GlobalSettings');
 
@@ -113,47 +114,9 @@ exports.createSubscriptionOrder = async (req, res) => {
         const { plan, currency, trial } = req.body;
         const userId = req.user.id;
 
-        // If it's a trial, we MUST use recurring subscriptions
-        if (trial) {
-            return this.createRecurringSubscription(req, res);
-        }
-
-        const user = await User.findById(userId);
-        if (!user) return res.status(404).json({ message: 'User not found' });
-
-        const dynamicPlans = await getDynamicPlanConfig();
-        const planConfig = dynamicPlans[plan] || dynamicPlans.pro || PLANS.pro;
-
-        let finalAmount;
-        let finalCurrency = currency;
-
-        if (currency === 'MZN' || currency === 'MT') {
-            const mznPrice = planConfig.prices?.MZN ? (planConfig.prices.MZN / 100) : (planConfig.price || 0);
-            const mznRate = await getLatestRate();
-            finalAmount = mznPrice / mznRate;
-            finalCurrency = 'USD';
-        } else {
-            finalAmount = planConfig.prices ? (planConfig.prices[currency] / 100) : (planConfig.price || 0);
-            if (!finalAmount && planConfig.prices?.USD) {
-                finalAmount = planConfig.prices.USD / 100;
-                finalCurrency = 'USD';
-            }
-        }
-
-        const orderData = {
-            intent: 'CAPTURE',
-            purchase_units: [{
-                amount: {
-                    currency_code: finalCurrency,
-                    value: finalAmount.toFixed(2)
-                },
-                description: `Upgrade para plano ${plan.toUpperCase()}`,
-                custom_id: JSON.stringify({ userId, plan, type: 'subscription' })
-            }]
-        };
-
-        const order = await paypalService.createOrder(orderData);
-        res.status(200).json(order);
+        // All plan upgrades are now handled as recurring subscriptions
+        // If it's a trial, it will have a trial period, if not, it will start regular billing
+        return await this.createRecurringSubscription(req, res);
     } catch (error) {
         console.error('❌ PayPal Create Subscription Order Error:', error);
         res.status(500).json({ message: error.message });

@@ -9,7 +9,10 @@ const whatsappService = require('./whatsappService');
 const {
     generatePendingApprovalEmail,
     generateReferralBonusEmail,
-    generateBasicEmail
+    generateBasicEmail,
+    generateSubscriptionExpiredEmail,
+    generateSubscriptionWarningEmail,
+    generateUpgradeSuggestionEmail
 } = require('../utils/emailTemplates');
 const { logCommunication } = require('../utils/communicationLogger');
 

@@ -65,7 +65,7 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
                 throw new Error(`Server Error: ${response.status} - ${errorData}`);
             }
 
-            const result = await response.json();
+            const result = await response.json(); console.log('PAYPAL CREATE RAW RESPONSE:', result);
             
             // If it's a recurring subscription, PayPal expects the subscription data
             if (result.isRecurring) {
@@ -195,7 +195,8 @@ export default function PaypalButton({ type, planId, formId, submissionData, adD
     }
 
     // Toggle between createOrder and createSubscription based on whether it's a trial/recurring
-    const isRecurring = type === 'subscription' && trial;
+    // All subscriptions should be recurring to support the automated lifecycle system
+    const isRecurring = type === 'subscription';
 
     return (
         <PayPalButtons

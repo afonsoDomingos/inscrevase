@@ -1471,6 +1471,9 @@
         "payWithCardStripe": "Pay with Card",
         "alternativePayment": "Manual Transfer",
         "footerInfo": "All plans include access to financial management tools and basic support. Platform fees are applied only to the net amount of processed registrations. The upgrade is immediate and billing is pro-rata.",
+        "trialBadge": "30 DAYS FREE",
+        "freeFirstMonth": "Free first month",
+        "perMonthAfter": "after trial period",
         "manualUpgrade": {
             "title": "Send Proof of Payment",
             "selectedPlan": "Selected Plan: {plan}",

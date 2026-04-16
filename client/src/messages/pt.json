@@ -1510,6 +1510,9 @@
         "payWithCardStripe": "Pagar com Cartão",
         "alternativePayment": "Transferência Manual",
         "footerInfo": "Todos os planos incluem acesso a ferramentas de gestão financeira e suporte básico. As taxas de plataforma são aplicadas apenas sobre o valor líquido das inscrições processadas. O upgrade é imediato e a cobrança é pro-rata.",
+        "trialBadge": "30 DIAS GRÁTIS",
+        "freeFirstMonth": "Grátis no 1º mês",
+        "perMonthAfter": "após o período de teste",
         "manualUpgrade": {
             "title": "Enviar Comprovativo",
             "selectedPlan": "Plano Selecionado: {plan}",
