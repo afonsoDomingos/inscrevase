@@ -105,8 +105,9 @@ import CurrencySwitcher from '@/components/CurrencySwitcher';
 import MySalesPanel from '@/components/books/MySalesPanel';
 import { pushService } from '@/lib/pushService';
 import SubscriptionStatus from '@/components/mentor/SubscriptionStatus';
+import PersonalDashboard from '@/components/personal/PersonalDashboard';
 
-type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard' | 'referral' | 'library' | 'mysales' | 'vacancies';
+type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard' | 'referral' | 'library' | 'mysales' | 'vacancies' | 'workspace';
 
 function MentorDashboardContent() {
     const { t } = useTranslate();
@@ -387,7 +388,7 @@ function MentorDashboardContent() {
     useEffect(() => {
         const tab = searchParams.get('tab');
         if (tab) {
-            const validTabs: Tab[] = ['overview', 'forms', 'submissions', 'reports', 'settings', 'earnings', 'blog', 'plans', 'services', 'ads', 'feedback', 'smartlinks', 'marketing', 'lessons'];
+            const validTabs: Tab[] = ['overview', 'forms', 'submissions', 'reports', 'settings', 'earnings', 'blog', 'plans', 'services', 'ads', 'feedback', 'smartlinks', 'marketing', 'lessons', 'workspace'];
             if (validTabs.includes(tab as Tab)) {
                 setActiveTab(tab as Tab);
             }
@@ -653,7 +654,10 @@ function MentorDashboardContent() {
                     {[
                         {
                             title: t('dashboard.sidebarGroups.dashboard') || "DASHBOARD",
-                            items: [{ id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> }]
+                            items: [
+                                { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
+                                { id: 'workspace', label: 'Workspace 360', icon: <Briefcase size={20} /> }
+                            ]
                         },
                         {
                             title: t('dashboard.sidebarGroups.content') || "CONTEÚDO / PRODUTOS",
@@ -1295,6 +1299,12 @@ function MentorDashboardContent() {
                 )}
 
                 <AnimatePresence mode="wait">
+                    {activeTab === 'workspace' && (
+                        <motion.div key="workspace" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <PersonalDashboard />
+                        </motion.div>
+                    )}
+
                     {activeTab === 'overview' && (
                         <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             {user && <SubscriptionStatus user={user} />}

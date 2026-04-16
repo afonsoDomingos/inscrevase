@@ -1,0 +1,117 @@
+import axios from 'axios';
+import { authService } from './authService';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+export interface PersonalTransaction {
+    _id: string;
+    type: 'income' | 'expense';
+    category: string;
+    amount: number;
+    currency: string;
+    description: string;
+    date: string;
+    isRecurring: boolean;
+    status: 'paid' | 'pending';
+    project?: { _id: string; name: string };
+}
+
+export interface PersonalTask {
+    _id: string;
+    title: string;
+    description?: string;
+    deadline?: string;
+    status: 'pending' | 'in_progress' | 'completed' | 'late';
+    priority: 'low' | 'medium' | 'high';
+    project?: { _id: string; name: string };
+}
+
+export interface PersonalProject {
+    _id: string;
+    name: string;
+    description?: string;
+    status: 'active' | 'completed' | 'on_hold' | 'cancelled';
+    totalBudget: number;
+    receivedAmount: number;
+    currency: string;
+    deadline?: string;
+    progress?: number;
+}
+
+export const personalService = {
+    // --- FINANCE ---
+    getFinanceSummary: async () => {
+        const token = authService.getToken();
+        const res = await axios.get(`${API_URL}/personal/finance/summary`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.summary;
+    },
+    getTransactions: async (): Promise<PersonalTransaction[]> => {
+        const token = authService.getToken();
+        const res = await axios.get(`${API_URL}/personal/finance`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.transactions;
+    },
+    addTransaction: async (data: Partial<PersonalTransaction>) => {
+        const token = authService.getToken();
+        const res = await axios.post(`${API_URL}/personal/finance`, data, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.transaction;
+    },
+    deleteTransaction: async (id: string) => {
+        const token = authService.getToken();
+        const res = await axios.delete(`${API_URL}/personal/finance/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data;
+    },
+
+    // --- TASKS ---
+    getTasks: async (): Promise<PersonalTask[]> => {
+        const token = authService.getToken();
+        const res = await axios.get(`${API_URL}/personal/tasks`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.tasks;
+    },
+    addTask: async (data: Partial<PersonalTask>) => {
+        const token = authService.getToken();
+        const res = await axios.post(`${API_URL}/personal/tasks`, data, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.task;
+    },
+    updateTaskStatus: async (id: string, status: string) => {
+        const token = authService.getToken();
+        const res = await axios.patch(`${API_URL}/personal/tasks/${id}`, { status }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.task;
+    },
+    deleteTask: async (id: string) => {
+        const token = authService.getToken();
+        const res = await axios.delete(`${API_URL}/personal/tasks/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data;
+    },
+
+    // --- PROJECTS ---
+    getProjects: async (): Promise<PersonalProject[]> => {
+        const token = authService.getToken();
+        const res = await axios.get(`${API_URL}/personal/projects`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.projects;
+    },
+    addProject: async (data: Partial<PersonalProject>) => {
+        const token = authService.getToken();
+        const res = await axios.post(`${API_URL}/personal/projects`, data, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.project;
+    }
+};

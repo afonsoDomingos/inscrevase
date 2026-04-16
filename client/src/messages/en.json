@@ -758,7 +758,13 @@
             "apiIntegration": "API Integration",
             "upgradeSuccess": "Congratulations! 🎉",
             "upgradeSuccessMessage": "Your subscription has been successfully activated. You are now a {plan} partner and have full access to Mentor tools.",
-            "startExploring": "Start Exploring"
+            "startExploring": "Start Exploring",
+            "trialBadge": "Free Trial",
+            "currentPlan": "Current Plan",
+            "freeFirstMonth": "1st Month Free",
+            "perMonthAfter": "/month after",
+            "currentActive": "Current Active Plan",
+            "alternativePayment": "Manual Payment (Transfer)"
         },
         "insights": {
             "welcomeBack": {

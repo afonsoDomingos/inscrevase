@@ -779,7 +779,13 @@
             "apiIntegration": "Integração API",
             "upgradeSuccess": "Parabéns! 🎉",
             "upgradeSuccessMessage": "A tua subscrição foi ativada com sucesso. Agora és um parceiro {plan} e tens acesso total às ferramentas de Mentor.",
-            "startExploring": "Começar a Explorar"
+            "startExploring": "Começar a Explorar",
+            "trialBadge": "Teste Grátis",
+            "currentPlan": "Plano Atual",
+            "freeFirstMonth": "1º Mês Grátis",
+            "perMonthAfter": "/mês depois",
+            "currentActive": "Plano Atual Ativo",
+            "alternativePayment": "Pagamento Manual (Transferência)"
         },
         "insights": {
             "welcomeBack": {
