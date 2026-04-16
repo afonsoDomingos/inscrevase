@@ -4,6 +4,7 @@ import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { toast } from "sonner";
 import Cookies from 'js-cookie';
 import { logService } from '@/lib/logService';
+import { useEffect } from 'react';
 
 export interface PaypalSuccessDetails {
     success: boolean;
@@ -28,7 +29,34 @@ interface PaypalButtonProps {
 
 export default function PaypalButton({ type, planId, formId, submissionData, adData, currency, trial, onSuccess }: PaypalButtonProps) {
     // O SDK já está carregado via PayPalProviderWrapper no layout global
-    const [{ isPending, isRejected }] = usePayPalScriptReducer();
+    const [{ options, isPending, isRejected }, dispatch] = usePayPalScriptReducer();
+
+    const isRecurring = type === 'subscription';
+
+    // Ensure the PayPal script is loaded with the correct intent for subscriptions
+    useEffect(() => {
+        if (isRecurring && options.intent !== 'subscription') {
+            console.log('🔄 Resetting PayPal SDK for Subscription mode...');
+            dispatch({
+                type: "resetOptions",
+                value: {
+                    ...options,
+                    intent: "subscription",
+                    vault: true,
+                },
+            });
+        } else if (!isRecurring && options.intent === 'subscription') {
+            console.log('🔄 Resetting PayPal SDK for Capture mode...');
+            dispatch({
+                type: "resetOptions",
+                value: {
+                    ...options,
+                    intent: "capture",
+                    vault: false,
+                },
+            });
+        }
+    }, [isRecurring, options, dispatch]);
 
     const createOrder = async () => {
         const loadingToast = toast.loading("Preparando ambiente seguro PayPal...", { duration: 25000 });
