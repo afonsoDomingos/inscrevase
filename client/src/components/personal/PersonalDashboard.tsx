@@ -169,6 +169,31 @@ function Modal({ title, onClose, onSubmit, children, submitLabel = "Guardar Alte
 
 const DEFAULT_CATEGORIES = ['Serviços', 'Licenças', 'Impostos', 'Marketing', 'Infraestrutura', 'Branding', 'Consultoria', 'Vendas', 'Outros'];
 
+interface TxFormState {
+    type: 'income' | 'expense';
+    category: string;
+    amount: string;
+    description: string;
+    date: string;
+    project: string;
+    client: string;
+}
+
+interface TaskFormState {
+    title: string;
+    deadline: string;
+    priority: 'low' | 'medium' | 'high';
+    project: string;
+}
+
+interface ProjectFormState {
+    name: string;
+    totalBudget: string;
+    description: string;
+    deadline: string;
+    client: string;
+}
+
 /* ─── Main component ─── */
 export default function PersonalDashboard() {
     const { formatPrice } = useCurrency();
@@ -197,14 +222,16 @@ export default function PersonalDashboard() {
     const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
     const [editingClientId, setEditingClientId] = useState<string | null>(null);
 
-    const defaultTxForm = { type: 'income' as const, category: '', amount: '', description: '', date: '', project: '', client: '' };
-    const defaultTaskForm = { title: '', deadline: '', priority: 'medium' as const, project: '' };
-    const defaultProjectForm = { name: '', totalBudget: '', description: '', deadline: '', client: '' };
-    const defaultClientForm = { name: '', type: 'individual' as const, email: '', phone: '', address: '', taxId: '', notes: '' };
 
-    const [txForm, setTxForm] = useState(defaultTxForm);
-    const [taskForm, setTaskForm] = useState(defaultTaskForm);
-    const [projectForm, setProjectForm] = useState(defaultProjectForm);
+
+    const defaultTxForm: TxFormState = { type: 'income', category: '', amount: '', description: '', date: '', project: '', client: '' };
+    const defaultTaskForm: TaskFormState = { title: '', deadline: '', priority: 'medium', project: '' };
+    const defaultProjectForm: ProjectFormState = { name: '', totalBudget: '', description: '', deadline: '', client: '' };
+    const defaultClientForm: Partial<PersonalClient> = { name: '', type: 'individual', email: '', phone: '', address: '', taxId: '', notes: '' };
+
+    const [txForm, setTxForm] = useState<TxFormState>(defaultTxForm);
+    const [taskForm, setTaskForm] = useState<TaskFormState>(defaultTaskForm);
+    const [projectForm, setProjectForm] = useState<ProjectFormState>(defaultProjectForm);
     const [clientForm, setClientForm] = useState<Partial<PersonalClient>>(defaultClientForm);
 
     const [showNewCategory, setShowNewCategory] = useState(false);
