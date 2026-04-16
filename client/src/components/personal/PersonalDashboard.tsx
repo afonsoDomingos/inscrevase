@@ -204,6 +204,9 @@ interface SavingFormState {
 }
 
 interface AISuggestion {
+    action: 'add_task' | 'add_transaction' | 'add_client';
+    data: any;
+}
 
 /* ─── Main component ─── */
 export default function PersonalDashboard() {
