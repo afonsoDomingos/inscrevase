@@ -67,7 +67,7 @@ async function ensurePaypalPlan(planKey, currency, trialDays = 0) {
                 sequence: 1,
                 total_cycles: 1,
                 pricing_scheme: {
-                    fixed_price: { value: "0", currency_code: currency }
+                    fixed_price: { value: "0.00", currency_code: currency }
                 }
             });
         }
@@ -93,7 +93,7 @@ async function ensurePaypalPlan(planKey, currency, trialDays = 0) {
             billing_cycles: billingCycles,
             payment_preferences: {
                 auto_bill_outstanding: true,
-                setup_fee: { value: "0", currency_code: currency },
+                setup_fee: { value: "0.00", currency_code: currency },
                 setup_fee_failure_action: "CONTINUE",
                 payment_failure_threshold: 3
             }
@@ -148,8 +148,9 @@ exports.createRecurringSubscription = async (req, res) => {
             plan_id: planId,
             custom_id: JSON.stringify({ userId, plan, type: 'recurring_subscription', isTrial: trialDays > 0 }),
             application_context: {
-                brand_name: "Inscreva-se",
+                brand_name: "Inscrevase",
                 user_action: "SUBSCRIBE_NOW",
+                shipping_preference: "NO_SHIPPING",
                 return_url: `${process.env.CLIENT_URL}/dashboard/mentor?subscription=success`,
                 cancel_url: `${process.env.CLIENT_URL}/planos`
             }
