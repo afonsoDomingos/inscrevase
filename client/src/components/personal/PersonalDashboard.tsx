@@ -629,10 +629,10 @@ export default function PersonalDashboard() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1.5rem' }}>
                 <div style={{ flex: '1', minWidth: '300px' }}>
                     <h1 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', fontWeight: 900, marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: 'var(--font-playfair)' }}>
-                        <Activity color="#FFD700" size={32} /> Workspace <span style={{ fontWeight: 300, opacity: 0.5 }}>360</span>
+                        <Activity color="#FFD700" size={32} /> Saúde <span style={{ fontWeight: 300, opacity: 0.5 }}>Profissional</span>
                     </h1>
                     <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.95rem', lineHeight: '1.6', maxWidth: '600px' }}>
-                        O seu centro de controlo pessoal para organizar **projectos**, gerir **finanças**, acompanhar **tarefas** e manter a sua base de **clientes** num único lugar.
+                        O seu diagnóstico inteligente para monitorizar **projectos**, gerir **finanças** e garantir a **máxima performance** da sua carreira num único lugar.
                     </p>
                 </div>
 
