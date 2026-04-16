@@ -414,7 +414,7 @@ function AdminDashboardContent() {
             title: t('dashboard.navigation') || 'Geral',
             items: [
                 { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={18} /> },
-                { id: 'workspace', label: 'Workspace 360', icon: <Briefcase size={18} /> },
+                { id: 'workspace', label: 'Saúde Profissional', icon: <Briefcase size={18} /> },
                 { id: 'lessons', label: t('academy.title') || 'Aulas', icon: <Video size={18} /> },
                 { id: 'users', label: t('dashboard.users'), icon: <Users size={18} /> },
             ]

@@ -651,7 +651,7 @@ function MentorDashboardContent() {
                             title: t('dashboard.sidebarGroups.dashboard') || "DASHBOARD",
                             items: [
                                 { id: 'overview', label: t('dashboard.overview'), icon: <LayoutDashboard size={20} /> },
-                                { id: 'workspace', label: 'Workspace 360', icon: <Briefcase size={20} /> }
+                                { id: 'workspace', label: 'Saúde Profissional', icon: <Briefcase size={20} /> }
                             ]
                         },
                         {

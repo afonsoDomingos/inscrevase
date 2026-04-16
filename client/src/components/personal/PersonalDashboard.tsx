@@ -608,8 +608,6 @@ export default function PersonalDashboard() {
         padding: '6px', background: 'var(--background)', border: '1px solid var(--border)',
         borderRadius: '8px', color: 'var(--text-muted)', cursor: 'pointer',
         display: 'inline-flex', transition: 'all 0.2s'
-    };
-
     const tabs: { id: ViewMode; label: string; icon: LucideIcon }[] = [
         { id: 'overview', label: 'Resumo Geral', icon: Activity },
         { id: 'finance', label: 'Finanças', icon: Wallet },
@@ -626,18 +624,27 @@ export default function PersonalDashboard() {
         <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', color: 'var(--foreground)' }}>
 
             {/* ── Header ── */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1.5rem' }}>
-                <div style={{ flex: '1', minWidth: '300px' }}>
-                    <h1 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', fontWeight: 900, marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: 'var(--font-playfair)' }}>
-                        <Activity color="#FFD700" size={32} /> Saúde <span style={{ fontWeight: 300, opacity: 0.5 }}>Profissional</span>
-                    </h1>
-                    <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.95rem', lineHeight: '1.6', maxWidth: '600px' }}>
-                        O seu diagnóstico inteligente para monitorizar **projectos**, gerir **finanças** e garantir a **máxima performance** da sua carreira num único lugar.
-                    </p>
+            <div style={{ marginBottom: '3rem', position: 'relative', background: 'var(--paper)', padding: '2.5rem', borderRadius: '32px', border: '1px solid var(--border)', boxShadow: '0 20px 40px rgba(0,0,0,0.05)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '1.5rem' }}>
+                    <div style={{ background: 'linear-gradient(135deg, #FFD700, #B8860B)', padding: '16px', borderRadius: '20px', color: '#000', boxShadow: '0 10px 20px rgba(184,134,11,0.3)' }}>
+                        <Activity size={32} />
+                    </div>
+                    <div>
+                        <h1 style={{ fontSize: 'clamp(2rem, 6vw, 3.2rem)', fontWeight: 900, margin: 0, fontFamily: 'var(--font-playfair)', letterSpacing: '-1.5px', color: 'var(--foreground)' }}>
+                            Saúde Profissional
+                        </h1>
+                        <div style={{ height: '6px', width: '80px', background: 'var(--gold-gradient)', borderRadius: '3px', marginTop: '8px' }} />
+                    </div>
                 </div>
+                
+                <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '1.1rem', lineHeight: '1.6', maxWidth: '700px', fontWeight: 500 }}>
+                    O seu ecossistema de gestão inteligente. Monitorize projectos, controle finanças e otimize a sua performance com precisão.
+                </p>
+            </div>
 
+            <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '2.5rem', overflowX: 'auto', paddingBottom: '10px' }}>
                 {/* ── Tabs ── */}
-                <div style={{ display: 'flex', background: 'var(--paper)', border: '1px solid var(--border)', padding: '6px', borderRadius: '16px', gap: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)', overflowX: 'auto', maxWidth: '100%' }}>
+                <div style={{ display: 'flex', background: 'var(--paper)', border: '1px solid var(--border)', padding: '6px', borderRadius: '20px', gap: '6px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
                     {tabs.map(tab => (
                         <button key={tab.id} onClick={() => setViewMode(tab.id)} style={{
                             padding: '10px 18px', borderRadius: '12px',
