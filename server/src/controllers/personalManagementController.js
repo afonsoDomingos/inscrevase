@@ -28,6 +28,7 @@ exports.addTransaction = async (req, res) => {
         await transaction.save();
         res.status(201).json({ success: true, transaction });
     } catch (error) {
+        console.error("🔴 [addTransaction Error]:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
@@ -101,10 +102,14 @@ exports.addTask = async (req, res) => {
     try {
         const { title, description, deadline, priority, project } = req.body;
         
+        if (!title) {
+            return res.status(400).json({ success: false, message: 'O título da tarefa é obrigatório.' });
+        }
+
         const task = new PersonalTask({
             user: req.user.id,
             title,
-            description: description || undefined,
+            description: description || '',
             deadline: deadline ? deadline : undefined,
             priority: priority || 'medium',
             project: project ? project : undefined
@@ -113,6 +118,7 @@ exports.addTask = async (req, res) => {
         await task.save();
         res.status(201).json({ success: true, task });
     } catch (error) {
+        console.error("🔴 [addTask Error]:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
@@ -206,6 +212,7 @@ exports.addProject = async (req, res) => {
         await project.save();
         res.status(201).json({ success: true, project });
     } catch (error) {
+        console.error("🔴 [addProject Error]:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
