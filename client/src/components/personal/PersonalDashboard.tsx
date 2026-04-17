@@ -883,6 +883,7 @@ export default function PersonalDashboard() {
                                     { text: "Registar Finança", icon: Wallet, template: "Recebi 1500 de..." },
                                     { text: "Guardar Poupança", icon: PiggyBank, template: "Guardar 1000 na Poupança" },
                                     { text: "Iniciar Projeto", icon: Briefcase, template: "Iniciar um novo Projeto" },
+                                    { text: "Procurar", icon: Search, template: "Procurar por..." },
                                     { text: "Guia Completo", icon: HelpCircle, template: "ajuda" }
                                 ].map((opt, idx) => (
                                     <button
@@ -903,7 +904,7 @@ export default function PersonalDashboard() {
                                         <opt.icon size={16} color="#FFD700" />
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                                             <span style={{ fontWeight: 700 }}>{opt.text}</span>
-                                            <span style={{ fontSize: '0.65rem', opacity: 0.5 }}>Ex: "{opt.template}"</span>
+                                            <span style={{ fontSize: '0.65rem', opacity: 0.5 }}>Ex: &quot;{opt.template}&quot;</span>
                                         </div>
                                     </button>
                                 ))}
