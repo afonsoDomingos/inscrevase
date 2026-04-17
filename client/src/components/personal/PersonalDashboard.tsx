@@ -731,6 +731,22 @@ export default function PersonalDashboard() {
             id="personal-dashboard-root"
             style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', color: 'var(--foreground)' }}
         >
+            <style>{`
+                @media (max-width: 768px) {
+                    #personal-dashboard-root { padding: 12px !important; }
+                    .personal-header { 
+                        flex-direction: column !important; 
+                        gap: 1.5rem !important; 
+                        text-align: center !important;
+                        margin-bottom: 2rem !important;
+                    }
+                    .personal-h1 { font-size: 1.8rem !important; }
+                    .personal-tabs-container { gap: 0.5rem !important; padding: 0.3rem !important; }
+                    .personal-tab-btn { padding: 10px 15px !important; font-size: 0.65rem !important; }
+                    .ai-input-bar { flex-direction: column !important; gap: 10px !important; align-items: stretch !important; }
+                    .ai-send-btn { width: 100% !important; height: 48px !important; border-radius: 12px !important; }
+                }
+            `}</style>
             {loading ? (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px', gap: '12px', color: '#FFD700', fontSize: '1.1rem', fontWeight: 600 }}>
                     <Activity size={24} style={{ animation: 'spin 1s linear infinite' }} /> Carregando Saúde Profissional...
@@ -739,7 +755,7 @@ export default function PersonalDashboard() {
                 <>
 
             {/* ── Header ── */}
-            <div style={{ marginBottom: '3rem', display: 'flex', alignItems: 'center', gap: '2rem', padding: '1rem 0' }}>
+            <div className="personal-header" style={{ marginBottom: '3rem', display: 'flex', alignItems: 'center', gap: '2rem', padding: '1rem 0' }}>
                 <div style={{ 
                     background: 'var(--gold-gradient)', 
                     padding: '16px', 
@@ -754,7 +770,7 @@ export default function PersonalDashboard() {
                 </div>
                 <div>
                     <div style={{ fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '3px', color: '#D4AF37', marginBottom: '8px' }}>Módulo de Excelência</div>
-                    <h1 style={{ fontSize: '2.5rem', fontWeight: 900, margin: 0, letterSpacing: '-1.5px', lineHeight: 1, color: 'var(--foreground)' }}>
+                    <h1 className="personal-h1" style={{ fontSize: '2.5rem', fontWeight: 900, margin: 0, letterSpacing: '-1.5px', lineHeight: 1, color: 'var(--foreground)' }}>
                         Saúde <span style={{ fontWeight: 300, opacity: 0.6 }}>Profissional</span>
                     </h1>
                     <p style={{ color: 'var(--text-muted)', marginTop: '8px', fontSize: '0.95rem', fontWeight: 500, maxWidth: '600px', lineHeight: 1.6, opacity: 0.8 }}>
@@ -778,13 +794,11 @@ export default function PersonalDashboard() {
                 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.2rem' }}>
                     <div style={{ position: 'relative' }}>
-                        <Sparkles size={20} color="#D4AF37" />
-                        <div style={{ position: 'absolute', inset: 0, background: '#D4AF37', filter: 'blur(10px)', opacity: 0.3, borderRadius: '50%' }} />
-                    </div>
+<truncated 57 bytes>
                     <span style={{ color: '#D4AF37', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Olá, {userFirstName}!</span>
                 </div>
 
-                <form onSubmit={handleAISend} style={{ position: 'relative', display: 'flex', gap: '15px', alignItems: 'center' }}>
+                <form onSubmit={handleAISend} className="ai-input-bar" style={{ position: 'relative', display: 'flex', gap: '15px', alignItems: 'center' }}>
                     <style>{`
                         @keyframes spin-gemini-border {
                             0% { transform: rotate(0deg); }
@@ -835,6 +849,7 @@ export default function PersonalDashboard() {
                     </div>
                     <button 
                         type="submit" 
+                        className="ai-send-btn"
                         disabled={aiLoading || !aiInput.trim()} 
                         style={{
                             background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)',
@@ -931,12 +946,13 @@ export default function PersonalDashboard() {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', width: '100%', gap: '0.5rem', padding: '0.4rem', background: '#f8f9fa', borderRadius: '20px', border: '1px solid rgba(0,0,0,0.03)', overflowX: 'auto', scrollbarWidth: 'none' }}>
+                <div className="personal-tabs-container" style={{ display: 'flex', width: '100%', gap: '0.5rem', padding: '0.4rem', background: '#f8f9fa', borderRadius: '20px', border: '1px solid rgba(0,0,0,0.03)', overflowX: 'auto', scrollbarWidth: 'none' }}>
                     {DASHBOARD_TABS.map(tab => {
                         const isActive = viewMode === tab.id;
                         return (
                             <button 
                                 key={tab.id} 
+                                className="personal-tab-btn"
                                 onClick={() => setViewMode(tab.id as ViewMode)} 
                                 style={{
                                     padding: '12px 24px', 
@@ -982,7 +998,7 @@ export default function PersonalDashboard() {
                     </div>
 
                     {/* ── TESLA THEMED OVERVIEW CARDS ── */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.2rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.2rem' }}>
                         
                         {/* 1. FINANCIAL HEALTH (Balance) */}
                         <div style={{ 
