@@ -422,7 +422,23 @@ exports.processAICommand = async (req, res) => {
         const firstName = userDoc ? userDoc.name.split(' ')[0] : 'Líder';
 
         // --- CONVERSATIONAL STATE MGMT ---
-        if (context && context.draftAction === 'add_client') {
+        if (context) {
+            // Step: Ask Task Name
+            if (context.step === 'ask_task_name') {
+                const name = text.trim();
+                const data = { title: name.charAt(0).toUpperCase() + name.slice(1), priority: 'medium' };
+                return res.status(200).json({ success: true, action: 'add_task', data, message: `Entendido, ${firstName}. Quer registar a tarefa: "${data.title}"?` });
+            }
+
+            // Step: Ask Client Name
+            if (context.step === 'ask_client_name') {
+                const name = text.trim();
+                const data = { name: name.charAt(0).toUpperCase() + name.slice(1) };
+                newContext = { draftAction: 'add_client', draftData: data, step: 'ask_email' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Anotei o nome: "${data.name}". Deseja associar um e-mail a este cliente?` });
+            }
+
+            if (context.draftAction === 'add_client') {
             const currentData = context.draftData;
 
             // Handle Email Step
@@ -481,7 +497,6 @@ exports.processAICommand = async (req, res) => {
         // Simple Smart Parser (Can be replaced/extended with OpenAI/Gemini later)
         const entityFilter = /\b(ola|olá|chat|assistente|podes|pode|consegue|consegues|por|favor|adicionar|criar|novo|nova|regista|registar|registe|salvar|guarda|guardar|quero|queria|gostaria|vou|estou|faz|fazer|anotar|anota|chamar|chama|chamado|chame|ligar|liga|ligado|contactar|contacto|falar|com|este|esta|esse|essa|o|a|os|as|um|uma|no|na|do|da|em|para|será|que|preciso|me|ajuda|ajudar|de|sobre|seria|podes-me|podias|conseguias)\b/gi;
 
-        // Intent: Add Task
         if (prompt.includes('tarefa') || prompt.includes('fazer')) {
             action = 'add_task';
             let cleanTitle = text.replace(/tarefa|fazer/gi, '')
@@ -489,12 +504,16 @@ exports.processAICommand = async (req, res) => {
                                  .replace(/[?.,!]/g, '')
                                  .trim();
             
-            cleanTitle = cleanTitle.replace(/\s+/g, ' '); // remove espaços duplos
-            if (cleanTitle.length >= 2) {
-                cleanTitle = cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
-            } else {
-                cleanTitle = 'Nova Tarefa';
+            cleanTitle = cleanTitle.replace(/\s+/g, ' ');
+
+            // If no specific title was provided, ask for it
+            if (!cleanTitle || cleanTitle.length < 3) {
+                newContext = { step: 'ask_task_name' };
+                message = `Com certeza, ${firstName}. Qual é o nome ou descrição da tarefa que deseja registar?`;
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message });
             }
+
+            const title = cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
 
             data = {
                 title: cleanTitle,
@@ -543,8 +562,15 @@ exports.processAICommand = async (req, res) => {
                                 .trim();
             
             cleanName = cleanName.replace(/\s+/g, ' ');
-            if (cleanName.length < 2) cleanName = 'Novo Cliente';
-            else cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+
+            // If no name, ask for it
+            if (!cleanName || cleanName.length < 3) {
+                newContext = { step: 'ask_client_name' };
+                message = `Certamente, ${firstName}. Qual é o nome do cliente ou empresa que deseja registar?`;
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message });
+            }
+
+            cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
 
             const emailMatch = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
             const phoneMatch = text.match(/(\+?\d[\d\s-]{7,14}\d)/);
