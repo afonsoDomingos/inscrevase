@@ -913,7 +913,7 @@ export default function PersonalDashboard() {
 
                         <input 
                             className="gemini-ai-input"
-                            placeholder="O que deseja orquestrar hoje? (Ex: 'Recebi 15k do Projeto Alpha')" 
+                            placeholder="Para começar a orquestrar, digite /suporte ou clique no +" 
                             value={aiInput}
                             onChange={e => setAiInput(e.target.value)}
                         />

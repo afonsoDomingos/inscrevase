@@ -733,7 +733,7 @@ exports.processAICommand = async (req, res) => {
             data = null;
         }
         // Intent: Support Requests
-        else if (prompt.includes('suporte') || (prompt.includes('ajuda') && !prompt.includes('como'))) {
+        else if (prompt.startsWith('/') || prompt.includes('suporte') || (prompt.includes('ajuda') && !prompt.includes('como'))) {
             message = `Precisa de apoio técnico ou tem alguma dúvida sobre a plataforma, ${firstName}? 🛠️\n\nPode utilizar o menu de **Ajuda e Suporte** no seu Dashboard para abrir um ticket ou contactar-nos diretamente via WhatsApp. Estou aqui para garantir que a sua experiência seja de elite!`;
             action = 'open_support';
             data = null;
