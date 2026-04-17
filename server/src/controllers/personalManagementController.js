@@ -732,6 +732,12 @@ exports.processAICommand = async (req, res) => {
             action = null;
             data = null;
         }
+        // Intent: Support Requests
+        else if (prompt.includes('suporte') || (prompt.includes('ajuda') && !prompt.includes('como'))) {
+            message = `Precisa de apoio técnico ou tem alguma dúvida sobre a plataforma, ${firstName}? 🛠️\n\nPode utilizar o menu de **Ajuda e Suporte** no seu Dashboard para abrir um ticket ou contactar-nos diretamente via WhatsApp. Estou aqui para garantir que a sua experiência seja de elite!`;
+            action = 'open_support';
+            data = null;
+        }
         else {
             message = `Ainda estou a aprender, ${firstName}! Eis o que consigo fazer por si hoje no Dashboard:\n\n` +
                       `📌 Criar Tarefas (ex: "Nova tarefa urgente rever contrato")\n` +
@@ -739,7 +745,8 @@ exports.processAICommand = async (req, res) => {
                       `👥 Registar Clientes (ex: "Adicionar parceiro ACME Corp")\n` +
                       `🚀 Iniciar Projetos (ex: "Criar projeto Website V2")\n` +
                       `🐷 Registar Poupança (ex: "Guardar 1000 MZN para portáteis")\n` +
-                      `🔍 Pesquisar Tudo (ex: "Procurar ACME" ou "Buscar fatura")`;
+                      `🔍 Pesquisar Tudo (ex: "Procurar ACME" ou "Buscar fatura")\n` +
+                      `🛠️ Suporte (ex: "Preciso de suporte" ou "Como falo com a ajuda?")`;
         }
 
         res.status(200).json({ success: true, action, data, context: newContext, message });
