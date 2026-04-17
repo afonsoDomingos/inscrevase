@@ -16,7 +16,7 @@ import { authService } from '@/lib/authService';
 import { personalService, PersonalTransaction, PersonalTask, PersonalProject, PersonalClient, PersonalSaving } from '@/lib/personalService';
 import { useCurrency } from '@/context/CurrencyContext';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+
 
 type ViewMode = 'overview' | 'finance' | 'tasks' | 'projects' | 'clients' | 'reports' | 'savings';
 type Timeframe = 'daily' | 'weekly' | 'monthly' | 'yearly';
