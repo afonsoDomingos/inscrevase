@@ -990,9 +990,8 @@ export default function PersonalDashboard() {
                         </div>
 
                     </div>
-                </div>
-            </>
-        )}
+                </>
+            )}
 
             {/* ── REPORTS ── */}
             {viewMode === 'reports' && (
