@@ -379,6 +379,8 @@ export default function PersonalDashboard() {
     const [projectForm, setProjectForm] = useState<ProjectFormState>(defaultProjectForm);
     const [clientForm, setClientForm] = useState<Partial<PersonalClient>>(defaultClientForm);
     const [savingForm, setSavingForm] = useState<SavingFormState>({ amount: '', account: '', date: new Date().toISOString().split('T')[0], description: '', linkedTransactionId: '' });
+    
+    const aiInputRef = React.useRef<HTMLInputElement>(null);
 
     const [showNewCategory, setShowNewCategory] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
@@ -891,6 +893,7 @@ export default function PersonalDashboard() {
                                         onClick={() => {
                                             setAiInput(opt.template);
                                             setIsAIOptionsOpen(false);
+                                            setTimeout(() => aiInputRef.current?.focus(), 100);
                                         }}
                                         style={{
                                             width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
@@ -912,6 +915,7 @@ export default function PersonalDashboard() {
                         )}
 
                         <input 
+                            ref={aiInputRef}
                             className="gemini-ai-input"
                             placeholder="Para começar a orquestrar, digite /suporte ou clique no +" 
                             value={aiInput}
