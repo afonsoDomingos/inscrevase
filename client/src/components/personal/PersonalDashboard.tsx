@@ -754,30 +754,7 @@ export default function PersonalDashboard() {
             ) : (
                 <>
 
-            {/* ── Header ── */}
-            <div className="personal-header" style={{ marginBottom: '3rem', display: 'flex', alignItems: 'center', gap: '2rem', padding: '1rem 0' }}>
-                <div style={{ 
-                    background: 'var(--gold-gradient)', 
-                    padding: '16px', 
-                    borderRadius: '20px', 
-                    color: '#000',
-                    boxShadow: '0 10px 20px rgba(212,175,55,0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}>
-                    <ShieldCheck size={32} />
-                </div>
-                <div>
-                    <div style={{ fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '3px', color: '#D4AF37', marginBottom: '8px' }}>Módulo de Excelência</div>
-                    <h1 className="personal-h1" style={{ fontSize: '2.5rem', fontWeight: 900, margin: 0, letterSpacing: '-1.5px', lineHeight: 1, color: 'var(--foreground)' }}>
-                        Saúde <span style={{ fontWeight: 300, opacity: 0.6 }}>Profissional</span>
-                    </h1>
-                    <p style={{ color: 'var(--text-muted)', marginTop: '8px', fontSize: '0.95rem', fontWeight: 500, maxWidth: '600px', lineHeight: 1.6, opacity: 0.8 }}>
-                        O seu ecossistema unificado para gestão financeira, produtividade tática e inteligência estratégica de alta performance.
-                    </p>
-                </div>
-            </div>
+
 
             {/* ── Smart Command Center (AI) ── */}
             <div style={{ 
