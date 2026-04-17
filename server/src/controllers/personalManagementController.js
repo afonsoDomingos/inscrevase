@@ -553,6 +553,7 @@ exports.processAICommand = async (req, res) => {
             message = `${firstName}, vou registar uma ${data.type === 'income' ? 'entrada' : 'saída'} de ${data.amount} MZN em "${data.category}" relativa a "${cleanDesc}". Confirmar?`;
         }
         // Intent: Add Client
+        else if (prompt.includes('cliente') || prompt.includes('empresa') || prompt.includes('parceiro')) {
             let cleanName = text.replace(/cliente|empresa|parceiro/gi, '')
                                 .replace(entityFilter, ' ')
                                 .replace(/\b(email|telefone|contacto|telefone:)\b/gi, '')
