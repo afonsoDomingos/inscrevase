@@ -871,24 +871,24 @@ export default function PersonalDashboard() {
                                 border: '1px solid rgba(255,215,0,0.2)',
                                 borderRadius: '16px',
                                 padding: '10px',
-                                width: '250px',
+                                width: '280px',
                                 boxShadow: '0 15px 30px rgba(0,0,0,0.4)',
                                 zIndex: 10,
                                 animation: 'fadeInUp 0.3s ease-out'
                             }}>
-                                <div style={{ fontSize: '0.65rem', color: '#9aa0a6', fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', padding: '0 8px', letterSpacing: '1px' }}>Comandos Rápidos</div>
+                                <div style={{ fontSize: '0.65rem', color: '#9aa0a6', fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', padding: '0 8px', letterSpacing: '1px' }}>Suporte de Comandos</div>
                                 {[
-                                    { text: "Registar Tarefa", icon: Target },
-                                    { text: "Recebi dinheiro de...", icon: Wallet },
-                                    { text: "Novo Cliente", icon: Users },
-                                    { text: "Ver Análise Geral", icon: BarChart3 },
-                                    { text: "Procurar...", icon: Search },
-                                    { text: "Suporte e Ajuda", icon: HelpCircle }
+                                    { text: "Registar Tarefa", icon: Target, template: "Registar uma Tarefa" },
+                                    { text: "Registar Cliente", icon: Users, template: "Registar um Cliente" },
+                                    { text: "Registar Finança", icon: Wallet, template: "Recebi 1500 de..." },
+                                    { text: "Guardar Poupança", icon: PiggyBank, template: "Guardar 1000 na Poupança" },
+                                    { text: "Iniciar Projeto", icon: Briefcase, template: "Iniciar um novo Projeto" },
+                                    { text: "Guia Completo", icon: HelpCircle, template: "ajuda" }
                                 ].map((opt, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => {
-                                            setAiInput(opt.text);
+                                            setAiInput(opt.template);
                                             setIsAIOptionsOpen(false);
                                         }}
                                         style={{
@@ -901,7 +901,10 @@ export default function PersonalDashboard() {
                                         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                     >
                                         <opt.icon size={16} color="#FFD700" />
-                                        {opt.text}
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span style={{ fontWeight: 700 }}>{opt.text}</span>
+                                            <span style={{ fontSize: '0.65rem', opacity: 0.5 }}>Ex: "{opt.template}"</span>
+                                        </div>
                                     </button>
                                 ))}
                             </div>
