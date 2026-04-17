@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { 
     Wallet, TrendingUp, Target, 
     CheckCircle, Clock, Plus, Activity, X,
-    ArrowUpRight, ArrowDownRight,
     Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase,
     BarChart3, PieChart as PieIcon, Sparkles, Send, Bot, AlertTriangle,
     ShieldCheck, PiggyBank
@@ -218,10 +217,22 @@ interface AISuggestion {
     data: any;
 }
 
-const SmartAlerts = ({ summary, tasks, transactions, savings, formatPrice }: any) => {
-    const alerts = [];
-    const lateCount = tasks.filter((t: any) => t.status === 'late').length;
-    const pendingValue = transactions.filter((t: any) => t.status === 'pending').reduce((a: any, b: any) => a + b.amount, 0);
+interface SmartAlertItem {
+    type: 'danger' | 'warning' | 'info' | 'success';
+    title: string;
+    msg: string;
+}
+
+const SmartAlerts = ({ summary, tasks, transactions, savings, formatPrice }: {
+    summary: { income: number; expense: number; balance: number };
+    tasks: Array<{ status: string }>;
+    transactions: Array<{ status: string; amount: number }>;
+    savings: Array<{ amount: number }>;
+    formatPrice: (v: number, c?: string) => string;
+}) => {
+    const alerts: SmartAlertItem[] = [];
+    const lateCount = tasks.filter((t) => t.status === 'late').length;
+    const pendingValue = transactions.filter((t) => t.status === 'pending').reduce((a, b) => a + b.amount, 0);
 
     if (summary.balance < 0) {
         alerts.push({ 
@@ -252,7 +263,7 @@ const SmartAlerts = ({ summary, tasks, transactions, savings, formatPrice }: any
         });
     }
 
-    const totalSaved = savings.reduce((a: any, b: any) => a + b.amount, 0);
+    const totalSaved = savings.reduce((a, b) => a + b.amount, 0);
     const savingsRate = summary.income > 0 ? (totalSaved / summary.income) : 0;
 
     if (summary.income > 0 && savingsRate < 0.15) {
@@ -647,7 +658,7 @@ export default function PersonalDashboard() {
             await personalService.deleteSaving(id);
             toast.success("Registo eliminado.");
             fetchData();
-        } catch (error) {
+        } catch {
             toast.error("Erro ao eliminar");
         }
     };
@@ -666,7 +677,7 @@ export default function PersonalDashboard() {
             setIsAddSavingOpen(false);
             setSavingForm({ amount: '', account: '', date: new Date().toISOString().split('T')[0], description: '', linkedTransactionId: '' });
             fetchData();
-        } catch (error) {
+        } catch {
             toast.error("Erro ao guardar poupança");
         }
     };
@@ -1612,30 +1623,3 @@ export default function PersonalDashboard() {
     );
 }
 
-function StatCard({ icon: Icon, label, value, color, secondary }: { icon: any, label: string, value: string | number, color: string, secondary?: string }) {
-    return (
-        <div style={{ 
-            background: 'var(--paper)', 
-            border: '1px solid #eee', 
-            borderRadius: '12px', 
-            padding: '1.2rem', 
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: '0.5rem',
-            transition: 'all 0.2s ease'
-        }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</div>
-                <div style={{ color: color, opacity: 0.8 }}><Icon size={16} /></div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                <div style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-0.5px' }}>{value}</div>
-                {secondary && (
-                    <span style={{ fontSize: '0.65rem', fontWeight: 800, color: secondary.startsWith('+') ? '#00ff41' : '#ff4444' }}>
-                        {secondary}
-                    </span>
-                )}
-            </div>
-        </div>
-    );
-}
