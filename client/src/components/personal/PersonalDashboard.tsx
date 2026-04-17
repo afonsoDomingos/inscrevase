@@ -640,6 +640,12 @@ export default function PersonalDashboard() {
             } else if (suggestion.action === 'add_client') {
                 await personalService.addClient(suggestion.data as Partial<PersonalClient>);
                 toast.success("Cliente registado por IA!");
+            } else if (suggestion.action === 'add_saving') {
+                await personalService.addSaving(suggestion.data as Partial<PersonalSaving>);
+                toast.success("Poupança registada por IA!");
+            } else if (suggestion.action === 'add_project') {
+                await personalService.addProject(suggestion.data as Partial<PersonalProject>);
+                toast.success("Projeto criado por IA!");
             }
             setAiMessages(prev => [...prev, { role: 'bot', content: "Concluído com sucesso! ✅" }]);
             fetchData();

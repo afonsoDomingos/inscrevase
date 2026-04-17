@@ -392,12 +392,23 @@ exports.processAICommand = async (req, res) => {
         // Intent: Add Task
         if (prompt.includes('tarefa') || prompt.includes('fazer')) {
             action = 'add_task';
-            const titleMatch = text.match(/(?:tarefa|fazer)\s+(?:de|para)?\s*([^.,?!]+)/i);
+            let cleanTitle = text.replace(/adicionar|criar|nova/gi, '')
+                                 .replace(/tarefa|fazer/gi, '')
+                                 .replace(/\b(?:de|para|urgente|alta|média|baixa)\b/gi, ' ')
+                                 .trim();
+            
+            cleanTitle = cleanTitle.replace(/\s+/g, ' '); // remove espaços duplos
+            if (cleanTitle.length >= 2) {
+                cleanTitle = cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
+            } else {
+                cleanTitle = 'Nova Tarefa';
+            }
+
             data = {
-                title: titleMatch ? titleMatch[1].trim() : 'Nova Tarefa',
+                title: cleanTitle,
                 priority: prompt.includes('urgente') || prompt.includes('alta') ? 'high' : 'medium'
             };
-            message = `Percebi que quer adicionar uma tarefa: "${data.title}". Confirmar?`;
+            message = `Percebi que quer adicionar a tarefa: "${data.title}". Confirmar?`;
         }
         // Intent: Add Transaction
         else if (prompt.includes('ganhei') || prompt.includes('recebi') || prompt.includes('gastei') || prompt.includes('paguei')) {
@@ -431,17 +442,78 @@ exports.processAICommand = async (req, res) => {
             message = `Vou registar uma ${data.type === 'income' ? 'entrada' : 'saída'} de ${data.amount} MZN relativa a "${cleanDesc}". Confirmar?`;
         }
         // Intent: Add Client
-        else if (prompt.includes('cliente') || prompt.includes('empresa')) {
+        else if (prompt.includes('cliente') || prompt.includes('empresa') || prompt.includes('parceiro')) {
             action = 'add_client';
-            const nameMatch = text.match(/(?:cliente|empresa)\s+([^.,?!]+)/i);
+            let cleanName = text.replace(/adicionar|novo|nova|criar/gi, '')
+                                .replace(/cliente|empresa|parceiro/gi, '')
+                                .trim();
+            
+            cleanName = cleanName.replace(/\s+/g, ' ');
+            if (cleanName.length >= 2) {
+                cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+            } else {
+                cleanName = 'Novo Cliente';
+            }
+
             data = {
-                name: nameMatch ? nameMatch[1].trim() : 'Novo Cliente',
+                name: cleanName,
                 type: prompt.includes('empresa') ? 'company' : 'individual'
             };
             message = `Deseja registar o cliente "${data.name}"?`;
         }
+        // Intent: Add Saving (Poupança)
+        else if (prompt.includes('poupança') || prompt.includes('guardar') || prompt.includes('poupar')) {
+            action = 'add_saving';
+            const amountMatch = text.match(/(\d+(?:[.,]\d+)?)/);
+            
+            let cleanDesc = text;
+            if (amountMatch) {
+                 cleanDesc = cleanDesc.replace(/adicionar|poupança|guardar|poupar/gi, '')
+                                      .replace(amountMatch[0], '')
+                                      .replace(/\b(?:mt|mzn|meticais)\b/gi, '')
+                                      .replace(/\b(?:para|na|em|no|com|a)\b/gi, ' ')
+                                      .trim();
+            }
+            
+            cleanDesc = cleanDesc.replace(/\s+/g, ' ');
+            if (cleanDesc.length >= 2) {
+                cleanDesc = cleanDesc.charAt(0).toUpperCase() + cleanDesc.slice(1);
+            } else {
+                cleanDesc = 'Depósito';
+            }
+            
+            data = {
+                amount: amountMatch ? parseFloat(amountMatch[1].replace(',', '.')) : 0,
+                account: 'Principal',
+                description: cleanDesc,
+                date: new Date().toISOString().split('T')[0]
+            };
+            message = `Registar ${data.amount} MZN na Poupança com a descrição "${cleanDesc}"?`;
+        }
+        // Intent: Add Project
+        else if (prompt.includes('projeto') || prompt.includes('projecto')) {
+            action = 'add_project';
+            let cleanName = text.replace(/adicionar|novo|criar|começar/gi, '')
+                                .replace(/projeto|projecto/gi, '')
+                                .replace(/\b(?:de|sobre|para)\b/gi, ' ')
+                                .trim();
+            
+            cleanName = cleanName.replace(/\s+/g, ' ');
+            if (cleanName.length >= 2) {
+                cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+            } else {
+                cleanName = 'Novo Projeto';
+            }
+
+            data = {
+                name: cleanName,
+                totalBudget: 0,
+                currency: 'MZN'
+            };
+            message = `Pretende iniciar o projeto "${data.name}"?`;
+        }
         else {
-            message = "Ainda estou a aprender! Tente algo como: 'Adicionar tarefa de design' ou 'Recebi 5000 MZN'.";
+            message = "Ainda estou a aprender! Tente algo como: 'Adicionar cliente Rádio Moçambique', 'Guardar 1000 para viagem' ou 'Nova tarefa rever contrato'.";
         }
 
         res.status(200).json({ success: true, action, data, message });
