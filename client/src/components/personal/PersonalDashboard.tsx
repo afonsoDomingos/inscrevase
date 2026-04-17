@@ -794,7 +794,9 @@ export default function PersonalDashboard() {
                 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.2rem' }}>
                     <div style={{ position: 'relative' }}>
-<truncated 57 bytes>
+                        <Bot size={28} color="#D4AF37" />
+                        <div style={{ position: 'absolute', top: -2, right: -2, width: '10px', height: '10px', background: '#FFD700', borderRadius: '50%', border: '2px solid #000' }} />
+                    </div>
                     <span style={{ color: '#D4AF37', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Olá, {userFirstName}!</span>
                 </div>
 
