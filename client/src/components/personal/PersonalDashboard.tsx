@@ -310,7 +310,19 @@ const SmartAlerts = ({ summary, tasks, transactions, savings, formatPrice }: {
                     background: '#fff',
                     border: '1px solid #eee',
                     borderRadius: '12px', padding: '1.2rem', display: 'flex', gap: '12px',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                    cursor: 'default'
+                }}
+                onMouseEnter={e => {
+                    e.currentTarget.style.transform = 'translateY(-6px)';
+                    e.currentTarget.style.boxShadow = '0 25px 50px rgba(0,0,0,0.08)';
+                    e.currentTarget.style.borderColor = '#D4AF37';
+                }}
+                onMouseLeave={e => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.02)';
+                    e.currentTarget.style.borderColor = '#eee';
                 }}>
                     <div style={{ color: a.type === 'danger' ? '#ff4444' : a.type === 'warning' ? '#ffb000' : a.type === 'success' ? '#00ff41' : '#3b82f6' }}>
                         {a.type === 'danger' || a.type === 'warning' ? <AlertTriangle size={18}/> : <Sparkles size={18}/>}
