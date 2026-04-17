@@ -1013,11 +1013,21 @@ export default function PersonalDashboard() {
                             </div>
                             
                             <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
-                                <div style={{ flex: 1 }}>
+                                <div 
+                                    onClick={() => setViewMode('finance')}
+                                    style={{ flex: 1, cursor: 'pointer', transition: 'all 0.2s' }}
+                                    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                    onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                                >
                                     <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', fontWeight: 800 }}>Entradas</div>
                                     <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#00ff41' }}>+{formatPrice(summary.income, 'MZN').split(',')[0]}</div>
                                 </div>
-                                <div style={{ flex: 1 }}>
+                                <div 
+                                    onClick={() => setViewMode('finance')}
+                                    style={{ flex: 1, cursor: 'pointer', transition: 'all 0.2s' }}
+                                    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                    onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                                >
                                     <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', fontWeight: 800 }}>Saídas</div>
                                     <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#ff4444' }}>-{formatPrice(summary.expense, 'MZN').split(',')[0]}</div>
                                 </div>
