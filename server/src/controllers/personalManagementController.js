@@ -734,19 +734,26 @@ exports.processAICommand = async (req, res) => {
         }
         // Intent: Support Requests
         else if (prompt.startsWith('/') || prompt.includes('suporte') || (prompt.includes('ajuda') && !prompt.includes('como'))) {
-            message = `Precisa de apoio técnico ou tem alguma dúvida sobre a plataforma, ${firstName}? 🛠️\n\nPode utilizar o menu de **Ajuda e Suporte** no seu Dashboard para abrir um ticket ou contactar-nos diretamente via WhatsApp. Estou aqui para garantir que a sua experiência seja de elite!`;
+            message = `### 🛠️ Guia de Comandos de Orquestração\n\n` +
+                      `${firstName}, aqui estão os comandos rápidos que pode utilizar para gerir o seu ecossistema. Selecione um e escreva-o abaixo:\n\n` +
+                      `📌 **Tarefas:** \`Registar uma Tarefa\`\n` +
+                      `👥 **Clientes:** \`Registar um Cliente\`\n` +
+                      `💰 **Finanças:** \`Recebi 1500 de...\` ou \`Gastei 200 em...\`\n` +
+                      `🚀 **Projetos:** \`Iniciar um novo Projeto\`\n" +
+                      `🐷 **Poupança:** \`Guardar 1000 na Poupança\`\n\n` +
+                      `**Dica:** Pode simplificar, por exemplo: *"Registar tarefa comprar café"*. Se precisar de ajuda técnica, utilize o menu **Ajuda e Suporte**.`;
             action = 'open_support';
             data = null;
         }
         else {
             message = `Ainda estou a aprender, ${firstName}! Eis o que consigo fazer por si hoje no Dashboard:\n\n` +
-                      `📌 Criar Tarefas (ex: "Nova tarefa urgente rever contrato")\n` +
-                      `💰 Adicionar Finanças (ex: "Gastei 1500 em marketing" | "Recebi 5000 do projeto")\n` +
-                      `👥 Registar Clientes (ex: "Adicionar parceiro ACME Corp")\n` +
-                      `🚀 Iniciar Projetos (ex: "Criar projeto Website V2")\n` +
-                      `🐷 Registar Poupança (ex: "Guardar 1000 MZN para portáteis")\n` +
-                      `🔍 Pesquisar Tudo (ex: "Procurar ACME" ou "Buscar fatura")\n` +
-                      `🛠️ Suporte (ex: "Preciso de suporte" ou "Como falo com a ajuda?")`;
+                      `📌 **Tarefas:** \`Registar uma Tarefa\`\n` +
+                      `👥 **Clientes:** \`Registar um Cliente\`\n` +
+                      `💰 **Finanças:** \`Recebi 1500 de...\` ou \`Gastei 200 em...\`\n` +
+                      `🚀 **Projetos:** \`Iniciar um novo Projeto\`\n` +
+                      `🐷 **Poupança:** \`Guardar 1000 na Poupança\`\n` +
+                      `🔍 **Pesquisa:** \`Procurar por...\`\n\n` +
+                      `Digite \`/suporte\` para ver este guia a qualquer momento.`;
         }
 
         res.status(200).json({ success: true, action, data, context: newContext, message });
