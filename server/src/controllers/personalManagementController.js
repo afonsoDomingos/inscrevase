@@ -411,354 +411,142 @@ exports.processAICommand = async (req, res) => {
         const { text, context } = req.body;
         if (!text) return res.status(400).json({ success: false, message: 'Texto é obrigatório' });
 
-        const prompt = text.toLowerCase();
-        let action = null;
-        let data = {};
-        let message = '';
-        let newContext = null;
+        const prompt = text.toLowerCase().trim();
+        const firstName = req.user.name.split(' ')[0];
+        
+        // --- 1. HANDLE EXISTING CONVERSATIONAL CONTEXT ---
+        if (context && context.step) {
+            let currentData = context.draftData || {};
+            let newContext = null;
 
-        // Obter nome do utilizador para respostas personalizadas
-        const userDoc = await User.findById(req.user.id).select('name');
-        const firstName = userDoc ? userDoc.name.split(' ')[0] : 'Líder';
-
-        // --- CONVERSATIONAL STATE MGMT ---
-        if (context) {
-            // Step: Ask Task Name
-            if (context.step === 'ask_task_name') {
-                const name = text.trim();
-                const data = { title: name.charAt(0).toUpperCase() + name.slice(1), priority: 'medium' };
-                return res.status(200).json({ success: true, action: 'add_task', data, message: `Entendido, ${firstName}. Quer registar a tarefa: "${data.title}"?` });
-            }
-
-            // Step: Ask Client Name
+            // CLIENT FLOW: Nome -> Contacto -> Email -> Confirmar
             if (context.step === 'ask_client_name') {
-                const name = text.trim();
-                const data = { name: name.charAt(0).toUpperCase() + name.slice(1) };
-                newContext = { draftAction: 'add_client', draftData: data, step: 'ask_email' };
-                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Anotei o nome: "${data.name}". Deseja associar um e-mail a este cliente?` });
+                currentData.name = text.trim();
+                newContext = { step: 'ask_client_phone', draftData: currentData, draftAction: 'add_client' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Anotado. Qual é o contacto telefónico de "${currentData.name}"? (Escreva "não" para saltar)` });
+            }
+            if (context.step === 'ask_client_phone') {
+                if (!prompt.includes('não')) currentData.phone = text.trim();
+                newContext = { step: 'ask_client_email', draftData: currentData, draftAction: 'add_client' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `E o e-mail para o cliente "${currentData.name}"? (Escreva "não" para saltar)` });
+            }
+            if (context.step === 'ask_client_email') {
+                if (!prompt.includes('não')) currentData.email = text.trim();
+                return res.status(200).json({ success: true, action: 'add_client', data: currentData, message: `Tudo pronto! Confirmar registo do Cliente: "${currentData.name}"?` });
             }
 
-            if (context.draftAction === 'add_client') {
-            const currentData = context.draftData;
-
-            // Handle Email Step
-            if (context.step === 'ask_email') {
-                if (prompt.includes('não') || prompt.includes('nao') || prompt.includes('pular') || prompt.includes('skip') || prompt.includes('nenhum')) {
-                    newContext = { draftAction: 'add_client', draftData: currentData, step: 'ask_phone' };
-                    return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: 'Tudo bem. Deseja adicionar o contacto telefônico deste cliente?' });
-                } else {
-                    const emailMatch = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
-                    if (emailMatch) {
-                        currentData.email = emailMatch[1];
-                        newContext = { draftAction: 'add_client', draftData: currentData, step: 'ask_phone' };
-                        return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `O e-mail ${currentData.email} foi salvo! Deseja adicionar o contacto telefônico também?` });
-                    } else {
-                        return res.status(200).json({ success: true, action: 'ask_info', context, message: 'Não entendi o endereço de e-mail. Por favor escreva um e-mail válido (exemplo@email.com) ou responda "não".' });
-                    }
-                }
+            // TASK FLOW: Nome -> Descrição -> Data Limite -> Cliente? -> Confirmar
+            if (context.step === 'ask_task_name') {
+                currentData.title = text.trim();
+                newContext = { step: 'ask_task_desc', draftData: currentData, draftAction: 'add_task' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é a descrição para a tarefa "${currentData.title}"?` });
             }
-            
-            // Handle Phone Step
-            if (context.step === 'ask_phone') {
-                const phoneMatch = text.match(/(\+?\d[\d\s-]{7,14}\d)/);
-                if (phoneMatch) {
-                    currentData.phone = phoneMatch[1].replace(/\s|-/g, '');
-                }
-                
-                // If type is still missing, ask it. Otherwise final confirmation.
-                if (!currentData.type || currentData.type === 'unknown') {
-                    newContext = { draftAction: 'add_client', draftData: currentData, step: 'ask_type' };
-                    return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Guardado! Uma última coisa, ${firstName}: Este cliente é uma "Empresa" ou uma "Pessoa Individual"?` });
-                }
-
-                return res.status(200).json({ success: true, action: 'add_client', data: currentData, message: `As informações essenciais estão prontas, ${firstName}! Deseja confirmar o registo do cliente "${currentData.name}"?` });
+            if (context.step === 'ask_task_desc') {
+                currentData.description = text.trim();
+                newContext = { step: 'ask_task_deadline', draftData: currentData, draftAction: 'add_task' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é a data limite para esta tarefa? (ex: 2024-12-31)` });
+            }
+            if (context.step === 'ask_task_deadline') {
+                currentData.deadline = text.trim();
+                newContext = { step: 'ask_task_client', draftData: currentData, draftAction: 'add_task' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Deseja associar esta tarefa a algum cliente específico? (Diga o nome do cliente ou "não")` });
+            }
+            if (context.step === 'ask_task_client') {
+                if (!prompt.includes('não')) currentData.clientName = text.trim();
+                return res.status(200).json({ success: true, action: 'add_task', data: currentData, message: `Confirmar registo da tarefa "${currentData.title}" com prazo em ${currentData.deadline}?` });
             }
 
-            // Handle Type Step
-            if (context.step === 'ask_type') {
-                if (prompt.includes('empresa') || prompt.includes('firma') || prompt.includes('companhia')) {
-                    currentData.type = 'company';
-                } else if (prompt.includes('pessoa') || prompt.includes('individual') || prompt.includes('particular')) {
-                    currentData.type = 'individual';
-                } else {
-                    return res.status(200).json({ success: true, action: 'ask_info', context, message: 'Não percebi. Por favor diga se é "Empresa" ou "Individual".' });
-                }
-                return res.status(200).json({ success: true, action: 'add_client', data: currentData, message: `Entendido, ${firstName}! Deseja confirmar o registo do cliente "${currentData.name}" como ${currentData.type === 'company' ? 'Empresa' : 'Pessoa Individual'}?` });
+            // SAVINGS FLOW: Valor -> Objetivo -> Data -> Confirmar
+            if (context.step === 'ask_saving_amount') {
+                const amount = parseFloat(text.replace(',', '.').match(/(\d+(\.\d+)?)/)?.[0] || 0);
+                currentData.amount = amount;
+                newContext = { step: 'ask_saving_goal', draftData: currentData, draftAction: 'add_saving' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é o objetivo desta poupança? (ex: Fundo de Reserva, Obra, etc)` });
+            }
+            if (context.step === 'ask_saving_goal') {
+                currentData.description = text.trim();
+                currentData.account = text.trim();
+                newContext = { step: 'ask_saving_date', draftData: currentData, draftAction: 'add_saving' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Para que data deseja registar esta alocação? (ex: hoje, 2024-05-20)` });
+            }
+            if (context.step === 'ask_saving_date') {
+                currentData.date = text.toLowerCase().includes('hoje') ? new Date().toISOString().split('T')[0] : text.trim();
+                return res.status(200).json({ success: true, action: 'add_saving', data: currentData, message: `Confirmar reserva de ${currentData.amount} MZN para "${currentData.description}"?` });
+            }
+
+            // FINANCE FLOW: Tipo -> Valor -> Categoria -> Data -> Confirmar
+            if (context.step === 'ask_finance_type') {
+                currentData.type = prompt.includes('receita') || prompt.includes('ganho') || prompt.includes('entrada') ? 'income' : 'expense';
+                newContext = { step: 'ask_finance_amount', draftData: currentData, draftAction: 'add_transaction' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é o valor do movimento financeiro?` });
+            }
+            if (context.step === 'ask_finance_amount') {
+                currentData.amount = parseFloat(text.replace(',', '.').match(/(\d+(\.\d+)?)/)?.[0] || 0);
+                newContext = { step: 'ask_finance_category', draftData: currentData, draftAction: 'add_transaction' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Em que categoria se enquadra? (ex: Marketing, Serviços, Impostos)` });
+            }
+            if (context.step === 'ask_finance_category') {
+                currentData.category = text.trim();
+                currentData.description = `${currentData.type === 'income' ? 'Receita' : 'Despesa'} em ${currentData.category}`;
+                newContext = { step: 'ask_finance_date', draftData: currentData, draftAction: 'add_transaction' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é a data deste movimento? (ex: hoje, 2024-06-15)` });
+            }
+            if (context.step === 'ask_finance_date') {
+                currentData.date = text.toLowerCase().includes('hoje') ? new Date().toISOString().split('T')[0] : text.trim();
+                return res.status(200).json({ success: true, action: 'add_transaction', data: currentData, message: `Confirmar registo de ${currentData.type === 'income' ? 'receita' : 'despesa'} de ${currentData.amount} MZN?` });
             }
         }
-        // ---------------------------------
 
-        // Intent: Correction / Mistake Recognition
-        if (prompt.includes('errado') || prompt.includes('erro') || prompt.includes('falhou') || prompt.includes('falhaste') || prompt.includes('corrigir') || prompt.includes('retificar') || prompt.includes('não é isso') || prompt.includes('engano')) {
-            message = `Peço imensa desculpa, ${firstName}. Como assistente em evolução, às vezes posso falhar na interpretação. 🧠\n\nQual parte devo retificar? Pode reformular o comando de forma mais direta para que eu possa executar exatamente o que pretende.`;
-            return res.status(200).json({ success: true, action: null, data: null, context: null, message });
+        // --- 2. HANDLE NEW INTENTS ---
+
+        // Support Commands
+        if (prompt === '/suporte' || prompt === 'ajuda' || prompt === 'suporte') {
+            const msg = `Comandos disponíveis:\n` +
+                      `- **/cliente** → Registar novo cliente\n` +
+                      `- **/tarefa** → Registar nova tarefa\n` +
+                      `- **/poupanca** → Criar/alocar poupança\n` +
+                      `- **/financas** → Registar movimento financeiro`;
+            return res.status(200).json({ success: true, message: msg });
         }
 
-        // Simple Smart Parser (Can be replaced/extended with OpenAI/Gemini later)
-        const entityFilter = /\b(ola|olá|chat|assistente|podes|pode|consegue|consegues|por|favor|adicionar|criar|novo|nova|regista|registar|registe|salvar|guarda|guardar|quero|queria|gostaria|vou|estou|faz|fazer|anotar|anota|chamar|chama|chamado|chame|ligar|liga|ligado|contactar|contacto|falar|com|este|esta|esse|essa|o|a|os|as|um|uma|no|na|do|da|em|para|será|que|preciso|me|ajuda|ajudar|de|sobre|seria|podes-me|podias|conseguias)\b/gi;
-
-        if (prompt.includes('tarefa') || prompt.includes('fazer')) {
-            action = 'add_task';
-            let cleanTitle = text.replace(/tarefa|fazer/gi, '')
-                                 .replace(entityFilter, ' ')
-                                 .replace(/[?.,!]/g, '')
-                                 .trim();
-            
-            cleanTitle = cleanTitle.replace(/\s+/g, ' ');
-
-            // If no specific title was provided, ask for it
-            if (!cleanTitle || cleanTitle.length < 3) {
-                newContext = { step: 'ask_task_name' };
-                message = `Com certeza, ${firstName}. Qual é o nome ou descrição da tarefa que deseja registar?`;
-                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message });
-            }
-
-            const title = cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
-
-            data = {
-                title: cleanTitle,
-                priority: prompt.includes('urgente') || prompt.includes('alta') ? 'high' : 'medium'
-            };
-            message = `Percebi, ${firstName}. Quer adicionar a tarefa: "${data.title}"?`;
-        }
-        // Intent: Add Transaction
-        else if (prompt.includes('ganhei') || prompt.includes('recebi') || prompt.includes('gastei') || prompt.includes('paguei')) {
-            action = 'add_transaction';
-            const isIncome = prompt.includes('ganhei') || prompt.includes('recebi');
-            const amountMatch = text.match(/(\d+(?:[.,]\d+)?)/);
-            
-            // Extração de descrição limpa e sensata
-            let cleanDesc = text;
-            if (amountMatch) {
-                cleanDesc = cleanDesc.replace(/ganhei|recebi|gastei|paguei/gi, '')
-                                     .replace(amountMatch[0], '')
-                                     .replace(/\b(?:mt|mzn|meticais)\b/gi, '')
-                                     .replace(entityFilter, ' ')
-                                     .trim();
-            }
-            
-            cleanDesc = cleanDesc.replace(/\s+/g, ' '); // remove espaços duplos
-            if (cleanDesc.length >= 2) {
-                cleanDesc = cleanDesc.charAt(0).toUpperCase() + cleanDesc.slice(1);
-            } else {
-                cleanDesc = isIncome ? 'Receita Geral' : 'Despesa Geral';
-            }
-
-            data = {
-                type: isIncome ? 'income' : 'expense',
-                amount: amountMatch ? parseFloat(amountMatch[1].replace(',', '.')) : 0,
-                description: cleanDesc,
-                category: predictCategory(cleanDesc)
-            };
-            message = `${firstName}, vou registar uma ${data.type === 'income' ? 'entrada' : 'saída'} de ${data.amount} MZN em "${data.category}" relativa a "${cleanDesc}". Confirmar?`;
-        }
         // Intent: Add Client
-        else if (prompt.includes('cliente') || prompt.includes('empresa') || prompt.includes('parceiro')) {
-            let cleanName = text.replace(/cliente|empresa|parceiro/gi, '')
-                                .replace(entityFilter, ' ')
-                                .replace(/\b(email|telefone|contacto|telefone:)\b/gi, '')
-                                .replace(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g, '')
-                                .replace(/(\+?\d[\d\s-]{7,14}\d)/g, '')
-                                .replace(/[?.,!]/g, '')
-                                .trim();
-            
-            cleanName = cleanName.replace(/\s+/g, ' ');
-
-            // If no name, ask for it
-            if (!cleanName || cleanName.length < 3) {
-                newContext = { step: 'ask_client_name' };
-                message = `Certamente, ${firstName}. Qual é o nome do cliente ou empresa que deseja registar?`;
-                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message });
+        if (prompt.startsWith('/cliente') || (prompt.includes('regista') && prompt.includes('cliente'))) {
+            let draftData = {};
+            const nameMatch = text.match(/(?:cliente|registar|regista)\s+([a-zA-ZÀ-ÿ\s]+)/i);
+            if (nameMatch && nameMatch[1].trim().length > 2) {
+                draftData.name = nameMatch[1].trim();
+                return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_client_phone', draftData }, message: `Anotado, ${firstName}. Qual é o contacto de "${draftData.name}"?` });
             }
-
-            cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
-
-            const emailMatch = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
-            const phoneMatch = text.match(/(\+?\d[\d\s-]{7,14}\d)/);
-            const isCompany = prompt.includes('empresa') || prompt.includes('firma') || prompt.includes('companhia');
-            const isIndividual = prompt.includes('pessoa') || prompt.includes('individual') || prompt.includes('particular');
-            
-            data = {
-                name: cleanName,
-                type: isCompany ? 'company' : (isIndividual ? 'individual' : ''),
-                email: emailMatch ? emailMatch[1] : '',
-                phone: phoneMatch ? phoneMatch[1].replace(/\s|-/g, '') : '',
-            };
-
-            // Conversational triggers
-            if (!data.email) {
-                newContext = { draftAction: 'add_client', draftData: data, step: 'ask_email' };
-                action = 'ask_info';
-                message = `Certamente, ${firstName}. Deseja associar um e-mail ao cliente "${data.name}"?`;
-            } else if (!data.phone) {
-                newContext = { draftAction: 'add_client', draftData: data, step: 'ask_phone' };
-                action = 'ask_info';
-                message = `E-mail anotado. E o contacto telefónico de "${data.name}", deseja adicionar?`;
-            } else if (!data.type) {
-                newContext = { draftAction: 'add_client', draftData: data, step: 'ask_type' };
-                action = 'ask_info';
-                message = `Quase lá! "${data.name}" é uma Empresa ou Pessoa Individual?`;
-            } else {
-                action = 'add_client';
-                message = `Tudo pronto, ${firstName}! Confirmar o registo de "${data.name}" (${data.type === 'company' ? 'Empresa' : 'Individual'})?`;
-            }
-        }
-        // Intent: Add Saving (Poupança)
-        else if (prompt.includes('poupança') || prompt.includes('guardar') || prompt.includes('poupar')) {
-            action = 'add_saving';
-            const amountMatch = text.match(/(\d+(?:[.,]\d+)?)/);
-            
-            let cleanDesc = text;
-            if (amountMatch) {
-                 cleanDesc = cleanDesc.replace(/adicionar|poupança|guardar|poupar/gi, '')
-                                      .replace(amountMatch[0], '')
-                                      .replace(/\b(?:mt|mzn|meticais)\b/gi, '')
-                                      .replace(/\b(?:para|na|em|no|com|a)\b/gi, ' ')
-                                      .trim();
-            }
-            
-            cleanDesc = cleanDesc.replace(/\s+/g, ' ');
-            if (cleanDesc.length >= 2) {
-                cleanDesc = cleanDesc.charAt(0).toUpperCase() + cleanDesc.slice(1);
-            } else {
-                cleanDesc = 'Depósito';
-            }
-            
-            data = {
-                amount: amountMatch ? parseFloat(amountMatch[1].replace(',', '.')) : 0,
-                account: 'Principal',
-                description: cleanDesc,
-                date: new Date().toISOString().split('T')[0]
-            };
-            message = `Perfeito ${firstName}. Registar ${data.amount} MZN na Poupança com a descrição "${cleanDesc}"?`;
-        }
-        // Intent: Add Project
-        else if (prompt.includes('projeto') || prompt.includes('projecto')) {
-            action = 'add_project';
-            let cleanName = text.replace(/projeto|projecto/gi, '')
-                                .replace(entityFilter, ' ')
-                                .replace(/[?.,!]/g, '')
-                                .trim();
-            
-            cleanName = cleanName.replace(/\s+/g, ' ');
-            if (cleanName.length >= 2) {
-                cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
-            } else {
-                cleanName = 'Novo Projeto';
-            }
-
-            data = {
-                name: cleanName,
-                totalBudget: 0,
-                currency: 'MZN'
-            };
-            message = `Pretende iniciar o projeto "${data.name}", ${firstName}?`;
-        }
-        // Intent: Search
-        else if (prompt.includes('procurar') || prompt.includes('buscar') || prompt.includes('pesquisar') || prompt.includes('onde')) {
-            const query = text.replace(/procurar|buscar|pesquisar|onde está|onde esta/gi, '').trim();
-            const userId = req.user.id;
-            const regex = new RegExp(query, 'i');
-            
-            const [tasks, txs, clients, projects] = await Promise.all([
-                PersonalTask.find({ user: userId, title: regex }).limit(3),
-                PersonalFinance.find({ user: userId, description: regex }).limit(3),
-                PersonalClient.find({ user: userId, name: regex }).limit(3),
-                PersonalProject.find({ user: userId, name: regex }).limit(3)
-            ]);
-
-            let resultsMsg = `Aqui está o que encontrei sobre "${query}":\n`;
-            let found = false;
-            
-            if (txs.length > 0) {
-                found = true;
-                resultsMsg += `\n💰 Finanças: ` + txs.map(t => `${t.description} (${t.amount} MZN)`).join(', ');
-            }
-            if (tasks.length > 0) {
-                found = true;
-                resultsMsg += `\n📌 Tarefas: ` + tasks.map(t => t.title).join(', ');
-            }
-            if (clients.length > 0) {
-                found = true;
-                resultsMsg += `\n👥 Clientes: ` + clients.map(c => c.name).join(', ');
-            }
-            if (projects.length > 0) {
-                found = true;
-                resultsMsg += `\n🚀 Projetos: ` + projects.map(p => p.name).join(', ');
-            }
-            
-            if (!found) {
-                resultsMsg = `Não encontrei registos relacionados a "${query}" no seu Módulo de Excelência, ${firstName}.`;
-            }
-            
-            message = resultsMsg;
-            action = null; 
-            data = null;
-        }
-        // Intent: Insights (Consultant Mode)
-        else if (prompt.includes('análise') || prompt.includes('como estou') || prompt.includes('insights') || prompt.includes('consultoria') || prompt.includes('dicas') || prompt.includes('estatísticas')) {
-            const [transactions, tasks, projects] = await Promise.all([
-                PersonalFinance.find({ user: req.user.id }),
-                PersonalTask.find({ user: req.user.id }),
-                PersonalProject.find({ user: req.user.id })
-            ]);
-
-            const totalIncome = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
-            const totalExpense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
-            const balance = totalIncome - totalExpense;
-            
-            const completedTasks = tasks.filter(t => t.status === 'completed').length;
-            const efficiency = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0;
-            
-            let statusEmoji = balance >= 0 ? '💰' : '⚠️';
-            let advice = '';
-
-            if (balance < 0) {
-                advice = 'As suas despesas estão a superar os ganhos. Recomendo cortar em custos não essenciais imediatamente.';
-            } else if (efficiency < 40 && tasks.length > 5) {
-                advice = 'O seu fluxo financeiro está bom, mas a execução de tarefas está baixa. Cuidado para não acumular trabalho e comprometer prazos de clientes.';
-            } else if (balance > 10000 && efficiency > 70) {
-                advice = 'Excelente! Está no "Sweet Spot". Finanças saudáveis e alta produtividade. Talvez seja hora de investir num novo projeto ou expansão.';
-            } else {
-                advice = 'Mantenha o foco. O equilíbrio entre finanças e tarefas é o segredo para o crescimento sustentável.';
-            }
-
-            message = `### 📊 Modo Consultor Saúde Profissional - Relatório para ${firstName}\n\n` +
-                      `${statusEmoji} **Saúde Financeira:** O seu balanço atual é de **${balance} MZN** (Receitas: ${totalIncome} | Despesas: ${totalExpense}).\n\n` +
-                      `📈 **Eficiência Operacional:** Concluiu **${completedTasks} de ${tasks.length}** tarefas (${efficiency}% de eficácia).\n\n` +
-                      `🚀 **Projetos Ativos:** Tem **${projects.length}** projetos em mãos.\n\n` +
-                      `💡 **O meu conselho:** ${advice}`;
-            
-            action = null;
-            data = null;
-        }
-        // Intent: Support Requests
-        else if (prompt.startsWith('/') || prompt.includes('suporte') || (prompt.includes('ajuda') && !prompt.includes('como'))) {
-            message = `### 🛠️ Guia de Comandos de Orquestração\n\n` +
-                      `${firstName}, aqui estão os comandos rápidos que pode utilizar para gerir o seu ecossistema. Selecione um e escreva-o abaixo:\n\n` +
-                      `📌 **Tarefas:** \`Registar uma Tarefa\`\n` +
-                      `👥 **Clientes:** \`Registar um Cliente\`\n` +
-                      `💰 **Finanças:** \`Recebi 1500 de...\` ou \`Gastei 200 em...\`\n` +
-                      `🚀 **Projetos:** \`Iniciar um novo Projeto\`\n" +
-                      `🐷 **Poupança:** \`Guardar 1000 na Poupança\`\n\n` +
-                      `**Dica:** Pode simplificar, por exemplo: *"Registar tarefa comprar café"*. Se precisar de ajuda técnica, utilize o menu **Ajuda e Suporte**.`;
-            action = 'open_support';
-            data = null;
-        }
-        else {
-            message = `Ainda estou a aprender, ${firstName}! Eis o que consigo fazer por si hoje no Dashboard:\n\n` +
-                      `📌 **Tarefas:** \`Registar uma Tarefa\`\n` +
-                      `👥 **Clientes:** \`Registar um Cliente\`\n` +
-                      `💰 **Finanças:** \`Recebi 1500 de...\` ou \`Gastei 200 em...\`\n` +
-                      `🚀 **Projetos:** \`Iniciar um novo Projeto\`\n` +
-                      `🐷 **Poupança:** \`Guardar 1000 na Poupança\`\n` +
-                      `🔍 **Pesquisa:** \`Procurar por...\`\n\n` +
-                      `Digite \`/suporte\` para ver este guia a qualquer momento.`;
+            return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_client_name' }, message: `Com certeza. Qual é o nome do cliente?` });
         }
 
-        res.status(200).json({ success: true, action, data, context: newContext, message });
+        // Intent: Add Task
+        if (prompt.startsWith('/tarefa') || (prompt.includes('regista') && prompt.includes('tarefa'))) {
+            return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_task_name' }, message: `Certamente. Qual é o nome da tarefa?` });
+        }
+
+        // Intent: Add Saving
+        if (prompt.startsWith('/poupanca') || (prompt.includes('poupanca')) || (prompt.includes('regista') && prompt.includes('poupança'))) {
+            return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_saving_amount' }, message: `Qual é o valor que deseja alocar à poupança?` });
+        }
+
+        // Intent: Add Finance
+        if (prompt.startsWith('/financas') || (prompt.includes('finanças')) || (prompt.includes('regista') && prompt.includes('finança'))) {
+            return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_finance_type' }, message: `Pretende registar uma Receita ou uma Despesa?` });
+        }
+
+        // Use standard guide if no intent matched
+        const helpMsg = `Ainda estou a aprender, ${firstName}! Posso ajudá-lo a orquestrar o seu ecossistema:\n\n` +
+                      `📌 **Tarefas:** Digite \`/tarefa\`\n` +
+                      `👥 **Clientes:** Digite \`/cliente\`\n` +
+                      `💰 **Finanças:** Digite \`/financas\`\n` +
+                      `🐷 **Poupança:** Digite \`/poupanca\`\n\n` +
+                      `Digite \`/suporte\` para ver todos os comandos.`;
+        
+        return res.status(200).json({ success: true, message: helpMsg });
+
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        return res.status(500).json({ success: false, message: error.message });
     }
 };
 
