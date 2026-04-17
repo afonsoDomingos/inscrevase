@@ -404,13 +404,31 @@ exports.processAICommand = async (req, res) => {
             action = 'add_transaction';
             const isIncome = prompt.includes('ganhei') || prompt.includes('recebi');
             const amountMatch = text.match(/(\d+(?:[.,]\d+)?)/);
+            
+            // Extração de descrição limpa e sensata
+            let cleanDesc = text;
+            if (amountMatch) {
+                cleanDesc = cleanDesc.replace(/ganhei|recebi|gastei|paguei/gi, '')
+                                     .replace(amountMatch[0], '')
+                                     .replace(/\b(?:mt|mzn|meticais)\b/gi, '')
+                                     .replace(/\b(?:com|no|na|do|da|de|em|para)\b/gi, ' ')
+                                     .trim();
+            }
+            
+            cleanDesc = cleanDesc.replace(/\s+/g, ' '); // remove espaços duplos
+            if (cleanDesc.length >= 2) {
+                cleanDesc = cleanDesc.charAt(0).toUpperCase() + cleanDesc.slice(1);
+            } else {
+                cleanDesc = isIncome ? 'Receita Geral' : 'Despesa Geral';
+            }
+
             data = {
                 type: isIncome ? 'income' : 'expense',
                 amount: amountMatch ? parseFloat(amountMatch[1].replace(',', '.')) : 0,
-                description: text,
+                description: cleanDesc,
                 category: 'Geral'
             };
-            message = `Vou registar uma ${data.type === 'income' ? 'entrada' : 'saída'} de ${data.amount} MZN. Confirmar?`;
+            message = `Vou registar uma ${data.type === 'income' ? 'entrada' : 'saída'} de ${data.amount} MZN relativa a "${cleanDesc}". Confirmar?`;
         }
         // Intent: Add Client
         else if (prompt.includes('cliente') || prompt.includes('empresa')) {
