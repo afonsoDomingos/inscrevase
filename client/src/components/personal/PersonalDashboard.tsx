@@ -1077,13 +1077,31 @@ export default function PersonalDashboard() {
                                 <Activity size={14} /> Ativos em Gestão
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '0.8rem 1rem', borderRadius: '12px', border: '1px solid #eee' }}>
+                                <div 
+                                    onClick={() => setViewMode('projects')}
+                                    style={{ 
+                                        display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+                                        background: '#fff', padding: '0.8rem 1rem', borderRadius: '12px', 
+                                        border: '1px solid #eee', cursor: 'pointer', transition: 'all 0.2s'
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#D4AF37'; e.currentTarget.style.transform = 'translateX(5px)'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#eee'; e.currentTarget.style.transform = 'translateX(0)'; }}
+                                >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', fontWeight: 600 }}>
                                         <Briefcase size={16} opacity={0.5} /> Projetos
                                     </div>
                                     <span style={{ fontSize: '1.1rem', fontWeight: 800 }}>{projects.length}</span>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '0.8rem 1rem', borderRadius: '12px', border: '1px solid #eee' }}>
+                                <div 
+                                    onClick={() => setViewMode('clients')}
+                                    style={{ 
+                                        display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+                                        background: '#fff', padding: '0.8rem 1rem', borderRadius: '12px', 
+                                        border: '1px solid #eee', cursor: 'pointer', transition: 'all 0.2s'
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#D4AF37'; e.currentTarget.style.transform = 'translateX(5px)'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#eee'; e.currentTarget.style.transform = 'translateX(0)'; }}
+                                >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', fontWeight: 600 }}>
                                         <Users size={16} opacity={0.5} /> Clientes
                                     </div>
