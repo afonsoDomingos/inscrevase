@@ -641,6 +641,17 @@ export default function PersonalDashboard() {
     const priorityColor = (p: string) => p === 'high' ? '#ef4444' : p === 'medium' ? '#f59e0b' : '#6b7280';
     const priorityLabel = (p: string) => p === 'high' ? 'Alta' : p === 'medium' ? 'Média' : 'Baixa';
 
+    const handleDeleteSaving = async (id: string) => {
+        if (!window.confirm("Eliminar este registo de poupança?")) return;
+        try {
+            await personalService.deleteSaving(id);
+            toast.success("Registo eliminado.");
+            fetchData();
+        } catch (error) {
+            toast.error("Erro ao eliminar");
+        }
+    };
+
     const handleAddSaving = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
