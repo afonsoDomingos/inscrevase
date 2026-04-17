@@ -849,22 +849,54 @@ export default function PersonalDashboard() {
 
             <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '2rem', overflowX: 'auto', paddingBottom: '8px' }}>
                 {/* ── Tesla Minimalist Tabs ── */}
-                <div style={{ display: 'flex', borderBottom: '1px solid #eee', width: '100%', gap: '2rem' }}>
-                    {DASHBOARD_TABS.map(tab => (
-                        <button key={tab.id} onClick={() => setViewMode(tab.id as ViewMode)} style={{
-                            padding: '12px 0', 
-                            background: 'transparent',
-                            color: viewMode === tab.id ? '#000' : 'var(--text-muted)',
-                            fontWeight: 800,
-                            border: 'none',
-                            borderBottom: viewMode === tab.id ? '2px solid #000' : '2px solid transparent',
-                            cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.8rem',
-                            display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap',
-                            textTransform: 'uppercase', letterSpacing: '1px'
-                        }}>
-                            <tab.icon size={14} /> {tab.label}
-                        </button>
-                    ))}
+                <div style={{ display: 'flex', borderBottom: '1px solid rgba(0,0,0,0.05)', width: '100%', gap: '1.5rem', position: 'relative', overflowX: 'auto', scrollbarWidth: 'none' }}>
+                    {DASHBOARD_TABS.map(tab => {
+                        const isActive = viewMode === tab.id;
+                        return (
+                            <button 
+                                key={tab.id} 
+                                onClick={() => setViewMode(tab.id as ViewMode)} 
+                                style={{
+                                    padding: '16px 4px', 
+                                    background: 'transparent',
+                                    color: isActive ? '#000' : '#888',
+                                    fontWeight: isActive ? 800 : 500,
+                                    border: 'none',
+                                    cursor: 'pointer', 
+                                    transition: 'color 0.3s, opacity 0.3s', 
+                                    fontSize: '0.72rem',
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '10px', 
+                                    whiteSpace: 'nowrap',
+                                    textTransform: 'uppercase', 
+                                    letterSpacing: '1.8px',
+                                    position: 'relative',
+                                    opacity: isActive ? 1 : 0.5,
+                                }}
+                                onMouseEnter={e => !isActive && (e.currentTarget.style.opacity = '1')}
+                                onMouseLeave={e => !isActive && (e.currentTarget.style.opacity = '0.5')}
+                            >
+                                <tab.icon size={15} strokeWidth={isActive ? 2.5 : 2} /> 
+                                {tab.label}
+                                {isActive && (
+                                    <motion.div 
+                                        layoutId="activeTabIndicator"
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: '-1px',
+                                            left: 0,
+                                            right: 0,
+                                            height: '2.5px',
+                                            background: '#000',
+                                            borderRadius: '2px'
+                                        }}
+                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                    />
+                                )}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 
