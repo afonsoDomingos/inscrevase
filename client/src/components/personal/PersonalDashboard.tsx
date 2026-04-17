@@ -384,7 +384,7 @@ export default function PersonalDashboard() {
             setSavings(svs);
         } catch (error) {
             console.error(error);
-            toast.error("Erro ao carregar dados do Workspace");
+            toast.error("Erro ao carregar dados do ecossistema Saúde Profissional");
         } finally {
             setLoading(false);
         }
@@ -705,22 +705,32 @@ export default function PersonalDashboard() {
         >
             {loading ? (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px', gap: '12px', color: '#FFD700', fontSize: '1.1rem', fontWeight: 600 }}>
-                    <Activity size={24} style={{ animation: 'spin 1s linear infinite' }} /> Carregando Workspace...
+                    <Activity size={24} style={{ animation: 'spin 1s linear infinite' }} /> Carregando Saúde Profissional...
                 </div>
             ) : (
                 <>
 
             {/* ── Header ── */}
-            <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1.5rem', background: 'var(--paper)', padding: '1.5rem 2rem', borderRadius: '16px', border: '1px solid var(--border)' }}>
-                <div style={{ background: '#000', padding: '10px', borderRadius: '10px', color: '#fff' }}>
-                    <Activity size={24} />
+            <div style={{ marginBottom: '3rem', display: 'flex', alignItems: 'center', gap: '2rem', padding: '1rem 0' }}>
+                <div style={{ 
+                    background: 'var(--gold-gradient)', 
+                    padding: '16px', 
+                    borderRadius: '20px', 
+                    color: '#000',
+                    boxShadow: '0 10px 20px rgba(212,175,55,0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <ShieldCheck size={32} />
                 </div>
                 <div>
-                    <h1 style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0, letterSpacing: '-1px' }}>
-                        Saúde <span style={{ fontWeight: 400, opacity: 0.5 }}>Profissional</span>
+                    <div style={{ fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '3px', color: '#D4AF37', marginBottom: '8px' }}>Módulo de Excelência</div>
+                    <h1 style={{ fontSize: '2.5rem', fontWeight: 900, margin: 0, letterSpacing: '-1.5px', lineHeight: 1, color: 'var(--foreground)' }}>
+                        Saúde <span style={{ fontWeight: 300, opacity: 0.6 }}>Profissional</span>
                     </h1>
-                    <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.85rem', fontWeight: 500 }}>
-                        Ecosistema de gestão inteligente e performance.
+                    <p style={{ color: 'var(--text-muted)', marginTop: '8px', fontSize: '0.95rem', fontWeight: 500, maxWidth: '600px', lineHeight: 1.6, opacity: 0.8 }}>
+                        O seu ecossistema unificado para gestão financeira, produtividade tática e inteligência estratégica de alta performance.
                     </p>
                 </div>
             </div>
@@ -728,31 +738,34 @@ export default function PersonalDashboard() {
             {/* ── Smart Command Center (AI) ── */}
             <div style={{ 
                 marginBottom: '3rem', 
-                background: 'linear-gradient(135deg,rgba(0,0,0,0.8), rgba(20,20,20,0.9))', 
-                padding: '2rem', 
-                borderRadius: '24px', 
-                border: '1px solid rgba(255,215,0,0.3)',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                background: 'linear-gradient(145deg, #050505, #121212)', 
+                padding: '2.5rem', 
+                borderRadius: '28px', 
+                border: '1px solid rgba(255,215,0,0.2)',
+                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
                 position: 'relative',
                 overflow: 'hidden'
             }}>
-                <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '200px', height: '200px', background: 'rgba(255,215,0,0.03)', borderRadius: '50%', filter: 'blur(40px)' }} />
+                <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%)', borderRadius: '50%' }} />
                 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
-                    <Sparkles size={20} color="#FFD700" />
-                    <span style={{ color: '#FFD700', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Consultor de Saúde Profissional IA</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2rem' }}>
+                    <div style={{ position: 'relative' }}>
+                        <Sparkles size={20} color="#D4AF37" />
+                        <div style={{ position: 'absolute', inset: 0, background: '#D4AF37', filter: 'blur(10px)', opacity: 0.3, borderRadius: '50%' }} />
+                    </div>
+                    <span style={{ color: '#D4AF37', fontWeight: 900, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '3px' }}>Cognição Digital Saúde Profissional</span>
                 </div>
 
-                <form onSubmit={handleAISend} style={{ position: 'relative', display: 'flex', gap: '10px' }}>
+                <form onSubmit={handleAISend} style={{ position: 'relative', display: 'flex', gap: '15px' }}>
                     <input 
-                        placeholder="Como posso otimizar a sua gestão hoje? (Ex: 'Registar 500€ do Cliente X' ou 'Nova tarefa: Revisão de contrato')" 
+                        placeholder="O que deseja orquestrar hoje? (Ex: 'Recebi 15k do Projeto Alpha' ou 'Registar 2k na Poupança')" 
                         value={aiInput}
                         onChange={e => setAiInput(e.target.value)}
                         style={{
                             flex: 1,
-                            padding: '1.2rem 1.5rem',
-                            background: 'rgba(255,255,255,0.05)',
-                            border: '1px solid rgba(255,215,0,0.2)',
+                            background: 'rgba(255,255,255,0.03)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            padding: '18px 24px',
                             borderRadius: '16px',
                             color: '#fff',
                             fontSize: '1rem',
@@ -760,24 +773,25 @@ export default function PersonalDashboard() {
                             transition: 'all 0.3s',
                             boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
                         }}
+                        onFocus={e => e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)'}
+                        onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'}
                     />
-                    <button 
-                        disabled={aiLoading}
-                        style={{
-                            padding: '0 2rem',
-                            background: 'var(--gold-gradient)',
-                            border: 'none',
-                            borderRadius: '16px',
-                            color: '#000',
-                            fontWeight: 800,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            transition: 'all 0.2s'
-                        }}
-                    >
-                        {aiLoading ? <Activity size={20} className="spin" /> : <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Send size={20} /> Analisar</span>}
+                    <button type="submit" disabled={aiLoading || !aiInput.trim()} style={{
+                        background: '#D4AF37',
+                        color: '#000',
+                        border: 'none',
+                        padding: '0 30px',
+                        borderRadius: '16px',
+                        fontWeight: 900,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        transition: 'all 0.2s',
+                        boxShadow: '0 10px 20px rgba(212,175,55,0.2)'
+                    }}>
+                        {aiLoading ? <Activity size={18} className="spin" /> : <Send size={18} />}
+                        <span style={{ letterSpacing: '1px' }}>EXECUTAR</span>
                     </button>
                 </form>
 
@@ -975,28 +989,36 @@ export default function PersonalDashboard() {
 
                         {/* 4. SAVINGS STATUS */}
                         <div style={{ 
-                            background: 'var(--paper)', 
+                            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
                             padding: '1.5rem', 
                             borderRadius: '16px', 
+                            boxShadow: '0 10px 30px rgba(16,185,129,0.15)',
                             display: 'flex', 
                             flexDirection: 'column', 
                             justifyContent: 'space-between',
-                            boxShadow: '0 4px 6px rgba(0,0,0,0.02)',
-                            border: '1px solid var(--border)'
+                            color: '#fff'
                         }}>
                             <div>
-                                <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <ShieldCheck size={14} color="#10b981" /> Liquidez Estratégica
+                                <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <ShieldCheck size={14} /> Liquidez Estratégica
                                 </div>
-                                <div style={{ fontSize: '2.4rem', fontWeight: 700, letterSpacing: '-1px' }}>
+                                <div style={{ fontSize: '2.4rem', fontWeight: 900, letterSpacing: '-1.5px' }}>
                                     {formatPrice(savings.reduce((a, b) => a + b.amount, 0), 'MZN')}
+                                </div>
+                                <div style={{ marginTop: '4px', fontSize: '0.7rem', opacity: 0.8, fontWeight: 700 }}>
+                                    TAXA DE POUPANÇA: {summary.income > 0 ? ((savings.reduce((a, b) => a + b.amount, 0) / summary.income) * 100).toFixed(1) : 0}%
                                 </div>
                             </div>
                             
-                            <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
-                                <div style={{ fontSize: '0.75rem', fontWeight: 600 }}>
-                                    Taxa de Poupança: <span style={{ color: '#10b981' }}>{summary.income > 0 ? ((savings.reduce((a, b) => a + b.amount, 0) / summary.income) * 100).toFixed(1) : 0}%</span>
-                                </div>
+                            <div style={{ marginTop: '1.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '12px', padding: '10px' }}>
+                                <div style={{ fontSize: '0.65rem', fontWeight: 800, opacity: 0.7, marginBottom: '5px' }}>ÚLTIMAS ALOCAÇÕES</div>
+                                {savings.slice(0, 2).map((s, idx) => (
+                                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600 }}>
+                                        <span>{s.account}</span>
+                                        <span>+{formatPrice(s.amount, 'MZN').split(',')[0]}</span>
+                                    </div>
+                                ))}
+                                {savings.length === 0 && <div style={{ fontSize: '0.7rem', opacity: 0.6 }}>Nenhuma reserva ativa</div>}
                             </div>
                         </div>
 
