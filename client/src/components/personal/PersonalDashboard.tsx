@@ -615,10 +615,10 @@ export default function PersonalDashboard() {
 
         const currentContext = aiMessages.length > 0 && aiMessages[aiMessages.length-1].role === 'bot' 
                                 ? aiMessages[aiMessages.length-1].suggestion?.context 
-                                : null;
+                                : undefined;
 
         try {
-            const res = await personalService.processAICommand(userMsg, currentContext);
+            const res = await personalService.processAICommand(userMsg, currentContext || undefined);
             if (res.success) {
                 setAiMessages(prev => [...prev, { 
                     role: 'bot', 
