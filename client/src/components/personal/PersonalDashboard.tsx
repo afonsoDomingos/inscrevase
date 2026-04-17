@@ -654,7 +654,10 @@ export default function PersonalDashboard() {
                 }]);
             }
         } catch {
-            setAiMessages(prev => [...prev, { role: 'bot', content: "Desculpe, tive um problema ao processar isso. Tente novamente." }]);
+            setAiMessages(prev => [...prev, { 
+                role: 'bot', 
+                content: "Pedimos desculpa, mas o meu centro de inteligência está temporariamente indisponível. 🧠⚠️\n\nPor favor, tente novamente em alguns instantes ou utilize os menus de registo manual para continuar a sua gestão de excelência." 
+            }]);
         } finally {
             setAiLoading(false);
         }
