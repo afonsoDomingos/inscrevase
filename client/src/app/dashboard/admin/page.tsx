@@ -340,10 +340,28 @@ function AdminDashboardContent() {
         // Poll for updates every 15 seconds (stats, traffic, unread)
         const interval = setInterval(() => {
             if (document.visibilityState === 'visible') {
-                dashboardService.getAdminStats().then(setStats).catch(err => console.error("Stats polling error", err));
-                dashboardService.getTrafficStats().then(setTrafficStats).catch(err => console.error("Traffic polling error", err));
+                const handleUnauthorized = (err: any) => {
+                    if (err.message.includes('401') || err.message.includes('Unauthorized') || err.status === 401) {
+                        console.warn("🔴 [Admin Dashboard] Session expired during polling. Redirecting...");
+                        clearInterval(interval);
+                        authService.logout();
+                        return true;
+                    }
+                    return false;
+                };
+
+                dashboardService.getAdminStats()
+                    .then(setStats)
+                    .catch(err => !handleUnauthorized(err) && console.error("Stats polling error", err));
+                
+                dashboardService.getTrafficStats()
+                    .then(setTrafficStats)
+                    .catch(err => !handleUnauthorized(err) && console.error("Traffic polling error", err));
+                
                 if (user?.role === 'SuperAdmin') {
-                    dashboardService.getSuperAdminAnalytics().then(setSuperAdminAnalytics).catch(err => console.error("Super Admin Analytics polling error", err));
+                    dashboardService.getSuperAdminAnalytics()
+                        .then(setSuperAdminAnalytics)
+                        .catch(err => !handleUnauthorized(err) && console.error("Super Admin Analytics polling error", err));
                 }
                 loadUnreadCount();
             }
@@ -355,7 +373,11 @@ function AdminDashboardContent() {
         try {
             const data = await supportService.getUnreadCount();
             setUnreadCount(data.count);
-        } catch (error) {
+        } catch (error: any) {
+            if (error.message?.includes('401') || error.status === 401) {
+                // Silently skip if unauthorized during polling - main dashboard logic will handle redirect
+                return;
+            }
             console.error('Error loading unread count:', error);
         }
     };

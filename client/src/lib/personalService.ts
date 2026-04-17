@@ -237,3 +237,15 @@ export const personalService = {
         return res.data;
     }
 };
+
+// Add Axios Interceptor for 401 errors
+axios.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response?.status === 401) {
+            console.warn("🔴 [Personal Service] 401 Unauthorized detected. Logging out...");
+            authService.logout();
+        }
+        return Promise.reject(error);
+    }
+);

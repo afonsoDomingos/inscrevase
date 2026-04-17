@@ -62,14 +62,25 @@ export interface TrafficStats {
     peakDays?: { day: number; count: number }[];
 }
 
+const handleResponse = async (response: Response, errorMsg: string) => {
+    if (!response.ok) {
+        if (response.status === 401) {
+            const err = new Error('Unauthorized');
+            (err as any).status = 401;
+            throw err;
+        }
+        throw new Error(errorMsg);
+    }
+    return response.json();
+};
+
 export const dashboardService = {
     async getAdminStats(): Promise<AdminStats> {
         const token = Cookies.get('token');
         const response = await fetch(`${API_URL}/dashboard/stats`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (!response.ok) throw new Error('Falha ao buscar estatísticas');
-        return response.json();
+        return handleResponse(response, 'Falha ao buscar estatísticas');
     },
 
     async getRecentForms(): Promise<RecentForm[]> {
@@ -77,8 +88,7 @@ export const dashboardService = {
         const response = await fetch(`${API_URL}/dashboard/recent-forms`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (!response.ok) throw new Error('Falha ao buscar formulários recentes');
-        return response.json();
+        return handleResponse(response, 'Falha ao buscar formulários recentes');
     },
 
     async getMentorStats(): Promise<AdminStats> {
@@ -86,8 +96,7 @@ export const dashboardService = {
         const response = await fetch(`${API_URL}/dashboard/mentor/stats`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (!response.ok) throw new Error('Falha ao buscar estatísticas do mentor');
-        return response.json();
+        return handleResponse(response, 'Falha ao buscar estatísticas do mentor');
     },
 
     async getAnalytics(): Promise<AnalyticsData> {
@@ -95,8 +104,7 @@ export const dashboardService = {
         const response = await fetch(`${API_URL}/dashboard/mentor/analytics`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (!response.ok) throw new Error('Falha ao buscar dados analíticos');
-        return response.json();
+        return handleResponse(response, 'Falha ao buscar dados analíticos');
     },
 
     async getTrafficStats(): Promise<TrafficStats> {
@@ -104,8 +112,7 @@ export const dashboardService = {
         const response = await fetch(`${API_URL}/analytics/stats`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (!response.ok) throw new Error('Falha ao buscar tráfego');
-        return response.json();
+        return handleResponse(response, 'Falha ao buscar tráfego');
     },
 
     async getTopMentors(): Promise<TopMentor[]> {
@@ -113,8 +120,7 @@ export const dashboardService = {
         const response = await fetch(`${API_URL}/dashboard/top-mentors`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (!response.ok) throw new Error('Falha ao buscar top mentores');
-        return response.json();
+        return handleResponse(response, 'Falha ao buscar top mentores');
     },
 
     async getSuperAdminAnalytics(): Promise<{
@@ -140,8 +146,7 @@ export const dashboardService = {
         const response = await fetch(`${API_URL}/auth/super-admin/analytics`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (!response.ok) throw new Error('Falha ao buscar analytics do SuperAdmin');
-        return response.json();
+        return handleResponse(response, 'Falha ao buscar analytics do SuperAdmin');
     },
     async getPayPalPayouts(): Promise<{
         _id: string;
@@ -159,7 +164,6 @@ export const dashboardService = {
         const response = await fetch(`${API_URL}/paypal/admin/payouts`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (!response.ok) throw new Error('Falha ao buscar repasses do PayPal');
-        return response.json();
+        return handleResponse(response, 'Falha ao buscar repasses do PayPal');
     }
 };

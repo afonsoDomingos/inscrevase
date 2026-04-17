@@ -36,6 +36,18 @@ const getHeaders = () => {
     };
 };
 
+const handleResponse = async (response: Response, errorMsg: string) => {
+    if (!response.ok) {
+        if (response.status === 401) {
+            const err = new Error('Unauthorized');
+            (err as any).status = 401;
+            throw err;
+        }
+        throw new Error(errorMsg);
+    }
+    return response.json();
+};
+
 export const supportService = {
     createTicket: async (subject: string, message: string, attachment?: string, mentorId?: string) => {
         const response = await fetch(`${API_URL}/support`, {
@@ -43,24 +55,21 @@ export const supportService = {
             headers: getHeaders(),
             body: JSON.stringify({ subject, message, attachment, mentorId })
         });
-        if (!response.ok) throw new Error('Erro ao criar ticket');
-        return response.json();
+        return handleResponse(response, 'Erro ao criar ticket');
     },
 
     getMyTickets: async (): Promise<Ticket[]> => {
         const response = await fetch(`${API_URL}/support/my`, {
             headers: getHeaders()
         });
-        if (!response.ok) throw new Error('Erro ao buscar tickets');
-        return response.json();
+        return handleResponse(response, 'Erro ao buscar tickets');
     },
 
     getAllTickets: async (): Promise<Ticket[]> => {
         const response = await fetch(`${API_URL}/support/all`, {
             headers: getHeaders()
         });
-        if (!response.ok) throw new Error('Erro ao buscar tickets');
-        return response.json();
+        return handleResponse(response, 'Erro ao buscar tickets');
     },
 
     addMessage: async (id: string, content: string, attachment?: string) => {
@@ -69,16 +78,14 @@ export const supportService = {
             headers: getHeaders(),
             body: JSON.stringify({ content, attachment })
         });
-        if (!response.ok) throw new Error('Erro ao enviar mensagem');
-        return response.json();
+        return handleResponse(response, 'Erro ao enviar mensagem');
     },
 
     getUnreadCount: async (): Promise<{ count: number }> => {
         const response = await fetch(`${API_URL}/support/unread-count`, {
             headers: getHeaders()
         });
-        if (!response.ok) throw new Error('Erro ao buscar notificações');
-        return response.json();
+        return handleResponse(response, 'Erro ao buscar notificações');
     },
 
     markAsRead: async (id: string) => {
@@ -86,7 +93,6 @@ export const supportService = {
             method: 'PUT',
             headers: getHeaders()
         });
-        if (!response.ok) throw new Error('Erro ao marcar como lido');
-        return response.json();
+        return handleResponse(response, 'Erro ao marcar como lido');
     }
 }
