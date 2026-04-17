@@ -6,7 +6,7 @@ import {
     CheckCircle, Clock, Plus, Activity, X,
     Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase,
     BarChart3, PieChart as PieIcon, Sparkles, Send, Bot, AlertTriangle,
-    ShieldCheck, PiggyBank, HelpCircle, Search
+    ShieldCheck, PiggyBank, HelpCircle
 } from 'lucide-react';
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -632,13 +632,14 @@ export default function PersonalDashboard() {
     };
 
     // --- AI ASSISTANT HANDLERS ---
-    const handleAISend = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!aiInput.trim()) return;
+    const handleAISend = async (e?: React.FormEvent, customMsg?: string) => {
+        if (e) e.preventDefault();
+        
+        const userMsg = customMsg || aiInput;
+        if (!userMsg.trim()) return;
 
-        const userMsg = aiInput;
         setAiMessages(prev => [...prev, { role: 'user', content: userMsg }]);
-        setAiInput('');
+        if (!customMsg) setAiInput('');
         setAiLoading(true);
 
         const currentContext = aiMessages.length > 0 && aiMessages[aiMessages.length-1].role === 'bot' 
@@ -890,9 +891,9 @@ export default function PersonalDashboard() {
                                     <button
                                         key={idx}
                                         onClick={() => {
-                                            setAiInput(opt.template);
+                                            handleAISend(undefined, opt.template);
                                             setIsAIOptionsOpen(false);
-                                            setTimeout(() => aiInputRef.current?.focus(), 100);
+                                            setTimeout(() => aiInputRef.current?.focus(), 200);
                                         }}
                                         style={{
                                             width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
