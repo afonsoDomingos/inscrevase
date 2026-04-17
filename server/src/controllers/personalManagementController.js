@@ -124,13 +124,15 @@ exports.getTasks = async (req, res) => {
 
         // Update late tasks dynamically before returning
         const now = new Date();
-        const updatedTasks = await Promise.all(tasks.map(async (task) => {
+        let changed = false;
+        
+        const updatedTasks = tasks.map((task) => {
             if (task.deadline && task.status !== 'completed' && task.status !== 'late' && new Date(task.deadline) < now) {
                 task.status = 'late';
-                await task.save();
+                PersonalTask.updateOne({ _id: task._id }, { status: 'late' }).catch(err => console.error("Update task status error:", err));
             }
             return task;
-        }));
+        });
 
         res.status(200).json({ success: true, tasks: updatedTasks });
     } catch (error) {

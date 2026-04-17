@@ -15,6 +15,7 @@ import {
 import { personalService, PersonalTransaction, PersonalTask, PersonalProject, PersonalClient, PersonalSaving } from '@/lib/personalService';
 import { useCurrency } from '@/context/CurrencyContext';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 type ViewMode = 'overview' | 'finance' | 'tasks' | 'projects' | 'clients' | 'reports' | 'savings';
 type Timeframe = 'daily' | 'weekly' | 'monthly' | 'yearly';
@@ -737,10 +738,10 @@ export default function PersonalDashboard() {
 
             {/* ── Smart Command Center (AI) ── */}
             <div style={{ 
-                marginBottom: '3rem', 
+                marginBottom: '2rem', 
                 background: 'linear-gradient(145deg, #050505, #121212)', 
-                padding: '2.5rem', 
-                borderRadius: '28px', 
+                padding: '1.5rem', 
+                borderRadius: '24px', 
                 border: '1px solid rgba(255,215,0,0.2)',
                 boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
                 position: 'relative',
@@ -748,7 +749,7 @@ export default function PersonalDashboard() {
             }}>
                 <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%)', borderRadius: '50%' }} />
                 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.2rem' }}>
                     <div style={{ position: 'relative' }}>
                         <Sparkles size={20} color="#D4AF37" />
                         <div style={{ position: 'absolute', inset: 0, background: '#D4AF37', filter: 'blur(10px)', opacity: 0.3, borderRadius: '50%' }} />
@@ -765,10 +766,10 @@ export default function PersonalDashboard() {
                             flex: 1,
                             background: 'rgba(255,255,255,0.03)',
                             border: '1px solid rgba(255,255,255,0.1)',
-                            padding: '18px 24px',
-                            borderRadius: '16px',
+                            padding: '14px 20px',
+                            borderRadius: '12px',
                             color: '#fff',
-                            fontSize: '1rem',
+                            fontSize: '0.95rem',
                             outline: 'none',
                             transition: 'all 0.3s',
                             boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
@@ -780,8 +781,8 @@ export default function PersonalDashboard() {
                         background: '#D4AF37',
                         color: '#000',
                         border: 'none',
-                        padding: '0 30px',
-                        borderRadius: '16px',
+                        padding: '0 24px',
+                        borderRadius: '12px',
                         fontWeight: 900,
                         cursor: 'pointer',
                         display: 'flex',
