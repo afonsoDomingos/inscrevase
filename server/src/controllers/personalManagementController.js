@@ -481,16 +481,39 @@ exports.processAICommand = async (req, res) => {
                 return res.status(200).json({ success: true, action: 'add_saving', data: currentData, message: `Confirmar alocação de **${currentData.amount} MZN** para o objetivo "${currentData.account}"?` });
             }
 
+            // PROJECT FLOW: Nome (Principal) -> Orçamento (Principal) -> Data Limite (Opcional) -> Cliente (Opcional)
+            if (context.step === 'ask_project_name') {
+                currentData.name = text.trim();
+                newContext = { step: 'ask_project_budget', draftData: currentData, draftAction: 'add_project' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é o orçamento total para o projeto "${currentData.name}"? (Campo Principal)` });
+            }
+            if (context.step === 'ask_project_budget') {
+                const amount = parseFloat(text.replace(',', '.').match(/(\d+(\.\d+)?)/)?.[0] || 0);
+                currentData.totalBudget = amount;
+                newContext = { step: 'ask_project_deadline', draftData: currentData, draftAction: 'add_project' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é a data prevista para entrega? (Escreva "não" para saltar)` });
+            }
+            if (context.step === 'ask_project_deadline') {
+                if (!prompt.includes('não')) currentData.deadline = text.trim();
+                newContext = { step: 'ask_project_client', draftData: currentData, draftAction: 'add_project' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Deseja associar este projeto a um cliente? (Indique o nome ou escreva "não")` });
+            }
+            if (context.step === 'ask_project_client') {
+                if (!prompt.includes('não')) currentData.clientName = text.trim();
+                const summary = `Proxeto: ${currentData.name} | Orçamento: ${currentData.totalBudget} MZN | Cliente: ${currentData.clientName || 'N/A'}`;
+                return res.status(200).json({ success: true, action: 'add_project', data: currentData, message: `Projeto orquestrado com sucesso! Confirmar criação?\n\n🚀 **Resumo:** ${summary}` });
+            }
+
             // FINANCE FLOW: Tipo (Principal) -> Valor (Principal) -> Categoria (Principal) -> Data (Opcional)
             if (context.step === 'ask_finance_type') {
                 currentData.type = (prompt.includes('receita') || prompt.includes('ganho') || prompt.includes('entrada')) ? 'income' : 'expense';
                 newContext = { step: 'ask_finance_amount', draftData: currentData, draftAction: 'add_transaction' };
-                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é o valor do movimento financeiro?` });
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é o valor da transação? (Campo Principal)` });
             }
             if (context.step === 'ask_finance_amount') {
                 currentData.amount = parseFloat(text.replace(',', '.').match(/(\d+(\.\d+)?)/)?.[0] || 0);
                 newContext = { step: 'ask_finance_category', draftData: currentData, draftAction: 'add_transaction' };
-                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Em que categoria se enquadra? (Principal, ex: Marketing, Serviços, Impostos)` });
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Em que categoria se enquadra? (Campo Principal, ex: Marketing, Tecnologia, Renda)` });
             }
             if (context.step === 'ask_finance_category') {
                 currentData.category = text.trim();
@@ -500,7 +523,8 @@ exports.processAICommand = async (req, res) => {
             }
             if (context.step === 'ask_finance_date') {
                 currentData.date = (prompt.includes('hoje') || prompt.includes('não')) ? new Date().toISOString().split('T')[0] : text.trim();
-                return res.status(200).json({ success: true, action: 'add_transaction', data: currentData, message: `Confirmar registo de **${currentData.amount} MZN** como ${currentData.type === 'income' ? 'Receita' : 'Despesa'}?` });
+                const summary = `${currentData.type === 'income' ? 'Receita' : 'Despesa'} | Valor: ${currentData.amount} MZN | Categoria: ${currentData.category}`;
+                return res.status(200).json({ success: true, action: 'add_transaction', data: currentData, message: `Confirmar registo financeiro?\n\n💰 **Resumo:** ${summary}` });
             }
         }
 
@@ -508,48 +532,39 @@ exports.processAICommand = async (req, res) => {
 
         // Support Commands
         if (prompt === '/suporte' || prompt === 'ajuda' || prompt === 'suporte') {
-            const msg = `### 🛠️ Comandos de Orquestração\n\n` +
-                      `- **/Registar-Cliente** → Novo cliente (Principal: Nome)\n` +
-                      `- **/Cria-Tarefa** → Nova tarefa (Principal: Nome)\n` +
-                      `- **/Nova-Alocação** → Poupança (Principal: Valor, Objetivo)\n` +
-                      `- **/Registar-Transação** → Finanças (Principal: Tipo, Valor)\n` +
-                      `- **/Novo-Projecto** → Criar projeto\n\n` +
-                      `*Nota: Pode escrever "não" em qualquer pergunta opcional para saltar.*`;
+            const msg = `### 🛠️ Comandos de Orquestração de Elite\n\n` +
+                      `- **/Registar-Cliente** → Novo cliente (Campos: Nome, Tel, Email)\n` +
+                      `- **/Cria-Tarefa** → Nova tarefa (Campos: Nome, Desc, Prazo, Cliente)\n` +
+                      `- **/Registar-Transação** → Finanças (Campos: Tipo, Valor, Categoria)\n` +
+                      `- **/Nova-Alocação** → Poupança (Campos: Valor, Objetivo, Data)\n` +
+                      `- **/Novo-Projecto** → Novo Projeto (Campos: Nome, Orçamento, Prazo, Cliente)\n\n` +
+                      `*Nota: Campos Principal são obrigatórios. Outros pode saltar escrevendo "não".*`;
             return res.status(200).json({ success: true, message: msg });
         }
 
-        // Intent: Add Client
-        if (prompt.startsWith('/registar-cliente') || prompt.startsWith('/cliente') || (prompt.includes('regista') && prompt.includes('cliente'))) {
-            let draftData = {};
-            const nameMatch = text.match(/(?:cliente|registar-cliente|regista|registar)\s+([a-zA-ZÀ-ÿ\s]+)/i);
-            if (nameMatch && nameMatch[1].trim().length > 2) {
-                draftData.name = nameMatch[1].trim();
-                return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_client_phone', draftData }, message: `Anotado, ${firstName}. Qual é o contacto de "${draftData.name}"? (Escreva "não" para saltar)` });
-            }
+        // Intent detection (simplified for speed)
+        if (prompt.startsWith('/registar-cliente') || prompt.startsWith('/cliente')) {
             return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_client_name' }, message: `Com certeza. Qual é o nome do cliente? (Campo Principal)` });
         }
-
-        // Intent: Add Task
-        if (prompt.startsWith('/cria-tarefa') || prompt.startsWith('/tarefa') || (prompt.includes('regista') && prompt.includes('tarefa'))) {
+        if (prompt.startsWith('/cria-tarefa') || prompt.startsWith('/tarefa')) {
             return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_task_name' }, message: `Certamente. Qual é o nome da tarefa? (Campo Principal)` });
         }
-
-        // Intent: Add Saving (Alocação)
-        if (prompt.startsWith('/nova-alocação') || prompt.startsWith('/poupanca') || (prompt.includes('regista') && prompt.includes('poupança'))) {
+        if (prompt.startsWith('/nova-alocação') || prompt.startsWith('/poupanca')) {
             return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_saving_amount' }, message: `Qual é o valor que deseja alocar à poupança? (Campo Principal)` });
         }
-
-        // Intent: Add Finance (Transação)
-        if (prompt.startsWith('/registar-transação') || prompt.startsWith('/financas') || (prompt.includes('regista') && prompt.includes('finança'))) {
+        if (prompt.startsWith('/registar-transação') || prompt.startsWith('/financas')) {
             return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_finance_type' }, message: `Pretende registar uma Receita ou uma Despesa? (Campo Principal)` });
         }
+        if (prompt.startsWith('/novo-projecto') || prompt.startsWith('/projeto')) {
+            return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_project_name' }, message: `Excelente iniciativa. Qual é o nome do novo projeto? (Campo Principal)` });
+        }
 
-        // Use standard guide if no intent matched
         const helpMsg = `Olá de novo, ${firstName}! Escolha uma destas ações para orquestrar rapidamente:\n\n` +
                       `📌 **/Cria-Tarefa**\n` +
                       `👥 **/Registar-Cliente**\n` +
                       `💰 **/Registar-Transação**\n` +
-                      `🐷 **/Nova-Alocação**\n\n` +
+                      `🐷 **/Nova-Alocação**\n` +
+                      `🚀 **/Novo-Projecto**\n\n` +
                       `Digite \`/suporte\` para ver os detalhes.`;
         
         return res.status(200).json({ success: true, message: helpMsg });
