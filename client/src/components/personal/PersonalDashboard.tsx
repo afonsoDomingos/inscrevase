@@ -958,9 +958,9 @@ export default function PersonalDashboard() {
                                 onClick={() => setViewMode(tab.id as ViewMode)} 
                                 style={{
                                     padding: '12px 24px', 
-                                    background: isActive ? '#fff' : 'transparent',
-                                    color: isActive ? '#000' : '#777',
-                                    fontWeight: isActive ? 800 : 600,
+                                    background: isActive ? '#000' : 'transparent',
+                                    color: isActive ? '#D4AF37' : '#777',
+                                    fontWeight: isActive ? 900 : 700,
                                     border: 'none',
                                     borderRadius: '16px',
                                     cursor: 'pointer', 
