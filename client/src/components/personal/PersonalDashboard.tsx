@@ -880,10 +880,11 @@ export default function PersonalDashboard() {
                             }}>
                                 <div style={{ fontSize: '0.65rem', color: '#9aa0a6', fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', padding: '0 8px', letterSpacing: '1px' }}>Suporte de Comandos</div>
                                 {[
-                                    { text: "/tarefa", icon: Target, template: "/tarefa", sub: "Registar nova tarefa" },
-                                    { text: "/cliente", icon: Users, template: "/cliente", sub: "Registar novo cliente" },
-                                    { text: "/financas", icon: Wallet, template: "/financas", sub: "Registar movimento" },
-                                    { text: "/poupanca", icon: PiggyBank, template: "/poupanca", sub: "Alocar poupança" },
+                                    { text: "/Cria-Tarefa", icon: Target, template: "/Cria-Tarefa", sub: "Registar nova tarefa" },
+                                    { text: "/Registar-Cliente", icon: Users, template: "/Registar-Cliente", sub: "Novo cliente" },
+                                    { text: "/Registar-Transação", icon: Wallet, template: "/Registar-Transação", sub: "Finanças" },
+                                    { text: "/Nova-Alocação", icon: PiggyBank, template: "/Nova-Alocação", sub: "Poupança" },
+                                    { text: "/Novo-Projecto", icon: Briefcase, template: "/Novo-Projecto", sub: "Criar projeto" },
                                     { text: "/suporte", icon: HelpCircle, template: "/suporte", sub: "Guia de comandos" }
                                 ].map((opt, idx) => (
                                     <button

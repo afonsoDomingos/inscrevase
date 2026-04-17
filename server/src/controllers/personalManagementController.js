@@ -509,18 +509,19 @@ exports.processAICommand = async (req, res) => {
         // Support Commands
         if (prompt === '/suporte' || prompt === 'ajuda' || prompt === 'suporte') {
             const msg = `### 🛠️ Comandos de Orquestração\n\n` +
-                      `- **/cliente** → Registar novo cliente (Principal: Nome)\n` +
-                      `- **/tarefa** → Registar nova taref (Principal: Nome)\n` +
-                      `- **/poupanca** → Alocar poupança (Principal: Valor, Objetivo)\n` +
-                      `- **/financas** → Movimento financeiro (Principal: Tipo, Valor, Categoria)\n\n` +
+                      `- **/Registar-Cliente** → Novo cliente (Principal: Nome)\n` +
+                      `- **/Cria-Tarefa** → Nova tarefa (Principal: Nome)\n` +
+                      `- **/Nova-Alocação** → Poupança (Principal: Valor, Objetivo)\n` +
+                      `- **/Registar-Transação** → Finanças (Principal: Tipo, Valor)\n` +
+                      `- **/Novo-Projecto** → Criar projeto\n\n` +
                       `*Nota: Pode escrever "não" em qualquer pergunta opcional para saltar.*`;
             return res.status(200).json({ success: true, message: msg });
         }
 
         // Intent: Add Client
-        if (prompt.startsWith('/cliente') || (prompt.includes('regista') && prompt.includes('cliente'))) {
+        if (prompt.startsWith('/registar-cliente') || prompt.startsWith('/cliente') || (prompt.includes('regista') && prompt.includes('cliente'))) {
             let draftData = {};
-            const nameMatch = text.match(/(?:cliente|registar|regista)\s+([a-zA-ZÀ-ÿ\s]+)/i);
+            const nameMatch = text.match(/(?:cliente|registar-cliente|regista|registar)\s+([a-zA-ZÀ-ÿ\s]+)/i);
             if (nameMatch && nameMatch[1].trim().length > 2) {
                 draftData.name = nameMatch[1].trim();
                 return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_client_phone', draftData }, message: `Anotado, ${firstName}. Qual é o contacto de "${draftData.name}"? (Escreva "não" para saltar)` });
@@ -529,27 +530,27 @@ exports.processAICommand = async (req, res) => {
         }
 
         // Intent: Add Task
-        if (prompt.startsWith('/tarefa') || (prompt.includes('regista') && prompt.includes('tarefa'))) {
+        if (prompt.startsWith('/cria-tarefa') || prompt.startsWith('/tarefa') || (prompt.includes('regista') && prompt.includes('tarefa'))) {
             return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_task_name' }, message: `Certamente. Qual é o nome da tarefa? (Campo Principal)` });
         }
 
-        // Intent: Add Saving
-        if (prompt.startsWith('/poupanca') || (prompt.includes('poupanca')) || (prompt.includes('regista') && prompt.includes('poupança'))) {
+        // Intent: Add Saving (Alocação)
+        if (prompt.startsWith('/nova-alocação') || prompt.startsWith('/poupanca') || (prompt.includes('regista') && prompt.includes('poupança'))) {
             return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_saving_amount' }, message: `Qual é o valor que deseja alocar à poupança? (Campo Principal)` });
         }
 
-        // Intent: Add Finance
-        if (prompt.startsWith('/financas') || (prompt.includes('finanças')) || (prompt.includes('regista') && prompt.includes('finança'))) {
+        // Intent: Add Finance (Transação)
+        if (prompt.startsWith('/registar-transação') || prompt.startsWith('/financas') || (prompt.includes('regista') && prompt.includes('finança'))) {
             return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_finance_type' }, message: `Pretende registar uma Receita ou uma Despesa? (Campo Principal)` });
         }
 
         // Use standard guide if no intent matched
-        const helpMsg = `Olá de novo, ${firstName}! Posso ajudá-lo a orquestrar o seu ecossistema rapidamente:\n\n` +
-                      `📌 **Tarefas:** Digite \`/tarefa\`\n` +
-                      `👥 **Clientes:** Digite \`/cliente\`\n` +
-                      `💰 **Finanças:** Digite \`/financas\`\n` +
-                      `🐷 **Poupança:** Digite \`/poupanca\`\n\n` +
-                      `Digite \`/suporte\` para ver os detalhes de cada comando.`;
+        const helpMsg = `Olá de novo, ${firstName}! Escolha uma destas ações para orquestrar rapidamente:\n\n` +
+                      `📌 **/Cria-Tarefa**\n` +
+                      `👥 **/Registar-Cliente**\n` +
+                      `💰 **/Registar-Transação**\n` +
+                      `🐷 **/Nova-Alocação**\n\n` +
+                      `Digite \`/suporte\` para ver os detalhes.`;
         
         return res.status(200).json({ success: true, message: helpMsg });
 
