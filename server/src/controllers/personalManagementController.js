@@ -377,6 +377,26 @@ exports.deleteClient = async (req, res) => {
     }
 };
 
+// --- CATEGORY PREDICTOR HELPER ---
+const predictCategory = (description) => {
+    const desc = description.toLowerCase();
+    const mapping = {
+        'Transporte': ['combustivel', 'gasolina', 'gasoleo', 'uber', 'bolt', 'chapa', 'taxi', 'viagem', 'mecanico', 'pneus'],
+        'Alimentação': ['restaurante', 'comida', 'almoço', 'jantar', 'supermercado', 'mercearia', 'pão', 'takeaway', 'café'],
+        'Comunicações': ['internet', 'dados', 'wifi', 'telefone', 'movitel', 'vodacom', 'tmcel', 'tv', 'gotv', 'dstv'],
+        'Marketing': ['marketing', 'ads', 'facebook', 'instagram', 'google ads', 'propaganda', 'anuncio', 'flyer'],
+        'Salários/Pessoal': ['salario', 'pagamento', 'ordenado', 'honorarios', 'subsidio', 'bónus'],
+        'Custos Fixos': ['renda', 'aluguel', 'luz', 'agua', 'energia', 'edm', 'fipag', 'condominio'],
+        'Material de Escritório': ['material', 'papel', 'caneta', 'impressora', 'escritorio', 'tinta', 'toner'],
+        'Tecnologia': ['software', 'licença', 'adobe', 'hosting', 'dominio', 'cloud', 'servidor', 'laptop', 'computador']
+    };
+
+    for (const [category, keywords] of Object.entries(mapping)) {
+        if (keywords.some(kw => desc.includes(kw))) return category;
+    }
+    return 'Geral';
+};
+
 // --- AI ASSISTANT ---
 
 exports.processAICommand = async (req, res) => {
@@ -494,9 +514,9 @@ exports.processAICommand = async (req, res) => {
                 type: isIncome ? 'income' : 'expense',
                 amount: amountMatch ? parseFloat(amountMatch[1].replace(',', '.')) : 0,
                 description: cleanDesc,
-                category: 'Geral'
+                category: predictCategory(cleanDesc)
             };
-            message = `${firstName}, vou registar uma ${data.type === 'income' ? 'entrada' : 'saída'} de ${data.amount} MZN relativa a "${cleanDesc}". Confirmar?`;
+            message = `${firstName}, vou registar uma ${data.type === 'income' ? 'entrada' : 'saída'} de ${data.amount} MZN em "${data.category}" relativa a "${cleanDesc}". Confirmar?`;
         }
         // Intent: Add Client
         else if (prompt.includes('cliente') || prompt.includes('empresa') || prompt.includes('parceiro')) {
@@ -632,7 +652,44 @@ exports.processAICommand = async (req, res) => {
             }
             
             message = resultsMsg;
-            action = null; // No confirm button, just text
+            action = null; 
+            data = null;
+        }
+        // Intent: Insights (Consultant Mode)
+        else if (prompt.includes('análise') || prompt.includes('como estou') || prompt.includes('insights') || prompt.includes('consultoria') || prompt.includes('dicas') || prompt.includes('estatísticas')) {
+            const [transactions, tasks, projects] = await Promise.all([
+                PersonalFinance.find({ user: req.user.id }),
+                PersonalTask.find({ user: req.user.id }),
+                PersonalProject.find({ user: req.user.id })
+            ]);
+
+            const totalIncome = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
+            const totalExpense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+            const balance = totalIncome - totalExpense;
+            
+            const completedTasks = tasks.filter(t => t.status === 'completed').length;
+            const efficiency = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0;
+            
+            let statusEmoji = balance >= 0 ? '💰' : '⚠️';
+            let advice = '';
+
+            if (balance < 0) {
+                advice = 'As suas despesas estão a superar os ganhos. Recomendo cortar em custos não essenciais imediatamente.';
+            } else if (efficiency < 40 && tasks.length > 5) {
+                advice = 'O seu fluxo financeiro está bom, mas a execução de tarefas está baixa. Cuidado para não acumular trabalho e comprometer prazos de clientes.';
+            } else if (balance > 10000 && efficiency > 70) {
+                advice = 'Excelente! Está no "Sweet Spot". Finanças saudáveis e alta produtividade. Talvez seja hora de investir num novo projeto ou expansão.';
+            } else {
+                advice = 'Mantenha o foco. O equilíbrio entre finanças e tarefas é o segredo para o crescimento sustentável.';
+            }
+
+            message = `### 📊 Modo Consultor Saúde Profissional - Relatório para ${firstName}\n\n` +
+                      `${statusEmoji} **Saúde Financeira:** O seu balanço atual é de **${balance} MZN** (Receitas: ${totalIncome} | Despesas: ${totalExpense}).\n\n` +
+                      `📈 **Eficiência Operacional:** Concluiu **${completedTasks} de ${tasks.length}** tarefas (${efficiency}% de eficácia).\n\n` +
+                      `🚀 **Projetos Ativos:** Tem **${projects.length}** projetos em mãos.\n\n` +
+                      `💡 **O meu conselho:** ${advice}`;
+            
+            action = null;
             data = null;
         }
         else {
