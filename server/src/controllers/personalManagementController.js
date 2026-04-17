@@ -412,7 +412,9 @@ exports.processAICommand = async (req, res) => {
         if (!text) return res.status(400).json({ success: false, message: 'Texto é obrigatório' });
 
         const prompt = text.toLowerCase().trim();
-        const firstName = req.user.name.split(' ')[0];
+        
+        // Get user first name safely
+        const firstName = req.user && req.user.name ? req.user.name.split(' ')[0] : 'Líder';
         
         // --- 1. HANDLE EXISTING CONVERSATIONAL CONTEXT ---
         if (context && context.step) {
