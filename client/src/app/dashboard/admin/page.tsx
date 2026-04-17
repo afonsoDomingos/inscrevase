@@ -340,8 +340,9 @@ function AdminDashboardContent() {
         // Poll for updates every 15 seconds (stats, traffic, unread)
         const interval = setInterval(() => {
             if (document.visibilityState === 'visible') {
-                const handleUnauthorized = (err: any) => {
-                    if (err.message.includes('401') || err.message.includes('Unauthorized') || err.status === 401) {
+                const handleUnauthorized = (err: unknown) => {
+                    const error = err as { message?: string; status?: number };
+                    if (error.message?.includes('401') || error.message?.includes('Unauthorized') || error.status === 401) {
                         console.warn("🔴 [Admin Dashboard] Session expired during polling. Redirecting...");
                         clearInterval(interval);
                         authService.logout();
@@ -373,8 +374,9 @@ function AdminDashboardContent() {
         try {
             const data = await supportService.getUnreadCount();
             setUnreadCount(data.count);
-        } catch (error: any) {
-            if (error.message?.includes('401') || error.status === 401) {
+        } catch (error: unknown) {
+            const err = error as { message?: string; status?: number };
+            if (err.message?.includes('401') || err.status === 401) {
                 // Silently skip if unauthorized during polling - main dashboard logic will handle redirect
                 return;
             }

@@ -65,8 +65,8 @@ export interface TrafficStats {
 const handleResponse = async (response: Response, errorMsg: string) => {
     if (!response.ok) {
         if (response.status === 401) {
-            const err = new Error('Unauthorized');
-            (err as any).status = 401;
+            const err = new Error('Unauthorized') as Error & { status?: number };
+            err.status = 401;
             throw err;
         }
         throw new Error(errorMsg);
