@@ -512,8 +512,49 @@ exports.processAICommand = async (req, res) => {
             };
             message = `Pretende iniciar o projeto "${data.name}"?`;
         }
+        // Intent: Search
+        else if (prompt.includes('procurar') || prompt.includes('buscar') || prompt.includes('pesquisar') || prompt.includes('onde')) {
+            const query = text.replace(/procurar|buscar|pesquisar|onde está|onde esta/gi, '').trim();
+            const userId = req.user.id;
+            const regex = new RegExp(query, 'i');
+            
+            const [tasks, txs, clients, projects] = await Promise.all([
+                PersonalTask.find({ user: userId, title: regex }).limit(3),
+                PersonalFinance.find({ user: userId, description: regex }).limit(3),
+                PersonalClient.find({ user: userId, name: regex }).limit(3),
+                PersonalProject.find({ user: userId, name: regex }).limit(3)
+            ]);
+
+            let resultsMsg = `Aqui está o que encontrei sobre "${query}":\n`;
+            let found = false;
+            
+            if (txs.length > 0) {
+                found = true;
+                resultsMsg += `\n💰 Finanças: ` + txs.map(t => `${t.description} (${t.amount} MZN)`).join(', ');
+            }
+            if (tasks.length > 0) {
+                found = true;
+                resultsMsg += `\n📌 Tarefas: ` + tasks.map(t => t.title).join(', ');
+            }
+            if (clients.length > 0) {
+                found = true;
+                resultsMsg += `\n👥 Clientes: ` + clients.map(c => c.name).join(', ');
+            }
+            if (projects.length > 0) {
+                found = true;
+                resultsMsg += `\n🚀 Projetos: ` + projects.map(p => p.name).join(', ');
+            }
+            
+            if (!found) {
+                resultsMsg = `Não encontrei registos relacionados a "${query}" no seu Módulo de Excelência.`;
+            }
+            
+            message = resultsMsg;
+            action = null; // No confirm button, just text
+            data = null;
+        }
         else {
-            message = "Ainda estou a aprender! Tente algo como: 'Adicionar cliente Rádio Moçambique', 'Guardar 1000 para viagem' ou 'Nova tarefa rever contrato'.";
+            message = "Ainda estou a aprender! Tente algo como: 'Adicionar cliente Rádio Moçambique', 'Guardar 1000 para viagem' ou 'Pesquisar impostos'.";
         }
 
         res.status(200).json({ success: true, action, data, message });

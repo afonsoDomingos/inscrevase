@@ -810,7 +810,7 @@ export default function PersonalDashboard() {
                                 <Bot size={22} />
                             </div>
                             <div style={{ flex: 1 }}>
-                                <p style={{ margin: 0, color: '#fff', fontSize: '0.95rem', lineHeight: '1.6' }}>{aiMessages[aiMessages.length-1].content}</p>
+                                <p style={{ margin: 0, color: '#fff', fontSize: '0.95rem', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>{aiMessages[aiMessages.length-1].content}</p>
                                 {aiMessages[aiMessages.length-1].suggestion && (
                                     <div style={{ marginTop: '1rem', display: 'flex', gap: '10px' }}>
                                         <button 
