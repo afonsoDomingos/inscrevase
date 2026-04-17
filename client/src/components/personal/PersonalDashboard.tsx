@@ -152,14 +152,22 @@ function Modal({ title, onClose, onSubmit, children, submitLabel = "Guardar Alte
                 {children}
 
                 <button type="submit" style={{
-                    width: '100%', marginTop: '1rem', padding: '14px',
-                    background: 'linear-gradient(135deg, #FFD700, #B8860B)',
-                    border: 'none', borderRadius: '12px',
-                    color: '#000', fontWeight: 800, fontSize: '0.95rem',
-                    cursor: 'pointer', transition: 'all 0.2s', letterSpacing: '0.5px'
+                    width: '100%', marginTop: '1.2rem', padding: '16px',
+                    background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)',
+                    border: 'none', borderRadius: '16px',
+                    color: '#000', fontWeight: 900, fontSize: '0.95rem',
+                    cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', 
+                    letterSpacing: '1px', textTransform: 'uppercase',
+                    boxShadow: '0 12px 24px rgba(212,175,55,0.2)'
                 }}
-                    onMouseOver={e => (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)'}
-                    onMouseOut={e => (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'}
+                    onMouseOver={e => {
+                        e.currentTarget.style.transform = 'translateY(-3px)';
+                        e.currentTarget.style.boxShadow = '0 18px 36px rgba(212,175,55,0.3)';
+                    }}
+                    onMouseOut={e => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 12px 24px rgba(212,175,55,0.2)';
+                    }}
                 >
                     {submitLabel}
                 </button>
@@ -703,10 +711,11 @@ export default function PersonalDashboard() {
 
     const btnPrimary: React.CSSProperties = {
         display: 'inline-flex', alignItems: 'center', gap: '8px',
-        padding: '10px 20px', background: '#000',
-        border: 'none', borderRadius: '8px', color: '#fff', fontWeight: 800,
-        cursor: 'pointer', fontSize: '0.85rem', transition: 'all 0.2s', letterSpacing: '0.5px',
-        whiteSpace: 'nowrap', boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+        padding: '12px 24px', background: 'linear-gradient(135deg, #000 0%, #333 100%)',
+        border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', fontWeight: 800,
+        cursor: 'pointer', fontSize: '0.85rem', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', 
+        letterSpacing: '0.5px', whiteSpace: 'nowrap', boxShadow: '0 8px 16px rgba(0,0,0,0.15)',
+        textTransform: 'uppercase'
     };
 
     const iconBtnStyle: React.CSSProperties = {
@@ -824,20 +833,34 @@ export default function PersonalDashboard() {
                             onChange={e => setAiInput(e.target.value)}
                         />
                     </div>
-                    <button type="submit" disabled={aiLoading || !aiInput.trim()} style={{
-                        background: '#D4AF37',
-                        color: '#000',
-                        border: 'none',
-                        width: '54px',
-                        height: '54px',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        boxShadow: '0 10px 20px rgba(212,175,55,0.2)'
-                    }}>
+                    <button 
+                        type="submit" 
+                        disabled={aiLoading || !aiInput.trim()} 
+                        style={{
+                            background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)',
+                            color: '#000',
+                            border: 'none',
+                            width: '54px',
+                            height: '54px',
+                            minWidth: '54px',
+                            borderRadius: '18px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                            boxShadow: '0 10px 20px rgba(212,175,55,0.3)',
+                            transform: 'translateY(0)'
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)';
+                            e.currentTarget.style.boxShadow = '0 15px 30px rgba(212,175,55,0.4)';
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                            e.currentTarget.style.boxShadow = '0 10px 20px rgba(212,175,55,0.3)';
+                        }}
+                    >
                         {aiLoading ? <Activity size={20} className="spin" /> : <Send size={20} />}
                     </button>
                 </form>
@@ -852,36 +875,49 @@ export default function PersonalDashboard() {
                             <div style={{ flex: 1 }}>
                                 <p style={{ margin: 0, color: '#fff', fontSize: '0.95rem', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>{aiMessages[aiMessages.length-1].content}</p>
                                 {(aiMessages[aiMessages.length-1].suggestion && aiMessages[aiMessages.length-1].suggestion!.action !== 'ask_info') && (
-                                    <div style={{ marginTop: '1rem', display: 'flex', gap: '10px' }}>
+                                    <div style={{ marginTop: '1rem', display: 'flex', gap: '12px' }}>
                                         <button 
                                             onClick={() => confirmAISuggestion(aiMessages[aiMessages.length-1].suggestion!)}
                                             style={{
-                                                padding: '10px 20px',
-                                                background: '#10b981',
+                                                padding: '12px 24px',
+                                                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                                                 color: '#fff',
                                                 border: 'none',
-                                                borderRadius: '10px',
+                                                borderRadius: '14px',
                                                 fontWeight: 800,
                                                 fontSize: '0.85rem',
                                                 cursor: 'pointer',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                gap: '8px'
+                                                gap: '8px',
+                                                boxShadow: '0 8px 16px rgba(16,185,129,0.2)',
+                                                transition: 'all 0.2s ease'
                                             }}
+                                            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                                         >
                                             <CheckCircle size={16} /> Confirmar Execução
                                         </button>
                                         <button 
                                             onClick={() => setAiMessages(prev => prev.slice(0, -1))}
                                             style={{
-                                                padding: '10px 20px',
-                                                background: 'rgba(255,255,255,0.05)',
-                                                color: '#fff',
+                                                padding: '12px 24px',
+                                                background: 'rgba(255,255,255,0.03)',
+                                                color: 'rgba(255,255,255,0.7)',
                                                 border: '1px solid rgba(255,255,255,0.1)',
-                                                borderRadius: '10px',
+                                                borderRadius: '14px',
                                                 fontWeight: 600,
                                                 fontSize: '0.85rem',
-                                                cursor: 'pointer'
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                                                e.currentTarget.style.color = '#fff';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                                                e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
                                             }}
                                         >
                                             Cancelar
@@ -894,9 +930,8 @@ export default function PersonalDashboard() {
                 )}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '2rem', overflowX: 'auto', paddingBottom: '8px' }}>
-                {/* ── Tesla Minimalist Tabs ── */}
-                <div style={{ display: 'flex', borderBottom: '1px solid rgba(0,0,0,0.05)', width: '100%', gap: '1.5rem', position: 'relative', overflowX: 'auto', scrollbarWidth: 'none' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', width: '100%', gap: '0.5rem', padding: '0.4rem', background: '#f8f9fa', borderRadius: '20px', border: '1px solid rgba(0,0,0,0.03)', overflowX: 'auto', scrollbarWidth: 'none' }}>
                     {DASHBOARD_TABS.map(tab => {
                         const isActive = viewMode === tab.id;
                         return (
@@ -904,43 +939,27 @@ export default function PersonalDashboard() {
                                 key={tab.id} 
                                 onClick={() => setViewMode(tab.id as ViewMode)} 
                                 style={{
-                                    padding: '16px 4px', 
-                                    background: 'transparent',
-                                    color: isActive ? '#000' : '#888',
-                                    fontWeight: isActive ? 800 : 500,
+                                    padding: '12px 24px', 
+                                    background: isActive ? '#fff' : 'transparent',
+                                    color: isActive ? '#000' : '#777',
+                                    fontWeight: isActive ? 800 : 600,
                                     border: 'none',
+                                    borderRadius: '16px',
                                     cursor: 'pointer', 
-                                    transition: 'color 0.3s, opacity 0.3s', 
-                                    fontSize: '0.72rem',
+                                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', 
+                                    fontSize: '0.75rem',
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     gap: '10px', 
                                     whiteSpace: 'nowrap',
+                                    boxShadow: isActive ? '0 8px 16px rgba(0,0,0,0.06)' : 'none',
                                     textTransform: 'uppercase', 
-                                    letterSpacing: '1.8px',
+                                    letterSpacing: '1px',
                                     position: 'relative',
-                                    opacity: isActive ? 1 : 0.5,
                                 }}
-                                onMouseEnter={e => !isActive && (e.currentTarget.style.opacity = '1')}
-                                onMouseLeave={e => !isActive && (e.currentTarget.style.opacity = '0.5')}
                             >
-                                <tab.icon size={15} strokeWidth={isActive ? 2.5 : 2} /> 
+                                <tab.icon size={16} color={isActive ? '#D4AF37' : '#888'} /> 
                                 {tab.label}
-                                {isActive && (
-                                    <motion.div 
-                                        layoutId="activeTabIndicator"
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: '-1px',
-                                            left: 0,
-                                            right: 0,
-                                            height: '2.5px',
-                                            background: '#000',
-                                            borderRadius: '2px'
-                                        }}
-                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                    />
-                                )}
                             </button>
                         );
                     })}
