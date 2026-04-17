@@ -12,6 +12,7 @@ import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
     PieChart, Pie, Cell
 } from 'recharts';
+import { authService } from '@/lib/authService';
 import { personalService, PersonalTransaction, PersonalTask, PersonalProject, PersonalClient, PersonalSaving } from '@/lib/personalService';
 import { useCurrency } from '@/context/CurrencyContext';
 import { toast } from 'sonner';
@@ -366,6 +367,10 @@ export default function PersonalDashboard() {
     const [aiInput, setAiInput] = useState('');
     const [aiMessages, setAiMessages] = useState<{ role: 'user' | 'bot'; content: string; suggestion?: AISuggestion | null }[]>([]);
     const [aiLoading, setAiLoading] = useState(false);
+    
+    // Obter nome do utilizador para saudação
+    const user = authService.getCurrentUser();
+    const userFirstName = user ? user.name.split(' ')[0] : 'Líder';
 
     const fetchData = async () => {
         setLoading(true);
@@ -767,7 +772,7 @@ export default function PersonalDashboard() {
                         <Sparkles size={20} color="#D4AF37" />
                         <div style={{ position: 'absolute', inset: 0, background: '#D4AF37', filter: 'blur(10px)', opacity: 0.3, borderRadius: '50%' }} />
                     </div>
-                    <span style={{ color: '#D4AF37', fontWeight: 900, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '3px' }}>Cognição Digital Saúde Profissional</span>
+                    <span style={{ color: '#D4AF37', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Olá, {userFirstName}!</span>
                 </div>
 
                 <form onSubmit={handleAISend} style={{ position: 'relative', display: 'flex', gap: '15px', alignItems: 'center' }}>
