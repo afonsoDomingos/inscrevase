@@ -466,12 +466,14 @@ exports.processAICommand = async (req, res) => {
         // ---------------------------------
 
         // Simple Smart Parser (Can be replaced/extended with OpenAI/Gemini later)
+        const entityFilter = /\b(ola|olá|chat|assistente|podes|pode|consegue|consegues|por|favor|adicionar|criar|novo|nova|regista|registar|registe|salvar|guarda|guardar|quero|queria|gostaria|vou|estou|faz|fazer|anotar|anota|chamar|chama|chamado|chame|ligar|liga|ligado|contactar|contacto|falar|com|este|esta|esse|essa|o|a|os|as|um|uma|no|na|do|da|em|para|será|que|preciso|me|ajuda|ajudar|de|sobre|seria|podes-me|podias|conseguias)\b/gi;
+
         // Intent: Add Task
         if (prompt.includes('tarefa') || prompt.includes('fazer')) {
             action = 'add_task';
-            let cleanTitle = text.replace(/adicionar|criar|nova/gi, '')
-                                 .replace(/tarefa|fazer/gi, '')
-                                 .replace(/\b(?:de|para|urgente|alta|média|baixa)\b/gi, ' ')
+            let cleanTitle = text.replace(/tarefa|fazer/gi, '')
+                                 .replace(entityFilter, ' ')
+                                 .replace(/[?.,!]/g, '')
                                  .trim();
             
             cleanTitle = cleanTitle.replace(/\s+/g, ' '); // remove espaços duplos
@@ -499,7 +501,7 @@ exports.processAICommand = async (req, res) => {
                 cleanDesc = cleanDesc.replace(/ganhei|recebi|gastei|paguei/gi, '')
                                      .replace(amountMatch[0], '')
                                      .replace(/\b(?:mt|mzn|meticais)\b/gi, '')
-                                     .replace(/\b(?:com|no|na|do|da|de|em|para)\b/gi, ' ')
+                                     .replace(entityFilter, ' ')
                                      .trim();
             }
             
@@ -519,10 +521,8 @@ exports.processAICommand = async (req, res) => {
             message = `${firstName}, vou registar uma ${data.type === 'income' ? 'entrada' : 'saída'} de ${data.amount} MZN em "${data.category}" relativa a "${cleanDesc}". Confirmar?`;
         }
         // Intent: Add Client
-        else if (prompt.includes('cliente') || prompt.includes('empresa') || prompt.includes('parceiro')) {
-            const commonFilter = /\b(ola|chat|podes|olá|assistente|consegues|por|favor|adicionar|novo|nova|criar|cliente|empresa|parceiro|será|que|regista|registar|esse|um|o|a|pode|consegue|me|ajuda|ajudar|salvar|guarda|guardar|podes-me|posso)\b/gi;
-            
-            let cleanName = text.replace(commonFilter, '')
+            let cleanName = text.replace(/cliente|empresa|parceiro/gi, '')
+                                .replace(entityFilter, ' ')
                                 .replace(/\b(email|telefone|contacto|telefone:)\b/gi, '')
                                 .replace(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g, '')
                                 .replace(/(\+?\d[\d\s-]{7,14}\d)/g, '')
@@ -595,9 +595,9 @@ exports.processAICommand = async (req, res) => {
         // Intent: Add Project
         else if (prompt.includes('projeto') || prompt.includes('projecto')) {
             action = 'add_project';
-            let cleanName = text.replace(/adicionar|novo|criar|começar/gi, '')
-                                .replace(/projeto|projecto/gi, '')
-                                .replace(/\b(?:de|sobre|para)\b/gi, ' ')
+            let cleanName = text.replace(/projeto|projecto/gi, '')
+                                .replace(entityFilter, ' ')
+                                .replace(/[?.,!]/g, '')
                                 .trim();
             
             cleanName = cleanName.replace(/\s+/g, ' ');
