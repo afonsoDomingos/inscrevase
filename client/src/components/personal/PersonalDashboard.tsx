@@ -880,13 +880,11 @@ export default function PersonalDashboard() {
                             }}>
                                 <div style={{ fontSize: '0.65rem', color: '#9aa0a6', fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', padding: '0 8px', letterSpacing: '1px' }}>Suporte de Comandos</div>
                                 {[
-                                    { text: "Registar Tarefa", icon: Target, template: "Registar uma Tarefa" },
-                                    { text: "Registar Cliente", icon: Users, template: "Registar um Cliente" },
-                                    { text: "Registar Finança", icon: Wallet, template: "Recebi 1500 de..." },
-                                    { text: "Guardar Poupança", icon: PiggyBank, template: "Guardar 1000 na Poupança" },
-                                    { text: "Iniciar Projeto", icon: Briefcase, template: "Iniciar um novo Projeto" },
-                                    { text: "Procurar", icon: Search, template: "Procurar por..." },
-                                    { text: "Guia Completo", icon: HelpCircle, template: "ajuda" }
+                                    { text: "/tarefa", icon: Target, template: "/tarefa", sub: "Registar nova tarefa" },
+                                    { text: "/cliente", icon: Users, template: "/cliente", sub: "Registar novo cliente" },
+                                    { text: "/financas", icon: Wallet, template: "/financas", sub: "Registar movimento" },
+                                    { text: "/poupanca", icon: PiggyBank, template: "/poupanca", sub: "Alocar poupança" },
+                                    { text: "/suporte", icon: HelpCircle, template: "/suporte", sub: "Guia de comandos" }
                                 ].map((opt, idx) => (
                                     <button
                                         key={idx}
@@ -907,7 +905,7 @@ export default function PersonalDashboard() {
                                         <opt.icon size={16} color="#FFD700" />
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                                             <span style={{ fontWeight: 700 }}>{opt.text}</span>
-                                            <span style={{ fontSize: '0.65rem', opacity: 0.5 }}>Ex: &quot;{opt.template}&quot;</span>
+                                            <span style={{ fontSize: '0.65rem', opacity: 0.5 }}>{opt.sub}</span>
                                         </div>
                                     </button>
                                 ))}
