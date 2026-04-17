@@ -6,7 +6,7 @@ import {
     CheckCircle, Clock, Plus, Activity, X,
     Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase,
     BarChart3, PieChart as PieIcon, Sparkles, Send, Bot, AlertTriangle,
-    ShieldCheck, PiggyBank
+    ShieldCheck, PiggyBank, HelpCircle, Search
 } from 'lucide-react';
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -387,6 +387,7 @@ export default function PersonalDashboard() {
     const [aiInput, setAiInput] = useState('');
     const [aiMessages, setAiMessages] = useState<{ role: 'user' | 'bot'; content: string; suggestion?: AISuggestion | null }[]>([]);
     const [aiLoading, setAiLoading] = useState(false);
+    const [isAIOptionsOpen, setIsAIOptionsOpen] = useState(false);
     
     // Obter nome do utilizador para saudação
     const user = authService.getCurrentUser();
@@ -822,7 +823,7 @@ export default function PersonalDashboard() {
                             background: #131314;
                             border: none;
                             border-radius: 48px;
-                            padding: 16px 24px;
+                            padding: 16px 24px 16px 54px;
                             color: #fff;
                             font-size: 1rem;
                             outline: none;
@@ -833,7 +834,79 @@ export default function PersonalDashboard() {
                             color: #9aa0a6;
                         }
                     `}</style>
-                    <div className="gemini-ai-wrapper">
+                    <div className="gemini-ai-wrapper" style={{ position: 'relative' }}>
+                        <button
+                            type="button"
+                            onClick={() => setIsAIOptionsOpen(!isAIOptionsOpen)}
+                            style={{
+                                position: 'absolute',
+                                left: '12px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                background: 'rgba(255,255,255,0.05)',
+                                color: '#FFD700',
+                                border: '1px solid rgba(255,215,0,0.3)',
+                                borderRadius: '50%',
+                                width: '32px',
+                                height: '32px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                zIndex: 5,
+                                transition: 'all 0.3s'
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,215,0,0.2)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                        >
+                            <Plus size={18} style={{ transform: isAIOptionsOpen ? 'rotate(45deg)' : 'none', transition: 'all 0.3s' }} />
+                        </button>
+
+                        {isAIOptionsOpen && (
+                            <div style={{
+                                position: 'absolute',
+                                bottom: '120%',
+                                left: 0,
+                                background: '#1e1e1f',
+                                border: '1px solid rgba(255,215,0,0.2)',
+                                borderRadius: '16px',
+                                padding: '10px',
+                                width: '250px',
+                                boxShadow: '0 15px 30px rgba(0,0,0,0.4)',
+                                zIndex: 10,
+                                animation: 'fadeInUp 0.3s ease-out'
+                            }}>
+                                <div style={{ fontSize: '0.65rem', color: '#9aa0a6', fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', padding: '0 8px', letterSpacing: '1px' }}>Comandos Rápidos</div>
+                                {[
+                                    { text: "Registar Tarefa", icon: Target },
+                                    { text: "Recebi dinheiro de...", icon: Wallet },
+                                    { text: "Novo Cliente", icon: Users },
+                                    { text: "Ver Análise Geral", icon: BarChart3 },
+                                    { text: "Procurar...", icon: Search },
+                                    { text: "Suporte e Ajuda", icon: HelpCircle }
+                                ].map((opt, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => {
+                                            setAiInput(opt.text);
+                                            setIsAIOptionsOpen(false);
+                                        }}
+                                        style={{
+                                            width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
+                                            padding: '10px', background: 'transparent', border: 'none',
+                                            borderRadius: '8px', color: '#fff', fontSize: '0.85rem', cursor: 'pointer',
+                                            textAlign: 'left', transition: 'all 0.2s'
+                                        }}
+                                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,215,0,0.1)'}
+                                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                    >
+                                        <opt.icon size={16} color="#FFD700" />
+                                        {opt.text}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
                         <input 
                             className="gemini-ai-input"
                             placeholder="O que deseja orquestrar hoje? (Ex: 'Recebi 15k do Projeto Alpha')" 
