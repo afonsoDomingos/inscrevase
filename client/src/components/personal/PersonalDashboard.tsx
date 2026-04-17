@@ -216,7 +216,7 @@ const DASHBOARD_TABS = [
 interface AISuggestion {
     action: 'add_task' | 'add_transaction' | 'add_client' | 'add_saving' | 'add_project' | 'ask_info';
     data: unknown;
-    context?: any;
+    context?: Record<string, unknown>;
 }
 
 interface SmartAlertItem {
