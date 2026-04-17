@@ -3,6 +3,7 @@ const PersonalTask = require('../models/PersonalTask');
 const PersonalProject = require('../models/PersonalProject');
 const PersonalClient = require('../models/PersonalClient');
 const PersonalSaving = require('../models/PersonalSaving');
+const User = require('../models/User');
 
 // --- FINANCE ---
 
@@ -388,6 +389,10 @@ exports.processAICommand = async (req, res) => {
         let data = {};
         let message = '';
 
+        // Obter nome do utilizador para respostas personalizadas
+        const userDoc = await User.findById(req.user.id).select('name');
+        const firstName = userDoc ? userDoc.name.split(' ')[0] : 'Líder';
+
         // Simple Smart Parser (Can be replaced/extended with OpenAI/Gemini later)
         // Intent: Add Task
         if (prompt.includes('tarefa') || prompt.includes('fazer')) {
@@ -408,7 +413,7 @@ exports.processAICommand = async (req, res) => {
                 title: cleanTitle,
                 priority: prompt.includes('urgente') || prompt.includes('alta') ? 'high' : 'medium'
             };
-            message = `Percebi que quer adicionar a tarefa: "${data.title}". Confirmar?`;
+            message = `Percebi, ${firstName}. Quer adicionar a tarefa: "${data.title}"?`;
         }
         // Intent: Add Transaction
         else if (prompt.includes('ganhei') || prompt.includes('recebi') || prompt.includes('gastei') || prompt.includes('paguei')) {
@@ -439,7 +444,7 @@ exports.processAICommand = async (req, res) => {
                 description: cleanDesc,
                 category: 'Geral'
             };
-            message = `Vou registar uma ${data.type === 'income' ? 'entrada' : 'saída'} de ${data.amount} MZN relativa a "${cleanDesc}". Confirmar?`;
+            message = `${firstName}, vou registar uma ${data.type === 'income' ? 'entrada' : 'saída'} de ${data.amount} MZN relativa a "${cleanDesc}". Confirmar?`;
         }
         // Intent: Add Client
         else if (prompt.includes('cliente') || prompt.includes('empresa') || prompt.includes('parceiro')) {
@@ -459,7 +464,7 @@ exports.processAICommand = async (req, res) => {
                 name: cleanName,
                 type: prompt.includes('empresa') ? 'company' : 'individual'
             };
-            message = `Deseja registar o cliente "${data.name}"?`;
+            message = `Excelente, ${firstName}. Deseja registar o cliente "${data.name}"?`;
         }
         // Intent: Add Saving (Poupança)
         else if (prompt.includes('poupança') || prompt.includes('guardar') || prompt.includes('poupar')) {
@@ -488,7 +493,7 @@ exports.processAICommand = async (req, res) => {
                 description: cleanDesc,
                 date: new Date().toISOString().split('T')[0]
             };
-            message = `Registar ${data.amount} MZN na Poupança com a descrição "${cleanDesc}"?`;
+            message = `Perfeito ${firstName}. Registar ${data.amount} MZN na Poupança com a descrição "${cleanDesc}"?`;
         }
         // Intent: Add Project
         else if (prompt.includes('projeto') || prompt.includes('projecto')) {
@@ -510,7 +515,7 @@ exports.processAICommand = async (req, res) => {
                 totalBudget: 0,
                 currency: 'MZN'
             };
-            message = `Pretende iniciar o projeto "${data.name}"?`;
+            message = `Pretende iniciar o projeto "${data.name}", ${firstName}?`;
         }
         // Intent: Search
         else if (prompt.includes('procurar') || prompt.includes('buscar') || prompt.includes('pesquisar') || prompt.includes('onde')) {
@@ -546,7 +551,7 @@ exports.processAICommand = async (req, res) => {
             }
             
             if (!found) {
-                resultsMsg = `Não encontrei registos relacionados a "${query}" no seu Módulo de Excelência.`;
+                resultsMsg = `Não encontrei registos relacionados a "${query}" no seu Módulo de Excelência, ${firstName}.`;
             }
             
             message = resultsMsg;
@@ -554,7 +559,13 @@ exports.processAICommand = async (req, res) => {
             data = null;
         }
         else {
-            message = "Ainda estou a aprender! Tente algo como: 'Adicionar cliente Rádio Moçambique', 'Guardar 1000 para viagem' ou 'Pesquisar impostos'.";
+            message = `Ainda estou a aprender, ${firstName}! Eis o que consigo fazer por si hoje no Dashboard:\n\n` +
+                      `📌 Criar Tarefas (ex: "Nova tarefa urgente rever contrato")\n` +
+                      `💰 Adicionar Finanças (ex: "Gastei 1500 em marketing" | "Recebi 5000 do projeto")\n` +
+                      `👥 Registar Clientes (ex: "Adicionar parceiro ACME Corp")\n` +
+                      `🚀 Iniciar Projetos (ex: "Criar projeto Website V2")\n` +
+                      `🐷 Registar Poupança (ex: "Guardar 1000 MZN para portáteis")\n` +
+                      `🔍 Pesquisar Tudo (ex: "Procurar ACME" ou "Buscar fatura")`;
         }
 
         res.status(200).json({ success: true, action, data, message });
