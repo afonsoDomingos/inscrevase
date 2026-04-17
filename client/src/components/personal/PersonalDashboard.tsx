@@ -638,6 +638,11 @@ export default function PersonalDashboard() {
         const userMsg = customMsg || aiInput;
         if (!userMsg.trim()) return;
 
+        // Se o usuário clicar em suporte, abrimos o seletor visual também para facilitar
+        if (userMsg.toLowerCase().includes('/suporte')) {
+            setIsAIOptionsOpen(true);
+        }
+
         setAiMessages(prev => [...prev, { role: 'user', content: userMsg }]);
         if (!customMsg) setAiInput('');
         setAiLoading(true);
@@ -665,6 +670,13 @@ export default function PersonalDashboard() {
         } finally {
             setAiLoading(false);
         }
+    };
+
+    const handleAICancel = () => {
+        setAiMessages([]);
+        setAiInput('');
+        setIsAIOptionsOpen(false);
+        toast.info("Processo cancelado. O que vamos orquestrar agora?");
     };
 
     const confirmAISuggestion = async (suggestion: AISuggestion) => {
@@ -796,7 +808,7 @@ export default function PersonalDashboard() {
                     <span style={{ color: '#D4AF37', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Olá, {userFirstName}!</span>
                 </div>
 
-                <form onSubmit={handleAISend} className="ai-input-bar" style={{ position: 'relative', display: 'flex', gap: '15px', alignItems: 'center' }}>
+                <form onSubmit={handleAISend} className="ai-input-bar" style={{ position: 'relative', display: 'flex', gap: '15px', alignItems: 'center', zIndex: 1000 }}>
                     <style>{`
                         @keyframes spin-gemini-border {
                             0% { transform: rotate(0deg); }
@@ -836,17 +848,60 @@ export default function PersonalDashboard() {
                         .gemini-ai-input::placeholder {
                             color: #9aa0a6;
                         }
+                        @keyframes fadeInUp {
+                            from { opacity: 0; transform: translateY(10px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+                        .ai-cancel-btn {
+                            position: absolute;
+                            right: 75px;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            background: rgba(239, 68, 68, 0.1);
+                            color: #ef4444;
+                            border: 1px solid rgba(239, 68, 68, 0.2);
+                            padding: 6px 12px;
+                            border-radius: 20px;
+                            font-size: 0.7rem;
+                            font-weight: 800;
+                            cursor: pointer;
+                            z-index: 10;
+                            transition: all 0.2s;
+                            text-transform: uppercase;
+                        }
+                        .ai-cancel-btn:hover {
+                            background: #ef4444;
+                            color: #fff;
+                        }
                     `}</style>
-                    <div className="gemini-ai-wrapper" style={{ position: 'relative' }}>
+
+                    <div style={{ position: 'relative', flex: 1, display: 'flex' }}>
+                        <div className="gemini-ai-wrapper">
+                            <input 
+                                ref={aiInputRef}
+                                className="gemini-ai-input"
+                                placeholder="Para começar a orquestrar, digite /suporte ou clique no +" 
+                                value={aiInput}
+                                onChange={(e) => setAiInput(e.target.value)}
+                            />
+                        </div>
+
+                        {/* Reset / Cancel Button inside input area when a flow is active */}
+                        {(aiMessages.length > 0 && aiMessages[aiMessages.length-1].suggestion?.context) && (
+                            <button type="button" onClick={handleAICancel} className="ai-cancel-btn">
+                                Cancelar
+                            </button>
+                        )}
+
                         <button
                             type="button"
                             onClick={() => setIsAIOptionsOpen(!isAIOptionsOpen)}
                             style={{
                                 position: 'absolute',
-                                left: '12px',
+                                left: '14px',
                                 top: '50%',
                                 transform: 'translateY(-50%)',
-                                background: 'rgba(255,255,255,0.05)',
+                                background: 'rgba(255,215,0,0.14)',
                                 color: '#FFD700',
                                 border: '1px solid rgba(255,215,0,0.3)',
                                 borderRadius: '50%',
@@ -856,11 +911,9 @@ export default function PersonalDashboard() {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 cursor: 'pointer',
-                                zIndex: 5,
+                                zIndex: 10,
                                 transition: 'all 0.3s'
                             }}
-                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,215,0,0.2)'}
-                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
                         >
                             <Plus size={18} style={{ transform: isAIOptionsOpen ? 'rotate(45deg)' : 'none', transition: 'all 0.3s' }} />
                         </button>
@@ -868,60 +921,56 @@ export default function PersonalDashboard() {
                         {isAIOptionsOpen && (
                             <div style={{
                                 position: 'absolute',
-                                bottom: '120%',
-                                left: 0,
+                                bottom: 'calc(100% + 15px)',
+                                left: '0',
                                 background: '#1e1e1f',
                                 border: '1px solid rgba(255,215,0,0.2)',
-                                borderRadius: '16px',
-                                padding: '10px',
-                                width: '280px',
-                                boxShadow: '0 15px 30px rgba(0,0,0,0.4)',
-                                zIndex: 10,
+                                borderRadius: '20px',
+                                padding: '12px',
+                                width: '300px',
+                                boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+                                zIndex: 2000,
                                 animation: 'fadeInUp 0.3s ease-out'
                             }}>
-                                <div style={{ fontSize: '0.65rem', color: '#9aa0a6', fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', padding: '0 8px', letterSpacing: '1px' }}>Suporte de Comandos</div>
+                                <div style={{ fontSize: '0.65rem', color: '#9aa0a6', fontWeight: 900, textTransform: 'uppercase', marginBottom: '10px', padding: '0 8px', letterSpacing: '1.5px' }}>Orquestração de Elite</div>
                                 {[
                                     { text: "/Cria-Tarefa", icon: Target, template: "/Cria-Tarefa", sub: "Registar nova tarefa" },
                                     { text: "/Registar-Cliente", icon: Users, template: "/Registar-Cliente", sub: "Novo cliente" },
-                                    { text: "/Registar-Transação", icon: Wallet, template: "/Registar-Transação", sub: "Finanças" },
+                                    { text: "/Registar-Transação", icon: Wallet, template: "/Registar-Transação", sub: "Fluxo financeiro" },
                                     { text: "/Nova-Alocação", icon: PiggyBank, template: "/Nova-Alocação", sub: "Poupança" },
                                     { text: "/Novo-Projecto", icon: Briefcase, template: "/Novo-Projecto", sub: "Criar projeto" },
-                                    { text: "/suporte", icon: HelpCircle, template: "/suporte", sub: "Guia de comandos" }
+                                    { text: "/suporte", icon: HelpCircle, template: "/suporte", sub: "Todos os comandos" }
                                 ].map((opt, idx) => (
                                     <button
                                         key={idx}
+                                        type="button"
                                         onClick={() => {
                                             handleAISend(undefined, opt.template);
                                             setIsAIOptionsOpen(false);
                                             setTimeout(() => aiInputRef.current?.focus(), 200);
                                         }}
                                         style={{
-                                            width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
-                                            padding: '10px', background: 'transparent', border: 'none',
-                                            borderRadius: '8px', color: '#fff', fontSize: '0.85rem', cursor: 'pointer',
+                                            width: '100%', display: 'flex', alignItems: 'center', gap: '12px',
+                                            padding: '12px', background: 'transparent', border: 'none',
+                                            borderRadius: '12px', color: '#fff', fontSize: '0.85rem', cursor: 'pointer',
                                             textAlign: 'left', transition: 'all 0.2s'
                                         }}
-                                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,215,0,0.1)'}
+                                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,215,0,0.08)'}
                                         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                     >
-                                        <opt.icon size={16} color="#FFD700" />
+                                        <div style={{ background: 'rgba(255,215,0,0.1)', padding: '8px', borderRadius: '10px' }}>
+                                            <opt.icon size={16} color="#FFD700" />
+                                        </div>
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                            <span style={{ fontWeight: 700 }}>{opt.text}</span>
-                                            <span style={{ fontSize: '0.65rem', opacity: 0.5 }}>{opt.sub}</span>
+                                            <span style={{ fontWeight: 800 }}>{opt.text}</span>
+                                            <span style={{ fontSize: '0.65rem', opacity: 0.6 }}>{opt.sub}</span>
                                         </div>
                                     </button>
                                 ))}
                             </div>
                         )}
-
-                        <input 
-                            ref={aiInputRef}
-                            className="gemini-ai-input"
-                            placeholder="Para começar a orquestrar, digite /suporte ou clique no +" 
-                            value={aiInput}
-                            onChange={e => setAiInput(e.target.value)}
-                        />
                     </div>
+
                     <button 
                         type="submit" 
                         className="ai-send-btn"
@@ -940,15 +989,8 @@ export default function PersonalDashboard() {
                             cursor: 'pointer',
                             transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                             boxShadow: '0 10px 20px rgba(212,175,55,0.3)',
-                            transform: 'translateY(0)'
-                        }}
-                        onMouseEnter={e => {
-                            e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)';
-                            e.currentTarget.style.boxShadow = '0 15px 30px rgba(212,175,55,0.4)';
-                        }}
-                        onMouseLeave={e => {
-                            e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                            e.currentTarget.style.boxShadow = '0 10px 20px rgba(212,175,55,0.3)';
+                            transform: 'translateY(0)',
+                            zIndex: 10
                         }}
                     >
                         {aiLoading ? <Activity size={20} className="spin" /> : <Send size={20} />}
