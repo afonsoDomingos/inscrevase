@@ -465,6 +465,12 @@ exports.processAICommand = async (req, res) => {
         }
         // ---------------------------------
 
+        // Intent: Correction / Mistake Recognition
+        if (prompt.includes('errado') || prompt.includes('erro') || prompt.includes('falhou') || prompt.includes('falhaste') || prompt.includes('corrigir') || prompt.includes('retificar') || prompt.includes('não é isso') || prompt.includes('engano')) {
+            message = `Peço imensa desculpa, ${firstName}. Como assistente em evolução, às vezes posso falhar na interpretação. 🧠\n\nQual parte devo retificar? Pode reformular o comando de forma mais direta para que eu possa executar exatamente o que pretende.`;
+            return res.status(200).json({ success: true, action: null, data: null, context: null, message });
+        }
+
         // Simple Smart Parser (Can be replaced/extended with OpenAI/Gemini later)
         const entityFilter = /\b(ola|olá|chat|assistente|podes|pode|consegue|consegues|por|favor|adicionar|criar|novo|nova|regista|registar|registe|salvar|guarda|guardar|quero|queria|gostaria|vou|estou|faz|fazer|anotar|anota|chamar|chama|chamado|chame|ligar|liga|ligado|contactar|contacto|falar|com|este|esta|esse|essa|o|a|os|as|um|uma|no|na|do|da|em|para|será|que|preciso|me|ajuda|ajudar|de|sobre|seria|podes-me|podias|conseguias)\b/gi;
 
