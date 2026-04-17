@@ -381,17 +381,56 @@ exports.deleteClient = async (req, res) => {
 
 exports.processAICommand = async (req, res) => {
     try {
-        const { text } = req.body;
+        const { text, context } = req.body;
         if (!text) return res.status(400).json({ success: false, message: 'Texto é obrigatório' });
 
         const prompt = text.toLowerCase();
         let action = null;
         let data = {};
         let message = '';
+        let newContext = null;
 
         // Obter nome do utilizador para respostas personalizadas
         const userDoc = await User.findById(req.user.id).select('name');
         const firstName = userDoc ? userDoc.name.split(' ')[0] : 'Líder';
+
+        // --- CONVERSATIONAL STATE MGMT ---
+        if (context && context.draftAction === 'add_client') {
+            const currentData = context.draftData;
+
+            // Handle Email Step
+            if (context.step === 'ask_email') {
+                if (prompt.includes('não') || prompt.includes('nao') || prompt.includes('pular') || prompt.includes('skip') || prompt.includes('nenhum')) {
+                    newContext = { draftAction: 'add_client', draftData: currentData, step: 'ask_phone' };
+                    return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: 'Tudo bem. Deseja adicionar o contacto telefônico deste cliente?' });
+                } else {
+                    const emailMatch = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+                    if (emailMatch) {
+                        currentData.email = emailMatch[1];
+                        newContext = { draftAction: 'add_client', draftData: currentData, step: 'ask_phone' };
+                        return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `O e-mail ${currentData.email} foi salvo! Deseja adicionar o contacto telefônico também?` });
+                    } else {
+                        return res.status(200).json({ success: true, action: 'ask_info', context, message: 'Não entendi o endereço de e-mail. Por favor escreva um e-mail válido (exemplo@email.com) ou responda "não".' });
+                    }
+                }
+            }
+            
+            // Handle Phone Step
+            if (context.step === 'ask_phone') {
+                if (prompt.includes('não') || prompt.includes('nao') || prompt.includes('pular') || prompt.includes('skip') || prompt.includes('nenhum')) {
+                    return res.status(200).json({ success: true, action: 'add_client', data: currentData, message: `As informações essenciais estão prontas, ${firstName}! Deseja confirmar o registo do cliente "${currentData.name}"?` });
+                } else {
+                    const phoneMatch = text.match(/(\+?\d[\d\s-]{7,14}\d)/);
+                    if (phoneMatch) {
+                        currentData.phone = phoneMatch[1].replace(/\s|-/g, ''); // limpa espaços
+                        return res.status(200).json({ success: true, action: 'add_client', data: currentData, message: `Perfeito! O contacto ${currentData.phone} foi guardado! Deseja confirmar o registo final do cliente "${currentData.name}"?` });
+                    } else {
+                        return res.status(200).json({ success: true, action: 'ask_info', context, message: 'Não entendi o número. Por favor digite um telemóvel válido ou responda "não" para ignorar.' });
+                    }
+                }
+            }
+        }
+        // ---------------------------------
 
         // Simple Smart Parser (Can be replaced/extended with OpenAI/Gemini later)
         // Intent: Add Task
@@ -448,9 +487,11 @@ exports.processAICommand = async (req, res) => {
         }
         // Intent: Add Client
         else if (prompt.includes('cliente') || prompt.includes('empresa') || prompt.includes('parceiro')) {
-            action = 'add_client';
             let cleanName = text.replace(/adicionar|novo|nova|criar/gi, '')
                                 .replace(/cliente|empresa|parceiro/gi, '')
+                                .replace(/\b(email|telefone|contacto|telefone:)\b/gi, '')
+                                .replace(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g, '') // strip email from name
+                                .replace(/(\+?\d[\d\s-]{7,14}\d)/g, '') // strip phone from name
                                 .trim();
             
             cleanName = cleanName.replace(/\s+/g, ' ');
@@ -460,11 +501,33 @@ exports.processAICommand = async (req, res) => {
                 cleanName = 'Novo Cliente';
             }
 
+            const emailMatch = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+            const phoneMatch = text.match(/(\+?\d[\d\s-]{7,14}\d)/);
+            
             data = {
                 name: cleanName,
-                type: prompt.includes('empresa') ? 'company' : 'individual'
+                type: prompt.includes('empresa') ? 'company' : 'individual',
+                email: emailMatch ? emailMatch[1] : '',
+                phone: phoneMatch ? phoneMatch[1].replace(/\s|-/g, '') : '',
             };
-            message = `Excelente, ${firstName}. Deseja registar o cliente "${data.name}"?`;
+
+            // Multi-turn Conversational state triggering:
+            if (!data.email && !data.phone) {
+                newContext = { draftAction: 'add_client', draftData: data, step: 'ask_email' };
+                action = 'ask_info';
+                message = `Excelente, ${firstName}. Deseja associar um e-mail a este cliente ("${data.name}")? Caso contrário responda apenas "não".`;
+            } else if (!data.email) {
+                newContext = { draftAction: 'add_client', draftData: data, step: 'ask_email' };
+                action = 'ask_info';
+                message = `Telefone registado, ${firstName}. Deseja associar um e-mail ao cliente "${data.name}" também?`;
+            } else if (!data.phone) {
+                newContext = { draftAction: 'add_client', draftData: data, step: 'ask_phone' };
+                action = 'ask_info';
+                message = `E-mail registado, ${firstName}. Deseja associar um número de telefone ao cliente "${data.name}" também?`;
+            } else {
+                action = 'add_client';
+                message = `Excelente, ${firstName}. Todos os dados foram fornecidos. Deseja criar o cliente "${data.name}" agora?`;
+            }
         }
         // Intent: Add Saving (Poupança)
         else if (prompt.includes('poupança') || prompt.includes('guardar') || prompt.includes('poupar')) {
@@ -568,7 +631,7 @@ exports.processAICommand = async (req, res) => {
                       `🔍 Pesquisar Tudo (ex: "Procurar ACME" ou "Buscar fatura")`;
         }
 
-        res.status(200).json({ success: true, action, data, message });
+        res.status(200).json({ success: true, action, data, context: newContext, message });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

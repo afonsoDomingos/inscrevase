@@ -214,8 +214,9 @@ const DASHBOARD_TABS = [
 ];
 
 interface AISuggestion {
-    action: 'add_task' | 'add_transaction' | 'add_client';
+    action: 'add_task' | 'add_transaction' | 'add_client' | 'add_saving' | 'add_project' | 'ask_info';
     data: unknown;
+    context?: any;
 }
 
 interface SmartAlertItem {
@@ -612,13 +613,19 @@ export default function PersonalDashboard() {
         setAiInput('');
         setAiLoading(true);
 
+        const currentContext = aiMessages.length > 0 && aiMessages[aiMessages.length-1].role === 'bot' 
+                                ? aiMessages[aiMessages.length-1].suggestion?.context 
+                                : null;
+
         try {
-            const res = await personalService.processAICommand(userMsg);
+            const res = await personalService.processAICommand(userMsg, currentContext);
             if (res.success) {
                 setAiMessages(prev => [...prev, { 
                     role: 'bot', 
                     content: res.message,
-                    suggestion: res.action ? { action: res.action, data: res.data } : null 
+                    suggestion: (res.action && res.action !== 'ask_info') 
+                        ? { action: res.action, data: res.data, context: res.context } 
+                        : (res.context ? { action: 'ask_info', data: null, context: res.context } : null) 
                 }]);
             }
         } catch {
@@ -763,42 +770,70 @@ export default function PersonalDashboard() {
                     <span style={{ color: '#D4AF37', fontWeight: 900, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '3px' }}>Cognição Digital Saúde Profissional</span>
                 </div>
 
-                <form onSubmit={handleAISend} style={{ position: 'relative', display: 'flex', gap: '15px' }}>
-                    <input 
-                        placeholder="O que deseja orquestrar hoje? (Ex: 'Recebi 15k do Projeto Alpha' ou 'Registar 2k na Poupança')" 
-                        value={aiInput}
-                        onChange={e => setAiInput(e.target.value)}
-                        style={{
-                            flex: 1,
-                            background: 'rgba(255,255,255,0.03)',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            padding: '14px 20px',
-                            borderRadius: '12px',
-                            color: '#fff',
-                            fontSize: '0.95rem',
-                            outline: 'none',
-                            transition: 'all 0.3s',
-                            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
-                        }}
-                        onFocus={e => e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)'}
-                        onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'}
-                    />
+                <form onSubmit={handleAISend} style={{ position: 'relative', display: 'flex', gap: '15px', alignItems: 'center' }}>
+                    <style>{`
+                        @keyframes spin-gemini-border {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                        .gemini-ai-wrapper {
+                            position: relative;
+                            flex: 1;
+                            border-radius: 50px;
+                            padding: 2px;
+                            display: flex;
+                            overflow: hidden;
+                            background: #111;
+                        }
+                        .gemini-ai-wrapper::before {
+                            content: "";
+                            position: absolute;
+                            top: -150%; right: -50%; bottom: -150%; left: -50%;
+                            background: conic-gradient(from 0deg, transparent 0%, transparent 40%, #4285f4 60%, #ea4335 70%, #fbbc05 80%, #34a853 90%, transparent 100%);
+                            animation: spin-gemini-border 3s linear infinite;
+                            z-index: 0;
+                        }
+                        .gemini-ai-input {
+                            position: relative;
+                            z-index: 1;
+                            width: 100%;
+                            background: #131314;
+                            border: none;
+                            border-radius: 48px;
+                            padding: 16px 24px;
+                            color: #fff;
+                            font-size: 1rem;
+                            outline: none;
+                            font-weight: 500;
+                            letter-spacing: 0.3px;
+                        }
+                        .gemini-ai-input::placeholder {
+                            color: #9aa0a6;
+                        }
+                    `}</style>
+                    <div className="gemini-ai-wrapper">
+                        <input 
+                            className="gemini-ai-input"
+                            placeholder="O que deseja orquestrar hoje? (Ex: 'Recebi 15k do Projeto Alpha')" 
+                            value={aiInput}
+                            onChange={e => setAiInput(e.target.value)}
+                        />
+                    </div>
                     <button type="submit" disabled={aiLoading || !aiInput.trim()} style={{
                         background: '#D4AF37',
                         color: '#000',
                         border: 'none',
-                        padding: '0 24px',
-                        borderRadius: '12px',
-                        fontWeight: 900,
-                        cursor: 'pointer',
+                        width: '54px',
+                        height: '54px',
+                        borderRadius: '50%',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '10px',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
                         transition: 'all 0.2s',
                         boxShadow: '0 10px 20px rgba(212,175,55,0.2)'
                     }}>
-                        {aiLoading ? <Activity size={18} className="spin" /> : <Send size={18} />}
-                        <span style={{ letterSpacing: '1px' }}>EXECUTAR</span>
+                        {aiLoading ? <Activity size={20} className="spin" /> : <Send size={20} />}
                     </button>
                 </form>
 
@@ -811,7 +846,7 @@ export default function PersonalDashboard() {
                             </div>
                             <div style={{ flex: 1 }}>
                                 <p style={{ margin: 0, color: '#fff', fontSize: '0.95rem', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>{aiMessages[aiMessages.length-1].content}</p>
-                                {aiMessages[aiMessages.length-1].suggestion && (
+                                {(aiMessages[aiMessages.length-1].suggestion && aiMessages[aiMessages.length-1].suggestion!.action !== 'ask_info') && (
                                     <div style={{ marginTop: '1rem', display: 'flex', gap: '10px' }}>
                                         <button 
                                             onClick={() => confirmAISuggestion(aiMessages[aiMessages.length-1].suggestion!)}
