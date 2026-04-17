@@ -1015,18 +1015,36 @@ export default function PersonalDashboard() {
                             <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
                                 <div 
                                     onClick={() => setViewMode('finance')}
-                                    style={{ flex: 1, cursor: 'pointer', transition: 'all 0.2s' }}
-                                    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-                                    onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                                    style={{ 
+                                        flex: 1, cursor: 'pointer', transition: 'all 0.3s',
+                                        padding: '8px', borderRadius: '8px'
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                                        e.currentTarget.style.transform = 'translateY(-3px)';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.background = 'transparent';
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                    }}
                                 >
                                     <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', fontWeight: 800 }}>Entradas</div>
                                     <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#00ff41' }}>+{formatPrice(summary.income, 'MZN').split(',')[0]}</div>
                                 </div>
                                 <div 
                                     onClick={() => setViewMode('finance')}
-                                    style={{ flex: 1, cursor: 'pointer', transition: 'all 0.2s' }}
-                                    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-                                    onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                                    style={{ 
+                                        flex: 1, cursor: 'pointer', transition: 'all 0.3s',
+                                        padding: '8px', borderRadius: '8px'
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                                        e.currentTarget.style.transform = 'translateY(-3px)';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.background = 'transparent';
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                    }}
                                 >
                                     <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', fontWeight: 800 }}>Saídas</div>
                                     <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#ff4444' }}>-{formatPrice(summary.expense, 'MZN').split(',')[0]}</div>
@@ -1055,7 +1073,22 @@ export default function PersonalDashboard() {
                                         { label: 'Atraso', val: tasks.filter(t => t.status === 'late').length, color: '#ff4444' },
                                         { label: 'Concluído', val: tasks.filter(t => t.status === 'completed').length, color: '#000', opacity: 0.4 },
                                     ].map(it => (
-                                        <div key={it.label}>
+                                        <div 
+                                            key={it.label}
+                                            onClick={() => setViewMode('tasks')}
+                                            style={{ 
+                                                cursor: 'pointer', transition: 'all 0.3s', 
+                                                padding: '8px 12px', borderRadius: '12px' 
+                                            }}
+                                            onMouseEnter={e => {
+                                                e.currentTarget.style.background = '#f9f9f9';
+                                                e.currentTarget.style.transform = 'translateY(-3px)';
+                                            }}
+                                            onMouseLeave={e => {
+                                                e.currentTarget.style.background = 'transparent';
+                                                e.currentTarget.style.transform = 'translateY(0)';
+                                            }}
+                                        >
                                             <div style={{ fontSize: '1.8rem', fontWeight: 800, color: it.color, opacity: it.opacity }}>{it.val}</div>
                                             <div style={{ fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase', marginTop: '4px' }}>{it.label}</div>
                                         </div>
