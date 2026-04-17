@@ -1133,7 +1133,25 @@ export default function PersonalDashboard() {
                                 </div>
                             </div>
                             
-                            <div style={{ marginTop: '1.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '12px', padding: '10px' }}>
+                            <div 
+                                onClick={() => setViewMode('savings')}
+                                style={{ 
+                                    marginTop: '1.5rem', 
+                                    background: 'rgba(255,255,255,0.1)', 
+                                    borderRadius: '12px', 
+                                    padding: '10px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                                }}
+                                onMouseEnter={e => {
+                                    e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                }}
+                                onMouseLeave={e => {
+                                    e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                }}
+                            >
                                 <div style={{ fontSize: '0.65rem', fontWeight: 800, opacity: 0.7, marginBottom: '5px' }}>ÚLTIMAS ALOCAÇÕES</div>
                                 {savings.slice(0, 2).map((s, idx) => (
                                     <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600 }}>
