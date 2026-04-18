@@ -402,8 +402,8 @@ export default function PersonalDashboard() {
     const user = authService.getCurrentUser();
     const userFirstName = user ? user.name.split(' ')[0] : 'Líder';
 
-    const fetchData = async () => {
-        setLoading(true);
+    const fetchData = async (showLoading = true) => {
+        if (showLoading) setLoading(true);
         try {
             const [sum, txs, tsks, projs, cls, svs] = await Promise.all([
                 personalService.getFinanceSummary(),
@@ -423,7 +423,7 @@ export default function PersonalDashboard() {
             console.error(error);
             toast.error("Erro ao carregar dados do ecossistema Saúde Profissional");
         } finally {
-            setLoading(false);
+            if (showLoading) setLoading(false);
         }
     };
 
@@ -436,7 +436,7 @@ export default function PersonalDashboard() {
         finally { setReportLoading(false); }
     };
 
-    useEffect(() => { fetchData(); }, []);
+    useEffect(() => { fetchData(true); }, []);
     useEffect(() => { if (viewMode === 'reports') fetchReport(reportTimeframe); }, [viewMode, reportTimeframe]);
 
     // --- FINANCE HANDLERS ---
@@ -458,7 +458,7 @@ export default function PersonalDashboard() {
                 toast.success("Transação registada!");
             }
             closeTxModal();
-            fetchData();
+            fetchData(false);
         } catch { toast.error("Erro ao guardar transação"); }
     };
 
@@ -467,7 +467,7 @@ export default function PersonalDashboard() {
             try {
                 await personalService.deleteTransaction(id);
                 toast.success("Transação eliminada");
-                fetchData();
+                fetchData(false);
             } catch { toast.error("Erro ao eliminar transação"); }
         }
     };
@@ -509,7 +509,7 @@ export default function PersonalDashboard() {
                 toast.success("Tarefa adicionada!");
             }
             closeTaskModal();
-            fetchData();
+            fetchData(false);
         } catch { toast.error("Erro ao guardar tarefa"); }
     };
 
@@ -518,7 +518,7 @@ export default function PersonalDashboard() {
             try {
                 await personalService.deleteTask(id);
                 toast.success("Tarefa eliminada");
-                fetchData();
+                fetchData(false);
             } catch { toast.error("Erro ao eliminar tarefa"); }
         }
     };
@@ -544,7 +544,7 @@ export default function PersonalDashboard() {
     const toggleTaskStatus = async (id: string, currentStatus: string) => {
         try {
             await personalService.updateTaskStatus(id, currentStatus === 'completed' ? 'pending' : 'completed');
-            fetchData();
+            fetchData(false);
         } catch { toast.error("Erro ao atualizar status"); }
     };
 
@@ -567,7 +567,7 @@ export default function PersonalDashboard() {
                 toast.success("Projeto criado!");
             }
             closeProjectModal();
-            fetchData();
+            fetchData(false);
         } catch { toast.error("Erro ao guardar projeto"); }
     };
 
@@ -576,7 +576,7 @@ export default function PersonalDashboard() {
             try {
                 await personalService.deleteProject(id);
                 toast.success("Projeto eliminado");
-                fetchData();
+                fetchData(false);
             } catch { toast.error("Erro ao eliminar projeto"); }
         }
     };
@@ -612,7 +612,7 @@ export default function PersonalDashboard() {
                 toast.success("Cliente registado!");
             }
             closeClientModal();
-            fetchData();
+            fetchData(false);
         } catch { toast.error("Erro ao guardar cliente"); }
     };
 
@@ -621,7 +621,7 @@ export default function PersonalDashboard() {
             try {
                 await personalService.deleteClient(id);
                 toast.success("Cliente removido");
-                fetchData();
+                fetchData(false);
             } catch { toast.error("Erro ao eliminar cliente"); }
         }
     };
@@ -722,7 +722,7 @@ export default function PersonalDashboard() {
                 content: "Concluído com sucesso! ✅ O registo já está visível no seu ecossistema.",
                 suggestion: { action: 'view_tab', data: targetTab }
             }]);
-            fetchData();
+            fetchData(false);
         } catch {
             setAiMessages(prev => [...prev, { 
                 role: 'bot', 
@@ -741,7 +741,7 @@ export default function PersonalDashboard() {
         try {
             await personalService.deleteSaving(id);
             toast.success("Registo eliminado.");
-            fetchData();
+            fetchData(false);
         } catch {
             toast.error("Erro ao eliminar");
         }
@@ -760,7 +760,7 @@ export default function PersonalDashboard() {
             toast.success("Poupança registada com sucesso!");
             setIsAddSavingOpen(false);
             setSavingForm({ amount: '', account: '', date: new Date().toISOString().split('T')[0], description: '', linkedTransactionId: '' });
-            fetchData();
+            fetchData(false);
         } catch {
             toast.error("Erro ao guardar poupança");
         }
