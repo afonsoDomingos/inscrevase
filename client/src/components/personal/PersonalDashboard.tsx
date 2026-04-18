@@ -905,13 +905,15 @@ export default function PersonalDashboard() {
                     .personal-h1 { font-size: 1.8rem !important; }
                     .personal-tabs-container { gap: 0.5rem !important; padding: 0.4rem !important; flex-wrap: nowrap !important; }
                     .personal-tab-btn { padding: 10px 15px !important; font-size: 0.65rem !important; flex-shrink: 0; }
-                    .personal-tabs-wrapper { position: relative; }
-                    .personal-tabs-wrapper::after {
-                        content: '➔';
-                        position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-                        color: #000; opacity: 0.5; pointer-events: none;
-                        animation: shift-right 2s infinite; font-size: 0.85rem; text-shadow: 0 0 4px #fff;
+                    .personal-tabs-wrapper { position: relative; padding-right: 30px !important; }
+                    .mobile-scroll-arrow { 
+                        display: flex !important; position: absolute; right: -5px; top: 50%; transform: translateY(-50%);
+                        width: 32px; height: 32px; background: rgba(0,0,0,0.9); color: #FFD700; border-radius: 50%;
+                        align-items: center; justify-content: center; z-index: 10; font-weight: bold; font-size: 1rem;
+                        box-shadow: -10px 0 15px rgba(248,249,250,1); animation: pulse 2s infinite; cursor: pointer; border: 1px solid rgba(255,215,0,0.3);
                     }
+                    .ai-action-buttons { flex-direction: column !important; gap: 8px !important; }
+                    .ai-action-buttons button { width: 100% !important; justify-content: center; }
                     .ai-input-bar { flex-direction: column !important; gap: 10px !important; align-items: stretch !important; }
                     .ai-send-btn { width: 100% !important; height: 48px !important; border-radius: 12px !important; }
                     .ai-cancel-btn { right: 15px !important; padding: 4px 10px !important; font-size: 0.65rem !important; }
@@ -923,6 +925,9 @@ export default function PersonalDashboard() {
                     0% { transform: translateY(-50%) translateX(0); opacity: 0.2; }
                     50% { transform: translateY(-50%) translateX(4px); opacity: 0.8; }
                     100% { transform: translateY(-50%) translateX(0); opacity: 0.2; }
+                }
+                @media (min-width: 769px) {
+                    .mobile-scroll-arrow { display: none !important; }
                 }
                 @keyframes pulse {
                     0% { transform: scale(1); opacity: 1; }
@@ -1329,7 +1334,7 @@ export default function PersonalDashboard() {
                                                                         <select
                                                                             value={currentVal}
                                                                             onChange={e => setDraftEdit(prev => ({ ...prev, [f.key]: e.target.value }))}
-                                                                            style={{ width: '100%', padding: '6px 10px', borderRadius: '8px', border: '1px solid rgba(255,215,0,0.2)', background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: '0.8rem', cursor: 'pointer' }}
+                                                                            style={{ width: '100%', padding: '6px 10px', borderRadius: '8px', border: '1px solid rgba(255,215,0,0.2)', background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: '0.8rem', cursor: 'pointer', boxSizing: 'border-box' }}
                                                                         >
                                                                             {f.options.map(o => <option key={o} value={o}>{priorityLabels[o] || o}</option>)}
                                                                         </select>
@@ -1351,7 +1356,7 @@ export default function PersonalDashboard() {
                                                     </div>
                                                 </div>
                                             )}
-                                            <div style={{ display: 'flex', gap: '12px' }}>
+                                            <div className="ai-action-buttons" style={{ display: 'flex', gap: '12px' }}>
                                                 <button 
                                                     onClick={() => confirmAISuggestion(sug)}
                                                     style={{
@@ -1592,8 +1597,17 @@ export default function PersonalDashboard() {
                 )}
             </div>
 
-            <div className="personal-tabs-wrapper" style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '2rem' }}>
-                <div className="personal-tabs-container" style={{ display: 'flex', width: '100%', gap: '0.5rem', padding: '0.4rem', background: '#f8f9fa', borderRadius: '20px', border: '1px solid rgba(0,0,0,0.03)', overflowX: 'auto', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+            <div className="personal-tabs-wrapper" style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '2rem', position: 'relative' }}>
+                <button 
+                    className="mobile-scroll-arrow" 
+                    onClick={() => {
+                        const el = document.getElementById('dashboard-mobile-tabs');
+                        if (el) el.scrollBy({ left: 150, behavior: 'smooth' });
+                    }}
+                >
+                    ➔
+                </button>
+                <div id="dashboard-mobile-tabs" className="personal-tabs-container" style={{ display: 'flex', width: '100%', gap: '0.5rem', padding: '0.4rem', background: '#f8f9fa', borderRadius: '20px', border: '1px solid rgba(0,0,0,0.03)', overflowX: 'auto', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch', scrollBehavior: 'smooth' }}>
                     {DASHBOARD_TABS.map(tab => {
                         const isActive = viewMode === tab.id;
                         return (
