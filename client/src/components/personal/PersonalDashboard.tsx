@@ -1098,7 +1098,6 @@ export default function PersonalDashboard() {
                                     </div>
                                 )}
                             </div>
-                            </div>
                         </div>
                     </div>
                 )}
