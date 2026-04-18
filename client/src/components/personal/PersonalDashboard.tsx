@@ -903,10 +903,25 @@ export default function PersonalDashboard() {
                         margin-bottom: 2rem !important;
                     }
                     .personal-h1 { font-size: 1.8rem !important; }
-                    .personal-tabs-container { gap: 0.5rem !important; padding: 0.4rem !important; }
-                    .personal-tab-btn { padding: 10px 15px !important; font-size: 0.65rem !important; }
+                    .personal-tabs-container { gap: 0.5rem !important; padding: 0.4rem !important; flex-wrap: nowrap !important; }
+                    .personal-tab-btn { padding: 10px 15px !important; font-size: 0.65rem !important; flex-shrink: 0; }
+                    .personal-tabs-wrapper { position: relative; }
+                    .personal-tabs-wrapper::after {
+                        content: '➔';
+                        position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+                        color: #000; opacity: 0.5; pointer-events: none;
+                        animation: shift-right 2s infinite; font-size: 0.85rem; text-shadow: 0 0 4px #fff;
+                    }
                     .ai-input-bar { flex-direction: column !important; gap: 10px !important; align-items: stretch !important; }
                     .ai-send-btn { width: 100% !important; height: 48px !important; border-radius: 12px !important; }
+                    .ai-cancel-btn { right: 15px !important; padding: 4px 10px !important; font-size: 0.65rem !important; }
+                    .gemini-ai-input { padding-right: 90px !important; }
+                    .ai-edit-grid { grid-template-columns: 1fr !important; }
+                }
+                @keyframes shift-right {
+                    0% { transform: translateY(-50%) translateX(0); opacity: 0.2; }
+                    50% { transform: translateY(-50%) translateX(4px); opacity: 0.8; }
+                    100% { transform: translateY(-50%) translateX(0); opacity: 0.2; }
                 }
                 @keyframes pulse {
                     0% { transform: scale(1); opacity: 1; }
@@ -1303,7 +1318,7 @@ export default function PersonalDashboard() {
                                             {fields.length > 0 && (
                                                 <div style={{ marginBottom: '1rem', borderRadius: '12px', border: '1px solid rgba(255,215,0,0.12)', background: 'rgba(255,215,0,0.04)', padding: '12px 14px' }}>
                                                     <div style={{ fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#FFD700', opacity: 0.6, marginBottom: '10px' }}>✏️ Editar antes de confirmar</div>
-                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                                    <div className="ai-edit-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                                                         {fields.map(f => {
                                                             const currentVal = String((draftEdit[f.key] !== undefined ? draftEdit[f.key] : d?.[f.key]) ?? '');
                                                             if (f.options) {
@@ -1576,8 +1591,8 @@ export default function PersonalDashboard() {
                 )}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '2rem' }}>
-                <div className="personal-tabs-container" style={{ display: 'flex', width: '100%', gap: '0.5rem', padding: '0.4rem', background: '#f8f9fa', borderRadius: '20px', border: '1px solid rgba(0,0,0,0.03)', overflowX: 'auto', scrollbarWidth: 'none' }}>
+            <div className="personal-tabs-wrapper" style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '2rem' }}>
+                <div className="personal-tabs-container" style={{ display: 'flex', width: '100%', gap: '0.5rem', padding: '0.4rem', background: '#f8f9fa', borderRadius: '20px', border: '1px solid rgba(0,0,0,0.03)', overflowX: 'auto', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
                     {DASHBOARD_TABS.map(tab => {
                         const isActive = viewMode === tab.id;
                         return (
