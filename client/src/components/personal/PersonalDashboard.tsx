@@ -1174,7 +1174,7 @@ export default function PersonalDashboard() {
                                         {aiMessages[aiMessages.length-1].suggestion!.options!.map(opt => (
                                             <button 
                                                 key={opt}
-                                                onClick={() => handleAISend(opt)}
+                                                onClick={() => handleAISend(undefined, opt)}
                                                 style={{
                                                     padding: '10px 20px',
                                                     background: 'rgba(255,215,0,0.05)',
