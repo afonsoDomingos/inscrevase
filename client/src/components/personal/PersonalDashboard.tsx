@@ -791,15 +791,48 @@ export default function PersonalDashboard() {
                         margin-bottom: 2rem !important;
                     }
                     .personal-h1 { font-size: 1.8rem !important; }
-                    .personal-tabs-container { gap: 0.5rem !important; padding: 0.3rem !important; }
+                    .personal-tabs-container { gap: 0.5rem !important; padding: 0.4rem !important; }
                     .personal-tab-btn { padding: 10px 15px !important; font-size: 0.65rem !important; }
                     .ai-input-bar { flex-direction: column !important; gap: 10px !important; align-items: stretch !important; }
                     .ai-send-btn { width: 100% !important; height: 48px !important; border-radius: 12px !important; }
                 }
+                @keyframes pulse {
+                    0% { transform: scale(1); opacity: 1; }
+                    50% { transform: scale(1.05); opacity: 0.8; }
+                    100% { transform: scale(1); opacity: 1; }
+                }
+                @keyframes shimmer-loading {
+                    0% { transform: translateX(-100%); }
+                    100% { transform: translateX(250%); }
+                }
             `}</style>
             {loading ? (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px', gap: '12px', color: '#FFD700', fontSize: '1.1rem', fontWeight: 600 }}>
-                    <Activity size={24} style={{ animation: 'spin 1s linear infinite' }} /> Carregando Saúde Profissional...
+                <div style={{ 
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
+                    minHeight: '450px', background: 'rgba(255,255,255,0.02)', borderRadius: '40px', 
+                    border: '1px solid rgba(255,215,0,0.1)', marginTop: '2rem'
+                }}>
+                    <div style={{ position: 'relative', marginBottom: '30px' }}>
+                        <div style={{ 
+                            position: 'absolute', inset: '-20px', borderRadius: '50%', 
+                            border: '2px solid transparent', borderTopColor: '#FFD700', 
+                            animation: 'spin 1.5s linear infinite' 
+                        }} />
+                        <div style={{ 
+                            background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)', 
+                            padding: '24px', borderRadius: '50%', boxShadow: '0 0 50px rgba(255,215,0,0.2)',
+                            animation: 'pulse 2s ease-in-out infinite',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        }}>
+                            <ShieldCheck size={48} color="#000" />
+                        </div>
+                    </div>
+                    <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: 900, marginBottom: '10px', letterSpacing: '1px' }}>Orquestrando Saúde...</h2>
+                    <p style={{ color: '#9aa0a6', fontSize: '0.95rem', fontWeight: 500, textAlign: 'center', maxWidth: '300px' }}>Estamos a preparar o seu diagnóstico de excelência profissional.</p>
+                    
+                    <div style={{ marginTop: '40px', width: '220px', height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', overflow: 'hidden', position: 'relative' }}>
+                        <div style={{ height: '100%', background: 'linear-gradient(90deg, transparent, #FFD700, transparent)', width: '100px', animation: 'shimmer-loading 2s infinite ease-in-out' }} />
+                    </div>
                 </div>
             ) : (
                 <>
