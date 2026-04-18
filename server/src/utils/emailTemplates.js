@@ -19,7 +19,6 @@ const getSocialFooter = () => {
                 ${[
             ['facebook', 'https://cdn-icons-png.flaticon.com/512/733/733547.png', socialLinks.facebook],
             ['linkedin', 'https://cdn-icons-png.flaticon.com/512/3536/3536505.png', socialLinks.linkedin],
-            ['twitter', 'https://cdn-icons-png.flaticon.com/512/5968/5968830.png', socialLinks.twitter], 
             ['instagram', 'https://cdn-icons-png.flaticon.com/512/2111/2111463.png', socialLinks.instagram],
             ['youtube', 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png', socialLinks.youtube],
             ['tiktok', 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png', socialLinks.tiktok],
