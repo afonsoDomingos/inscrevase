@@ -995,8 +995,8 @@ export default function PersonalDashboard() {
                         style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '7px',
-                            padding: '8px 16px',
+                            gap: '5px',
+                            padding: '5px 11px',
                             borderRadius: '20px',
                             border: conversaModeActive
                                 ? '1px solid rgba(239,68,68,0.35)'
@@ -1005,10 +1005,10 @@ export default function PersonalDashboard() {
                                 ? 'rgba(239,68,68,0.08)'
                                 : 'rgba(6,182,212,0.08)',
                             color: conversaModeActive ? '#ef4444' : '#06b6d4',
-                            fontSize: '0.7rem',
+                            fontSize: '0.58rem',
                             fontWeight: 900,
                             textTransform: 'uppercase',
-                            letterSpacing: '1.2px',
+                            letterSpacing: '1px',
                             cursor: 'pointer',
                             transition: 'all 0.25s ease',
                             whiteSpace: 'nowrap'
@@ -1025,8 +1025,8 @@ export default function PersonalDashboard() {
                         }}
                     >
                         {conversaModeActive
-                            ? <><Zap size={13} /> Sair da Conversa</>
-                            : <><MessageSquare size={13} /> Modo Conversa</>
+                            ? <><Zap size={11} /> Sair da Conversa</>
+                            : <><MessageSquare size={11} /> Modo Conversa</>
                         }
                     </button>
                 </div>
