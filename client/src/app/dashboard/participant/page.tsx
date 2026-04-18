@@ -5,7 +5,7 @@ import { useEffect, useState, useCallback, useMemo, Suspense } from 'react';
 import { authService, UserData } from '@/lib/authService';
 import { formService, FormModel } from '@/lib/formService';
 import { financeService } from '@/lib/financeService';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useTranslate } from '@/context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -81,6 +81,7 @@ function ParticipantDashboardContent() {
     ];
     const router = useRouter();
     const searchParams = useSearchParams();
+    const pathname = usePathname();
     const [user, setUser] = useState<UserData | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<Tab>('tickets');
@@ -250,7 +251,8 @@ function ParticipantDashboardContent() {
                 setSponsoredItems(combinedAds);
             } catch (error) {
                 console.error("Error loading profile:", error);
-                router.push('/entrar');
+                const currentUrl = encodeURIComponent(pathname + (searchParams.toString() ? '?' + searchParams.toString() : ''));
+                router.push(`/entrar?redirect=${currentUrl}`);
             } finally {
                 setLoading(false);
                 setTicketsLoading(false);

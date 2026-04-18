@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { authService, UserData } from '@/lib/authService';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Suspense } from 'react';
 import { dashboardService, AdminStats } from '@/lib/dashboardService';
 import { formService, FormModel } from '@/lib/formService';
@@ -115,6 +115,7 @@ function MentorDashboardContent() {
     const { currency, formatPrice } = useCurrency();
     const router = useRouter();
     const searchParams = useSearchParams();
+    const pathname = usePathname();
     const [user, setUser] = useState<UserData | null>(null);
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [forms, setForms] = useState<FormModel[]>([]);
@@ -290,7 +291,8 @@ function MentorDashboardContent() {
             console.error("Dashboard error:", error);
             // If unauthorized, redirect to login
             if (error instanceof Error && (error.message.includes('401') || error.message.includes('Falha ao buscar perfil'))) {
-                router.push('/entrar');
+                const currentUrl = encodeURIComponent(pathname + (searchParams.toString() ? '?' + searchParams.toString() : ''));
+                router.push(`/entrar?redirect=${currentUrl}`);
             }
         } finally {
             // Only set loading false if we are not waiting for subscription

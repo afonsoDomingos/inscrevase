@@ -26,7 +26,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Book, MessageCircle, Smartphone, Briefcase } from 'lucide-react';
 
 import ProfileModal from '@/components/mentor/ProfileModal';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Suspense } from 'react';
 import { supportService } from '@/lib/supportService';
 import { referralService, ReferralRanking, ReferralHistory } from '@/lib/referralService';
@@ -76,6 +76,7 @@ function AdminDashboardContent() {
     const { currency, formatPrice } = useCurrency();
     const router = useRouter();
     const searchParams = useSearchParams();
+    const pathname = usePathname();
     const [user, setUser] = useState<UserData | null>(null);
     const [activeTab, setActiveTab] = useState<Tab>('overview');
 
@@ -262,7 +263,8 @@ function AdminDashboardContent() {
 
                 if (!currentUser) {
                     console.error('🔴 [Admin Dashboard] No user found, redirecting to login');
-                    router.push('/entrar');
+                    const currentUrl = encodeURIComponent(pathname + (searchParams.toString() ? '?' + searchParams.toString() : ''));
+                    router.push(`/entrar?redirect=${currentUrl}`);
                     return;
                 }
 
@@ -326,7 +328,8 @@ function AdminDashboardContent() {
                 console.error("🔴 [Admin Dashboard] Error loading dashboard:", err);
                 if (err instanceof Error && (err.message.includes('401') || err.message.includes('perfil'))) {
                     console.log('🔴 [Admin Dashboard] Unauthorized, redirecting...');
-                    router.push('/entrar');
+                    const currentUrl = encodeURIComponent(pathname + (searchParams.toString() ? '?' + searchParams.toString() : ''));
+                    router.push(`/entrar?redirect=${currentUrl}`);
                 }
             } finally {
                 setLoading(false);
@@ -391,8 +394,10 @@ function AdminDashboardContent() {
             setAuditUser(data.user);
             setAuditHistory(data.history);
             setIsAuditModalOpen(true);
-        } catch {
-            toast.error('Erro ao buscar auditoria de convites');
+        } catch (error) {
+            console.error(error);
+            const currentUrl = encodeURIComponent(pathname + (searchParams.toString() ? '?' + searchParams.toString() : ''));
+            router.push(`/entrar?redirect=${currentUrl}`);
         } finally {
             setLoading(false);
         }
@@ -407,7 +412,10 @@ function AdminDashboardContent() {
     }
 
     if (!user) {
-        if (!loading) router.push('/entrar');
+        if (!loading) {
+            const currentUrl = encodeURIComponent(pathname + (searchParams.toString() ? '?' + searchParams.toString() : ''));
+            router.push(`/entrar?redirect=${currentUrl}`);
+        }
         return null;
     }
 
