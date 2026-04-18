@@ -423,7 +423,11 @@ exports.processAICommand = async (req, res) => {
 
             // CLIENT FLOW: Nome (Principal) -> Tipo (Principal) -> Contacto (Opcional) -> Email (Opcional)
             if (context.step === 'ask_client_name') {
-                currentData.name = text.trim();
+                const nameValue = text.trim();
+                if (nameValue.length < 2) {
+                    return res.status(200).json({ success: true, action: 'ask_info', context, message: `⚠️ O nome parece ser demasiado curto. Por favor, insira o nome completo do cliente.` });
+                }
+                currentData.name = nameValue;
                 newContext = { step: 'ask_client_type', draftData: currentData, draftAction: 'add_client' };
                 return res.status(200).json({ 
                     success: true, 
@@ -481,7 +485,11 @@ exports.processAICommand = async (req, res) => {
 
             // TASK FLOW: Nome (Principal) -> Prioridade (Principal) -> Descrição (Opcional) -> Data Limite (Opcional) -> Cliente (Opcional)
             if (context.step === 'ask_task_name') {
-                currentData.title = text.trim();
+                const titleValue = text.trim();
+                if (titleValue.length < 2) {
+                    return res.status(200).json({ success: true, action: 'ask_info', context, message: `⚠️ O título da tarefa parece ser demasiado curto. Por favor, forneça um título mais descritivo.` });
+                }
+                currentData.title = titleValue;
                 newContext = { step: 'ask_task_priority', draftData: currentData, draftAction: 'add_task' };
                 return res.status(200).json({ 
                     success: true, 
@@ -521,7 +529,13 @@ exports.processAICommand = async (req, res) => {
                         tomorrow.setDate(tomorrow.getDate() + 1);
                         currentData.deadline = tomorrow.toISOString().split('T')[0];
                     }
-                    else currentData.deadline = text.trim();
+                    else {
+                        const dateValue = text.trim();
+                        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateValue) && !/^\d{2}\/\d{2}\/\d{4}$/.test(dateValue) && dateValue.length < 4) {
+                            return res.status(200).json({ success: true, action: 'ask_info', context, options: ['Hoje', 'Amanhã', 'Saltar'], message: `⚠️ A data parece ter um formato inválido. Use um formato como 2026-12-31 ou escolha uma das opções:` });
+                        }
+                        currentData.deadline = dateValue;
+                    }
                 }
                 newContext = { step: 'ask_task_client', draftData: currentData, draftAction: 'add_task' };
                 return res.status(200).json({ 
@@ -562,13 +576,25 @@ exports.processAICommand = async (req, res) => {
                 });
             }
             if (context.step === 'ask_saving_date') {
-                currentData.date = (prompt.includes('hoje') || prompt.includes('não')) ? new Date().toISOString().split('T')[0] : text.trim();
+                if (prompt.includes('hoje') || prompt.includes('não') || prompt.includes('saltar')) {
+                    currentData.date = new Date().toISOString().split('T')[0];
+                } else {
+                    const dateValue = text.trim();
+                    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateValue) && !/^\d{2}\/\d{2}\/\d{4}$/.test(dateValue) && dateValue.length < 4) {
+                        return res.status(200).json({ success: true, action: 'ask_info', context, options: ['Hoje'], message: `⚠️ Formato de data inválido. Use 2026-12-31 ou clique em "Hoje".` });
+                    }
+                    currentData.date = dateValue;
+                }
                 return res.status(200).json({ success: true, action: 'add_saving', data: currentData, message: `Confirmar alocação de ${currentData.amount} MZN para o objetivo "${currentData.account}"?` });
             }
 
             // PROJECT FLOW: Nome (Principal) -> Descrição (Opcional) -> Orçamento (Principal) -> Data Limite (Opcional) -> Cliente (Opcional)
             if (context.step === 'ask_project_name') {
-                currentData.name = text.trim();
+                const nameValue = text.trim();
+                if (nameValue.length < 2) {
+                    return res.status(200).json({ success: true, action: 'ask_info', context, message: `⚠️ O nome do projeto parece ser muito curto. Por favor, insira um nome mais descritivo.` });
+                }
+                currentData.name = nameValue;
                 newContext = { step: 'ask_project_desc', draftData: currentData, draftAction: 'add_project' };
                 return res.status(200).json({ 
                     success: true, 
@@ -606,7 +632,13 @@ exports.processAICommand = async (req, res) => {
                         tomorrow.setDate(tomorrow.getDate() + 1);
                         currentData.deadline = tomorrow.toISOString().split('T')[0];
                     }
-                    else currentData.deadline = text.trim();
+                    else {
+                        const dateValue = text.trim();
+                        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateValue) && !/^\d{2}\/\d{2}\/\d{4}$/.test(dateValue) && dateValue.length < 4) {
+                            return res.status(200).json({ success: true, action: 'ask_info', context, options: ['Hoje', 'Amanhã', 'Saltar'], message: `⚠️ Formato de data inválido. Use 2026-12-31 ou uma das opções:` });
+                        }
+                        currentData.deadline = dateValue;
+                    }
                 }
                 newContext = { step: 'ask_project_client', draftData: currentData, draftAction: 'add_project' };
                 return res.status(200).json({ 
@@ -651,7 +683,15 @@ exports.processAICommand = async (req, res) => {
                 });
             }
             if (context.step === 'ask_finance_date') {
-                currentData.date = (prompt.includes('hoje') || prompt.includes('não')) ? new Date().toISOString().split('T')[0] : text.trim();
+                if (prompt.includes('hoje') || prompt.includes('não') || prompt.includes('saltar')) {
+                    currentData.date = new Date().toISOString().split('T')[0];
+                } else {
+                    const dateValue = text.trim();
+                    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateValue) && !/^\d{2}\/\d{2}\/\d{4}$/.test(dateValue) && dateValue.length < 4) {
+                        return res.status(200).json({ success: true, action: 'ask_info', context, options: ['Hoje'], message: `⚠️ Formato de data inválido. Use 2026-12-31 ou clique em "Hoje".` });
+                    }
+                    currentData.date = dateValue;
+                }
                 const summary = `${currentData.type === 'income' ? 'Receita' : 'Despesa'} | Valor: ${currentData.amount} MZN | Categoria: ${currentData.category}`;
                 return res.status(200).json({ success: true, action: 'add_transaction', data: currentData, message: `Confirmar registo financeiro?\n\nResumo: ${summary}` });
             }
