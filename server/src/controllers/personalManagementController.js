@@ -538,12 +538,14 @@ exports.processAICommand = async (req, res) => {
                     }
                 }
                 newContext = { step: 'ask_task_client', draftData: currentData, draftAction: 'add_task' };
+                const userClients = await PersonalClient.find({ user: req.user.id }).select('name').limit(4);
+                const clientOptions = [...userClients.map(c => c.name), 'Saltar'];
                 return res.status(200).json({ 
                     success: true, 
                     action: 'ask_info', 
                     context: newContext, 
-                    options: ['Saltar'],
-                    message: `Deseja associar a algum cliente? (Indique o nome ou clique em "Saltar")` 
+                    options: clientOptions,
+                    message: `Deseja associar a algum cliente? (Escolha abaixo, indique um nome ou clique em "Saltar")` 
                 });
             }
             if (context.step === 'ask_task_client') {
@@ -641,12 +643,14 @@ exports.processAICommand = async (req, res) => {
                     }
                 }
                 newContext = { step: 'ask_project_client', draftData: currentData, draftAction: 'add_project' };
+                const userClients = await PersonalClient.find({ user: req.user.id }).select('name').limit(4);
+                const clientOptions = [...userClients.map(c => c.name), 'Saltar'];
                 return res.status(200).json({ 
                     success: true, 
                     action: 'ask_info', 
                     context: newContext, 
-                    options: ['Saltar'],
-                    message: `Deseja associar este projeto a um cliente? (Indique o nome ou clique em "Saltar")` 
+                    options: clientOptions,
+                    message: `Deseja associar este projeto a um cliente? (Escolha abaixo, indique um nome ou clique em "Saltar")` 
                 });
             }
             if (context.step === 'ask_project_client') {
