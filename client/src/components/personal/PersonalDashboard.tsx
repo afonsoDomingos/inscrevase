@@ -934,9 +934,9 @@ export default function PersonalDashboard() {
                                 left: '0',
                                 background: '#1e1e1f',
                                 border: '1px solid rgba(255,215,0,0.2)',
-                                borderRadius: '20px',
-                                padding: '12px',
-                                width: '300px',
+                                borderRadius: '18px',
+                                padding: '8px',
+                                width: '280px',
                                 boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
                                 zIndex: 2000,
                                 animation: 'fadeInDown 0.3s ease-out'
@@ -947,7 +947,7 @@ export default function PersonalDashboard() {
                                         to { opacity: 1; transform: translateY(0); }
                                     }
                                 `}</style>
-                                <div style={{ fontSize: '0.65rem', color: '#9aa0a6', fontWeight: 900, textTransform: 'uppercase', marginBottom: '10px', padding: '0 8px', letterSpacing: '1.5px' }}>Orquestração de Elite</div>
+                                <div style={{ fontSize: '0.6rem', color: '#9aa0a6', fontWeight: 900, textTransform: 'uppercase', marginBottom: '8px', padding: '0 8px', letterSpacing: '1.5px' }}>Orquestração de Elite</div>
                                 {[
                                     { text: "/Cria-Tarefa", icon: Target, template: "/Cria-Tarefa", sub: "Registar nova tarefa" },
                                     { text: "/Registar-Cliente", icon: Users, template: "/Registar-Cliente", sub: "Novo cliente" },
@@ -965,20 +965,20 @@ export default function PersonalDashboard() {
                                             setTimeout(() => aiInputRef.current?.focus(), 200);
                                         }}
                                         style={{
-                                            width: '100%', display: 'flex', alignItems: 'center', gap: '12px',
-                                            padding: '12px', background: 'transparent', border: 'none',
-                                            borderRadius: '12px', color: '#fff', fontSize: '0.85rem', cursor: 'pointer',
+                                            width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
+                                            padding: '7px 10px', background: 'transparent', border: 'none',
+                                            borderRadius: '10px', color: '#fff', fontSize: '0.78rem', cursor: 'pointer',
                                             textAlign: 'left', transition: 'all 0.2s'
                                         }}
                                         onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,215,0,0.08)'}
                                         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                     >
-                                        <div style={{ background: 'rgba(255,215,0,0.1)', padding: '8px', borderRadius: '10px' }}>
-                                            <opt.icon size={16} color="#FFD700" />
+                                        <div style={{ background: 'rgba(255,215,0,0.1)', padding: '6px', borderRadius: '8px' }}>
+                                            <opt.icon size={14} color="#FFD700" />
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                                             <span style={{ fontWeight: 800 }}>{opt.text}</span>
-                                            <span style={{ fontSize: '0.65rem', opacity: 0.6 }}>{opt.sub}</span>
+                                            <span style={{ fontSize: '0.6rem', opacity: 0.6 }}>{opt.sub}</span>
                                         </div>
                                     </button>
                                 ))}
