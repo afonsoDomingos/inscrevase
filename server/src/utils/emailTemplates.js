@@ -13,31 +13,34 @@ const socialLinks = {
 const getSocialFooter = () => {
     return `
         <div style="margin-top: 45px; text-align: center; padding-top: 40px; border-top: 1px solid #f0f0f0;">
-            <p style="font-size: 13px; color: #999; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">Conecte-se com a Elite</p>
+            <p style="font-size: 13px; color: #999; font-weight: 800; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px;">CONECTE-SE COM A ELITE</p>
             
-            <div style="margin-bottom: 30px; display: flex; justify-content: center; align-items: center;">
-                ${[
-            ['facebook', 'https://cdn-icons-png.flaticon.com/512/733/733547.png', socialLinks.facebook],
-            ['linkedin', 'https://cdn-icons-png.flaticon.com/512/3536/3536505.png', socialLinks.linkedin],
-            ['instagram', 'https://cdn-icons-png.flaticon.com/512/2111/2111463.png', socialLinks.instagram],
-            ['youtube', 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png', socialLinks.youtube],
-            ['tiktok', 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png', socialLinks.tiktok],
-            ['email', 'https://cdn-icons-png.flaticon.com/512/542/542689.png', 'mailto:geral@inscreva-se.com']
-        ].map(([platform, icon, url]) => `
-                    <a href="${url}" style="display: inline-block; width: 28px; height: 28px; background-color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; margin: 0 4px;">
-                        <img src="${icon}" alt="${platform}" style="width: 12px; height: 12px; filter: brightness(0) invert(1);">
-                    </a>
-                `).join('')}
+            <div style="margin-bottom: 30px; display: flex; justify-content: center; align-items: center; gap: 4px;">
+                <a href="${socialLinks.facebook}" style="display: inline-block; margin: 0 6px; text-decoration: none;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" style="width: 28px; height: 28px; border-radius: 6px;">
+                </a>
+                <a href="${socialLinks.youtube}" style="display: inline-block; margin: 0 6px; text-decoration: none;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube" style="width: 28px; height: 28px; border-radius: 6px;">
+                </a>
+                <a href="${socialLinks.linkedin}" style="display: inline-block; margin: 0 6px; text-decoration: none;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3536/3536505.png" alt="LinkedIn" style="width: 28px; height: 28px; border-radius: 6px;">
+                </a>
+                <a href="${socialLinks.tiktok}" style="display: inline-block; margin: 0 6px; text-decoration: none;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" alt="TikTok" style="width: 28px; height: 28px; border-radius: 6px;">
+                </a>
+                <a href="${socialLinks.whatsapp}" style="display: inline-block; margin: 0 6px; text-decoration: none;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" style="width: 28px; height: 28px; border-radius: 6px;">
+                </a>
             </div>
 
-            <div style="margin-bottom: 35px;">
-                <a href="${socialLinks.community}" style="background-color: #000; color: #fff; padding: 14px 28px; text-decoration: none; border-radius: 100px; font-weight: 800; font-size: 13px; display: inline-block; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 1px solid #eee;">
+            <div style="margin-bottom: 35px; text-align: center;">
+                <a href="${socialLinks.community}" style="background-color: #000; color: #fff; padding: 18px 45px; text-decoration: none; border-radius: 100px; font-weight: 800; font-size: 14px; display: inline-block; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 2px solid #000;">
                    💎 Entrar na Comunidade VIP
                 </a>
             </div>
 
-            <p style="font-size: 11px; color: #ccc; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">&copy; ${new Date().getFullYear()} Inscreva-se Infrastructure. Excelência em Eventos.</p>
-            <p style="font-size: 10px; color: #eee; line-height: 1.6;">Este é um e-mail transacional. Caso tenha dúvidas, responda a este e-mail ou contacte o nosso suporte oficial.</p>
+            <p style="font-size: 11px; color: #bbb; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;">&copy; ${new Date().getFullYear()} INSCRIVA-SE INFRASTRUCTURE. EXCELÊNCIA EM EVENTOS.</p>
+            <p style="font-size: 10px; color: #ddd; line-height: 1.6; max-width: 450px; margin: auto;">Este é um e-mail transacional. Caso tenha dúvidas, responda a este e-mail ou contacte o nosso suporte oficial.</p>
         </div>
     `;
 };
