@@ -6,7 +6,7 @@ import {
     CheckCircle, Clock, Plus, Activity, X,
     Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase,
     BarChart3, PieChart as PieIcon, Sparkles, Send, Bot, AlertTriangle,
-    ShieldCheck, PiggyBank, HelpCircle, Calendar, MessageSquare
+    ShieldCheck, PiggyBank, HelpCircle, Calendar, MessageSquare, Zap
 } from 'lucide-react';
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -973,29 +973,62 @@ export default function PersonalDashboard() {
                     <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%)', borderRadius: '50%' }} />
                 </div>
                 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.2rem', position: 'relative', zIndex: 1 }}>
-                    <div style={{ position: 'relative' }}>
-                        <Bot size={28} color={conversaModeActive ? '#06b6d4' : '#D4AF37'} style={{ transition: 'color 0.3s' }} />
-                        <div style={{ position: 'absolute', top: -2, right: -2, width: '10px', height: '10px', background: conversaModeActive ? '#06b6d4' : '#FFD700', borderRadius: '50%', border: '2px solid #000', transition: 'background 0.3s' }} />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.2rem', position: 'relative', zIndex: 1 }}>
+                    {/* Left: bot icon + greeting */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ position: 'relative' }}>
+                            <Bot size={28} color={conversaModeActive ? '#06b6d4' : '#D4AF37'} style={{ transition: 'color 0.3s' }} />
+                            <div style={{ position: 'absolute', top: -2, right: -2, width: '10px', height: '10px', background: conversaModeActive ? '#06b6d4' : '#22c55e', borderRadius: '50%', border: '2px solid #000', transition: 'background 0.3s' }} />
+                        </div>
+                        <div>
+                            <span style={{ color: conversaModeActive ? '#06b6d4' : '#D4AF37', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '2px', transition: 'color 0.3s' }}>Olá, {userFirstName}!</span>
+                            <div style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.35)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '1px' }}>
+                                {conversaModeActive ? 'Modo Conversa Activo' : 'Orquestração de Elite'}
+                            </div>
+                        </div>
                     </div>
-                    <span style={{ color: conversaModeActive ? '#06b6d4' : '#D4AF37', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '2px', transition: 'color 0.3s' }}>Olá, {userFirstName}!</span>
-                    {conversaModeActive && (
-                        <div style={{
-                            display: 'flex', alignItems: 'center', gap: '6px',
-                            padding: '4px 12px',
-                            background: 'rgba(6,182,212,0.12)',
-                            border: '1px solid rgba(6,182,212,0.35)',
+
+                    {/* Right: always-visible mode toggle button */}
+                    <button
+                        type="button"
+                        onClick={() => handleAISend(undefined, conversaModeActive ? '/sair' : '/conversa')}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '7px',
+                            padding: '8px 16px',
                             borderRadius: '20px',
-                            color: '#06b6d4',
-                            fontSize: '0.65rem',
+                            border: conversaModeActive
+                                ? '1px solid rgba(239,68,68,0.35)'
+                                : '1px solid rgba(6,182,212,0.35)',
+                            background: conversaModeActive
+                                ? 'rgba(239,68,68,0.08)'
+                                : 'rgba(6,182,212,0.08)',
+                            color: conversaModeActive ? '#ef4444' : '#06b6d4',
+                            fontSize: '0.7rem',
                             fontWeight: 900,
                             textTransform: 'uppercase',
-                            letterSpacing: '1.5px',
-                            animation: 'pulse 2s infinite'
-                        }}>
-                            💬 Modo Conversa
-                        </div>
-                    )}
+                            letterSpacing: '1.2px',
+                            cursor: 'pointer',
+                            transition: 'all 0.25s ease',
+                            whiteSpace: 'nowrap'
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.transform = 'scale(1.04)';
+                            e.currentTarget.style.boxShadow = conversaModeActive
+                                ? '0 0 12px rgba(239,68,68,0.25)'
+                                : '0 0 12px rgba(6,182,212,0.25)';
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.boxShadow = 'none';
+                        }}
+                    >
+                        {conversaModeActive
+                            ? <><Zap size={13} /> Sair da Conversa</>
+                            : <><MessageSquare size={13} /> Modo Conversa</>
+                        }
+                    </button>
                 </div>
 
                 <form onSubmit={handleAISend} className="ai-input-bar" style={{ position: 'relative', display: 'flex', gap: '15px', alignItems: 'center', zIndex: 10 }}>
