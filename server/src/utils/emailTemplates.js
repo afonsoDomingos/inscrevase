@@ -4,6 +4,8 @@ const socialLinks = {
     youtube: "https://www.youtube.com/@Inscreva-se-events",
     facebook: "https://www.facebook.com/people/Inscreva-se/61586427553486/?locale=pt_BR",
     tiktok: "https://www.tiktok.com/@inscreva_se_events",
+    instagram: "https://www.instagram.com/inscreva_se_events/",
+    twitter: "https://x.com/inscreva_se",
     whatsapp: "https://api.whatsapp.com/send/?phone=258856079576&text&type=phone_number&app_absent=0",
     community: "https://chat.whatsapp.com/Cn3tondmipgHTavIhr8zLi"
 };
@@ -13,16 +15,18 @@ const getSocialFooter = () => {
         <div style="margin-top: 45px; text-align: center; padding-top: 40px; border-top: 1px solid #f0f0f0;">
             <p style="font-size: 13px; color: #999; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">Conecte-se com a Elite</p>
             
-            <div style="margin-bottom: 30px;">
+            <div style="margin-bottom: 30px; display: flex; justify-content: center; align-items: center;">
                 ${[
-            ['facebook', 'https://cdn-icons-png.flaticon.com/512/733/733547.png'],
-            ['youtube', 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png'],
-            ['linkedin', 'https://cdn-icons-png.flaticon.com/512/174/174857.png'],
-            ['tiktok', 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png'],
-            ['whatsapp', 'https://cdn-icons-png.flaticon.com/512/733/733585.png']
-        ].map(([platform, icon]) => `
-                    <a href="${socialLinks[platform]}" style="display: inline-block; margin: 0 10px; transition: opacity 0.2s;">
-                        <img src="${icon}" alt="${platform}" style="width: 22px; height: 22px; opacity: 0.8;">
+            ['facebook', 'https://cdn-icons-png.flaticon.com/512/733/733547.png', socialLinks.facebook],
+            ['linkedin', 'https://cdn-icons-png.flaticon.com/512/3536/3536505.png', socialLinks.linkedin],
+            ['twitter', 'https://cdn-icons-png.flaticon.com/512/5968/5968830.png', socialLinks.twitter], 
+            ['instagram', 'https://cdn-icons-png.flaticon.com/512/2111/2111463.png', socialLinks.instagram],
+            ['youtube', 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png', socialLinks.youtube],
+            ['tiktok', 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png', socialLinks.tiktok],
+            ['email', 'https://cdn-icons-png.flaticon.com/512/542/542689.png', 'mailto:geral@inscreva-se.com']
+        ].map(([platform, icon, url]) => `
+                    <a href="${url}" style="display: inline-block; width: 28px; height: 28px; background-color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; margin: 0 4px;">
+                        <img src="${icon}" alt="${platform}" style="width: 12px; height: 12px; filter: brightness(0) invert(1);">
                     </a>
                 `).join('')}
             </div>
