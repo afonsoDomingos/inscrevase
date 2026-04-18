@@ -1705,7 +1705,7 @@ const generateFinancialHealthIncentiveEmail = (name, dashboardUrl) => {
             <div style="background: linear-gradient(135deg, ${accentColor} 0%, #000000 100%); padding: 50px 20px; text-align: center; position: relative; overflow: hidden;">
                 <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
                 <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1;">
-                <h1 style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 20px; letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 1;">Visibilidade é Poder 💎</h1>
+                <h1 style="color: #ffffff; font-size: 20px; font-weight: 900; margin-top: 20px; letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 1;">Controle Total do Seu Império 🏰</h1>
             </div>
 
             <div style="padding: 45px;">
@@ -1713,37 +1713,41 @@ const generateFinancialHealthIncentiveEmail = (name, dashboardUrl) => {
                     <p style="font-size: 18px; color: #111; margin-top: 0; font-weight: 700;">Olá, ${name}.</p>
                     
                     <p style="font-size: 15px; color: #444; line-height: 1.7;">
-                        Sabia que os mentores que acompanham as suas finanças mensalmente têm <strong>3x mais chances</strong> de escalar o seu faturamento?
+                        Muitos produtores e mentores talentosos perdem-se na gestão do dia-a-dia. A ferramenta <strong>Saúde Profissional</strong> não é apenas sobre dinheiro — é sobre ter o comando completo do seu ecossistema.
                     </p>
 
-                    <p style="font-size: 15px; color: #444; line-height: 1.7;">
-                        Muitos profissionais talentosos perdem dinheiro por não saberem exatamente para onde ele vai. A ferramenta <strong>Saúde Profissional</strong> foi desenhada para lhe dar o controlo de elite que o seu negócio merece.
+                    <p style="font-size: 15px; color: #444; line-height: 1.7; margin-bottom: 30px;">
+                        Desenvolvemos um workspace de elite para que possa focar no que realmente importa: <strong>Impactar pessoas e crescer.</strong>
                     </p>
 
-                    <div style="margin: 30px 0; background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #eee;">
+                    <div style="margin: 30px 0; background: #fff; padding: 25px; border-radius: 16px; border: 1px solid #eee;">
                         <ul style="margin: 0; padding: 0; list-style: none;">
-                            <li style="margin-bottom: 12px; display: flex; align-items: flex-start; gap: 10px;">
-                                <span style="background: ${accentColor}; color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">✓</span>
-                                <span style="font-size: 14px; color: #555;"><strong>Gráficos de Lucratividade:</strong> Veja quanto sobra no final do mês.</span>
+                            <li style="margin-bottom: 15px; display: flex; align-items: flex-start; gap: 12px;">
+                                <div style="background: ${accentColor}; color: #000; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">✓</div>
+                                <span style="font-size: 14px; color: #555;"><strong>Gestão de Finanças:</strong> Saiba exatamente quanto entra, quanto sai e qual é a sua lucratividade real.</span>
                             </li>
-                            <li style="margin-bottom: 12px; display: flex; align-items: flex-start; gap: 10px;">
-                                <span style="background: ${accentColor}; color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">✓</span>
-                                <span style="font-size: 14px; color: #555;"><strong>Gestão de Impostos:</strong> Prepare-se antes do final do ano.</span>
+                            <li style="margin-bottom: 15px; display: flex; align-items: flex-start; gap: 12px;">
+                                <div style="background: ${accentColor}; color: #000; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">✓</div>
+                                <span style="font-size: 14px; color: #555;"><strong>Controlo de Clientes:</strong> Tenha uma visão clara de todos os seus leads e mentorados num só lugar.</span>
                             </li>
-                            <li style="margin-bottom: 0; display: flex; align-items: flex-start; gap: 10px;">
-                                <span style="background: ${accentColor}; color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">✓</span>
-                                <span style="font-size: 14px; color: #555;"><strong>Insights da Aura:</strong> Inteligência artificial sugerindo metas de poupança.</span>
+                            <li style="margin-bottom: 15px; display: flex; align-items: flex-start; gap: 12px;">
+                                <div style="background: ${accentColor}; color: #000; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">✓</div>
+                                <span style="font-size: 14px; color: #555;"><strong>Projetos e Tarefas:</strong> Organize o seu fluxo de trabalho e nunca mais perca um prazo importante.</span>
+                            </li>
+                            <li style="margin-bottom: 0; display: flex; align-items: flex-start; gap: 12px;">
+                                <div style="background: ${accentColor}; color: #000; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">✓</div>
+                                <span style="font-size: 14px; color: #555;"><strong>Insights da Aura:</strong> Deixe a nossa IA sugerir metas e detectar gargalos no seu crescimento.</span>
                             </li>
                         </ul>
                     </div>
 
-                    <p style="font-size: 15px; color: #111; font-weight: 700; text-align: center; margin-bottom: 25px;">
-                        Que tal começar hoje com apenas os seus 3 principais custos?
+                    <p style="font-size: 15px; color: #000; font-weight: 700; text-align: center; margin-bottom: 25px;">
+                        O sucesso não acontece por acaso, ele é gerido. Comece agora:
                     </p>
                     
                     <div style="text-align: center;">
                         <a href="${dashboardUrl}" style="background: #000; color: #ffffff; padding: 20px 45px; text-decoration: none; border-radius: 15px; font-weight: 900; font-size: 14px; display: inline-block; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-transform: uppercase; letter-spacing: 1px;">
-                            Ativar Saúde Profissional
+                            Explorar Meu Workspace
                         </a>
                     </div>
                 </div>
