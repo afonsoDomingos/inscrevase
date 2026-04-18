@@ -425,12 +425,23 @@ exports.processAICommand = async (req, res) => {
             if (context.step === 'ask_client_name') {
                 currentData.name = text.trim();
                 newContext = { step: 'ask_client_type', draftData: currentData, draftAction: 'add_client' };
-                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Anotado. O cliente "${currentData.name}" é uma Pessoa Individual ou uma Empresa?` });
+                return res.status(200).json({ 
+                    success: true, 
+                    action: 'ask_info', 
+                    context: newContext, 
+                    options: ['Individual', 'Empresa'],
+                    message: `Anotado. O cliente "${currentData.name}" é uma Pessoa Individual ou uma Empresa?` 
+                });
             }
             if (context.step === 'ask_client_type') {
                 currentData.type = (prompt.includes('empresa') || prompt.includes('firma') || prompt.includes('entidade')) ? 'company' : 'individual';
                 newContext = { step: 'ask_client_phone', draftData: currentData, draftAction: 'add_client' };
-                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é o contacto telefónico para este cliente ${currentData.type === 'company' ? 'empresa' : 'individual'}? (Escreva "não" para saltar)` });
+                return res.status(200).json({ 
+                    success: true, 
+                    action: 'ask_info', 
+                    context: newContext, 
+                    message: `Qual é o contacto telefónico para este cliente ${currentData.type === 'company' ? 'empresa' : 'individual'}? (Escreva "não" para saltar)` 
+                });
             }
             if (context.step === 'ask_client_phone') {
                 if (!prompt.includes('não')) currentData.phone = text.trim();
@@ -447,7 +458,13 @@ exports.processAICommand = async (req, res) => {
             if (context.step === 'ask_task_name') {
                 currentData.title = text.trim();
                 newContext = { step: 'ask_task_priority', draftData: currentData, draftAction: 'add_task' };
-                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é a prioridade para "${currentData.title}"? (Alta, Média ou Baixa)` });
+                return res.status(200).json({ 
+                    success: true, 
+                    action: 'ask_info', 
+                    context: newContext, 
+                    options: ['Alta', 'Média', 'Baixa'],
+                    message: `Qual é a prioridade para "${currentData.title}"? (Escolha abaixo)` 
+                });
             }
             if (context.step === 'ask_task_priority') {
                 currentData.priority = (prompt.includes('alta') || prompt.includes('urgente')) ? 'high' : (prompt.includes('baixa') ? 'low' : 'medium');
@@ -585,7 +602,13 @@ exports.processAICommand = async (req, res) => {
             return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_saving_amount' }, message: `Qual é o valor que deseja alocar à poupança? (Campo Principal)` });
         }
         if (prompt.startsWith('/registar-transação') || prompt.startsWith('/financas')) {
-            return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_finance_type' }, message: `Pretende registar uma Receita ou uma Despesa? (Campo Principal)` });
+            return res.status(200).json({ 
+                success: true, 
+                action: 'ask_info', 
+                context: { step: 'ask_finance_type' }, 
+                options: ['Receita', 'Despesa'],
+                message: `Pretende registar uma Receita ou uma Despesa? (Escolha abaixo)` 
+            });
         }
         if (prompt.startsWith('/novo-projecto') || prompt.startsWith('/projeto')) {
             return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_project_name' }, message: `Excelente iniciativa. Qual é o nome do novo projeto? (Campo Principal)` });

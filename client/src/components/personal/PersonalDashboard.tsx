@@ -231,6 +231,7 @@ interface AICommandAction {
 interface AISuggestion {
     action: 'add_task' | 'add_transaction' | 'add_client' | 'add_saving' | 'add_project' | 'ask_info' | 'show_commands' | 'view_tab';
     data: unknown;
+    options?: string[];
     context?: Record<string, unknown>;
 }
 
@@ -1151,6 +1152,38 @@ export default function PersonalDashboard() {
                                                     <span>{cmd.label}</span>
                                                 </div>
                                                 <span style={{ fontSize: '0.65rem', opacity: 0.6, fontWeight: 500 }}>{cmd.sub}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {aiMessages[aiMessages.length-1].suggestion?.options && (
+                                    <div style={{ marginTop: '1.2rem', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                        {aiMessages[aiMessages.length-1].suggestion!.options!.map(opt => (
+                                            <button 
+                                                key={opt}
+                                                onClick={() => handleAISend(opt)}
+                                                style={{
+                                                    padding: '10px 20px',
+                                                    background: 'rgba(255,215,0,0.05)',
+                                                    border: '1px solid rgba(255,215,0,0.2)',
+                                                    borderRadius: '12px',
+                                                    color: '#FFD700',
+                                                    fontSize: '0.85rem',
+                                                    fontWeight: 700,
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s'
+                                                }}
+                                                onMouseEnter={e => {
+                                                    e.currentTarget.style.background = 'rgba(255,215,0,0.15)';
+                                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                                }}
+                                                onMouseLeave={e => {
+                                                    e.currentTarget.style.background = 'rgba(255,215,0,0.05)';
+                                                    e.currentTarget.style.transform = 'translateY(0)';
+                                                }}
+                                            >
+                                                {opt}
                                             </button>
                                         ))}
                                     </div>
