@@ -15,7 +15,7 @@ interface Insight {
     title: string;
     text: string;
     color: string;
-    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks' | 'social_facebook' | 'social_linkedin' | 'social_youtube' | 'social_tiktok' | 'plans' | 'experts' | 'blog';
+    action?: 'create' | 'settings' | 'referral' | 'ads' | 'smartlinks' | 'social_facebook' | 'social_linkedin' | 'social_youtube' | 'social_tiktok' | 'plans' | 'experts' | 'blog' | 'workspace';
     buttonText?: string;
 }
 
@@ -256,7 +256,18 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                 buttonText: t('dashboard.insights.buttons.blog')
             });
 
-            // 18. Support
+            // 18. Professional Health (Workspace)
+            list.push({
+                id: 'professional_health',
+                icon: <Briefcase className="text-emerald-400" />,
+                title: t('dashboard.insights.professionalHealth.title'),
+                text: t('dashboard.insights.professionalHealth.text'),
+                color: '#34d399',
+                action: 'workspace',
+                buttonText: t('dashboard.insights.buttons.workspace')
+            });
+
+            // 19. Support
             list.push({
                 id: 'support_ready',
                 icon: <MessageSquare className="text-cyan-400" />,
@@ -348,6 +359,13 @@ export default function SmartInsights({ user, stats, forms, onCreateEvent, onOpe
                     onNavigate('blog');
                 } else {
                     router.push('/dashboard/mentor/blog');
+                }
+                break;
+            case 'workspace':
+                if (onNavigate) {
+                    onNavigate('workspace');
+                } else {
+                    router.push('/dashboard/mentor?tab=workspace');
                 }
                 break;
         }

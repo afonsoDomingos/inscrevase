@@ -833,6 +833,10 @@
                 "title": "Learn from Experts",
                 "text": "Explore our blog to discover the best marketing and event management strategies."
             },
+            "professionalHealth": {
+                "title": "Professional Health: Elite Workspace",
+                "text": "Manage finances, clients, projects, and tasks in one place. Total control for your business to scale."
+            },
             "socialFollow": {
                 "title": "Grow with the Community",
                 "text": "Follow our social media for exclusive marketing and event management tips. Click to follow us!"
@@ -847,7 +851,8 @@
                 "social": "Follow",
                 "plans": "View Plans",
                 "experts": "View Experts",
-                "blog": "Read Blog"
+                "blog": "Read Blog",
+                "workspace": "Manage"
             }
         },
         "navigation": "Navigation",

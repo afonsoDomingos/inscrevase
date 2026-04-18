@@ -854,6 +854,10 @@
                 "title": "Aprenda com Especialistas",
                 "text": "Explore o nosso blog para descobrir as melhores estratégias de marketing e gestão de eventos."
             },
+            "professionalHealth": {
+                "title": "Saúde Profissional: Workspace de Elite",
+                "text": "Gerencie finanças, clientes, projetos e tarefas num único lugar. Controle total para o seu negócio escalar."
+            },
             "socialFollow": {
                 "title": "Cresça com a Comunidade",
                 "text": "Siga as nossas redes sociais para dicas exclusivas de marketing e gestão de eventos. Clique para nos acompanhar!"
@@ -868,7 +872,8 @@
                 "social": "Seguir",
                 "plans": "Ver Planos",
                 "experts": "Ver Especialistas",
-                "blog": "Ler Blog"
+                "blog": "Ler Blog",
+                "workspace": "Gerir"
             }
         },
         "navigation": "Navegação",
