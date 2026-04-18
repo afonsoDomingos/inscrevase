@@ -57,7 +57,6 @@ import AdManagement from '@/components/mentor/AdManagement';
 import { SmartLinksManager } from '@/components/mentor/SmartLinksManager';
 import { stripeService } from '@/lib/stripeService';
 import MySalesPanel from '@/components/books/MySalesPanel';
-import { useSearchParams } from 'next/navigation';
 import { pushService } from '@/lib/pushService';
 
 import PlansSection from '@/components/common/PlansSection';
