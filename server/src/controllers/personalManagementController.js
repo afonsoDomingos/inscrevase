@@ -481,8 +481,11 @@ exports.processAICommand = async (req, res) => {
 
             // SAVINGS FLOW: Valor (Principal) -> Objetivo (Principal) -> Data (Opcional)
             if (context.step === 'ask_saving_amount') {
-                const amount = parseFloat(text.replace(',', '.').match(/(\d+(\.\d+)?)/)?.[0] || 0);
-                currentData.amount = amount;
+                const amountStr = text.replace(',', '.').match(/(\d+(\.\d+)?)/)?.[0];
+                if (!amountStr) {
+                    return res.status(200).json({ success: true, action: 'ask_info', context, message: `⚠️ O valor digitado parece inválido. Por favor, indique um valor numérico para a poupança (ex: 500 ou 1.250,50).` });
+                }
+                currentData.amount = parseFloat(amountStr);
                 newContext = { step: 'ask_saving_goal', draftData: currentData, draftAction: 'add_saving' };
                 return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é o objetivo desta poupança? (Principal, ex: Fundo de Reserva, Obra, etc)` });
             }
@@ -509,8 +512,11 @@ exports.processAICommand = async (req, res) => {
                 return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é o orçamento total para o projeto "${currentData.name}"? (Campo Principal)` });
             }
             if (context.step === 'ask_project_budget') {
-                const amount = parseFloat(text.replace(',', '.').match(/(\d+(\.\d+)?)/)?.[0] || 0);
-                currentData.totalBudget = amount;
+                const amountStr = text.replace(',', '.').match(/(\d+(\.\d+)?)/)?.[0];
+                if (!amountStr) {
+                    return res.status(200).json({ success: true, action: 'ask_info', context, message: `⚠️ Não consegui identificar o orçamento. Por favor, digite apenas números (ex: 50000).` });
+                }
+                currentData.totalBudget = parseFloat(amountStr);
                 newContext = { step: 'ask_project_deadline', draftData: currentData, draftAction: 'add_project' };
                 return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é a data prevista para entrega? (Escreva "não" para saltar)` });
             }
@@ -532,7 +538,11 @@ exports.processAICommand = async (req, res) => {
                 return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é o valor da transação? (Campo Principal)` });
             }
             if (context.step === 'ask_finance_amount') {
-                currentData.amount = parseFloat(text.replace(',', '.').match(/(\d+(\.\d+)?)/)?.[0] || 0);
+                const amountStr = text.replace(',', '.').match(/(\d+(\.\d+)?)/)?.[0];
+                if (!amountStr) {
+                    return res.status(200).json({ success: true, action: 'ask_info', context, message: `⚠️ Valor inválido. Preciso de um número para registar a transação. Quanto foi o montante?` });
+                }
+                currentData.amount = parseFloat(amountStr);
                 newContext = { step: 'ask_finance_category', draftData: currentData, draftAction: 'add_transaction' };
                 return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Em que categoria se enquadra? (Campo Principal, ex: Marketing, Tecnologia, Renda)` });
             }
