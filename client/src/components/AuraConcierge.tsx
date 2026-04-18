@@ -420,8 +420,8 @@ export default function AuraConcierge() {
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsOpen(!isOpen)}
                 style={{
-                    width: '45px',
-                    height: '45px',
+                    width: isMobile ? '38px' : '45px',
+                    height: isMobile ? '38px' : '45px',
                     borderRadius: '50%',
                     background: '#000',
                     color: '#FFD700',

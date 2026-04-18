@@ -6,6 +6,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ScrollToTop() {
     const [isVisible, setIsVisible] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         const toggleVisibility = () => {
@@ -38,11 +46,11 @@ export default function ScrollToTop() {
                     title="Scroll to Top"
                     style={{
                         position: 'fixed',
-                        bottom: '30px',
+                        bottom: '20px',
                         right: '20px',
                         zIndex: 1000,
-                        width: '40px',
-                        height: '40px',
+                        width: isMobile ? '38px' : '45px',
+                        height: isMobile ? '38px' : '45px',
                         borderRadius: '50%',
                         background: '#000',
                         color: '#FFD700',
@@ -57,7 +65,7 @@ export default function ScrollToTop() {
                     onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
                     onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                 >
-                    <ChevronUp size={20} strokeWidth={2.5} />
+                    <ChevronUp size={isMobile ? 18 : 22} strokeWidth={2.5} />
                 </motion.button>
             )}
         </AnimatePresence>
