@@ -680,10 +680,12 @@ export default function PersonalDashboard() {
     };
 
     const handleAICancel = () => {
-        setAiMessages([]);
+        setAiMessages(prev => [...prev, { 
+            role: 'bot', 
+            content: "Operação cancelada com sucesso. 🛑\n\nO que vamos orquestrar agora? Estou aqui para ajudar na sua gestão de excelência." 
+        }]);
         setAiInput('');
         setIsAIOptionsOpen(false);
-        toast.info("Processo cancelado. O que vamos orquestrar agora?");
     };
 
     const confirmAISuggestion = async (suggestion: AISuggestion) => {
@@ -692,23 +694,18 @@ export default function PersonalDashboard() {
             let targetTab: ViewMode = 'overview';
             if (suggestion.action === 'add_task') {
                 await personalService.addTask(suggestion.data as Partial<PersonalTask>);
-                toast.success("Tarefa criada por IA!");
                 targetTab = 'tasks';
             } else if (suggestion.action === 'add_transaction') {
                 await personalService.addTransaction(suggestion.data as Partial<PersonalTransaction>);
-                toast.success("Transação registada por IA!");
                 targetTab = 'finance';
             } else if (suggestion.action === 'add_client') {
                 await personalService.addClient(suggestion.data as Partial<PersonalClient>);
-                toast.success("Cliente registado por IA!");
                 targetTab = 'clients';
             } else if (suggestion.action === 'add_saving') {
                 await personalService.addSaving(suggestion.data as Partial<PersonalSaving>);
-                toast.success("Poupança registada por IA!");
                 targetTab = 'savings';
             } else if (suggestion.action === 'add_project') {
                 await personalService.addProject(suggestion.data as Partial<PersonalProject>);
-                toast.success("Projeto criado por IA!");
                 targetTab = 'projects';
             }
             
@@ -719,7 +716,10 @@ export default function PersonalDashboard() {
             }]);
             fetchData();
         } catch {
-            toast.error("Erro ao executar ação da IA");
+            setAiMessages(prev => [...prev, { 
+                role: 'bot', 
+                content: "⚠️ Lamento, mas ocorreu um erro técnico ao tentar processar o registo. Por favor, verifique a conexão ou tente novamente via menu manual." 
+            }]);
         } finally {
             setAiLoading(false);
         }
