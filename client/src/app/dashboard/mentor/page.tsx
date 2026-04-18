@@ -1194,7 +1194,7 @@ function MentorDashboardContent() {
                                     onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                                     onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                                 >
-                                    <Briefcase size={14} color="#FFD700" /> Saúde Prof.
+                                    <Briefcase size={14} color="#FFD700" /> Saúde Profissional
                                 </button>
                             )}
                         </div>
