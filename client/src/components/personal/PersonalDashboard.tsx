@@ -683,7 +683,17 @@ export default function PersonalDashboard() {
         else if (lowerMsg.includes('/registar-transação') || lowerMsg.includes('/financas')) setViewMode('finance');
         else if (lowerMsg.includes('/nova-alocação') || lowerMsg.includes('/poupanca')) setViewMode('savings');
 
-        const currentContext = aiMessages.length > 0 && aiMessages[aiMessages.length-1].role === 'bot' 
+        // Opção de Reset Rápido do Agente
+        if (userMsg.toLowerCase().trim() === '/limpar' || userMsg.toLowerCase().trim() === '/reset') {
+            setAiMessages([]);
+            setAiInput('');
+            setAiLoading(false);
+            toast.success("O Agente foi redefinido com sucesso.");
+            return;
+        }
+
+        const isNewCommand = userMsg.trim().startsWith('/');
+        const currentContext = !isNewCommand && aiMessages.length > 0 && aiMessages[aiMessages.length-1].role === 'bot' 
                                 ? aiMessages[aiMessages.length-1].suggestion?.context 
                                 : undefined;
 
