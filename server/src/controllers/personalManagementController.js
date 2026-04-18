@@ -789,3 +789,18 @@ exports.deleteSaving = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+exports.updateSaving = async (req, res) => {
+    try {
+        const { amount, account, date, description, linkedTransactionId } = req.body;
+        const saving = await PersonalSaving.findOneAndUpdate(
+            { _id: req.params.id, user: req.user.id },
+            { amount, account, date, description, linkedTransactionId },
+            { new: true, runValidators: true }
+        );
+        if (!saving) return res.status(404).json({ success: false, message: 'Registo não encontrado.' });
+        res.status(200).json({ success: true, saving });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

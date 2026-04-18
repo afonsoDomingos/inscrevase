@@ -394,6 +394,7 @@ export default function PersonalDashboard() {
     const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
     const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
     const [editingClientId, setEditingClientId] = useState<string | null>(null);
+    const [editingSavingId, setEditingSavingId] = useState<string | null>(null);
 
 
 
@@ -778,19 +779,42 @@ export default function PersonalDashboard() {
         }
     };
 
+    const openEditSaving = (s: PersonalSaving) => {
+        setEditingSavingId(s._id);
+        setSavingForm({
+            amount: String(s.amount),
+            account: s.account,
+            date: s.date ? s.date.toString().split('T')[0] : new Date().toISOString().split('T')[0],
+            description: s.description || '',
+            linkedTransactionId: s.linkedTransactionId || ''
+        });
+        setIsAddSavingOpen(true);
+    };
+
+    const closeSavingModal = () => {
+        setIsAddSavingOpen(false);
+        setEditingSavingId(null);
+        setSavingForm({ amount: '', account: '', date: new Date().toISOString().split('T')[0], description: '', linkedTransactionId: '' });
+    };
+
     const handleAddSaving = async (e: React.FormEvent) => {
         e.preventDefault();
+        const payload = {
+            amount: parseFloat(savingForm.amount),
+            account: savingForm.account,
+            date: savingForm.date,
+            description: savingForm.description || '',
+            linkedTransactionId: savingForm.linkedTransactionId || undefined
+        };
         try {
-            await personalService.addSaving({
-                amount: parseFloat(savingForm.amount),
-                account: savingForm.account,
-                date: savingForm.date,
-                description: savingForm.description || '',
-                linkedTransactionId: savingForm.linkedTransactionId || undefined
-            });
-            toast.success("Poupança registada com sucesso!");
-            setIsAddSavingOpen(false);
-            setSavingForm({ amount: '', account: '', date: new Date().toISOString().split('T')[0], description: '', linkedTransactionId: '' });
+            if (editingSavingId) {
+                await personalService.updateSaving(editingSavingId, payload);
+                toast.success("Poupança actualizada!");
+            } else {
+                await personalService.addSaving(payload);
+                toast.success("Poupança registada com sucesso!");
+            }
+            closeSavingModal();
             fetchData(false);
         } catch {
             toast.error("Erro ao guardar poupança");
@@ -1812,9 +1836,10 @@ export default function PersonalDashboard() {
                                             </td>
                                             <td style={{ padding: '18px 24px', textAlign: 'right', fontWeight: 800 }}>{formatPrice(s.amount, 'MZN')}</td>
                                             <td style={{ padding: '18px 24px', textAlign: 'center' }}>
-                                                <button onClick={() => handleDeleteSaving(s._id)} style={{ padding: '8px', color: '#ef4444', background: 'transparent', border: 'none', cursor: 'pointer', opacity: 0.5 }}>
-                                                    <Trash2 size={16} />
-                                                </button>
+                                                <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }}>
+                                                    <button onClick={() => openEditSaving(s)} style={iconBtnStyle}><Edit3 size={15} /></button>
+                                                    <button onClick={() => handleDeleteSaving(s._id)} style={{...iconBtnStyle, color: '#ef4444'}}><Trash2 size={15} /></button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
@@ -2143,7 +2168,7 @@ export default function PersonalDashboard() {
 
             {/* Savings Modal */}
             {isAddSavingOpen && (
-                <Modal title="Registar Nova Poupança" onClose={() => setIsAddSavingOpen(false)} onSubmit={handleAddSaving}>
+                <Modal title={editingSavingId ? "Editar Poupança" : "Registar Nova Poupança"} onClose={closeSavingModal} onSubmit={handleAddSaving}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                         <Field label="Valor da Poupança">
                             <StyledInput type="number" step="0.01" placeholder="0.00" required value={savingForm.amount} onChange={e => setSavingForm({ ...savingForm, amount: e.target.value })} />

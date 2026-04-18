@@ -100,6 +100,13 @@ export const personalService = {
         });
         return res.data.saving;
     },
+    updateSaving: async (id: string, data: Partial<PersonalSaving>) => {
+        const token = authService.getToken();
+        const res = await axios.patch(`${API_URL}/personal/savings/${id}`, data, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.saving;
+    },
     deleteSaving: async (id: string) => {
         const token = authService.getToken();
         await axios.delete(`${API_URL}/personal/savings/${id}`, {

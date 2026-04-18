@@ -38,6 +38,7 @@ router.get('/reports', personalManagementController.getReportData);
 // --- SAVINGS ---
 router.get('/savings', personalManagementController.getSavings);
 router.post('/savings', personalManagementController.addSaving);
+router.patch('/savings/:id', personalManagementController.updateSaving);
 router.delete('/savings/:id', personalManagementController.deleteSaving);
 
 // --- AI ASSISTANT ---
