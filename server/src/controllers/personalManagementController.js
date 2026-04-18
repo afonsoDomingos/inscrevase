@@ -421,11 +421,16 @@ exports.processAICommand = async (req, res) => {
             let currentData = context.draftData || {};
             let newContext = null;
 
-            // CLIENT FLOW: Nome (Principal) -> Contacto (Opcional) -> Email (Opcional)
+            // CLIENT FLOW: Nome (Principal) -> Tipo (Principal) -> Contacto (Opcional) -> Email (Opcional)
             if (context.step === 'ask_client_name') {
                 currentData.name = text.trim();
+                newContext = { step: 'ask_client_type', draftData: currentData, draftAction: 'add_client' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Anotado. O cliente "${currentData.name}" é uma Pessoa Individual ou uma Empresa?` });
+            }
+            if (context.step === 'ask_client_type') {
+                currentData.type = (prompt.includes('empresa') || prompt.includes('firma') || prompt.includes('entidade')) ? 'company' : 'individual';
                 newContext = { step: 'ask_client_phone', draftData: currentData, draftAction: 'add_client' };
-                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Anotado. Qual é o contacto telefónico de "${currentData.name}"? (Escreva "não" para saltar)` });
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é o contacto telefónico para este cliente ${currentData.type === 'company' ? 'empresa' : 'individual'}? (Escreva "não" para saltar)` });
             }
             if (context.step === 'ask_client_phone') {
                 if (!prompt.includes('não')) currentData.phone = text.trim();
@@ -434,33 +439,44 @@ exports.processAICommand = async (req, res) => {
             }
             if (context.step === 'ask_client_email') {
                 if (!prompt.includes('não')) currentData.email = text.trim();
-                const summary = `Nome: ${currentData.name}${currentData.phone ? ` | Tel: ${currentData.phone}` : ''}${currentData.email ? ` | Email: ${currentData.email}` : ''}`;
-                return res.status(200).json({ success: true, action: 'add_client', data: currentData, message: `Excelente! Confirmar registo do Cliente?\n\n📁 **Resumo:** ${summary}` });
+                const summary = `Nome: ${currentData.name} (${currentData.type === 'company' ? 'Empresa' : 'Individual'})${currentData.phone ? ` | Tel: ${currentData.phone}` : ''}${currentData.email ? ` | Email: ${currentData.email}` : ''}`;
+                return res.status(200).json({ success: true, action: 'add_client', data: currentData, message: `Excelente! Confirmar registo do Cliente?\n\n📁 Resumo: ${summary}` });
             }
 
-            // TASK FLOW: Nome (Principal) -> Descrição (Opcional) -> Data Limite (Opcional) -> Cliente (Opcional)
+            // TASK FLOW: Nome (Principal) -> Prioridade (Principal) -> Descrição (Opcional) -> Data Limite (Opcional) -> Cliente (Opcional)
             if (context.step === 'ask_task_name') {
                 currentData.title = text.trim();
+                newContext = { step: 'ask_task_priority', draftData: currentData, draftAction: 'add_task' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é a prioridade para "${currentData.title}"? (Alta, Média ou Baixa)` });
+            }
+            if (context.step === 'ask_task_priority') {
+                currentData.priority = (prompt.includes('alta') || prompt.includes('urgente')) ? 'high' : (prompt.includes('baixa') ? 'low' : 'medium');
                 newContext = { step: 'ask_task_desc', draftData: currentData, draftAction: 'add_task' };
-                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Deseja adicionar uma descrição para "${currentData.title}"? (Escreva "não" para saltar)` });
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Deseja adicionar uma descrição curta? (Escreva "não" para saltar)` });
             }
             if (context.step === 'ask_task_desc') {
                 if (!prompt.includes('não')) currentData.description = text.trim();
                 newContext = { step: 'ask_task_deadline', draftData: currentData, draftAction: 'add_task' };
-                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é a data limite para esta tarefa? (Ex: hoje, 2024-12-31. Escreva "não" para saltar)` });
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é a data limite para esta tarefa? (Ex: hoje, amanhã, 2026-12-31. "não" para saltar)` });
             }
             if (context.step === 'ask_task_deadline') {
                 if (!prompt.includes('não')) {
                     if (prompt.includes('hoje')) currentData.deadline = new Date().toISOString().split('T')[0];
+                    else if (prompt.includes('amanhã')) {
+                        const tomorrow = new Date();
+                        tomorrow.setDate(tomorrow.getDate() + 1);
+                        currentData.deadline = tomorrow.toISOString().split('T')[0];
+                    }
                     else currentData.deadline = text.trim();
                 }
                 newContext = { step: 'ask_task_client', draftData: currentData, draftAction: 'add_task' };
-                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Deseja associar esta tarefa a algum cliente? (Escreva o nome ou "não" para saltar)` });
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Deseja associar a algum cliente? (Indique o nome ou "não" para saltar)` });
             }
             if (context.step === 'ask_task_client') {
                 if (!prompt.includes('não')) currentData.clientName = text.trim();
-                const summary = `Tarefa: ${currentData.title}${currentData.deadline ? ` | Prazo: ${currentData.deadline}` : ''}${currentData.clientName ? ` | Cliente: ${currentData.clientName}` : ''}`;
-                return res.status(200).json({ success: true, action: 'add_task', data: currentData, message: `Tudo orquestrado! Confirmar registo da tarefa?\n\n📌 **Resumo:** ${summary}` });
+                const prioLabel = currentData.priority === 'high' ? 'Alta' : currentData.priority === 'low' ? 'Baixa' : 'Média';
+                const summary = `Tarefa: ${currentData.title} | Prioridade: ${prioLabel}${currentData.deadline ? ` | Prazo: ${currentData.deadline}` : ''}${currentData.clientName ? ` | Cliente: ${currentData.clientName}` : ''}`;
+                return res.status(200).json({ success: true, action: 'add_task', data: currentData, message: `Tudo orquestrado! Confirmar registo da tarefa?\n\n📌 Resumo: ${summary}` });
             }
 
             // SAVINGS FLOW: Valor (Principal) -> Objetivo (Principal) -> Data (Opcional)
@@ -481,9 +497,14 @@ exports.processAICommand = async (req, res) => {
                 return res.status(200).json({ success: true, action: 'add_saving', data: currentData, message: `Confirmar alocação de ${currentData.amount} MZN para o objetivo "${currentData.account}"?` });
             }
 
-            // PROJECT FLOW: Nome (Principal) -> Orçamento (Principal) -> Data Limite (Opcional) -> Cliente (Opcional)
+            // PROJECT FLOW: Nome (Principal) -> Descrição (Opcional) -> Orçamento (Principal) -> Data Limite (Opcional) -> Cliente (Opcional)
             if (context.step === 'ask_project_name') {
                 currentData.name = text.trim();
+                newContext = { step: 'ask_project_desc', draftData: currentData, draftAction: 'add_project' };
+                return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Deseja adicionar um breve contexto ou descrição para "${currentData.name}"? (Escreva "não" para saltar)` });
+            }
+            if (context.step === 'ask_project_desc') {
+                if (!prompt.includes('não')) currentData.description = text.trim();
                 newContext = { step: 'ask_project_budget', draftData: currentData, draftAction: 'add_project' };
                 return res.status(200).json({ success: true, action: 'ask_info', context: newContext, message: `Qual é o orçamento total para o projeto "${currentData.name}"? (Campo Principal)` });
             }
