@@ -1100,100 +1100,104 @@ function MentorDashboardContent() {
                         paddingBottom: isMobile ? '5px' : '0',
                         alignItems: 'center'
                     }}>
-                        <Link
-                            href="/"
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                padding: '0.75rem 1.25rem',
-                                borderRadius: '12px',
-                                background: 'rgba(0,0,0,0.03)',
-                                border: '1px solid rgba(0,0,0,0.05)',
-                                color: 'var(--foreground)',
-                                fontWeight: 700,
-                                fontSize: '0.85rem',
-                                textDecoration: 'none',
-                                transition: 'all 0.3s'
-                            }}
-                            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                            onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                        >
-                            <ArrowRight size={18} /> {!isMobile && t('nav.home')}
-                        </Link>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.5rem', flexWrap: 'nowrap' }}>
+                            <Link
+                                href="/"
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '8px',
+                                    padding: isMobile ? '0 0.6rem' : '0.75rem 1.25rem',
+                                    borderRadius: '12px',
+                                    background: 'rgba(0,0,0,0.03)',
+                                    border: '1px solid rgba(0,0,0,0.05)',
+                                    color: 'var(--foreground)',
+                                    fontWeight: 700,
+                                    fontSize: '0.85rem',
+                                    textDecoration: 'none',
+                                    transition: 'all 0.3s',
+                                    height: isMobile ? '36px' : '40px'
+                                }}
+                                onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                                onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                            >
+                                <ArrowRight size={18} /> {!isMobile && t('nav.home')}
+                            </Link>
 
-                        {user.canCreateEvents !== false && (user.isEmailVerified || user.role === 'admin' || user.role === 'SuperAdmin') ? (
-                            <Tooltip content={t('common.createEvent')}>
+                            {user.canCreateEvents !== false && (user.isEmailVerified || user.role === 'admin' || user.role === 'SuperAdmin') ? (
+                                <Tooltip content={t('common.createEvent')}>
+                                    <button
+                                        onClick={() => setIsEventModalOpen(true)}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: isMobile ? '4px' : '8px',
+                                            padding: isMobile ? '0 0.5rem' : '0.5rem 1rem',
+                                            background: 'var(--gold-gradient)',
+                                            border: 'none',
+                                            borderRadius: '10px',
+                                            color: '#000',
+                                            fontWeight: 800,
+                                            cursor: 'pointer',
+                                            boxShadow: '0 4px 15px rgba(212,175,55,0.3)',
+                                            transition: 'all 0.3s',
+                                            fontSize: isMobile ? '0.7rem' : '0.9rem',
+                                            whiteSpace: 'nowrap',
+                                            height: isMobile ? '36px' : '40px'
+                                        }}
+                                        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                    >
+                                        <Plus size={isMobile ? 14 : 18} /> {t('common.createEvent')}
+                                    </button>
+                                </Tooltip>
+                            ) : (
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    padding: '0 0.5rem',
+                                    background: isAdmin ? 'var(--gold-gradient)' : '#fff5f5',
+                                    border: isAdmin ? 'none' : '1px solid #fed7d7',
+                                    borderRadius: '10px',
+                                    color: isAdmin ? '#000' : '#c53030',
+                                    fontWeight: 800,
+                                    fontSize: isMobile ? '0.7rem' : '0.9rem',
+                                    height: isMobile ? '36px' : '40px',
+                                    whiteSpace: 'nowrap'
+                                }}>
+                                    {!isAdmin && <Lock size={isMobile ? 14 : 16} />} {user.isEmailVerified || isAdmin ? t('dashboard.restrictedAccess') : t('dashboard.emailUnverified')}
+                                </div>
+                            )}
+
+                            {isMobile && (
                                 <button
-                                    onClick={() => setIsEventModalOpen(true)}
+                                    onClick={() => { setActiveTab('workspace'); }}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '8px',
-                                        padding: '0.5rem 1rem',
-                                        background: 'var(--gold-gradient)',
-                                        border: 'none',
+                                        gap: '4px',
+                                        padding: '0 0.6rem',
+                                        background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)',
+                                        border: '1px solid rgba(255, 215, 0, 0.4)',
                                         borderRadius: '10px',
-                                        color: '#000',
-                                        fontWeight: 700,
+                                        color: '#FFD700',
+                                        fontWeight: 800,
                                         cursor: 'pointer',
-                                        boxShadow: '0 4px 15px rgba(212,175,55,0.3)',
-                                        transition: 'all 0.3s',
-                                        fontSize: isMobile ? '0.75rem' : '0.9rem',
+                                        transition: 'transform 0.2s',
+                                        fontSize: '0.7rem',
                                         whiteSpace: 'nowrap',
-                                        height: isMobile ? '36px' : '40px'
+                                        height: '36px',
+                                        boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
                                     }}
                                     onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                                     onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                                 >
-                                    <Plus size={18} /> {t('common.createEvent')}
+                                    <Briefcase size={14} color="#FFD700" /> Saúde Prof.
                                 </button>
-                            </Tooltip>
-                        ) : (
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                padding: '0.5rem 1rem',
-                                background: isAdmin ? 'var(--gold-gradient)' : '#fff5f5',
-                                border: isAdmin ? 'none' : '1px solid #fed7d7',
-                                borderRadius: '10px',
-                                color: isAdmin ? '#000' : '#c53030',
-                                fontWeight: 700,
-                                fontSize: isMobile ? '0.8rem' : '0.9rem',
-                                height: '40px',
-                                whiteSpace: 'nowrap'
-                            }}>
-                                {!isAdmin && <Lock size={16} />} {user.isEmailVerified || isAdmin ? t('dashboard.restrictedAccess') : t('dashboard.emailUnverified')}
-                            </div>
-                        )}
-
-                        {isMobile && (
-                            <button
-                                onClick={() => { setActiveTab('workspace'); }}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    padding: '0.5rem 0.75rem',
-                                    background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)',
-                                    border: '1px solid rgba(255, 215, 0, 0.4)',
-                                    borderRadius: '10px',
-                                    color: '#FFD700',
-                                    fontWeight: 800,
-                                    cursor: 'pointer',
-                                    transition: 'transform 0.2s',
-                                    fontSize: '0.75rem',
-                                    whiteSpace: 'nowrap',
-                                    height: '36px',
-                                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
-                                }}
-                                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                            >
-                                <Briefcase size={14} color="#FFD700" /> Saúde Profissional
-                            </button>
-                        )}
+                            )}
+                        </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.5rem' }}>
                             <LanguageSwitcher />
                             <CurrencySwitcher />
