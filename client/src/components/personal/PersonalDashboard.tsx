@@ -222,6 +222,12 @@ const DASHBOARD_TABS = [
     { id: 'reports' as ViewMode, label: 'Análises', icon: BarChart3 },
 ];
 
+interface AICommandAction {
+    id: string;
+    label: string;
+    sub: string;
+}
+
 interface AISuggestion {
     action: 'add_task' | 'add_transaction' | 'add_client' | 'add_saving' | 'add_project' | 'ask_info' | 'show_commands';
     data: unknown;
@@ -1060,7 +1066,7 @@ export default function PersonalDashboard() {
                                         gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
                                         gap: '10px' 
                                     }}>
-                                        {(aiMessages[aiMessages.length-1].suggestion?.data as any[]).map(cmd => (
+                                        {(aiMessages[aiMessages.length-1].suggestion?.data as AICommandAction[]).map(cmd => (
                                             <button 
                                                 key={cmd.id}
                                                 onClick={() => handleAISend(undefined, cmd.id)}
