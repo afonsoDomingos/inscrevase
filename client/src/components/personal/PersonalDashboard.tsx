@@ -419,6 +419,7 @@ export default function PersonalDashboard() {
     const [aiMessages, setAiMessages] = useState<{ role: 'user' | 'bot'; content: string; suggestion?: AISuggestion | null }[]>([]);
     const [aiLoading, setAiLoading] = useState(false);
     const [isAIOptionsOpen, setIsAIOptionsOpen] = useState(false);
+    const [draftEdit, setDraftEdit] = useState<Record<string, string>>({});
     
     // Obter nome do utilizador para saudação
     const user = authService.getCurrentUser();
@@ -730,22 +731,28 @@ export default function PersonalDashboard() {
 
     const confirmAISuggestion = async (suggestion: AISuggestion) => {
         setAiLoading(true);
+        // Merge any inline edits from draftEdit into the suggestion data
+        const mergedData = { ...(suggestion.data as Record<string, unknown>), ...draftEdit };
+        // Convert numeric fields back to numbers
+        if (mergedData.amount) mergedData.amount = parseFloat(mergedData.amount as string) || mergedData.amount;
+        if (mergedData.totalBudget) mergedData.totalBudget = parseFloat(mergedData.totalBudget as string) || mergedData.totalBudget;
+        setDraftEdit({});
         try {
             let targetTab: ViewMode = 'overview';
             if (suggestion.action === 'add_task') {
-                await personalService.addTask(suggestion.data as Partial<PersonalTask>);
+                await personalService.addTask(mergedData as Partial<PersonalTask>);
                 targetTab = 'tasks';
             } else if (suggestion.action === 'add_transaction') {
-                await personalService.addTransaction(suggestion.data as Partial<PersonalTransaction>);
+                await personalService.addTransaction(mergedData as Partial<PersonalTransaction>);
                 targetTab = 'finance';
             } else if (suggestion.action === 'add_client') {
-                await personalService.addClient(suggestion.data as Partial<PersonalClient>);
+                await personalService.addClient(mergedData as Partial<PersonalClient>);
                 targetTab = 'clients';
             } else if (suggestion.action === 'add_saving') {
-                await personalService.addSaving(suggestion.data as Partial<PersonalSaving>);
+                await personalService.addSaving(mergedData as Partial<PersonalSaving>);
                 targetTab = 'savings';
             } else if (suggestion.action === 'add_project') {
-                await personalService.addProject(suggestion.data as Partial<PersonalProject>);
+                await personalService.addProject(mergedData as Partial<PersonalProject>);
                 targetTab = 'projects';
             }
             
@@ -1146,41 +1153,112 @@ export default function PersonalDashboard() {
                                 {(aiMessages[aiMessages.length-1].suggestion && 
                                   aiMessages[aiMessages.length-1].suggestion!.action !== 'ask_info' && 
                                   aiMessages[aiMessages.length-1].suggestion!.action !== 'show_commands' &&
-                                  aiMessages[aiMessages.length-1].suggestion!.action !== 'view_tab') && (
-                                    <div style={{ marginTop: '1rem', display: 'flex', gap: '12px' }}>
-                                        <button 
-                                            onClick={() => confirmAISuggestion(aiMessages[aiMessages.length-1].suggestion!)}
-                                            style={{
-                                                padding: '12px 24px',
-                                                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                                                color: '#fff', border: 'none', borderRadius: '14px',
-                                                fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer',
-                                                display: 'flex', alignItems: 'center', gap: '8px',
-                                                boxShadow: '0 8px 16px rgba(16,185,129,0.2)', transition: 'all 0.2s ease'
-                                            }}
-                                            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                                            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                                        >
-                                            <CheckCircle size={16} /> Confirmar Execução
-                                        </button>
-                                        <button 
-                                            onClick={() => setAiMessages(prev => prev.slice(0, -1))}
-                                            style={{
-                                                padding: '12px 24px',
-                                                background: 'rgba(255,255,255,0.03)',
-                                                color: 'rgba(255,255,255,0.7)',
-                                                border: '1px solid rgba(255,255,255,0.1)',
-                                                borderRadius: '14px',
-                                                fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer',
-                                                transition: 'all 0.2s ease'
-                                            }}
-                                            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
-                                            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
-                                        >
-                                            Cancelar
-                                        </button>
-                                    </div>
-                                )}
+                                  aiMessages[aiMessages.length-1].suggestion!.action !== 'view_tab') && (() => {
+                                    const sug = aiMessages[aiMessages.length-1].suggestion!;
+                                    const d = sug.data as Record<string, unknown>;
+                                    // Define editable fields per action type
+                                    const fieldMap: Record<string, Array<{key: string; label: string; type?: string; options?: string[]}>> = {
+                                        add_task: [
+                                            { key: 'title', label: 'Título' },
+                                            { key: 'priority', label: 'Prioridade', options: ['low', 'medium', 'high'] },
+                                            { key: 'deadline', label: 'Prazo', type: 'date' },
+                                        ],
+                                        add_transaction: [
+                                            { key: 'amount', label: 'Valor', type: 'number' },
+                                            { key: 'category', label: 'Categoria' },
+                                            { key: 'date', label: 'Data', type: 'date' },
+                                        ],
+                                        add_project: [
+                                            { key: 'name', label: 'Nome' },
+                                            { key: 'totalBudget', label: 'Orçamento', type: 'number' },
+                                            { key: 'deadline', label: 'Prazo', type: 'date' },
+                                        ],
+                                        add_client: [
+                                            { key: 'name', label: 'Nome' },
+                                            { key: 'email', label: 'E-mail', type: 'email' },
+                                            { key: 'phone', label: 'Telefone' },
+                                        ],
+                                        add_saving: [
+                                            { key: 'amount', label: 'Valor', type: 'number' },
+                                            { key: 'account', label: 'Conta / Destino' },
+                                            { key: 'date', label: 'Data', type: 'date' },
+                                        ],
+                                    };
+                                    const fields = fieldMap[sug.action] || [];
+                                    const priorityLabels: Record<string, string> = { low: 'Baixa', medium: 'Média', high: 'Alta' };
+                                    return (
+                                        <div style={{ marginTop: '1.2rem' }}>
+                                            {fields.length > 0 && (
+                                                <div style={{ marginBottom: '1rem', borderRadius: '12px', border: '1px solid rgba(255,215,0,0.12)', background: 'rgba(255,215,0,0.04)', padding: '12px 14px' }}>
+                                                    <div style={{ fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#FFD700', opacity: 0.6, marginBottom: '10px' }}>✏️ Editar antes de confirmar</div>
+                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                                        {fields.map(f => {
+                                                            const currentVal = String((draftEdit[f.key] !== undefined ? draftEdit[f.key] : d?.[f.key]) ?? '');
+                                                            if (f.options) {
+                                                                return (
+                                                                    <div key={f.key}>
+                                                                        <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '3px' }}>{f.label}</div>
+                                                                        <select
+                                                                            value={currentVal}
+                                                                            onChange={e => setDraftEdit(prev => ({ ...prev, [f.key]: e.target.value }))}
+                                                                            style={{ width: '100%', padding: '6px 10px', borderRadius: '8px', border: '1px solid rgba(255,215,0,0.2)', background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: '0.8rem', cursor: 'pointer' }}
+                                                                        >
+                                                                            {f.options.map(o => <option key={o} value={o}>{priorityLabels[o] || o}</option>)}
+                                                                        </select>
+                                                                    </div>
+                                                                );
+                                                            }
+                                                            return (
+                                                                <div key={f.key}>
+                                                                    <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '3px' }}>{f.label}</div>
+                                                                    <input
+                                                                        type={f.type || 'text'}
+                                                                        value={currentVal}
+                                                                        onChange={e => setDraftEdit(prev => ({ ...prev, [f.key]: e.target.value }))}
+                                                                        style={{ width: '100%', padding: '6px 10px', borderRadius: '8px', border: '1px solid rgba(255,215,0,0.2)', background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: '0.8rem', boxSizing: 'border-box' }}
+                                                                    />
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            <div style={{ display: 'flex', gap: '12px' }}>
+                                                <button 
+                                                    onClick={() => confirmAISuggestion(sug)}
+                                                    style={{
+                                                        padding: '12px 24px',
+                                                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                                        color: '#fff', border: 'none', borderRadius: '14px',
+                                                        fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer',
+                                                        display: 'flex', alignItems: 'center', gap: '8px',
+                                                        boxShadow: '0 8px 16px rgba(16,185,129,0.2)', transition: 'all 0.2s ease'
+                                                    }}
+                                                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                >
+                                                    <CheckCircle size={16} /> Confirmar Execução
+                                                </button>
+                                                <button 
+                                                    onClick={() => { setAiMessages(prev => prev.slice(0, -1)); setDraftEdit({}); }}
+                                                    style={{
+                                                        padding: '12px 24px',
+                                                        background: 'rgba(255,255,255,0.03)',
+                                                        color: 'rgba(255,255,255,0.7)',
+                                                        border: '1px solid rgba(255,255,255,0.1)',
+                                                        borderRadius: '14px',
+                                                        fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer',
+                                                        transition: 'all 0.2s ease'
+                                                    }}
+                                                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
+                                                    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
+                                                >
+                                                    Cancelar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                  })()}
 
                                 {aiMessages[aiMessages.length-1].suggestion?.action === 'show_commands' && (
                                     <div style={{ 
