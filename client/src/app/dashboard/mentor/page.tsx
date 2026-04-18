@@ -58,6 +58,7 @@ import {
     Copy,
     Trash2,
     User as UserIcon,
+    Home,
     Palette,
     DollarSign,
     PieChart,
@@ -1122,7 +1123,7 @@ function MentorDashboardContent() {
                                 onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
                                 onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                             >
-                                <ArrowRight size={18} /> {!isMobile && t('nav.home')}
+                                <Home size={18} /> {!isMobile && t('nav.home')}
                             </Link>
 
                             {user.canCreateEvents !== false && (user.isEmailVerified || user.role === 'admin' || user.role === 'SuperAdmin') ? (
