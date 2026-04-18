@@ -1713,30 +1713,42 @@ const generateFinancialHealthIncentiveEmail = (name, dashboardUrl) => {
                     <p style="font-size: 18px; color: #111; margin-top: 0; font-weight: 700;">Olá, ${name}.</p>
                     
                     <p style="font-size: 15px; color: #444; line-height: 1.7;">
-                        Muitos produtores e mentores talentosos perdem-se na gestão do dia-a-dia. A ferramenta <strong>Saúde Profissional</strong> não é apenas sobre dinheiro — é sobre ter o comando completo do seu ecossistema.
+                        Muitos <strong>Profissionais</strong> talentosos perdem-se na gestão do dia-a-dia. A ferramenta <strong>Saúde Profissional</strong> não é apenas sobre dinheiro — é sobre ter o comando completo do seu ecossistema.
                     </p>
 
                     <p style="font-size: 15px; color: #444; line-height: 1.7; margin-bottom: 30px;">
                         Desenvolvemos um workspace de elite para que possa focar no que realmente importa: <strong>Impactar pessoas e crescer.</strong>
                     </p>
 
-                    <div style="margin: 30px 0; background: #fff; padding: 25px; border-radius: 16px; border: 1px solid #eee;">
+                    <div style="margin: 30px 0; background: #ffffff; padding: 25px; border-radius: 20px; border: 1px solid #f0f0f0; box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
                         <ul style="margin: 0; padding: 0; list-style: none;">
-                            <li style="margin-bottom: 15px; display: flex; align-items: flex-start; gap: 12px;">
-                                <div style="background: ${accentColor}; color: #000; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">✓</div>
-                                <span style="font-size: 14px; color: #555;"><strong>Gestão de Finanças:</strong> Saiba exatamente quanto entra, quanto sai e qual é a sua lucratividade real.</span>
+                            <li style="margin-bottom: 20px; display: flex; align-items: flex-start; gap: 15px;">
+                                <div style="background: linear-gradient(135deg, ${accentColor} 0%, #B8860B 100%); color: #000; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);">📊</div>
+                                <div style="padding-top: 2px;">
+                                    <span style="font-size: 15px; color: #111; font-weight: 700; display: block; margin-bottom: 2px;">Gestão de Finanças</span>
+                                    <span style="font-size: 13px; color: #666; line-height: 1.4;">Controlo total de entradas, saídas e a sua lucratividade real.</span>
+                                </div>
                             </li>
-                            <li style="margin-bottom: 15px; display: flex; align-items: flex-start; gap: 12px;">
-                                <div style="background: ${accentColor}; color: #000; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">✓</div>
-                                <span style="font-size: 14px; color: #555;"><strong>Controlo de Clientes:</strong> Tenha uma visão clara de todos os seus leads e mentorados num só lugar.</span>
+                            <li style="margin-bottom: 20px; display: flex; align-items: flex-start; gap: 15px;">
+                                <div style="background: linear-gradient(135deg, ${accentColor} 0%, #B8860B 100%); color: #000; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);">👥</div>
+                                <div style="padding-top: 2px;">
+                                    <span style="font-size: 15px; color: #111; font-weight: 700; display: block; margin-bottom: 2px;">Controlo de Clientes</span>
+                                    <span style="font-size: 13px; color: #666; line-height: 1.4;">Visão centralizada de todos os seus leads e mentorados.</span>
+                                </div>
                             </li>
-                            <li style="margin-bottom: 15px; display: flex; align-items: flex-start; gap: 12px;">
-                                <div style="background: ${accentColor}; color: #000; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">✓</div>
-                                <span style="font-size: 14px; color: #555;"><strong>Projetos e Tarefas:</strong> Organize o seu fluxo de trabalho e nunca mais perca um prazo importante.</span>
+                            <li style="margin-bottom: 20px; display: flex; align-items: flex-start; gap: 15px;">
+                                <div style="background: linear-gradient(135deg, ${accentColor} 0%, #B8860B 100%); color: #000; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);">🚀</div>
+                                <div style="padding-top: 2px;">
+                                    <span style="font-size: 15px; color: #111; font-weight: 700; display: block; margin-bottom: 2px;">Projetos e Tarefas</span>
+                                    <span style="font-size: 13px; color: #666; line-height: 1.4;">Organização implacável para nunca mais falhar um prazo.</span>
+                                </div>
                             </li>
-                            <li style="margin-bottom: 0; display: flex; align-items: flex-start; gap: 12px;">
-                                <div style="background: ${accentColor}; color: #000; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">✓</div>
-                                <span style="font-size: 14px; color: #555;"><strong>Insights da Aura:</strong> Deixe a nossa IA sugerir metas e detectar gargalos no seu crescimento.</span>
+                            <li style="margin-bottom: 0; display: flex; align-items: flex-start; gap: 15px;">
+                                <div style="background: linear-gradient(135deg, ${accentColor} 0%, #B8860B 100%); color: #000; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);">✨</div>
+                                <div style="padding-top: 2px;">
+                                    <span style="font-size: 15px; color: #111; font-weight: 700; display: block; margin-bottom: 2px;">Insights da Aura</span>
+                                    <span style="font-size: 13px; color: #666; line-height: 1.4;">IA a prever o seu próximo passo para escalar o negócio.</span>
+                                </div>
                             </li>
                         </ul>
                     </div>
