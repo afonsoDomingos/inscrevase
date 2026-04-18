@@ -36,6 +36,27 @@ interface ReportData {
 
 /* --- Shared styled sub-components --- */
 
+const TypewriterText = ({ text }: { text: string }) => {
+    const [displayedText, setDisplayedText] = useState('');
+    
+    useEffect(() => {
+        setDisplayedText('');
+        let i = 0;
+        const interval = setInterval(() => {
+            if (i < text.length) {
+                // Use a functional update to safely append the next character
+                setDisplayedText(prev => text.substring(0, prev.length + 1));
+                i++;
+            } else {
+                clearInterval(interval);
+            }
+        }, 12); // Typing speed in ms
+        return () => clearInterval(interval);
+    }, [text]);
+
+    return <>{displayedText}</>;
+};
+
 const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: '12px 16px',
@@ -1085,7 +1106,9 @@ export default function PersonalDashboard() {
                                 <Bot size={22} />
                             </div>
                             <div style={{ flex: 1 }}>
-                                <p style={{ margin: 0, color: '#fff', fontSize: '0.95rem', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>{aiMessages[aiMessages.length-1].content}</p>
+                                <p style={{ margin: 0, color: '#fff', fontSize: '0.95rem', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
+                                    <TypewriterText text={aiMessages[aiMessages.length-1].content} />
+                                </p>
                                 {(aiMessages[aiMessages.length-1].suggestion && 
                                   aiMessages[aiMessages.length-1].suggestion!.action !== 'ask_info' && 
                                   aiMessages[aiMessages.length-1].suggestion!.action !== 'show_commands' &&
