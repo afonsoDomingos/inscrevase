@@ -920,12 +920,15 @@ export default function PersonalDashboard() {
                     .gemini-ai-input { padding-right: 90px !important; font-size: 0.8rem !important; }
                     .gemini-ai-input::placeholder { font-size: 0.75rem !important; }
                     .ai-edit-grid { grid-template-columns: 1fr !important; }
-                    .dashboard-loading-container { min-height: 380px !important; border-radius: 24px !important; padding: 20px !important; }
-                    .loading-aura-bg { width: 220px !important; height: 220px !important; }
-                    .loading-shield-icon { padding: 16px !important; }
-                    .loading-shield-svg { width: 32px !important; height: 32px !important; }
-                    .loading-main-title { font-size: 1.15rem !important; text-align: center; }
-                    .loading-sub-text { font-size: 0.72rem !important; max-width: 250px !important; }
+                    .dashboard-loading-container { min-height: 320px !important; border-radius: 20px !important; padding: 15px !important; }
+                    .loading-aura-bg { width: 160px !important; height: 160px !important; }
+                    .loading-shield-icon { padding: 12px !important; }
+                    .loading-shield-svg { width: 28px !important; height: 28px !important; }
+                    .loading-main-title { font-size: 1rem !important; text-align: center; margin-bottom: 4px !important; }
+                    .loading-sub-text { font-size: 0.65rem !important; max-width: 220px !important; line-height: 1.4 !important; }
+                    .loading-steps-container { width: 100% !important; max-width: 220px !important; margin-top: 24px !important; gap: 8px !important; }
+                    .loading-steps-container span { font-size: 0.65rem !important; }
+                    .loading-progress-bar { margin-top: 24px !important; width: 160px !important; }
                     .marquee-placeholder span {
                         animation: marquee-bounce 6s ease-in-out infinite alternate !important;
                         display: inline-block;
@@ -991,7 +994,7 @@ export default function PersonalDashboard() {
                     <p className="loading-sub-text" style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', fontWeight: 500, textAlign: 'center', maxWidth: '320px', lineHeight: '1.6' }}>Analisando finanças, tarefas, projetos e poupanças em tempo real.</p>
                     
                     {/* Step indicators */}
-                    <div style={{ marginTop: '36px', display: 'flex', flexDirection: 'column', gap: '10px', width: '260px' }}>
+                    <div className="loading-steps-container" style={{ marginTop: '36px', display: 'flex', flexDirection: 'column', gap: '10px', width: '260px' }}>
                         {[
                             { label: 'Fluxo financeiro', done: true },
                             { label: 'Produtividade operacional', done: true },
@@ -1009,7 +1012,7 @@ export default function PersonalDashboard() {
                     </div>
 
                     {/* Progress bar */}
-                    <div style={{ marginTop: '32px', width: '200px', height: '3px', background: 'rgba(255,255,255,0.04)', borderRadius: '20px', overflow: 'hidden' }}>
+                    <div className="loading-progress-bar" style={{ marginTop: '32px', width: '200px', height: '3px', background: 'rgba(255,255,255,0.04)', borderRadius: '20px', overflow: 'hidden' }}>
                         <div style={{ height: '100%', background: 'linear-gradient(90deg, transparent, #FFD700, transparent)', width: '80px', animation: 'shimmer-loading 1.8s infinite ease-in-out' }} />
                     </div>
                 </div>
