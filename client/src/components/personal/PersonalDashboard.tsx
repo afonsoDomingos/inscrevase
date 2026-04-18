@@ -644,9 +644,11 @@ export default function PersonalDashboard() {
         const userMsg = customMsg || aiInput;
         if (!userMsg.trim()) return;
 
-        // Se o usuário clicar em suporte, abrimos o seletor visual também para facilitar
-        if (userMsg.toLowerCase().includes('/suporte')) {
+        // Se o usuário escrever /suporte, apenas abrimos o seletor visual (select) e não enviamos mensagem redundante
+        if (userMsg.toLowerCase().trim() === '/suporte') {
             setIsAIOptionsOpen(true);
+            if (!customMsg) setAiInput('');
+            return;
         }
 
         setAiMessages(prev => [...prev, { role: 'user', content: userMsg }]);
