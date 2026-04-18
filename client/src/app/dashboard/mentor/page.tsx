@@ -1167,6 +1167,33 @@ function MentorDashboardContent() {
                                 {!isAdmin && <Lock size={16} />} {user.isEmailVerified || isAdmin ? t('dashboard.restrictedAccess') : t('dashboard.emailUnverified')}
                             </div>
                         )}
+
+                        {isMobile && (
+                            <button
+                                onClick={() => { setActiveTab('workspace'); }}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    padding: '0.5rem 0.75rem',
+                                    background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)',
+                                    border: '1px solid rgba(255, 215, 0, 0.4)',
+                                    borderRadius: '10px',
+                                    color: '#FFD700',
+                                    fontWeight: 800,
+                                    cursor: 'pointer',
+                                    transition: 'transform 0.2s',
+                                    fontSize: '0.75rem',
+                                    whiteSpace: 'nowrap',
+                                    height: '36px',
+                                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                                }}
+                                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                            >
+                                <Briefcase size={14} color="#FFD700" /> Saúde Profissional
+                            </button>
+                        )}
                         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.5rem' }}>
                             <LanguageSwitcher />
                             <CurrencySwitcher />
