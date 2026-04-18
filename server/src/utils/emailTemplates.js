@@ -1631,7 +1631,74 @@ const generateUpgradeSuggestionEmail = (name, dashboardUrl) => {
     `;
 };
 
+const generateMonthlyFinancialReportEmail = (name, monthName, data, dashboardUrl) => {
+    const { totalIncome, totalExpense, balance, topCategories, insight } = data;
+    const accentColor = "#D4AF37";
+    const statusColor = balance >= 0 ? "#22c55e" : "#ef4444";
+
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, ${accentColor} 0%, #000000 100%); padding: 50px 20px; text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1;">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 20px; letter-spacing: 2px; text-transform: uppercase; position: relative; z-index: 1;">Saúde Profissional: <span style="color: #fff;">${monthName}</span> 📊</h1>
+            </div>
+
+            <div style="padding: 45px;">
+                <div style="background-color: #fcfcfc; padding: 35px; border-radius: 20px; border: 1px solid #f0f0f0; border-left: 5px solid ${accentColor};">
+                    <p style="font-size: 18px; color: #111; margin-top: 0; font-weight: 700;">Olá, ${name}.</p>
+                    
+                    <p style="font-size: 15px; color: #555; line-height: 1.7;">
+                        O seu resumo mensal de saúde financeira está pronto. Analisar os seus números é o primeiro passo para dominar o seu mercado.
+                    </p>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 30px 0;">
+                        <div style="background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #f0f0f0; text-align: center;">
+                            <span style="display: block; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;">Receitas</span>
+                            <span style="display: block; font-size: 16px; color: #22c55e; font-weight: 900; margin-top: 5px;">${totalIncome.toLocaleString()} MZN</span>
+                        </div>
+                        <div style="background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #f0f0f0; text-align: center;">
+                            <span style="display: block; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;">Despesas</span>
+                            <span style="display: block; font-size: 16px; color: #ef4444; font-weight: 900; margin-top: 5px;">${totalExpense.toLocaleString()} MZN</span>
+                        </div>
+                    </div>
+
+                    <div style="background: #000; padding: 25px; border-radius: 16px; text-align: center; margin-bottom: 30px;">
+                        <span style="display: block; font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;">Saldo Líquido</span>
+                        <span style="display: block; font-size: 24px; color: ${statusColor}; font-weight: 900; margin-top: 5px;">${balance.toLocaleString()} MZN</span>
+                    </div>
+
+                    ${topCategories && topCategories.length > 0 ? `
+                    <div style="margin-bottom: 30px;">
+                        <p style="font-size: 13px; color: #111; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Top Categorias de Gastos:</p>
+                        ${topCategories.map(cat => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed #eee;">
+                                <span style="font-size: 14px; color: #444;">${cat.name}</span>
+                                <span style="font-size: 14px; color: #000; font-weight: 700;">${cat.value.toLocaleString()} MZN</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    ` : ''}
+
+                    <p style="font-size: 14px; color: #666; line-height: 1.7; font-style: italic;">
+                        <strong>✨ Insight da Aura:</strong> ${insight || "Mantenha o registo das suas transações atualizado para obter insights mais precisos sobre a sua rentabilidade."}
+                    </p>
+                    
+                    <div style="text-align: center; margin: 40px 0 10px;">
+                        <a href="${dashboardUrl}" style="background: linear-gradient(135deg, ${accentColor} 0%, #000 100%); color: #ffffff; padding: 20px 45px; text-decoration: none; border-radius: 15px; font-weight: 900; font-size: 14px; display: inline-block; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-transform: uppercase; letter-spacing: 1px;">
+                            Ver Meu Dashboard Profissional
+                        </a>
+                    </div>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
 module.exports = {
+    generateMonthlyFinancialReportEmail,
     generateWelcomeEmail,
     generateBasicEmail,
     generatePendingApprovalEmail,

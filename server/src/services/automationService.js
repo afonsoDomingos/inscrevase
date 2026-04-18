@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Form = require('../models/Form');
 const Lesson = require('../models/Lesson');
 const LessonProgress = require('../models/LessonProgress');
+const PersonalFinance = require('../models/PersonalFinance');
 const sendEmail = require('../utils/emailService');
 const whatsappService = require('./whatsappService');
 const {
@@ -12,7 +13,8 @@ const {
     generateBasicEmail,
     generateSubscriptionExpiredEmail,
     generateSubscriptionWarningEmail,
-    generateUpgradeSuggestionEmail
+    generateUpgradeSuggestionEmail,
+    generateMonthlyFinancialReportEmail
 } = require('../utils/emailTemplates');
 const { logCommunication } = require('../utils/communicationLogger');
 
@@ -592,6 +594,85 @@ const initAutomations = () => {
 
         } catch (err) {
             console.error('❌ [Automation] Subscription Lifecycle error:', err);
+        }
+    
+    // 11. End of Month: Monthly Financial Health Report
+    // Cron: 0 8 1 * * (Every 1st day of month at 8 AM)
+    cron.schedule('0 8 1 * *', async () => {
+        console.log('📊 [Automation] Generating monthly financial health reports...');
+        try {
+            const now = new Date();
+            // Get last month range
+            const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+            const monthName = startOfLastMonth.toLocaleString('pt-PT', { month: 'long', year: 'numeric' });
+
+            // Find all users who have personal finance data this month
+            const usersWithFinance = await PersonalFinance.distinct('user', {
+                date: { $gte: startOfLastMonth, $lte: endOfLastMonth }
+            });
+
+            console.log(`📊 [Automation] Found ${usersWithFinance.length} users with financial data for ${monthName}.`);
+
+            for (const userId of usersWithFinance) {
+                const user = await User.findById(userId);
+                if (!user || !user.email) continue;
+
+                const transactions = await PersonalFinance.find({
+                    user: userId,
+                    date: { $gte: startOfLastMonth, $lte: endOfLastMonth }
+                });
+
+                let totalIncome = 0;
+                let totalExpense = 0;
+                const categoryMap = {};
+
+                transactions.forEach(tx => {
+                    if (tx.type === 'income') {
+                        totalIncome += tx.amount;
+                    } else if (tx.type === 'expense') {
+                        totalExpense += tx.amount;
+                        categoryMap[tx.category] = (categoryMap[tx.category] || 0) + tx.amount;
+                    }
+                });
+
+                const balance = totalIncome - totalExpense;
+                const topCategories = Object.entries(categoryMap)
+                    .map(([name, value]) => ({ name, value }))
+                    .sort((a, b) => b.value - a.value)
+                    .slice(0, 3);
+
+                // Simple AI-like insight
+                let insight = "";
+                if (balance > 0) {
+                    insight = "Excelente trabalho! Fechou o mês com saldo positivo. Considere investir pelo menos 10% deste lucro para escalar o seu ecossistema no próximo trimestre.";
+                } else if (balance < 0) {
+                    insight = "Atenção necessária: As suas despesas superaram as receitas. Analise as categorias acima e tente reduzir custos fixos para equilibrar a sua saúde financeira.";
+                } else {
+                    insight = "Ponto de equilíbrio atingido. Para o próximo mês, foque em aumentar as suas fontes de receita (como novos eventos ou upsells) para gerar lucro.";
+                }
+
+                const dashboardUrl = `${process.env.FRONTEND_URL || 'https://inscreva-se.com'}/dashboard/mentor`;
+                const emailHtml = generateMonthlyFinancialReportEmail(user.name, monthName, {
+                    totalIncome,
+                    totalExpense,
+                    balance,
+                    topCategories,
+                    insight
+                }, dashboardUrl);
+
+                await sendEmail(user.email, `📊 Relatório Mensal (${monthName}): Saúde Financeira - Inscreva-se`, emailHtml);
+                
+                await logCommunication({
+                    recipientIds: [user._id],
+                    recipientEmails: [user.email],
+                    subject: `Relatório Financeiro: ${monthName}`,
+                    content: `Envio automático do resumo mensal de saúde financeira. Saldo: ${balance} MZN`,
+                    status: 'sent'
+                });
+            }
+        } catch (err) {
+            console.error('❌ [Automation] Monthly report error:', err);
         }
     });
 };
