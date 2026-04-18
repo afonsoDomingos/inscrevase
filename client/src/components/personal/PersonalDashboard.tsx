@@ -420,6 +420,7 @@ export default function PersonalDashboard() {
     const [aiLoading, setAiLoading] = useState(false);
     const [isAIOptionsOpen, setIsAIOptionsOpen] = useState(false);
     const [draftEdit, setDraftEdit] = useState<Record<string, string>>({});
+    const [showMoreOptions, setShowMoreOptions] = useState(false);
     
     // Obter nome do utilizador para saudação
     const user = authService.getCurrentUser();
@@ -1305,77 +1306,127 @@ export default function PersonalDashboard() {
                                     </div>
                                 )}
 
-                                {aiMessages[aiMessages.length-1].suggestion?.options && (
-                                    <div style={{ marginTop: '1.2rem', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                        {aiMessages[aiMessages.length-1].suggestion!.options!.map(opt => (
-                                            <button 
-                                                key={opt}
-                                                onClick={() => handleAISend(undefined, opt)}
-                                                style={{
-                                                    padding: '10px 20px',
-                                                    background: 'rgba(255,215,0,0.05)',
-                                                    border: '1px solid rgba(255,215,0,0.2)',
-                                                    borderRadius: '12px',
-                                                    color: '#FFD700',
-                                                    fontSize: '0.85rem',
-                                                    fontWeight: 700,
-                                                    cursor: 'pointer',
-                                                    transition: 'all 0.2s'
-                                                }}
-                                                onMouseEnter={e => {
-                                                    e.currentTarget.style.background = 'rgba(255,215,0,0.15)';
-                                                    e.currentTarget.style.transform = 'translateY(-2px)';
-                                                }}
-                                                onMouseLeave={e => {
-                                                    e.currentTarget.style.background = 'rgba(255,215,0,0.05)';
-                                                    e.currentTarget.style.transform = 'translateY(0)';
-                                                }}
-                                            >
-                                                {opt}
-                                            </button>
-                                        ))}
-                                        {aiMessages[aiMessages.length-1].suggestion!.options!.includes('Hoje') && (
-                                            <div style={{ position: 'relative', display: 'inline-block' }}>
-                                                <input 
-                                                    type="date"
-                                                    onChange={(e) => {
-                                                        if (e.target.value) handleAISend(undefined, e.target.value);
-                                                    }}
+                                {aiMessages[aiMessages.length-1].suggestion?.options && (() => {
+                                    const allOpts = aiMessages[aiMessages.length-1].suggestion!.options!;
+                                    const fixedOpts = ['Hoje', 'Amanhã', 'Saltar'];
+                                    // Separate 'fixed' options (always last) from 'client' options
+                                    const dynamicOpts = allOpts.filter(o => !fixedOpts.includes(o));
+                                    const staticOpts = allOpts.filter(o => fixedOpts.includes(o));
+                                    const MAX_VISIBLE = 4;
+                                    const hasMore = dynamicOpts.length > MAX_VISIBLE;
+                                    const visibleDynamic = (hasMore && !showMoreOptions) ? dynamicOpts.slice(0, MAX_VISIBLE) : dynamicOpts;
+                                    const renderBtn = (opt: string) => (
+                                        <button 
+                                            key={opt}
+                                            onClick={() => { handleAISend(undefined, opt); setShowMoreOptions(false); }}
+                                            style={{
+                                                padding: '10px 20px',
+                                                background: 'rgba(255,215,0,0.05)',
+                                                border: '1px solid rgba(255,215,0,0.2)',
+                                                borderRadius: '12px',
+                                                color: '#FFD700',
+                                                fontSize: '0.85rem',
+                                                fontWeight: 700,
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                            onMouseEnter={e => {
+                                                e.currentTarget.style.background = 'rgba(255,215,0,0.15)';
+                                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                            }}
+                                            onMouseLeave={e => {
+                                                e.currentTarget.style.background = 'rgba(255,215,0,0.05)';
+                                                e.currentTarget.style.transform = 'translateY(0)';
+                                            }}
+                                        >
+                                            {opt}
+                                        </button>
+                                    );
+                                    return (
+                                        <div style={{ marginTop: '1.2rem', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                                            {visibleDynamic.map(renderBtn)}
+                                            {hasMore && !showMoreOptions && (
+                                                <button
+                                                    onClick={() => setShowMoreOptions(true)}
                                                     style={{
-                                                        position: 'absolute',
-                                                        visibility: 'hidden',
-                                                        width: 0,
-                                                        height: 0
-                                                    }}
-                                                />
-                                                <button 
-                                                    onClick={(e) => {
-                                                        const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-                                                        if (input && input.showPicker) {
-                                                            input.showPicker();
-                                                        }
-                                                    }}
-                                                    style={{
-                                                        padding: '10px 20px',
-                                                        background: 'rgba(255,215,0,0.05)',
-                                                        border: '1px dashed rgba(255,215,0,0.4)',
+                                                        padding: '10px 16px',
+                                                        background: 'rgba(255,255,255,0.04)',
+                                                        border: '1px dashed rgba(255,255,255,0.2)',
                                                         borderRadius: '12px',
-                                                        color: '#FFD700',
-                                                        fontSize: '0.85rem',
+                                                        color: 'rgba(255,255,255,0.6)',
+                                                        fontSize: '0.75rem',
                                                         fontWeight: 700,
                                                         cursor: 'pointer',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '8px',
                                                         transition: 'all 0.2s'
                                                     }}
+                                                    onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+                                                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
                                                 >
-                                                    <Calendar size={16} /> Calendário
+                                                    Ver mais (+{dynamicOpts.length - MAX_VISIBLE})
                                                 </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
+                                            )}
+                                            {hasMore && showMoreOptions && (
+                                                <button
+                                                    onClick={() => setShowMoreOptions(false)}
+                                                    style={{
+                                                        padding: '10px 16px',
+                                                        background: 'rgba(255,255,255,0.04)',
+                                                        border: '1px dashed rgba(255,255,255,0.2)',
+                                                        borderRadius: '12px',
+                                                        color: 'rgba(255,255,255,0.6)',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 700,
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                    onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+                                                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
+                                                >
+                                                    Ver menos
+                                                </button>
+                                            )}
+                                            {staticOpts.map(renderBtn)}
+                                            {allOpts.includes('Hoje') && (
+                                                <div style={{ position: 'relative', display: 'inline-block' }}>
+                                                    <input 
+                                                        type="date"
+                                                        onChange={(e) => {
+                                                            if (e.target.value) handleAISend(undefined, e.target.value);
+                                                        }}
+                                                        style={{
+                                                            position: 'absolute',
+                                                            visibility: 'hidden',
+                                                            width: 0,
+                                                            height: 0
+                                                        }}
+                                                    />
+                                                    <button 
+                                                        onClick={(e) => {
+                                                            const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                                                            if (input && input.showPicker) input.showPicker();
+                                                        }}
+                                                        style={{
+                                                            padding: '10px 20px',
+                                                            background: 'rgba(255,215,0,0.05)',
+                                                            border: '1px dashed rgba(255,215,0,0.4)',
+                                                            borderRadius: '12px',
+                                                            color: '#FFD700',
+                                                            fontSize: '0.85rem',
+                                                            fontWeight: 700,
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '8px',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                    >
+                                                        <Calendar size={16} /> Calendário
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })()}
 
                                 {aiMessages[aiMessages.length-1].suggestion?.action === 'view_tab' && (
                                     <div style={{ marginTop: '1.2rem' }}>

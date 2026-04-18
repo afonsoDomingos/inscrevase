@@ -538,7 +538,7 @@ exports.processAICommand = async (req, res) => {
                     }
                 }
                 newContext = { step: 'ask_task_client', draftData: currentData, draftAction: 'add_task' };
-                const userClients = await PersonalClient.find({ user: req.user.id }).select('name').limit(4);
+                const userClients = await PersonalClient.find({ user: req.user.id }).select('name').limit(8);
                 const clientOptions = [...userClients.map(c => c.name), 'Saltar'];
                 return res.status(200).json({ 
                     success: true, 
@@ -643,7 +643,7 @@ exports.processAICommand = async (req, res) => {
                     }
                 }
                 newContext = { step: 'ask_project_client', draftData: currentData, draftAction: 'add_project' };
-                const userClients = await PersonalClient.find({ user: req.user.id }).select('name').limit(4);
+                const userClients = await PersonalClient.find({ user: req.user.id }).select('name').limit(8);
                 const clientOptions = [...userClients.map(c => c.name), 'Saltar'];
                 return res.status(200).json({ 
                     success: true, 
