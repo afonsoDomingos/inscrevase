@@ -645,16 +645,14 @@ export default function PersonalDashboard() {
         const userMsg = customMsg || aiInput;
         if (!userMsg.trim()) return;
 
-        // Se o usuário escrever /suporte, apenas abrimos o seletor visual (select) e não enviamos mensagem redundante
-        if (userMsg.toLowerCase().trim() === '/suporte') {
-            setIsAIOptionsOpen(true);
-            if (!customMsg) setAiInput('');
-            return;
-        }
-
         setAiMessages(prev => [...prev, { role: 'user', content: userMsg }]);
         if (!customMsg) setAiInput('');
         setAiLoading(true);
+
+        // Se o usuário escrever /suporte, garantimos que o seletor visual (+) não abre sozinho
+        if (userMsg.toLowerCase().trim() === '/suporte') {
+            setIsAIOptionsOpen(false);
+        }
 
         const currentContext = aiMessages.length > 0 && aiMessages[aiMessages.length-1].role === 'bot' 
                                 ? aiMessages[aiMessages.length-1].suggestion?.context 
