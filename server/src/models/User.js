@@ -61,6 +61,7 @@ const UserSchema = new mongoose.Schema({
     subscriptionWarningSentAt: { type: Date }, // To track 3/7 day warnings
     lastExpirationEmailSentAt: { type: Date }, // To track when the "Expired" email was sent
     lastMonthlyNudgeSentAt: { type: Date }, // To track the monthly Pro incentive nudge
+    lastFinancialNudgeSentAt: { type: Date }, // To track the monthly financial health tool nudge
     createdAt: { type: Date, default: Date.now }
 });
 

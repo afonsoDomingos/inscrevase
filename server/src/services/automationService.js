@@ -14,7 +14,8 @@ const {
     generateSubscriptionExpiredEmail,
     generateSubscriptionWarningEmail,
     generateUpgradeSuggestionEmail,
-    generateMonthlyFinancialReportEmail
+    generateMonthlyFinancialReportEmail,
+    generateFinancialHealthIncentiveEmail
 } = require('../utils/emailTemplates');
 const { logCommunication } = require('../utils/communicationLogger');
 
@@ -652,7 +653,7 @@ const initAutomations = () => {
                     insight = "Ponto de equilíbrio atingido. Para o próximo mês, foque em aumentar as suas fontes de receita (como novos eventos ou upsells) para gerar lucro.";
                 }
 
-                const dashboardUrl = `${process.env.FRONTEND_URL || 'https://inscreva-se.com'}/dashboard/mentor`;
+                const dashboardUrl = `${process.env.FRONTEND_URL || 'https://inscreva-se.com'}/dashboard/mentor?tab=workspace`;
                 const emailHtml = generateMonthlyFinancialReportEmail(user.name, monthName, {
                     totalIncome,
                     totalExpense,
@@ -673,6 +674,51 @@ const initAutomations = () => {
             }
         } catch (err) {
             console.error('❌ [Automation] Monthly report error:', err);
+        }
+    });
+
+    // 12. Monthly Incentive: Saúde Profissional Tool Nudge
+    // Day 5 of each month at 9 AM
+    // Cron: 0 9 5 * *
+    cron.schedule('0 9 5 * *', async () => {
+        console.log('💎 [Automation] Checking for users to nudge about Saúde Profissional...');
+        try {
+            const mentors = await User.find({ role: 'mentor', status: 'active' });
+            const now = new Date();
+
+            for (const user of mentors) {
+                // Skip if already sent this month
+                if (user.lastFinancialNudgeSentAt && 
+                    user.lastFinancialNudgeSentAt.getMonth() === now.getMonth() && 
+                    user.lastFinancialNudgeSentAt.getFullYear() === now.getFullYear()) {
+                    continue;
+                }
+
+                // Check if they use the tool (if they have ANY record)
+                const hasData = await PersonalFinance.exists({ user: user._id });
+                
+                if (!hasData) {
+                    const dashboardUrl = `${process.env.FRONTEND_URL || 'https://inscreva-se.com'}/dashboard/mentor?tab=workspace`;
+                    const html = generateFinancialHealthIncentiveEmail(user.name, dashboardUrl);
+                    
+                    await sendEmail(user.email, `💎 Domine o seu mercado: Ative a sua Saúde Profissional`, html);
+                    
+                    user.lastFinancialNudgeSentAt = now;
+                    await user.save();
+                    
+                    console.log(`📡 [Automation] Sent financial health nudge to ${user.email}`);
+
+                    await logCommunication({
+                        recipientIds: [user._id],
+                        recipientEmails: [user.email],
+                        subject: `Incentivo Saúde Profissional`,
+                        content: `Envio automático de incentivo para começar a usar a ferramenta financeira.`,
+                        status: 'sent'
+                    });
+                }
+            }
+        } catch (err) {
+            console.error('❌ [Automation] Financial nudge error:', err);
         }
     });
 };
