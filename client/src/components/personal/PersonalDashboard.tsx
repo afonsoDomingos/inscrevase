@@ -6,7 +6,7 @@ import {
     CheckCircle, Clock, Plus, Activity, X,
     Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase,
     BarChart3, PieChart as PieIcon, Sparkles, Send, Bot, AlertTriangle,
-    ShieldCheck, PiggyBank, HelpCircle, Calendar
+    ShieldCheck, PiggyBank, HelpCircle, Calendar, MessageSquare
 } from 'lucide-react';
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -421,6 +421,7 @@ export default function PersonalDashboard() {
     const [isAIOptionsOpen, setIsAIOptionsOpen] = useState(false);
     const [draftEdit, setDraftEdit] = useState<Record<string, string>>({});
     const [showMoreOptions, setShowMoreOptions] = useState(false);
+    const [conversaModeActive, setConversaModeActive] = useState(false);
     
     // Obter nome do utilizador para saudação
     const user = authService.getCurrentUser();
@@ -691,14 +692,39 @@ export default function PersonalDashboard() {
             setAiMessages([]);
             setAiInput('');
             setAiLoading(false);
+            setConversaModeActive(false);
             toast.success("O Agente foi redefinido com sucesso.");
             return;
         }
 
+        // Activar modo conversa
+        if (userMsg.toLowerCase().trim() === '/conversa') {
+            setConversaModeActive(true);
+            setAiLoading(false);
+            setAiMessages(prev => [...prev, {
+                role: 'bot',
+                content: `💬 **Modo Conversa activado!**\n\nOlá ${userFirstName}! Agora podes falar livremente comigo sobre a tua saúde financeira.\n\nPodes perguntar sobre:\n• **saúde financeira** — estado geral\n• **receitas / despesas** — análise de fluxo\n• **poupanças** — tracking de reservas\n• **tarefas / projetos / clientes**\n• **dicas** — conselhos personalizados\n• **resumo** — visão global\n\nPara voltar ao modo orquestração, escreve **/sair**.`
+            }]);
+            return;
+        }
+
+        // Desactivar modo conversa
+        if (userMsg.toLowerCase().trim() === '/sair') {
+            setConversaModeActive(false);
+            setAiLoading(false);
+            setAiMessages(prev => [...prev, {
+                role: 'bot',
+                content: `✅ Modo conversa terminado. Voltei ao modo **Orquestração de Elite**!\n\nO que vamos registar agora? Use /suporte para ver todos os comandos.`
+            }]);
+            return;
+        }
+
         const isNewCommand = userMsg.trim().startsWith('/');
-        const currentContext = !isNewCommand && aiMessages.length > 0 && aiMessages[aiMessages.length-1].role === 'bot' 
-                                ? aiMessages[aiMessages.length-1].suggestion?.context 
-                                : undefined;
+        const currentContext = conversaModeActive
+            ? { mode: 'conversation' }
+            : (!isNewCommand && aiMessages.length > 0 && aiMessages[aiMessages.length-1].role === 'bot' 
+                ? aiMessages[aiMessages.length-1].suggestion?.context 
+                : undefined);
 
         try {
             const res = await personalService.processAICommand(userMsg, currentContext || undefined);
@@ -933,10 +959,27 @@ export default function PersonalDashboard() {
                 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.2rem', position: 'relative', zIndex: 1 }}>
                     <div style={{ position: 'relative' }}>
-                        <Bot size={28} color="#D4AF37" />
-                        <div style={{ position: 'absolute', top: -2, right: -2, width: '10px', height: '10px', background: '#FFD700', borderRadius: '50%', border: '2px solid #000' }} />
+                        <Bot size={28} color={conversaModeActive ? '#06b6d4' : '#D4AF37'} style={{ transition: 'color 0.3s' }} />
+                        <div style={{ position: 'absolute', top: -2, right: -2, width: '10px', height: '10px', background: conversaModeActive ? '#06b6d4' : '#FFD700', borderRadius: '50%', border: '2px solid #000', transition: 'background 0.3s' }} />
                     </div>
-                    <span style={{ color: '#D4AF37', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Olá, {userFirstName}!</span>
+                    <span style={{ color: conversaModeActive ? '#06b6d4' : '#D4AF37', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '2px', transition: 'color 0.3s' }}>Olá, {userFirstName}!</span>
+                    {conversaModeActive && (
+                        <div style={{
+                            display: 'flex', alignItems: 'center', gap: '6px',
+                            padding: '4px 12px',
+                            background: 'rgba(6,182,212,0.12)',
+                            border: '1px solid rgba(6,182,212,0.35)',
+                            borderRadius: '20px',
+                            color: '#06b6d4',
+                            fontSize: '0.65rem',
+                            fontWeight: 900,
+                            textTransform: 'uppercase',
+                            letterSpacing: '1.5px',
+                            animation: 'pulse 2s infinite'
+                        }}>
+                            💬 Modo Conversa
+                        </div>
+                    )}
                 </div>
 
                 <form onSubmit={handleAISend} className="ai-input-bar" style={{ position: 'relative', display: 'flex', gap: '15px', alignItems: 'center', zIndex: 10 }}>
@@ -1012,11 +1055,13 @@ export default function PersonalDashboard() {
                                 ref={aiInputRef}
                                 className="gemini-ai-input"
                                 placeholder={
-                                    (aiMessages.length > 0 && 
-                                     aiMessages[aiMessages.length-1].role === 'bot' && 
-                                     aiMessages[aiMessages.length-1].suggestion?.context)
-                                    ? "Digite a sua resposta aqui..."
-                                    : "Para começar a orquestrar, digite /suporte ou clique no +"
+                                    conversaModeActive
+                                    ? "Faz uma pergunta sobre a tua saúde financeira..."
+                                    : (aiMessages.length > 0 && 
+                                       aiMessages[aiMessages.length-1].role === 'bot' && 
+                                       aiMessages[aiMessages.length-1].suggestion?.context)
+                                      ? "Digite a sua resposta aqui..."
+                                      : "Para começar a orquestrar, digite /suporte ou clique no +"
                                 } 
                                 value={aiInput}
                                 onChange={(e) => setAiInput(e.target.value)}
@@ -1082,6 +1127,7 @@ export default function PersonalDashboard() {
                                     { text: "/Registar-Transação", icon: Wallet, template: "/Registar-Transação", sub: "Fluxo financeiro" },
                                     { text: "/Nova-Alocação", icon: PiggyBank, template: "/Nova-Alocação", sub: "Poupança" },
                                     { text: "/Novo-Projecto", icon: Briefcase, template: "/Novo-Projecto", sub: "Criar projeto" },
+                                    { text: "/conversa", icon: MessageSquare, template: "/conversa", sub: "Activar modo conversa" },
                                     { text: "/suporte", icon: HelpCircle, template: "/suporte", sub: "Todos os comandos" }
                                 ].map((opt, idx) => (
                                     <button

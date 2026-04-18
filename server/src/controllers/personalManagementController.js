@@ -416,6 +416,108 @@ exports.processAICommand = async (req, res) => {
         // Get user first name safely
         const firstName = req.user && req.user.name ? req.user.name.split(' ')[0] : 'Líder';
         
+        // --- 0. CONVERSATION MODE ---
+        if (context && context.mode === 'conversation') {
+            // Load real user data for context-aware responses
+            const [transactions, tasks, savings, projects, clients] = await Promise.all([
+                PersonalFinance.find({ user: req.user.id }),
+                PersonalTask.find({ user: req.user.id }),
+                PersonalSaving.find({ user: req.user.id }),
+                PersonalProject.find({ user: req.user.id }),
+                PersonalClient.find({ user: req.user.id })
+            ]);
+
+            const totalIncome = transactions.filter(t => t.type === 'income').reduce((a, b) => a + b.amount, 0);
+            const totalExpense = transactions.filter(t => t.type === 'expense').reduce((a, b) => a + b.amount, 0);
+            const balance = totalIncome - totalExpense;
+            const totalSavings = savings.reduce((a, b) => a + b.amount, 0);
+            const completedTasks = tasks.filter(t => t.status === 'completed').length;
+            const pendingTasks = tasks.filter(t => t.status !== 'completed').length;
+            const lateTasks = tasks.filter(t => t.status === 'late').length;
+            const activeProjects = projects.filter(p => p.status !== 'completed').length;
+            const fmt = (n) => new Intl.NumberFormat('pt-MZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+
+            let reply = '';
+
+            if (prompt.includes('saúde') || prompt.includes('saude') || prompt.includes('como estou') || prompt.includes('situação') || prompt.includes('estado')) {
+                const healthStatus = balance >= 0 ? '🟢 Saudável' : '🔴 Em Défice';
+                reply = `📊 **Saúde Financeira: ${healthStatus}**\n\n` +
+                    `💰 Receitas totais: **${fmt(totalIncome)} MZN**\n` +
+                    `📤 Despesas totais: **${fmt(totalExpense)} MZN**\n` +
+                    `⚖️ Saldo líquido: **${balance >= 0 ? '+' : ''}${fmt(balance)} MZN**\n` +
+                    `🐷 Em poupanças: **${fmt(totalSavings)} MZN**\n\n` +
+                    (balance < 0 
+                        ? `⚠️ Atenção ${firstName}: as suas despesas estão a superar as receitas. Considere rever os custos ou aumentar as fontes de rendimento.`
+                        : `✅ Parabéns ${firstName}! O fluxo de caixa está positivo. Continue a poupar e a investir!`);
+            } else if (prompt.includes('receita') || prompt.includes('ganho') || prompt.includes('entrada')) {
+                const topIncome = [...transactions].filter(t => t.type === 'income').sort((a, b) => b.amount - a.amount).slice(0, 3);
+                reply = `💰 **Receitas de ${firstName}**\n\nTotal recebido: **${fmt(totalIncome)} MZN**\n\n`;
+                if (topIncome.length > 0) {
+                    reply += `Top 3 maiores entradas:\n${topIncome.map((t, i) => `${i+1}. ${t.description} — ${fmt(t.amount)} MZN`).join('\n')}`;
+                }
+            } else if (prompt.includes('despesa') || prompt.includes('gasto') || prompt.includes('saída') || prompt.includes('saida')) {
+                const topExpense = [...transactions].filter(t => t.type === 'expense').sort((a, b) => b.amount - a.amount).slice(0, 3);
+                reply = `📤 **Despesas de ${firstName}**\n\nTotal gasto: **${fmt(totalExpense)} MZN**\n\n`;
+                if (topExpense.length > 0) {
+                    reply += `Top 3 maiores despesas:\n${topExpense.map((t, i) => `${i+1}. ${t.description} — ${fmt(t.amount)} MZN`).join('\n')}`;
+                }
+            } else if (prompt.includes('poupan') || prompt.includes('poupar') || prompt.includes('reserva')) {
+                const pct = totalIncome > 0 ? ((totalSavings / totalIncome) * 100).toFixed(1) : 0;
+                reply = `🐷 **Poupanças de ${firstName}**\n\nTotal alocado: **${fmt(totalSavings)} MZN**\n` +
+                    `Taxa de poupança: **${pct}% das receitas**\n\n` +
+                    (savings.length === 0 
+                        ? `Ainda não tens registos de poupança. Use /Nova-Alocação para começar a poupar.`
+                        : `Tens ${savings.length} registo(s) de poupança. ${parseFloat(String(pct)) >= 20 ? '🌟 Excelente disciplina financeira!' : '💡 Tenta atingir 20% das receitas em poupanças.'}`);
+            } else if (prompt.includes('tarefa') || prompt.includes('trabalho') || prompt.includes('fazer')) {
+                reply = `📋 **Tarefas de ${firstName}**\n\n` +
+                    `✅ Concluídas: **${completedTasks}**\n` +
+                    `⏳ Pendentes: **${pendingTasks}**\n` +
+                    `🔴 Em atraso: **${lateTasks}**\n\n` +
+                    (lateTasks > 0 ? `⚠️ Tens ${lateTasks} tarefa(s) em atraso. Prioriza-as!` : `👍 Nenhuma tarefa atrasada. Boa gestão!`);
+            } else if (prompt.includes('projeto') || prompt.includes('work') || prompt.includes('portfólio')) {
+                reply = `📁 **Projetos de ${firstName}**\n\n` +
+                    `🔵 Projetos activos: **${activeProjects}**\n` +
+                    `Total de projetos: **${projects.length}**\n` +
+                    `👥 Clientes registados: **${clients.length}**\n\n` +
+                    (activeProjects > 0 ? `Tens ${activeProjects} projeto(s) em curso. Mantém o ritmo!` : `Nenhum projeto activo. Usa /Novo-Projecto para começar.`);
+            } else if (prompt.includes('resumo') || prompt.includes('dashboard') || prompt.includes('tudo') || prompt.includes('geral')) {
+                reply = `📊 **Resumo Geral — ${firstName}**\n\n` +
+                    `💰 Receitas: ${fmt(totalIncome)} MZN\n` +
+                    `📤 Despesas: ${fmt(totalExpense)} MZN\n` +
+                    `⚖️ Saldo: ${balance >= 0 ? '+' : ''}${fmt(balance)} MZN\n` +
+                    `🐷 Poupanças: ${fmt(totalSavings)} MZN\n` +
+                    `📋 Tarefas: ${completedTasks}✅ / ${pendingTasks}⏳\n` +
+                    `📁 Projetos activos: ${activeProjects}\n` +
+                    `👥 Clientes: ${clients.length}\n\n` +
+                    `Para sair do modo conversa, escreva **/sair**.`;
+            } else if (prompt.includes('cliente') || prompt.includes('parceiro')) {
+                reply = `👥 **Clientes de ${firstName}**\n\nTotal registado: **${clients.length} cliente(s)**\n\n` +
+                    (clients.length > 0 
+                        ? clients.slice(0, 5).map(c => `• ${c.name} (${c.type === 'company' ? 'Empresa' : 'Individual'})`).join('\n')
+                        : `Ainda não tens clientes registados. Usa /Registar-Cliente para adicionar.`);
+            } else if (prompt.includes('dica') || prompt.includes('conselho') || prompt.includes('sugestão') || prompt.includes('sugestao')) {
+                const tips = [];
+                if (balance < 0) tips.push('🔴 O teu saldo está negativo — reduz despesas desnecessárias urgentemente.');
+                if (totalSavings / Math.max(totalIncome, 1) < 0.1) tips.push('💡 Estás a poupar menos de 10% das receitas. Tenta automatizar uma poupança mensal.');
+                if (lateTasks > 0) tips.push(`⏰ Tens ${lateTasks} tarefa(s) atrasada(s) — revê as prioridades desta semana.`);
+                if (clients.length === 0) tips.push('👥 Ainda não tens clientes registados — começa a construir a tua carteira de clientes.');
+                if (activeProjects === 0 && clients.length > 0) tips.push('📁 Tens clientes mas nenhum projecto activo — considera propor novos serviços.');
+                if (tips.length === 0) tips.push('🌟 O teu ecossistema está equilibrado! Mantém a consistência e continua a crescer.');
+                reply = `💡 **Dicas Personalizadas para ${firstName}**\n\n${tips.join('\n\n')}`;
+            } else {
+                reply = `Olá ${firstName}! Estou no modo conversa. Podes perguntar-me sobre:\n\n` +
+                    `• **saúde financeira** — estado geral\n` +
+                    `• **receitas / despesas** — análise de fluxo\n` +
+                    `• **poupanças** — tracking de reservas\n` +
+                    `• **tarefas / projetos / clientes** — operações\n` +
+                    `• **dicas** — conselhos personalizados\n` +
+                    `• **resumo** — visão global\n\n` +
+                    `Para voltar ao modo orquestração, escreve **/sair**.`;
+            }
+
+            return res.status(200).json({ success: true, action: 'conversation', context, message: reply });
+        }
+
         // --- 1. HANDLE EXISTING CONVERSATIONAL CONTEXT ---
         if (context && context.step) {
             let currentData = context.draftData || {};
