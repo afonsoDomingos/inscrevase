@@ -922,15 +922,15 @@ export default function PersonalDashboard() {
                     .gemini-ai-input { padding-right: 90px !important; font-size: 0.8rem !important; }
                     .gemini-ai-input::placeholder { font-size: 0.75rem !important; }
                     .ai-edit-grid { grid-template-columns: 1fr !important; }
-                    .dashboard-loading-container { min-height: 320px !important; border-radius: 20px !important; padding: 15px !important; }
-                    .loading-aura-bg { width: 160px !important; height: 160px !important; }
-                    .loading-shield-icon { padding: 12px !important; }
-                    .loading-shield-svg { width: 28px !important; height: 28px !important; }
-                    .loading-main-title { font-size: 1rem !important; text-align: center; margin-bottom: 4px !important; }
-                    .loading-sub-text { font-size: 0.65rem !important; max-width: 220px !important; line-height: 1.4 !important; }
-                    .loading-steps-container { width: 100% !important; max-width: 220px !important; margin-top: 24px !important; gap: 8px !important; }
-                    .loading-steps-container span { font-size: 0.65rem !important; }
-                    .loading-progress-bar { margin-top: 24px !important; width: 160px !important; }
+                    .dashboard-loading-container { min-height: 260px !important; border-radius: 16px !important; padding: 10px !important; }
+                    .loading-aura-bg { width: 120px !important; height: 120px !important; }
+                    .loading-shield-icon { padding: 8px !important; }
+                    .loading-shield-svg { width: 22px !important; height: 22px !important; }
+                    .loading-main-title { font-size: 0.9rem !important; text-align: center; margin-bottom: 4px !important; }
+                    .loading-sub-text { font-size: 0.6rem !important; max-width: 180px !important; line-height: 1.3 !important; }
+                    .loading-steps-container { width: 100% !important; max-width: 180px !important; margin-top: 16px !important; gap: 6px !important; }
+                    .loading-steps-container span { font-size: 0.6rem !important; }
+                    .loading-progress-bar { margin-top: 16px !important; width: 140px !important; }
                     .marquee-placeholder span {
                         animation: marquee-bounce 6s ease-in-out infinite alternate !important;
                         display: inline-block;
