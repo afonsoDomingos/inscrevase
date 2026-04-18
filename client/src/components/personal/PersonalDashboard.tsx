@@ -915,7 +915,8 @@ export default function PersonalDashboard() {
                     .ai-input-bar { flex-direction: column !important; gap: 10px !important; align-items: stretch !important; }
                     .ai-send-btn { width: 100% !important; height: 48px !important; border-radius: 12px !important; }
                     .ai-cancel-btn { right: 15px !important; padding: 4px 10px !important; font-size: 0.65rem !important; }
-                    .gemini-ai-input { padding-right: 90px !important; }
+                    .gemini-ai-input { padding-right: 90px !important; font-size: 0.8rem !important; }
+                    .gemini-ai-input::placeholder { font-size: 0.75rem !important; }
                     .ai-edit-grid { grid-template-columns: 1fr !important; }
                 }
                 @keyframes shift-right {
