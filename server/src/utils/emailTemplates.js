@@ -15,20 +15,20 @@ const getSocialFooter = () => {
         <div style="margin-top: 45px; text-align: center; padding-top: 40px; border-top: 1px solid #f0f0f0;">
             <p style="font-size: 13px; color: #999; font-weight: 800; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px;">CONECTE-SE COM A ELITE</p>
             
-            <div style="margin-bottom: 30px; display: flex; justify-content: center; align-items: center; gap: 4px;">
-                <a href="${socialLinks.facebook}" style="display: inline-block; margin: 0 6px; text-decoration: none;">
+            <div style="margin-bottom: 30px; text-align: center;">
+                <a href="${socialLinks.facebook}" style="display: inline-block; margin: 0 8px; text-decoration: none; vertical-align: middle;">
                     <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" style="width: 28px; height: 28px; border-radius: 6px;">
                 </a>
-                <a href="${socialLinks.youtube}" style="display: inline-block; margin: 0 6px; text-decoration: none;">
+                <a href="${socialLinks.youtube}" style="display: inline-block; margin: 0 8px; text-decoration: none; vertical-align: middle;">
                     <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube" style="width: 28px; height: 28px; border-radius: 6px;">
                 </a>
-                <a href="${socialLinks.linkedin}" style="display: inline-block; margin: 0 6px; text-decoration: none;">
+                <a href="${socialLinks.linkedin}" style="display: inline-block; margin: 0 8px; text-decoration: none; vertical-align: middle;">
                     <img src="https://cdn-icons-png.flaticon.com/512/3536/3536505.png" alt="LinkedIn" style="width: 28px; height: 28px; border-radius: 6px;">
                 </a>
-                <a href="${socialLinks.tiktok}" style="display: inline-block; margin: 0 6px; text-decoration: none;">
+                <a href="${socialLinks.tiktok}" style="display: inline-block; margin: 0 8px; text-decoration: none; vertical-align: middle;">
                     <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" alt="TikTok" style="width: 28px; height: 28px; border-radius: 6px;">
                 </a>
-                <a href="${socialLinks.whatsapp}" style="display: inline-block; margin: 0 6px; text-decoration: none;">
+                <a href="${socialLinks.whatsapp}" style="display: inline-block; margin: 0 8px; text-decoration: none; vertical-align: middle;">
                     <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" style="width: 28px; height: 28px; border-radius: 6px;">
                 </a>
             </div>
