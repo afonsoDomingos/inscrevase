@@ -920,6 +920,12 @@ export default function PersonalDashboard() {
                     .gemini-ai-input { padding-right: 90px !important; font-size: 0.8rem !important; }
                     .gemini-ai-input::placeholder { font-size: 0.75rem !important; }
                     .ai-edit-grid { grid-template-columns: 1fr !important; }
+                    .dashboard-loading-container { min-height: 380px !important; border-radius: 24px !important; padding: 20px !important; }
+                    .loading-aura-bg { width: 220px !important; height: 220px !important; }
+                    .loading-shield-icon { padding: 16px !important; }
+                    .loading-shield-svg { width: 32px !important; height: 32px !important; }
+                    .loading-main-title { font-size: 1.15rem !important; text-align: center; }
+                    .loading-sub-text { font-size: 0.72rem !important; max-width: 250px !important; }
                 }
                 @keyframes shift-right {
                     0% { transform: translateY(-50%) translateX(0); opacity: 0.2; }
@@ -945,26 +951,26 @@ export default function PersonalDashboard() {
                 }
             `}</style>
             {loading ? (
-                <div style={{ 
+                <div className="dashboard-loading-container" style={{ 
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
                     minHeight: '500px', background: 'linear-gradient(160deg,#060606,#0f0f0f)',
                     borderRadius: '40px', border: '1px solid rgba(255,215,0,0.08)',
                     position: 'relative', overflow: 'hidden'
                 }}>
                     {/* Background aura */}
-                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
+                    <div className="loading-aura-bg" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
                     
                     {/* Icon with multi-ring orbit */}
                     <div style={{ position: 'relative', marginBottom: '36px' }}>
                         <div style={{ position: 'absolute', inset: '-28px', borderRadius: '50%', border: '1.5px solid rgba(255,215,0,0.08)', animation: 'spin 10s linear infinite reverse' }} />
                         <div style={{ position: 'absolute', inset: '-16px', borderRadius: '50%', border: '1.5px solid rgba(255,215,0,0.15)', borderTopColor: '#FFD700', animation: 'spin 2s linear infinite' }} />
-                        <div style={{ background: 'linear-gradient(135deg, #D4AF37, #FFD700)', padding: '22px', borderRadius: '50%', boxShadow: '0 0 60px rgba(255,215,0,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'pulse 2.5s ease-in-out infinite' }}>
-                            <ShieldCheck size={44} color="#000" />
+                        <div className="loading-shield-icon" style={{ background: 'linear-gradient(135deg, #D4AF37, #FFD700)', padding: '22px', borderRadius: '50%', boxShadow: '0 0 60px rgba(255,215,0,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'pulse 2.5s ease-in-out infinite' }}>
+                            <ShieldCheck size={44} color="#000" className="loading-shield-svg" />
                         </div>
                     </div>
 
-                    <h2 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 900, marginBottom: '8px', letterSpacing: '0.5px' }}>A Processar o seu Ecossistema</h2>
-                    <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', fontWeight: 500, textAlign: 'center', maxWidth: '320px', lineHeight: '1.6' }}>Analisando finanças, tarefas, projetos e poupanças em tempo real.</p>
+                    <h2 className="loading-main-title" style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 900, marginBottom: '8px', letterSpacing: '0.5px' }}>A Processar o seu Ecossistema</h2>
+                    <p className="loading-sub-text" style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', fontWeight: 500, textAlign: 'center', maxWidth: '320px', lineHeight: '1.6' }}>Analisando finanças, tarefas, projetos e poupanças em tempo real.</p>
                     
                     {/* Step indicators */}
                     <div style={{ marginTop: '36px', display: 'flex', flexDirection: 'column', gap: '10px', width: '260px' }}>
