@@ -1087,19 +1087,19 @@ export default function PersonalDashboard() {
                         className="ai-send-btn"
                         disabled={aiLoading || !aiInput.trim()} 
                         style={{
-                            background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)',
+                            background: 'linear-gradient(135deg, #FFD700 0%, #F59E0B 100%)',
                             color: '#000',
                             border: 'none',
-                            width: '54px',
-                            height: '54px',
-                            minWidth: '54px',
-                            borderRadius: '18px',
+                            width: '46px',
+                            height: '46px',
+                            minWidth: '46px',
+                            borderRadius: '50%',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             cursor: 'pointer',
                             transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                            boxShadow: '0 10px 20px rgba(212,175,55,0.3)',
+                            boxShadow: '0 8px 16px rgba(212,175,55,0.4), inset 0 2px 4px rgba(255,255,255,0.4)',
                             transform: 'translateY(0)',
                             zIndex: 10
                         }}
