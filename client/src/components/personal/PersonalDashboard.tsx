@@ -889,7 +889,13 @@ export default function PersonalDashboard() {
                             <input 
                                 ref={aiInputRef}
                                 className="gemini-ai-input"
-                                placeholder="Para começar a orquestrar, digite /suporte ou clique no +" 
+                                placeholder={
+                                    (aiMessages.length > 0 && 
+                                     aiMessages[aiMessages.length-1].role === 'bot' && 
+                                     aiMessages[aiMessages.length-1].suggestion?.context)
+                                    ? "Digite a sua resposta aqui..."
+                                    : "Para começar a orquestrar, digite /suporte ou clique no +"
+                                } 
                                 value={aiInput}
                                 onChange={(e) => setAiInput(e.target.value)}
                             />
