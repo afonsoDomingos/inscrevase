@@ -1241,15 +1241,18 @@ export default function PersonalDashboard() {
                                                     }}
                                                     style={{
                                                         position: 'absolute',
-                                                        opacity: 0,
-                                                        width: '100%',
-                                                        height: '100%',
-                                                        cursor: 'pointer',
-                                                        left: 0,
-                                                        top: 0
+                                                        visibility: 'hidden',
+                                                        width: 0,
+                                                        height: 0
                                                     }}
                                                 />
                                                 <button 
+                                                    onClick={(e) => {
+                                                        const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                                                        if (input && input.showPicker) {
+                                                            input.showPicker();
+                                                        }
+                                                    }}
                                                     style={{
                                                         padding: '10px 20px',
                                                         background: 'rgba(255,215,0,0.05)',
