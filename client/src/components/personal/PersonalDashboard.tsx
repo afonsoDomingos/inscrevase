@@ -673,8 +673,8 @@ export default function PersonalDashboard() {
                     role: 'bot', 
                     content: res.message,
                     suggestion: (res.action && res.action !== 'ask_info') 
-                        ? { action: res.action, data: res.data, context: res.context } 
-                        : (res.context ? { action: 'ask_info', data: null, context: res.context } : null) 
+                        ? { action: res.action, data: res.data, context: res.context, options: res.options } 
+                        : (res.context || res.options ? { action: res.action || 'ask_info', data: res.data || null, context: res.context, options: res.options } : null) 
                 }]);
             }
         } catch {
