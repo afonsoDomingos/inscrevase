@@ -36,6 +36,23 @@ interface ReportData {
 
 /* --- Shared styled sub-components --- */
 
+// Parses simple markdown: **bold**, newlines → line breaks
+const parseMarkdown = (text: string): React.ReactNode[] => {
+    return text.split('\n').map((line, li) => {
+        const parts: React.ReactNode[] = [];
+        const regex = /\*\*(.+?)\*\*/g;
+        let lastIndex = 0;
+        let match;
+        while ((match = regex.exec(line)) !== null) {
+            if (match.index > lastIndex) parts.push(line.slice(lastIndex, match.index));
+            parts.push(<strong key={`b-${li}-${match.index}`} style={{ fontWeight: 800, color: '#fff' }}>{match[1]}</strong>);
+            lastIndex = regex.lastIndex;
+        }
+        if (lastIndex < line.length) parts.push(line.slice(lastIndex));
+        return <span key={li}>{parts}{li < text.split('\n').length - 1 && <br />}</span>;
+    });
+};
+
 const TypewriterText = ({ text }: { text: string }) => {
     const [displayedText, setDisplayedText] = useState('');
     
@@ -44,17 +61,16 @@ const TypewriterText = ({ text }: { text: string }) => {
         let i = 0;
         const interval = setInterval(() => {
             if (i < text.length) {
-                // Use a functional update to safely append the next character
                 setDisplayedText(prev => text.substring(0, prev.length + 1));
                 i++;
             } else {
                 clearInterval(interval);
             }
-        }, 12); // Typing speed in ms
+        }, 12);
         return () => clearInterval(interval);
     }, [text]);
 
-    return <>{displayedText}</>;
+    return <>{parseMarkdown(displayedText)}</>;
 };
 
 const inputStyle: React.CSSProperties = {
@@ -1194,7 +1210,7 @@ export default function PersonalDashboard() {
                                 <Bot size={22} />
                             </div>
                             <div style={{ flex: 1 }}>
-                                <p style={{ margin: 0, color: '#fff', fontSize: '0.95rem', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
+                                <p style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '0.95rem', lineHeight: '1.7' }}>
                                     <TypewriterText text={aiMessages[aiMessages.length-1].content} />
                                 </p>
                                 {(aiMessages[aiMessages.length-1].suggestion && 
