@@ -1513,6 +1513,7 @@
         "enterpriseContact": "Para o plano Enterprise, entre em contacto com a nossa equipa de vendas.",
         "standardPlan": "Plano Padrão",
         "currentPlan": "Plano Atual",
+        "currentActive": "Plano Atual Ativo",
         "payWithCardStripe": "Pagar com Cartão",
         "alternativePayment": "Transferência Manual",
         "footerInfo": "Todos os planos incluem acesso a ferramentas de gestão financeira e suporte básico. As taxas de plataforma são aplicadas apenas sobre o valor líquido das inscrições processadas. O upgrade é imediato e a cobrança é pro-rata.",

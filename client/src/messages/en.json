@@ -1474,6 +1474,7 @@
         "enterpriseContact": "For the Enterprise plan, please contact our sales team.",
         "standardPlan": "Standard Plan",
         "currentPlan": "Current Plan",
+        "currentActive": "Currently Active Plan",
         "payWithCardStripe": "Pay with Card",
         "alternativePayment": "Manual Transfer",
         "footerInfo": "All plans include access to financial management tools and basic support. Platform fees are applied only to the net amount of processed registrations. The upgrade is immediate and billing is pro-rata.",
