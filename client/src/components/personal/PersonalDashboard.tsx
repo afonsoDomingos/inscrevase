@@ -1088,7 +1088,8 @@ export default function PersonalDashboard() {
                                 <p style={{ margin: 0, color: '#fff', fontSize: '0.95rem', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>{aiMessages[aiMessages.length-1].content}</p>
                                 {(aiMessages[aiMessages.length-1].suggestion && 
                                   aiMessages[aiMessages.length-1].suggestion!.action !== 'ask_info' && 
-                                  aiMessages[aiMessages.length-1].suggestion!.action !== 'show_commands') && (
+                                  aiMessages[aiMessages.length-1].suggestion!.action !== 'show_commands' &&
+                                  aiMessages[aiMessages.length-1].suggestion!.action !== 'view_tab') && (
                                     <div style={{ marginTop: '1rem', display: 'flex', gap: '12px' }}>
                                         <button 
                                             onClick={() => confirmAISuggestion(aiMessages[aiMessages.length-1].suggestion!)}
