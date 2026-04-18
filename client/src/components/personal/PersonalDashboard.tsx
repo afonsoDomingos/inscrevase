@@ -229,7 +229,7 @@ interface AICommandAction {
 }
 
 interface AISuggestion {
-    action: 'add_task' | 'add_transaction' | 'add_client' | 'add_saving' | 'add_project' | 'ask_info' | 'show_commands';
+    action: 'add_task' | 'add_transaction' | 'add_client' | 'add_saving' | 'add_project' | 'ask_info' | 'show_commands' | 'view_tab';
     data: unknown;
     context?: Record<string, unknown>;
 }
@@ -690,23 +690,34 @@ export default function PersonalDashboard() {
     const confirmAISuggestion = async (suggestion: AISuggestion) => {
         setAiLoading(true);
         try {
+            let targetTab: ViewMode = 'overview';
             if (suggestion.action === 'add_task') {
                 await personalService.addTask(suggestion.data as Partial<PersonalTask>);
                 toast.success("Tarefa criada por IA!");
+                targetTab = 'tasks';
             } else if (suggestion.action === 'add_transaction') {
                 await personalService.addTransaction(suggestion.data as Partial<PersonalTransaction>);
                 toast.success("Transação registada por IA!");
+                targetTab = 'finance';
             } else if (suggestion.action === 'add_client') {
                 await personalService.addClient(suggestion.data as Partial<PersonalClient>);
                 toast.success("Cliente registado por IA!");
+                targetTab = 'clients';
             } else if (suggestion.action === 'add_saving') {
                 await personalService.addSaving(suggestion.data as Partial<PersonalSaving>);
                 toast.success("Poupança registada por IA!");
+                targetTab = 'savings';
             } else if (suggestion.action === 'add_project') {
                 await personalService.addProject(suggestion.data as Partial<PersonalProject>);
                 toast.success("Projeto criado por IA!");
+                targetTab = 'projects';
             }
-            setAiMessages(prev => [...prev, { role: 'bot', content: "Concluído com sucesso! ✅" }]);
+            
+            setAiMessages(prev => [...prev, { 
+                role: 'bot', 
+                content: "Concluído com sucesso! ✅ O registo já está visível no seu ecossistema.",
+                suggestion: { action: 'view_tab', data: targetTab }
+            }]);
             fetchData();
         } catch {
             toast.error("Erro ao executar ação da IA");
@@ -1109,6 +1120,38 @@ export default function PersonalDashboard() {
                                                 <span style={{ fontSize: '0.65rem', opacity: 0.6, fontWeight: 500 }}>{cmd.sub}</span>
                                             </button>
                                         ))}
+                                    </div>
+                                )}
+
+                                {aiMessages[aiMessages.length-1].suggestion?.action === 'view_tab' && (
+                                    <div style={{ marginTop: '1.2rem' }}>
+                                        <button 
+                                            onClick={() => setViewMode(aiMessages[aiMessages.length-1].suggestion!.data as ViewMode)}
+                                            style={{
+                                                padding: '12px 24px',
+                                                background: 'rgba(255,215,0,0.1)',
+                                                color: '#FFD700',
+                                                border: '1px solid #FFD700',
+                                                borderRadius: '14px',
+                                                fontWeight: 800,
+                                                fontSize: '0.85rem',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                transition: 'all 0.2s ease'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.background = '#FFD700';
+                                                e.currentTarget.style.color = '#000';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.background = 'rgba(255,215,0,0.1)';
+                                                e.currentTarget.style.color = '#FFD700';
+                                            }}
+                                        >
+                                            <TrendingUp size={16} /> Ver no Painel de {(aiMessages[aiMessages.length-1].suggestion!.data as string).charAt(0).toUpperCase() + (aiMessages[aiMessages.length-1].suggestion!.data as string).slice(1)}
+                                        </button>
                                     </div>
                                 )}
                             </div>
