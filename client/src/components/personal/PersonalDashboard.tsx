@@ -6,7 +6,7 @@ import {
     CheckCircle, Clock, Plus, Activity, X,
     Trash2, Edit3, Users, Building, User, Mail, Phone, Briefcase,
     BarChart3, PieChart as PieIcon, Sparkles, Send, Bot, AlertTriangle,
-    ShieldCheck, PiggyBank, HelpCircle
+    ShieldCheck, PiggyBank, HelpCircle, Calendar
 } from 'lucide-react';
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -1199,6 +1199,43 @@ export default function PersonalDashboard() {
                                                 {opt}
                                             </button>
                                         ))}
+                                        {aiMessages[aiMessages.length-1].suggestion!.options!.includes('Hoje') && (
+                                            <div style={{ position: 'relative', display: 'inline-block' }}>
+                                                <input 
+                                                    type="date"
+                                                    onChange={(e) => {
+                                                        if (e.target.value) handleAISend(undefined, e.target.value);
+                                                    }}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        opacity: 0,
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        cursor: 'pointer',
+                                                        left: 0,
+                                                        top: 0
+                                                    }}
+                                                />
+                                                <button 
+                                                    style={{
+                                                        padding: '10px 20px',
+                                                        background: 'rgba(255,215,0,0.05)',
+                                                        border: '1px dashed rgba(255,215,0,0.4)',
+                                                        borderRadius: '12px',
+                                                        color: '#FFD700',
+                                                        fontSize: '0.85rem',
+                                                        fontWeight: 700,
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                >
+                                                    <Calendar size={16} /> Calendário
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
