@@ -445,7 +445,16 @@ exports.processAICommand = async (req, res) => {
                 });
             }
             if (context.step === 'ask_client_phone') {
-                if (!prompt.includes('não') && !prompt.includes('saltar')) currentData.phone = text.trim();
+                if (!prompt.includes('não') && !prompt.includes('saltar')) {
+                    const phoneValue = text.trim();
+                    if (!/^[\d\s\+\-\(\)]+$/.test(phoneValue) || phoneValue.length < 5) {
+                        return res.status(200).json({ 
+                            success: true, action: 'ask_info', context, options: ['Saltar'],
+                            message: `⚠️ O formato do telefone parece ser inválido. Por favor, insira números válidos ou clique em "Saltar".` 
+                        });
+                    }
+                    currentData.phone = phoneValue;
+                }
                 newContext = { step: 'ask_client_email', draftData: currentData, draftAction: 'add_client' };
                 return res.status(200).json({ 
                     success: true, 
@@ -456,7 +465,16 @@ exports.processAICommand = async (req, res) => {
                 });
             }
             if (context.step === 'ask_client_email') {
-                if (!prompt.includes('não')) currentData.email = text.trim();
+                if (!prompt.includes('não') && !prompt.includes('saltar')) {
+                    const emailValue = text.trim();
+                    if (!emailValue.includes('@') || !emailValue.includes('.')) {
+                        return res.status(200).json({ 
+                            success: true, action: 'ask_info', context, options: ['Saltar'],
+                            message: `⚠️ Este e-mail não parece ser válido (está sem '@' ou um domínio correto). Por favor, corrija ou clique em "Saltar".` 
+                        });
+                    }
+                    currentData.email = emailValue;
+                }
                 const summary = `Nome: ${currentData.name} (${currentData.type === 'company' ? 'Empresa' : 'Individual'})${currentData.phone ? ` | Tel: ${currentData.phone}` : ''}${currentData.email ? ` | Email: ${currentData.email}` : ''}`;
                 return res.status(200).json({ success: true, action: 'add_client', data: currentData, message: `Excelente! Confirmar registo do Cliente?\n\n📁 Resumo: ${summary}` });
             }
