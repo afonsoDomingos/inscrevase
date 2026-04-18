@@ -926,11 +926,29 @@ export default function PersonalDashboard() {
                     .loading-shield-svg { width: 32px !important; height: 32px !important; }
                     .loading-main-title { font-size: 1.15rem !important; text-align: center; }
                     .loading-sub-text { font-size: 0.72rem !important; max-width: 250px !important; }
+                    .marquee-placeholder span {
+                        animation: marquee-bounce 6s ease-in-out infinite alternate !important;
+                        display: inline-block;
+                    }
+                    .ai-options-dropdown {
+                        width: 230px !important;
+                        left: -5px !important;
+                    }
+                    .ai-bot-message-container {
+                        flex-direction: column !important;
+                        align-items: center !important;
+                        text-align: center !important;
+                    }
+                    .ai-bot-message-container > div {
+                        width: 100% !important;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                    }
                 }
-                @keyframes shift-right {
-                    0% { transform: translateY(-50%) translateX(0); opacity: 0.2; }
-                    50% { transform: translateY(-50%) translateX(4px); opacity: 0.8; }
-                    100% { transform: translateY(-50%) translateX(0); opacity: 0.2; }
+                @keyframes marquee-bounce {
+                    0%, 15% { transform: translateX(0); }
+                    85%, 100% { transform: translateX(-40%); }
                 }
                 @media (min-width: 769px) {
                     .mobile-scroll-arrow { display: none !important; }
@@ -1143,18 +1161,21 @@ export default function PersonalDashboard() {
 
                     <div style={{ position: 'relative', flex: 1, display: 'flex' }}>
                         <div className="gemini-ai-wrapper">
+                            {!aiInput && (
+                                <div className="marquee-placeholder" aria-hidden="true" style={{ position: 'absolute', left: '54px', right: '90px', top: 0, bottom: 0, pointerEvents: 'none', display: 'flex', alignItems: 'center', overflow: 'hidden', zIndex: 2, maskImage: 'linear-gradient(90deg, #000 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(90deg, #000 85%, transparent 100%)' }}>
+                                    <span style={{ color: '#9aa0a6', fontSize: '0.80rem', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                                        {conversaModeActive
+                                        ? "Faz uma pergunta sobre a tua saúde financeira..."
+                                        : (aiMessages.length > 0 && aiMessages[aiMessages.length-1].role === 'bot' && aiMessages[aiMessages.length-1].suggestion?.context)
+                                          ? "Digite a sua resposta aqui..."
+                                          : "Para começar a orquestrar, digite /suporte ou clique no +"}
+                                    </span>
+                                </div>
+                            )}
                             <input 
                                 ref={aiInputRef}
                                 className="gemini-ai-input"
-                                placeholder={
-                                    conversaModeActive
-                                    ? "Faz uma pergunta sobre a tua saúde financeira..."
-                                    : (aiMessages.length > 0 && 
-                                       aiMessages[aiMessages.length-1].role === 'bot' && 
-                                       aiMessages[aiMessages.length-1].suggestion?.context)
-                                      ? "Digite a sua resposta aqui..."
-                                      : "Para começar a orquestrar, digite /suporte ou clique no +"
-                                } 
+                                placeholder="" 
                                 value={aiInput}
                                 onChange={(e) => setAiInput(e.target.value)}
                             />
@@ -1193,7 +1214,7 @@ export default function PersonalDashboard() {
                         </button>
 
                         {isAIOptionsOpen && (
-                            <div style={{
+                            <div className="ai-options-dropdown" style={{
                                 position: 'absolute',
                                 top: 'calc(100% + 15px)',
                                 left: '0',
@@ -1281,12 +1302,12 @@ export default function PersonalDashboard() {
                 {/* AI Results/Suggestions Display */}
                 {aiMessages.length > 0 && aiMessages[aiMessages.length-1].role === 'bot' && (
                     <div style={{ marginTop: '1.5rem', borderTop: '1px solid rgba(255,215,0,0.1)', paddingTop: '1.5rem' }}>
-                        <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
-                            <div style={{ background: 'rgba(255,215,0,0.1)', color: '#FFD700', padding: '10px', borderRadius: '12px' }}>
+                        <div className="ai-bot-message-container" style={{ display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
+                            <div style={{ background: 'rgba(255,215,0,0.1)', color: '#FFD700', padding: '10px', borderRadius: '12px', flexShrink: 0 }}>
                                 <Bot size={22} />
                             </div>
-                            <div style={{ flex: 1 }}>
-                                <p style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '0.95rem', lineHeight: '1.7' }}>
+                            <div style={{ flex: 1, width: '100%' }}>
+                                <div style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '0.95rem', lineHeight: '1.7', width: '100%' }}>
                                     <TypewriterText text={aiMessages[aiMessages.length-1].content} />
                                 </p>
                                 {(aiMessages[aiMessages.length-1].suggestion && 
