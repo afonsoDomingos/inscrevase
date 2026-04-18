@@ -796,11 +796,14 @@ export default function PersonalDashboard() {
                 border: '1px solid rgba(255,215,0,0.2)',
                 boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
                 position: 'relative',
-                overflow: 'hidden'
+                zIndex: 1000
             }}>
-                <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%)', borderRadius: '50%' }} />
+                {/* Decorative background circle (contained) */}
+                <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', borderRadius: '24px' }}>
+                    <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%)', borderRadius: '50%' }} />
+                </div>
                 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.2rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.2rem', position: 'relative', zIndex: 1 }}>
                     <div style={{ position: 'relative' }}>
                         <Bot size={28} color="#D4AF37" />
                         <div style={{ position: 'absolute', top: -2, right: -2, width: '10px', height: '10px', background: '#FFD700', borderRadius: '50%', border: '2px solid #000' }} />
@@ -808,7 +811,7 @@ export default function PersonalDashboard() {
                     <span style={{ color: '#D4AF37', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Olá, {userFirstName}!</span>
                 </div>
 
-                <form onSubmit={handleAISend} className="ai-input-bar" style={{ position: 'relative', display: 'flex', gap: '15px', alignItems: 'center', zIndex: 1000 }}>
+                <form onSubmit={handleAISend} className="ai-input-bar" style={{ position: 'relative', display: 'flex', gap: '15px', alignItems: 'center', zIndex: 10 }}>
                     <style>{`
                         @keyframes spin-gemini-border {
                             0% { transform: rotate(0deg); }
@@ -921,7 +924,7 @@ export default function PersonalDashboard() {
                         {isAIOptionsOpen && (
                             <div style={{
                                 position: 'absolute',
-                                bottom: 'calc(100% + 15px)',
+                                top: 'calc(100% + 15px)',
                                 left: '0',
                                 background: '#1e1e1f',
                                 border: '1px solid rgba(255,215,0,0.2)',
@@ -930,8 +933,14 @@ export default function PersonalDashboard() {
                                 width: '300px',
                                 boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
                                 zIndex: 2000,
-                                animation: 'fadeInUp 0.3s ease-out'
+                                animation: 'fadeInDown 0.3s ease-out'
                             }}>
+                                <style>{`
+                                    @keyframes fadeInDown {
+                                        from { opacity: 0; transform: translateY(-10px); }
+                                        to { opacity: 1; transform: translateY(0); }
+                                    }
+                                `}</style>
                                 <div style={{ fontSize: '0.65rem', color: '#9aa0a6', fontWeight: 900, textTransform: 'uppercase', marginBottom: '10px', padding: '0 8px', letterSpacing: '1.5px' }}>Orquestração de Elite</div>
                                 {[
                                     { text: "/Cria-Tarefa", icon: Target, template: "/Cria-Tarefa", sub: "Registar nova tarefa" },
