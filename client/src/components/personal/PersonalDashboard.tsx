@@ -926,30 +926,46 @@ export default function PersonalDashboard() {
             {loading ? (
                 <div style={{ 
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
-                    minHeight: '450px', background: 'rgba(255,215,0,0.02)', borderRadius: '40px', 
-                    border: '1px solid rgba(255,215,0,0.1)', marginTop: '2rem',
-                    animation: 'border-glow 3s infinite ease-in-out'
+                    minHeight: '500px', background: 'linear-gradient(160deg,#060606,#0f0f0f)',
+                    borderRadius: '40px', border: '1px solid rgba(255,215,0,0.08)',
+                    position: 'relative', overflow: 'hidden'
                 }}>
-                    <div style={{ position: 'relative', marginBottom: '30px' }}>
-                        <div style={{ 
-                            position: 'absolute', inset: '-20px', borderRadius: '50%', 
-                            border: '2px solid transparent', borderTopColor: '#FFD700', 
-                            animation: 'spin 1.5s linear infinite' 
-                        }} />
-                        <div style={{ 
-                            background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)', 
-                            padding: '24px', borderRadius: '50%', boxShadow: '0 0 50px rgba(255,215,0,0.2)',
-                            animation: 'pulse 2s ease-in-out infinite',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center'
-                        }}>
-                            <ShieldCheck size={48} color="#000" />
+                    {/* Background aura */}
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
+                    
+                    {/* Icon with multi-ring orbit */}
+                    <div style={{ position: 'relative', marginBottom: '36px' }}>
+                        <div style={{ position: 'absolute', inset: '-28px', borderRadius: '50%', border: '1.5px solid rgba(255,215,0,0.08)', animation: 'spin 10s linear infinite reverse' }} />
+                        <div style={{ position: 'absolute', inset: '-16px', borderRadius: '50%', border: '1.5px solid rgba(255,215,0,0.15)', borderTopColor: '#FFD700', animation: 'spin 2s linear infinite' }} />
+                        <div style={{ background: 'linear-gradient(135deg, #D4AF37, #FFD700)', padding: '22px', borderRadius: '50%', boxShadow: '0 0 60px rgba(255,215,0,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'pulse 2.5s ease-in-out infinite' }}>
+                            <ShieldCheck size={44} color="#000" />
                         </div>
                     </div>
-                    <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: 900, marginBottom: '10px', letterSpacing: '1px' }}>Orquestrando Saúde...</h2>
-                    <p style={{ color: '#9aa0a6', fontSize: '0.95rem', fontWeight: 500, textAlign: 'center', maxWidth: '300px' }}>Estamos a preparar o seu diagnóstico de excelência profissional.</p>
+
+                    <h2 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 900, marginBottom: '8px', letterSpacing: '0.5px' }}>A Processar o seu Ecossistema</h2>
+                    <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', fontWeight: 500, textAlign: 'center', maxWidth: '320px', lineHeight: '1.6' }}>Analisando finanças, tarefas, projetos e poupanças em tempo real.</p>
                     
-                    <div style={{ marginTop: '40px', width: '220px', height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', overflow: 'hidden', position: 'relative' }}>
-                        <div style={{ height: '100%', background: 'linear-gradient(90deg, transparent, #FFD700, transparent)', width: '100px', animation: 'shimmer-loading 2s infinite ease-in-out' }} />
+                    {/* Step indicators */}
+                    <div style={{ marginTop: '36px', display: 'flex', flexDirection: 'column', gap: '10px', width: '260px' }}>
+                        {[
+                            { label: 'Fluxo financeiro', done: true },
+                            { label: 'Produtividade operacional', done: true },
+                            { label: 'Gestão de activos', done: false },
+                            { label: 'Reservas estratégicas', done: false },
+                        ].map((step, i) => (
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <div style={{ width: '18px', height: '18px', borderRadius: '50%', flexShrink: 0, background: step.done ? '#FFD700' : 'rgba(255,255,255,0.06)', border: step.done ? 'none' : '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.5s', animationDelay: `${i * 0.3}s` }}>
+                                    {step.done && <span style={{ fontSize: '9px', color: '#000', fontWeight: 900 }}>✓</span>}
+                                    {!step.done && <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', animation: 'pulse 1.5s infinite', animationDelay: `${i * 0.2}s` }} />}
+                                </div>
+                                <span style={{ fontSize: '0.75rem', color: step.done ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.25)', fontWeight: step.done ? 700 : 500, transition: 'color 0.5s', letterSpacing: '0.3px' }}>{step.label}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Progress bar */}
+                    <div style={{ marginTop: '32px', width: '200px', height: '3px', background: 'rgba(255,255,255,0.04)', borderRadius: '20px', overflow: 'hidden' }}>
+                        <div style={{ height: '100%', background: 'linear-gradient(90deg, transparent, #FFD700, transparent)', width: '80px', animation: 'shimmer-loading 1.8s infinite ease-in-out' }} />
                     </div>
                 </div>
             ) : (
@@ -1624,209 +1640,233 @@ export default function PersonalDashboard() {
                             display: 'flex', 
                             flexDirection: 'column', 
                             justifyContent: 'space-between',
-                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                            border: '1px solid rgba(255,255,255,0.05)'
+                            border: '1px solid rgba(14,165,233,0.2)',
+                            boxShadow: '0 4px 20px rgba(14,165,233,0.05)',
+                            position: 'relative',
+                            overflow: 'hidden'
                         }}>
-                            <div>
-                                <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <div style={{ position: 'absolute', top: -50, right: -50, width: 100, height: 100, background: 'rgba(14,165,233,0.15)', filter: 'blur(40px)', borderRadius: '50%' }} />
+                            <div style={{ position: 'relative', zIndex: 1 }}>
+                                <div style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.7, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '6px', color: '#38bdf8' }}>
                                     <Wallet size={14} /> Liquidez Total
                                 </div>
-                                <div style={{ fontSize: '2.4rem', fontWeight: 700, letterSpacing: '-1px', color: summary.balance >= 0 ? '#fff' : '#ff4444' }}>
+                                <div style={{ fontSize: '2.4rem', fontWeight: 900, letterSpacing: '-1px', color: '#fff' }}>
                                     {formatPrice(summary.balance, 'MZN')}
                                 </div>
                             </div>
                             
-                            <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
+                            <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem', position: 'relative', zIndex: 1 }}>
                                 <div 
                                     onClick={() => setViewMode('finance')}
                                     style={{ 
                                         flex: 1, cursor: 'pointer', transition: 'all 0.3s',
-                                        padding: '8px', borderRadius: '8px'
+                                        padding: '10px', borderRadius: '12px', background: 'rgba(255,255,255,0.02)'
                                     }}
                                     onMouseEnter={e => {
-                                        e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                                        e.currentTarget.style.background = 'rgba(14,165,233,0.1)';
                                         e.currentTarget.style.transform = 'translateY(-3px)';
                                     }}
                                     onMouseLeave={e => {
-                                        e.currentTarget.style.background = 'transparent';
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
                                         e.currentTarget.style.transform = 'translateY(0)';
                                     }}
                                 >
-                                    <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', fontWeight: 800 }}>Entradas</div>
-                                    <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#00ff41' }}>+{formatPrice(summary.income, 'MZN').split(',')[0]}</div>
+                                    <div style={{ fontSize: '0.6rem', opacity: 0.6, textTransform: 'uppercase', fontWeight: 800 }}>Entradas</div>
+                                    <div style={{ fontSize: '1rem', fontWeight: 700, color: '#10b981' }}>+{formatPrice(summary.income, 'MZN').split(',')[0]}</div>
                                 </div>
                                 <div 
                                     onClick={() => setViewMode('finance')}
                                     style={{ 
                                         flex: 1, cursor: 'pointer', transition: 'all 0.3s',
-                                        padding: '8px', borderRadius: '8px'
+                                        padding: '10px', borderRadius: '12px', background: 'rgba(255,255,255,0.02)'
                                     }}
                                     onMouseEnter={e => {
-                                        e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                                        e.currentTarget.style.background = 'rgba(239,68,68,0.1)';
                                         e.currentTarget.style.transform = 'translateY(-3px)';
                                     }}
                                     onMouseLeave={e => {
-                                        e.currentTarget.style.background = 'transparent';
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
                                         e.currentTarget.style.transform = 'translateY(0)';
                                     }}
                                 >
-                                    <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', fontWeight: 800 }}>Saídas</div>
-                                    <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#ff4444' }}>-{formatPrice(summary.expense, 'MZN').split(',')[0]}</div>
+                                    <div style={{ fontSize: '0.6rem', opacity: 0.6, textTransform: 'uppercase', fontWeight: 800 }}>Saídas</div>
+                                    <div style={{ fontSize: '1rem', fontWeight: 700, color: '#ef4444' }}>-{formatPrice(summary.expense, 'MZN').split(',')[0]}</div>
                                 </div>
                             </div>
                         </div>
 
                         {/* 2. PRODUCTIVITY (Tasks) */}
                         <div style={{ 
-                            background: '#fff', 
-                            color: '#000', 
+                            background: '#0a0a0a', 
+                            color: '#fff', 
                             padding: '1.5rem', 
                             borderRadius: '16px', 
-                            border: '1px solid #e5e5e5',
+                            border: '1px solid rgba(245,158,11,0.2)',
+                            boxShadow: '0 4px 20px rgba(245,158,11,0.05)',
                             display: 'flex', 
                             flexDirection: 'column', 
-                            justifyContent: 'space-between'
+                            justifyContent: 'space-between',
+                            position: 'relative',
+                            overflow: 'hidden'
                         }}>
-                            <div>
-                                <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <div style={{ position: 'absolute', top: -50, right: -50, width: 100, height: 100, background: 'rgba(245,158,11,0.15)', filter: 'blur(40px)', borderRadius: '50%' }} />
+                            <div style={{ position: 'relative', zIndex: 1 }}>
+                                <div style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.7, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '6px', color: '#fbbf24' }}>
                                     <Target size={14} /> Performance Operacional
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', textAlign: 'center' }}>
                                     {[
-                                        { label: 'Aberto', val: tasks.filter(t => t.status === 'pending' || t.status === 'in_progress').length, color: '#000' },
-                                        { label: 'Atraso', val: tasks.filter(t => t.status === 'late').length, color: '#ff4444' },
-                                        { label: 'Concluído', val: tasks.filter(t => t.status === 'completed').length, color: '#000', opacity: 0.4 },
+                                        { label: 'Aberto', val: tasks.filter(t => t.status === 'pending' || t.status === 'in_progress').length, color: '#fff', bg: 'rgba(255,255,255,0.1)' },
+                                        { label: 'Atraso', val: tasks.filter(t => t.status === 'late').length, color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
+                                        { label: 'Concluído', val: tasks.filter(t => t.status === 'completed').length, color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
                                     ].map(it => (
                                         <div 
                                             key={it.label}
                                             onClick={() => setViewMode('tasks')}
                                             style={{ 
                                                 cursor: 'pointer', transition: 'all 0.3s', 
-                                                padding: '8px 12px', borderRadius: '12px' 
+                                                padding: '10px', borderRadius: '12px', background: 'rgba(255,255,255,0.02)', width: '31%'
                                             }}
                                             onMouseEnter={e => {
-                                                e.currentTarget.style.background = '#f9f9f9';
+                                                e.currentTarget.style.background = it.bg;
                                                 e.currentTarget.style.transform = 'translateY(-3px)';
                                             }}
                                             onMouseLeave={e => {
-                                                e.currentTarget.style.background = 'transparent';
+                                                e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
                                                 e.currentTarget.style.transform = 'translateY(0)';
                                             }}
                                         >
-                                            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: it.color, opacity: it.opacity }}>{it.val}</div>
-                                            <div style={{ fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase', marginTop: '4px' }}>{it.label}</div>
+                                            <div style={{ fontSize: '1.6rem', fontWeight: 900, color: it.color }}>{it.val}</div>
+                                            <div style={{ fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase', marginTop: '2px', opacity: 0.7 }}>{it.label}</div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                             
-                            <div style={{ marginTop: '1.5rem' }}>
-                                <div style={{ height: '4px', width: '100%', background: '#f0f0f0', borderRadius: '2px', overflow: 'hidden' }}>
-                                    <div style={{ height: '100%', width: `${tasks.length ? Math.round((tasks.filter(t => t.status === 'completed').length / tasks.length) * 100) : 0}%`, background: '#000', transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' }} />
+                            <div style={{ marginTop: '1.5rem', position: 'relative', zIndex: 1 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                    <span style={{ fontSize: '0.6rem', fontWeight: 800, opacity: 0.6 }}>EFICIÊNCIA GERAL</span>
+                                    <span style={{ fontSize: '0.65rem', fontWeight: 900, color: '#fbbf24' }}>
+                                        {tasks.length ? Math.round((tasks.filter(t => t.status === 'completed').length / tasks.length) * 100) : 0}%
+                                    </span>
                                 </div>
-                                <div style={{ fontSize: '0.65rem', fontWeight: 800, textAlign: 'right', marginTop: '6px' }}>
-                                    {tasks.length ? Math.round((tasks.filter(t => t.status === 'completed').length / tasks.length) * 100) : 0}% EFICIÊNCIA
+                                <div style={{ height: '5px', width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+                                    <div style={{ height: '100%', width: `${tasks.length ? Math.round((tasks.filter(t => t.status === 'completed').length / tasks.length) * 100) : 0}%`, background: '#fbbf24', transition: 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)' }} />
                                 </div>
                             </div>
                         </div>
 
                         {/* 3. MANAGEMENT (Entities) */}
                         <div style={{ 
-                            background: '#f8f8f8', 
-                            color: '#000', 
+                            background: '#0a0a0a', 
+                            color: '#fff', 
                             padding: '1.5rem', 
                             borderRadius: '16px', 
-                            border: '1px solid #eee',
+                            border: '1px solid rgba(168,85,247,0.2)',
+                            boxShadow: '0 4px 20px rgba(168,85,247,0.05)',
                             display: 'flex', 
-                            flexDirection: 'column'
+                            flexDirection: 'column',
+                            position: 'relative',
+                            overflow: 'hidden'
                         }}>
-                            <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <Activity size={14} /> Ativos em Gestão
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                                <div 
-                                    onClick={() => setViewMode('projects')}
-                                    style={{ 
-                                        display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-                                        background: '#fff', padding: '0.8rem 1rem', borderRadius: '12px', 
-                                        border: '1px solid #eee', cursor: 'pointer', transition: 'all 0.2s'
-                                    }}
-                                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#D4AF37'; e.currentTarget.style.transform = 'translateX(5px)'; }}
-                                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#eee'; e.currentTarget.style.transform = 'translateX(0)'; }}
-                                >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', fontWeight: 600 }}>
-                                        <Briefcase size={16} opacity={0.5} /> Projetos
-                                    </div>
-                                    <span style={{ fontSize: '1.1rem', fontWeight: 800 }}>{projects.length}</span>
+                            <div style={{ position: 'absolute', top: -50, right: -50, width: 100, height: 100, background: 'rgba(168,85,247,0.15)', filter: 'blur(40px)', borderRadius: '50%' }} />
+                            <div style={{ position: 'relative', zIndex: 1, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                <div style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.7, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '6px', color: '#c084fc' }}>
+                                    <Activity size={14} /> Ativos em Gestão
                                 </div>
-                                <div 
-                                    onClick={() => setViewMode('clients')}
-                                    style={{ 
-                                        display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-                                        background: '#fff', padding: '0.8rem 1rem', borderRadius: '12px', 
-                                        border: '1px solid #eee', cursor: 'pointer', transition: 'all 0.2s'
-                                    }}
-                                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#D4AF37'; e.currentTarget.style.transform = 'translateX(5px)'; }}
-                                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#eee'; e.currentTarget.style.transform = 'translateX(0)'; }}
-                                >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', fontWeight: 600 }}>
-                                        <Users size={16} opacity={0.5} /> Clientes
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', flex: 1, justifyContent: 'center' }}>
+                                    <div 
+                                        onClick={() => setViewMode('projects')}
+                                        style={{ 
+                                            display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+                                            background: 'rgba(255,255,255,0.03)', padding: '0.8rem 1rem', borderRadius: '12px', 
+                                            border: '1px solid rgba(255,255,255,0.02)', cursor: 'pointer', transition: 'all 0.3s'
+                                        }}
+                                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(168,85,247,0.1)'; e.currentTarget.style.transform = 'translateX(5px)'; }}
+                                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.transform = 'translateX(0)'; }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', fontWeight: 700 }}>
+                                            <Briefcase size={16} color="#c084fc" /> Projetos
+                                        </div>
+                                        <span style={{ fontSize: '1.2rem', fontWeight: 900 }}>{projects.length}</span>
                                     </div>
-                                    <span style={{ fontSize: '1.1rem', fontWeight: 800 }}>{clients.length}</span>
+                                    <div 
+                                        onClick={() => setViewMode('clients')}
+                                        style={{ 
+                                            display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+                                            background: 'rgba(255,255,255,0.03)', padding: '0.8rem 1rem', borderRadius: '12px', 
+                                            border: '1px solid rgba(255,255,255,0.02)', cursor: 'pointer', transition: 'all 0.3s'
+                                        }}
+                                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(168,85,247,0.1)'; e.currentTarget.style.transform = 'translateX(5px)'; }}
+                                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.transform = 'translateX(0)'; }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', fontWeight: 700 }}>
+                                            <Users size={16} color="#c084fc" /> Clientes
+                                        </div>
+                                        <span style={{ fontSize: '1.2rem', fontWeight: 900 }}>{clients.length}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* 4. SAVINGS STATUS */}
                         <div style={{ 
-                            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
+                            background: '#0a0a0a', 
+                            color: '#fff', 
                             padding: '1.5rem', 
                             borderRadius: '16px', 
-                            boxShadow: '0 10px 30px rgba(16,185,129,0.15)',
+                            border: '1px solid rgba(16,185,129,0.2)',
+                            boxShadow: '0 4px 20px rgba(16,185,129,0.05)',
                             display: 'flex', 
                             flexDirection: 'column', 
                             justifyContent: 'space-between',
-                            color: '#fff'
+                            position: 'relative',
+                            overflow: 'hidden'
                         }}>
-                            <div>
-                                <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <div style={{ position: 'absolute', top: -50, right: -50, width: 100, height: 100, background: 'rgba(16,185,129,0.15)', filter: 'blur(40px)', borderRadius: '50%' }} />
+                            <div style={{ position: 'relative', zIndex: 1 }}>
+                                <div style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.7, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '6px', color: '#34d399' }}>
                                     <ShieldCheck size={14} /> Liquidez Estratégica
                                 </div>
-                                <div style={{ fontSize: '2.4rem', fontWeight: 900, letterSpacing: '-1.5px' }}>
+                                <div style={{ fontSize: '2.4rem', fontWeight: 900, letterSpacing: '-1px', color: '#fff' }}>
                                     {formatPrice(savings.reduce((a, b) => a + b.amount, 0), 'MZN')}
                                 </div>
-                                <div style={{ marginTop: '4px', fontSize: '0.7rem', opacity: 0.8, fontWeight: 700 }}>
-                                    TAXA DE POUPANÇA: {summary.income > 0 ? ((savings.reduce((a, b) => a + b.amount, 0) / summary.income) * 100).toFixed(1) : 0}%
+                                <div style={{ marginTop: '4px', fontSize: '0.65rem', fontWeight: 800, opacity: 0.7 }}>
+                                    TAXA DE POUPANÇA: <span style={{ color: '#34d399' }}>{summary.income > 0 ? ((savings.reduce((a, b) => a + b.amount, 0) / summary.income) * 100).toFixed(1) : 0}%</span>
                                 </div>
                             </div>
                             
                             <div 
                                 onClick={() => setViewMode('savings')}
                                 style={{ 
-                                    marginTop: '1.5rem', 
-                                    background: 'rgba(255,255,255,0.1)', 
+                                    marginTop: '1.2rem', 
+                                    background: 'rgba(255,255,255,0.02)', 
+                                    border: '1px solid rgba(255,255,255,0.05)',
                                     borderRadius: '12px', 
-                                    padding: '10px',
+                                    padding: '10px 12px',
                                     cursor: 'pointer',
-                                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                                    transition: 'all 0.3s',
+                                    position: 'relative', zIndex: 1
                                 }}
                                 onMouseEnter={e => {
-                                    e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                                    e.currentTarget.style.background = 'rgba(16,185,129,0.1)';
                                     e.currentTarget.style.transform = 'translateY(-2px)';
                                 }}
                                 onMouseLeave={e => {
-                                    e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                                    e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
                                     e.currentTarget.style.transform = 'translateY(0)';
                                 }}
                             >
-                                <div style={{ fontSize: '0.65rem', fontWeight: 800, opacity: 0.7, marginBottom: '5px' }}>ÚLTIMAS ALOCAÇÕES</div>
-                                {savings.slice(0, 2).map((s, idx) => (
-                                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600 }}>
-                                        <span>{s.account}</span>
-                                        <span>+{formatPrice(s.amount, 'MZN').split(',')[0]}</span>
-                                    </div>
-                                ))}
-                                {savings.length === 0 && <div style={{ fontSize: '0.7rem', opacity: 0.6 }}>Nenhuma reserva ativa</div>}
+                                <div style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.6, marginBottom: '6px', textTransform: 'uppercase' }}>Histórico Recente</div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                    {savings.slice(0, 2).map((s, idx) => (
+                                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 700 }}>
+                                            <span style={{ color: 'rgba(255,255,255,0.8)' }}>{s.account}</span>
+                                            <span style={{ color: '#10b981' }}>+{formatPrice(s.amount, 'MZN').split(',')[0]}</span>
+                                        </div>
+                                    ))}
+                                    {savings.length === 0 && <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>Nenhuma reserva ativa</div>}
+                                </div>
                             </div>
                         </div>
 
