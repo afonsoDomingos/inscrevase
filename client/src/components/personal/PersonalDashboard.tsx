@@ -898,10 +898,12 @@ export default function PersonalDashboard() {
                     #personal-dashboard-root { padding: 12px !important; }
                     .personal-header { 
                         flex-direction: column !important; 
-                        gap: 1.5rem !important; 
+                        gap: 1rem !important; 
                         text-align: center !important;
+                        align-items: center !important;
                         margin-bottom: 2rem !important;
                     }
+                    .responsive-grid-cards { grid-template-columns: 1fr !important; gap: 1rem !important; }
                     .personal-h1 { font-size: 1.8rem !important; }
                     .personal-tabs-container { gap: 0.5rem !important; padding: 0.4rem !important; flex-wrap: nowrap !important; }
                     .personal-tab-btn { padding: 10px 15px !important; font-size: 0.65rem !important; flex-shrink: 0; }
@@ -2033,7 +2035,7 @@ export default function PersonalDashboard() {
             {/* ── FINANCE ── */}
             {viewMode === 'finance' && (
                 <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div className="personal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                         <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Minhas Finanças</h2>
                         <button onClick={() => setIsAddTxOpen(true)} style={btnPrimary}>
                             <Plus size={18} /> Registar Transação
@@ -2098,7 +2100,7 @@ export default function PersonalDashboard() {
             {/* ── SAVINGS (POUPANÇA) ── */}
             {viewMode === 'savings' && (
                 <div style={{ animation: 'fadeIn 0.4s ease' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+                    <div className="personal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
                         <div>
                             <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Gestão de Poupança</h2>
                             <p style={{ margin: '4px 0 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>Controle as suas reservas e planeie o seu futuro financeiro.</p>
@@ -2108,7 +2110,7 @@ export default function PersonalDashboard() {
                         </button>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
+                    <div className="responsive-grid-cards" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                             <div style={{ background: '#000', color: '#fff', padding: '2rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', opacity: 0.6 }}>
@@ -2177,14 +2179,14 @@ export default function PersonalDashboard() {
             {/* ── TASKS ── */}
             {viewMode === 'tasks' && (
                 <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div className="personal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                         <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Minhas Tarefas</h2>
                         <button onClick={() => setIsAddTaskOpen(true)} style={btnPrimary}>
                             <Plus size={18} /> Criar Tarefa
                         </button>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div className="responsive-grid-cards" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {tasks.length === 0 ? (
                             <div style={{ padding: '6rem 2rem', textAlign: 'center', background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '24px' }}>
                                 <CheckCircle size={48} style={{ opacity: 0.15, marginBottom: '1.5rem', color: '#10b981' }} />
@@ -2256,14 +2258,14 @@ export default function PersonalDashboard() {
             {/* ── PROJECTS ── */}
             {viewMode === 'projects' && (
                 <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div className="personal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                         <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Meus Projectos</h2>
                         <button onClick={() => setIsAddProjectOpen(true)} style={btnPrimary}>
                             <Plus size={18} /> Novo Projecto
                         </button>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '1.5rem' }}>
+                    <div className="responsive-grid-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
                         {projects.length === 0 ? (
                             <div style={{ gridColumn: '1/-1', padding: '6rem 2rem', textAlign: 'center', background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '24px' }}>
                                 <Briefcase size={48} style={{ opacity: 0.1, marginBottom: '1.5rem' }} />
@@ -2319,14 +2321,14 @@ export default function PersonalDashboard() {
             {/* ── CLIENTS ── */}
             {viewMode === 'clients' && (
                 <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div className="personal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                         <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>Meus Clientes</h2>
                         <button onClick={() => setIsAddClientOpen(true)} style={btnPrimary}>
                             <Plus size={18} /> Registar Cliente
                         </button>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                    <div className="responsive-grid-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
                         {clients.length === 0 ? (
                             <div style={{ gridColumn: '1/-1', padding: '6rem 2rem', textAlign: 'center', background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '24px' }}>
                                 <Users size={48} style={{ opacity: 0.1, marginBottom: '1.5rem' }} />
