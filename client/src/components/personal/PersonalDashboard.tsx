@@ -812,12 +812,18 @@ export default function PersonalDashboard() {
                     0% { transform: translateX(-100%); }
                     100% { transform: translateX(250%); }
                 }
+                @keyframes border-glow {
+                    0% { border-color: rgba(255,215,0,0.1); box-shadow: 0 0 10px rgba(255,215,0,0.05); }
+                    50% { border-color: rgba(255,215,0,0.3); box-shadow: 0 0 30px rgba(255,215,0,0.15); }
+                    100% { border-color: rgba(255,215,0,0.1); box-shadow: 0 0 10px rgba(255,215,0,0.05); }
+                }
             `}</style>
             {loading ? (
                 <div style={{ 
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
-                    minHeight: '450px', background: 'rgba(255,255,255,0.02)', borderRadius: '40px', 
-                    border: '1px solid rgba(255,215,0,0.1)', marginTop: '2rem'
+                    minHeight: '450px', background: 'rgba(255,215,0,0.02)', borderRadius: '40px', 
+                    border: '1px solid rgba(255,215,0,0.1)', marginTop: '2rem',
+                    animation: 'border-glow 3s infinite ease-in-out'
                 }}>
                     <div style={{ position: 'relative', marginBottom: '30px' }}>
                         <div style={{ 
