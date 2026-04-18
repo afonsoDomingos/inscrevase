@@ -413,8 +413,9 @@ exports.processAICommand = async (req, res) => {
 
         const prompt = text.toLowerCase().trim();
         
-        // Get user first name safely
-        const firstName = req.user && req.user.name ? req.user.name.split(' ')[0] : 'Líder';
+        // Get user first name from DB (JWT only has id+role, not name)
+        const userDoc = await User.findById(req.user.id).select('name');
+        const firstName = userDoc && userDoc.name ? userDoc.name.split(' ')[0] : 'Utilizador';
         
         // --- 0. CONVERSATION MODE ---
         if (context && context.mode === 'conversation') {
