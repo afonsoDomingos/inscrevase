@@ -1309,7 +1309,7 @@ export default function PersonalDashboard() {
                             <div style={{ flex: 1, width: '100%' }}>
                                 <div style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '0.95rem', lineHeight: '1.7', width: '100%' }}>
                                     <TypewriterText text={aiMessages[aiMessages.length-1].content} />
-                                </p>
+                                </div>
                                 {(aiMessages[aiMessages.length-1].suggestion && 
                                   aiMessages[aiMessages.length-1].suggestion!.action !== 'ask_info' && 
                                   aiMessages[aiMessages.length-1].suggestion!.action !== 'show_commands' &&
