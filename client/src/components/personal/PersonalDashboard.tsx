@@ -223,7 +223,7 @@ const DASHBOARD_TABS = [
 ];
 
 interface AISuggestion {
-    action: 'add_task' | 'add_transaction' | 'add_client' | 'add_saving' | 'add_project' | 'ask_info';
+    action: 'add_task' | 'add_transaction' | 'add_client' | 'add_saving' | 'add_project' | 'ask_info' | 'show_commands';
     data: unknown;
     context?: Record<string, unknown>;
 }
@@ -1006,24 +1006,19 @@ export default function PersonalDashboard() {
                             </div>
                             <div style={{ flex: 1 }}>
                                 <p style={{ margin: 0, color: '#fff', fontSize: '0.95rem', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>{aiMessages[aiMessages.length-1].content}</p>
-                                {(aiMessages[aiMessages.length-1].suggestion && aiMessages[aiMessages.length-1].suggestion!.action !== 'ask_info') && (
+                                {(aiMessages[aiMessages.length-1].suggestion && 
+                                  aiMessages[aiMessages.length-1].suggestion!.action !== 'ask_info' && 
+                                  aiMessages[aiMessages.length-1].suggestion!.action !== 'show_commands') && (
                                     <div style={{ marginTop: '1rem', display: 'flex', gap: '12px' }}>
                                         <button 
                                             onClick={() => confirmAISuggestion(aiMessages[aiMessages.length-1].suggestion!)}
                                             style={{
                                                 padding: '12px 24px',
                                                 background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                                                color: '#fff',
-                                                border: 'none',
-                                                borderRadius: '14px',
-                                                fontWeight: 800,
-                                                fontSize: '0.85rem',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '8px',
-                                                boxShadow: '0 8px 16px rgba(16,185,129,0.2)',
-                                                transition: 'all 0.2s ease'
+                                                color: '#fff', border: 'none', borderRadius: '14px',
+                                                fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer',
+                                                display: 'flex', alignItems: 'center', gap: '8px',
+                                                boxShadow: '0 8px 16px rgba(16,185,129,0.2)', transition: 'all 0.2s ease'
                                             }}
                                             onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                                             onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
@@ -1038,24 +1033,62 @@ export default function PersonalDashboard() {
                                                 color: 'rgba(255,255,255,0.7)',
                                                 border: '1px solid rgba(255,255,255,0.1)',
                                                 borderRadius: '14px',
-                                                fontWeight: 600,
-                                                fontSize: '0.85rem',
-                                                cursor: 'pointer',
+                                                fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer',
                                                 transition: 'all 0.2s ease'
                                             }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-                                                e.currentTarget.style.color = '#fff';
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                                                e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
-                                            }}
+                                            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
+                                            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
                                         >
                                             Cancelar
                                         </button>
                                     </div>
                                 )}
+
+                                {aiMessages[aiMessages.length-1].suggestion?.action === 'show_commands' && (
+                                    <div style={{ 
+                                        marginTop: '1.2rem', 
+                                        display: 'grid', 
+                                        gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
+                                        gap: '10px' 
+                                    }}>
+                                        {(aiMessages[aiMessages.length-1].suggestion?.data as any[]).map(cmd => (
+                                            <button 
+                                                key={cmd.id}
+                                                onClick={() => handleAISend(undefined, cmd.id)}
+                                                style={{
+                                                    padding: '12px',
+                                                    background: 'rgba(255,215,0,0.05)',
+                                                    border: '1px solid rgba(255,215,0,0.15)',
+                                                    borderRadius: '12px',
+                                                    color: '#FFD700',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: 800,
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s',
+                                                    textAlign: 'left',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: '4px'
+                                                }}
+                                                onMouseEnter={e => {
+                                                    e.currentTarget.style.background = 'rgba(255,215,0,0.1)';
+                                                    e.currentTarget.style.borderColor = '#FFD700';
+                                                }}
+                                                onMouseLeave={e => {
+                                                    e.currentTarget.style.background = 'rgba(255,215,0,0.05)';
+                                                    e.currentTarget.style.borderColor = 'rgba(255,215,0,0.15)';
+                                                }}
+                                            >
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <Sparkles size={14} />
+                                                    <span>{cmd.label}</span>
+                                                </div>
+                                                <span style={{ fontSize: '0.65rem', opacity: 0.6, fontWeight: 500 }}>{cmd.sub}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                             </div>
                         </div>
                     </div>

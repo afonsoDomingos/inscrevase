@@ -478,7 +478,7 @@ exports.processAICommand = async (req, res) => {
             }
             if (context.step === 'ask_saving_date') {
                 currentData.date = (prompt.includes('hoje') || prompt.includes('não')) ? new Date().toISOString().split('T')[0] : text.trim();
-                return res.status(200).json({ success: true, action: 'add_saving', data: currentData, message: `Confirmar alocação de **${currentData.amount} MZN** para o objetivo "${currentData.account}"?` });
+                return res.status(200).json({ success: true, action: 'add_saving', data: currentData, message: `Confirmar alocação de ${currentData.amount} MZN para o objetivo "${currentData.account}"?` });
             }
 
             // PROJECT FLOW: Nome (Principal) -> Orçamento (Principal) -> Data Limite (Opcional) -> Cliente (Opcional)
@@ -500,8 +500,8 @@ exports.processAICommand = async (req, res) => {
             }
             if (context.step === 'ask_project_client') {
                 if (!prompt.includes('não')) currentData.clientName = text.trim();
-                const summary = `Proxeto: ${currentData.name} | Orçamento: ${currentData.totalBudget} MZN | Cliente: ${currentData.clientName || 'N/A'}`;
-                return res.status(200).json({ success: true, action: 'add_project', data: currentData, message: `Projeto orquestrado com sucesso! Confirmar criação?\n\n🚀 **Resumo:** ${summary}` });
+                const summary = `Projeto: ${currentData.name} | Orçamento: ${currentData.totalBudget} MZN | Cliente: ${currentData.clientName || 'N/A'}`;
+                return res.status(200).json({ success: true, action: 'add_project', data: currentData, message: `Projeto orquestrado com sucesso! Confirmar criação?\n\nResumo: ${summary}` });
             }
 
             // FINANCE FLOW: Tipo (Principal) -> Valor (Principal) -> Categoria (Principal) -> Data (Opcional)
@@ -524,7 +524,7 @@ exports.processAICommand = async (req, res) => {
             if (context.step === 'ask_finance_date') {
                 currentData.date = (prompt.includes('hoje') || prompt.includes('não')) ? new Date().toISOString().split('T')[0] : text.trim();
                 const summary = `${currentData.type === 'income' ? 'Receita' : 'Despesa'} | Valor: ${currentData.amount} MZN | Categoria: ${currentData.category}`;
-                return res.status(200).json({ success: true, action: 'add_transaction', data: currentData, message: `Confirmar registo financeiro?\n\n💰 **Resumo:** ${summary}` });
+                return res.status(200).json({ success: true, action: 'add_transaction', data: currentData, message: `Confirmar registo financeiro?\n\nResumo: ${summary}` });
             }
         }
 
@@ -532,14 +532,15 @@ exports.processAICommand = async (req, res) => {
 
         // Support Commands
         if (prompt === '/suporte' || prompt === 'ajuda' || prompt === 'suporte') {
-            const msg = `### 🛠️ Comandos de Orquestração de Elite\n\n` +
-                      `- **/Registar-Cliente** → Novo cliente (Campos: Nome, Tel, Email)\n` +
-                      `- **/Cria-Tarefa** → Nova tarefa (Campos: Nome, Desc, Prazo, Cliente)\n` +
-                      `- **/Registar-Transação** → Finanças (Campos: Tipo, Valor, Categoria)\n` +
-                      `- **/Nova-Alocação** → Poupança (Campos: Valor, Objetivo, Data)\n` +
-                      `- **/Novo-Projecto** → Novo Projeto (Campos: Nome, Orçamento, Prazo, Cliente)\n\n` +
-                      `*Nota: Campos Principal são obrigatórios. Outros pode saltar escrevendo "não".*`;
-            return res.status(200).json({ success: true, message: msg });
+            const msg = `Central de Orquestração: Selecione uma das ações rápidas abaixo para começar.`;
+            const commands = [
+                { id: '/Registar-Cliente', label: 'Registar Cliente', sub: 'Gestão de base de clientes' },
+                { id: '/Cria-Tarefa', label: 'Criar Tarefa', sub: 'Organização de tarefas' },
+                { id: '/Registar-Transação', label: 'Lançar Finanças', sub: 'Controlo de caixa' },
+                { id: '/Nova-Alocação', label: 'Nova Poupança', sub: 'Gestão de capital' },
+                { id: '/Novo-Projecto', label: 'Iniciar Projeto', sub: 'Gestão de empreitadas' }
+            ];
+            return res.status(200).json({ success: true, message: msg, action: 'show_commands', data: commands });
         }
 
         // Intent detection (simplified for speed)
@@ -559,13 +560,9 @@ exports.processAICommand = async (req, res) => {
             return res.status(200).json({ success: true, action: 'ask_info', context: { step: 'ask_project_name' }, message: `Excelente iniciativa. Qual é o nome do novo projeto? (Campo Principal)` });
         }
 
-        const helpMsg = `Olá de novo, ${firstName}! Escolha uma destas ações para orquestrar rapidamente:\n\n` +
-                      `📌 **/Cria-Tarefa**\n` +
-                      `👥 **/Registar-Cliente**\n` +
-                      `💰 **/Registar-Transação**\n` +
-                      `🐷 **/Nova-Alocação**\n` +
-                      `🚀 **/Novo-Projecto**\n\n` +
-                      `Digite \`/suporte\` para ver os detalhes.`;
+        const helpMsg = `Olá de novo, ${firstName}! Para orquestrar o seu ecossistema rapidamente, pode utilizar os seguintes comandos:\n\n` +
+                      `/Cria-Tarefa - /Registar-Cliente - /Registar-Transação - /Nova-Alocação - /Novo-Projecto\n\n` +
+                      `Dica: Digite /suporte para aceder ao menu de botões interativos.`;
         
         return res.status(200).json({ success: true, message: helpMsg });
 
