@@ -654,6 +654,14 @@ export default function PersonalDashboard() {
             setIsAIOptionsOpen(false);
         }
 
+        // Troca de aba automática baseada no comando para melhor UX visual imersiva
+        const lowerMsg = userMsg.toLowerCase();
+        if (lowerMsg.includes('/registar-cliente') || lowerMsg.includes('/cliente')) setViewMode('clients');
+        else if (lowerMsg.includes('/cria-tarefa') || lowerMsg.includes('/tarefa')) setViewMode('tasks');
+        else if (lowerMsg.includes('/novo-projecto') || lowerMsg.includes('/projeto')) setViewMode('projects');
+        else if (lowerMsg.includes('/registar-transação') || lowerMsg.includes('/financas')) setViewMode('finance');
+        else if (lowerMsg.includes('/nova-alocação') || lowerMsg.includes('/poupanca')) setViewMode('savings');
+
         const currentContext = aiMessages.length > 0 && aiMessages[aiMessages.length-1].role === 'bot' 
                                 ? aiMessages[aiMessages.length-1].suggestion?.context 
                                 : undefined;
