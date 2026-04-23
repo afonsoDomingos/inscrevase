@@ -16,6 +16,7 @@ import { SUPPORT_WHATSAPP } from '@/lib/constants';
 import PWAInstallPrompt from '@/components/common/PWAInstallPrompt';
 import PayPalProviderWrapper from '@/components/common/PayPalProviderWrapper';
 import OfflineDetector from '@/components/common/OfflineDetector';
+import GoogleAdsense from '@/components/common/GoogleAdsense';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -191,13 +192,8 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="192x192" href="/icon-192x192.png" />
         <link rel="apple-touch-icon-precomposed" href="/logo.png" />
 
-        {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
-          <script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
-            crossOrigin="anonymous"
-          ></script>
-        )}
+        <GoogleAdsense />
+
         {/* Script para prevenir o Flash (piscar) de tema branco ao carregar */}
         <script
           dangerouslySetInnerHTML={{

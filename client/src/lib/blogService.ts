@@ -244,8 +244,19 @@ export const blogService = {
 
     // Get single post by slug
     async getPostBySlug(slug: string): Promise<BlogPost> {
-        const response = await axios.get(`${API_URL}/blog/${slug}`);
-        return response.data;
+        try {
+            const response = await axios.get(`${API_URL}/blog/${slug}`);
+            if (response.data) {
+                return response.data;
+            }
+        } catch (error) {
+            const fallback = defaultFallbackPosts.find(p => p.slug === slug);
+            if (fallback) return fallback;
+            throw error;
+        }
+        const fallback = defaultFallbackPosts.find(p => p.slug === slug);
+        if (fallback) return fallback;
+        throw new Error('Post not found');
     },
 
     // Create new post (admin only)

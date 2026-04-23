@@ -300,7 +300,7 @@ function MentorDashboardContent() {
                 setLoading(false);
             }
         }
-    }, [router, searchParams]);
+    }, [router, searchParams, pathname]);
 
     // Handle initial mobile check and window resize
     useEffect(() => {

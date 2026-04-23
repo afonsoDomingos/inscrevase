@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon, Facebook, Linkedin, Youtube, Crown, Users, BookOpen } from 'lucide-react';
+import { Sparkles, TrendingUp, Star, Layout, Rocket, UserCircle, ShieldCheck, Share2, MessageSquare, Globe, DollarSign, Zap, Link as LinkIcon, Facebook, Linkedin, Youtube, Crown, Users, BookOpen, Briefcase } from 'lucide-react';
 import { UserData } from '@/lib/authService';
 import { AdminStats } from '@/lib/dashboardService';
 import { FormModel } from '@/lib/formService';

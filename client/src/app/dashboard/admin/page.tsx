@@ -371,7 +371,7 @@ function AdminDashboardContent() {
             }
         }, 15000);
         return () => clearInterval(interval);
-    }, [router, user?.role]);
+    }, [router, user?.role, pathname, searchParams]);
 
     const loadUnreadCount = async () => {
         try {

@@ -258,7 +258,7 @@ function ParticipantDashboardContent() {
             }
         };
         loadProfile();
-    }, [router]);
+    }, [router, pathname, searchParams]);
 
     // Socket listeners for counts
     useEffect(() => {

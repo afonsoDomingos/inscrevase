@@ -95,13 +95,20 @@ export default function PrivacyPolicy() {
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
                             <Eye color="#FFD700" />
-                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#000', margin: 0 }}>Recolha de Informação</h2>
+                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#000', margin: 0 }}>Recolha de Informação e Cookies</h2>
                         </div>
                         <p>Recolhemos informações de diversas formas, incluindo:</p>
                         <ul>
                             <li><strong>Informações fornecidas por si:</strong> Nome, e-mail e dados de contacto ao registar-se como mentor ou participante.</li>
                             <li><strong>Dados de Utilização:</strong> Informações sobre como utiliza o site, incluindo o seu endereço IP, tipo de navegador e páginas visitadas.</li>
-                            <li><strong>Cookies:</strong> Utilizamos cookies para melhorar a experiência do utilizador e para fins analíticos.</li>
+                        </ul>
+                        <p style={{ marginTop: '15px' }}>
+                            O Inscreva-se utiliza cookies para melhorar a experiência de navegação. Os principais cookies utilizados são:
+                        </p>
+                        <ul>
+                            <li><strong>Cookies de sessão:</strong> para manter o seu estado de login.</li>
+                            <li><strong>Google Analytics:</strong> para análise de tráfego anónima. Saiba mais em <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD700', fontWeight: 700 }}>policies.google.com/privacy</a>.</li>
+                            <li><strong>Google AdSense:</strong> para exibição de anúncios personalizados. Saiba mais em <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD700', fontWeight: 700 }}>policies.google.com/technologies/ads</a>.</li>
                         </ul>
                     </div>
 
@@ -132,6 +139,29 @@ export default function PrivacyPolicy() {
                         </div>
                         <p>
                             De acordo com regulamentos globais como o RGPD, tem o direito de aceder, corrigir ou eliminar os seus dados pessoais a qualquer momento. Para exercer esses direitos, contacte-nos através do suporte oficial da plataforma.
+                        </p>
+                    </div>
+
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+                            <Lock color="#FFD700" />
+                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#000', margin: 0 }}>Partilha de Dados com Terceiros</h2>
+                        </div>
+                        <p>Não vendemos, alugamos nem partilhamos os seus dados pessoais com terceiros, exceto:</p>
+                        <ul>
+                            <li><strong>Google Analytics:</strong> para análise de tráfego.</li>
+                            <li><strong>Google AdSense:</strong> para exibição de anúncios.</li>
+                            <li><strong>Quando exigido por lei:</strong> ou por autoridade competente.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+                            <Shield color="#FFD700" />
+                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#000', margin: 0 }}>Segurança dos Dados</h2>
+                        </div>
+                        <p>
+                            Adotamos medidas técnicas e organizacionais adequadas para proteger os seus dados contra acesso não autorizado, alteração, divulgação ou destruição. As palavras-passe são armazenadas de forma rigorosamente encriptada.
                         </p>
                     </div>
 

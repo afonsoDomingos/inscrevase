@@ -23,6 +23,8 @@ import { publicService, PublicImpactStats } from "@/lib/publicService";
 import SectorsSection from "@/components/home/SectorsSection";
 import CommunicationHubSection from "@/components/home/CommunicationHubSection";
 import PlansSection from "@/components/common/PlansSection";
+import FAQSection from "@/components/home/FAQSection";
+import InstitutionalSection from "@/components/home/InstitutionalSection";
 import WeatherWidget from "@/components/home/WeatherWidget";
 import CurrencyWidget from "@/components/home/CurrencyWidget";
 
@@ -1274,6 +1276,12 @@ export default function Home() {
 
       {/* Team Section - Leadership Authority */}
       < TeamSection />
+
+      {/* Institutional Section */}
+      < InstitutionalSection />
+
+      {/* FAQ Section */}
+      < FAQSection />
 
       {/* Testimonials Section */}
       < Testimonials />
