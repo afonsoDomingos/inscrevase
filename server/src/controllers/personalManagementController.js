@@ -106,14 +106,16 @@ exports.addTask = async (req, res) => {
             return res.status(400).json({ success: false, message: 'O título da tarefa é obrigatório.' });
         }
 
-        const task = new PersonalTask({
+        const taskData = {
             user: req.user.id,
             title,
             description: description || '',
-            deadline: deadline || null,
-            priority: priority || 'medium',
-            project: project || null
-        });
+            priority: priority || 'medium'
+        };
+        if (deadline) taskData.deadline = deadline;
+        if (project) taskData.project = project;
+
+        const task = new PersonalTask(taskData);
 
         await task.save();
         res.status(201).json({ success: true, task });
