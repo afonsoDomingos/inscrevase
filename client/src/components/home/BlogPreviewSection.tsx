@@ -74,6 +74,11 @@ export default function BlogPreviewSection() {
                                     </div>
                                     <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#1e293b', marginBottom: '10px', lineHeight: 1.4 }}>{post.title}</h3>
                                     <p style={{ color: '#64748b', fontSize: '0.95rem', lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: '3', WebkitBoxOrient: 'vertical', overflow: 'hidden', flex: 1 }}>{post.excerpt}</p>
+                                    <div style={{ marginTop: '20px', paddingTop: '15px', borderTop: '1px solid #eaeaea', display: 'flex', justifyContent: 'flex-end' }}>
+                                        <div style={{ color: '#000', fontWeight: 800, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase' }}>
+                                            Ler Artigo <ArrowRight size={14} color="#FFD700" />
+                                        </div>
+                                    </div>
                                 </div>
                             </Link>
                         </motion.div>
