@@ -2224,7 +2224,7 @@
         "paypalSecureHint": "Transação segura processada pelo PayPal."
     },
     "aura": {
-        "welcome": "Olá, eu sou a Aura. Sua concierge digital de luxo. Como posso elevar o seu evento hoje?",
+        "welcome": "Olá! Como posso ajudar?",
         "placeholder": "Fale com a Aura...",
         "tooltip": "Falar com Aura AI",
         "brandingTitle": "Consultoria de Branding",

@@ -27,6 +27,7 @@ export default function AuraConcierge() {
     const [attachment, setAttachment] = useState<string | null>(null);
     const [uploadingFile, setUploadingFile] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -303,13 +304,19 @@ export default function AuraConcierge() {
                                             </div>
                                         </a>
 
-                                        <a href="mailto:info@inscrevase.com" style={{
-                                            display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
-                                            background: '#000', borderRadius: '16px', color: '#fff', textDecoration: 'none',
-                                            border: '1px solid rgba(212, 175, 55, 0.3)', transition: 'all 0.2s ease', cursor: 'pointer'
-                                        }}
-                                        onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                                        onMouseOut={(e) => { e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                                        <a 
+                                            href="mailto:info@inscrevase.com" 
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                window.location.href = "mailto:info@inscrevase.com";
+                                            }}
+                                            style={{
+                                                display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
+                                                background: '#000', borderRadius: '16px', color: '#fff', textDecoration: 'none',
+                                                border: '1px solid rgba(212, 175, 55, 0.3)', transition: 'all 0.2s ease', cursor: 'pointer'
+                                            }}
+                                            onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                                            onMouseOut={(e) => { e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                                         >
                                             <div style={{ background: 'rgba(255,255,255,0.1)', padding: '8px', borderRadius: '50%' }}>
                                                 <Mail size={20} color="#FFD700" />
@@ -336,6 +343,44 @@ export default function AuraConcierge() {
                                                 <div style={{ fontSize: '0.75rem', color: '#aaa' }}>Seg-Sex: 8h-18h</div>
                                             </div>
                                         </a>
+
+                                        <button 
+                                            onClick={() => setShowSuggestions(!showSuggestions)}
+                                            style={{
+                                                background: 'none', border: '1px dashed rgba(212, 175, 55, 0.5)', 
+                                                borderRadius: '12px', color: '#666', fontSize: '0.75rem', 
+                                                padding: '8px', cursor: 'pointer', marginTop: '4px',
+                                                transition: 'all 0.2s ease'
+                                            }}
+                                            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,215,0,0.05)'; e.currentTarget.style.color = '#000'; }}
+                                            onMouseOut={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#666'; }}
+                                        >
+                                            {showSuggestions ? 'Esconder sugestões' : 'Ver sugestões de perguntas'}
+                                        </button>
+
+                                        {showSuggestions && (
+                                            <motion.div 
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '4px' }}
+                                            >
+                                                {['q1', 'q2', 'q3', 'q4'].map((key) => (
+                                                    <button
+                                                        key={key}
+                                                        onClick={() => handleSend(undefined, t(`aura.suggestions.${key}`))}
+                                                        style={{
+                                                            textAlign: 'left', padding: '10px 14px', borderRadius: '12px',
+                                                            background: '#fff', border: '1px solid #eee', fontSize: '0.8rem',
+                                                            cursor: 'pointer', transition: 'all 0.2s ease'
+                                                        }}
+                                                        onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.background = '#fcf9ed'; }}
+                                                        onMouseOut={(e) => { e.currentTarget.style.borderColor = '#eee'; e.currentTarget.style.background = '#fff'; }}
+                                                    >
+                                                        {t(`aura.suggestions.${key}`)}
+                                                    </button>
+                                                ))}
+                                            </motion.div>
+                                        )}
                                     </div>
                                 </motion.div>
                             )}

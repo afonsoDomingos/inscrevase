@@ -2139,7 +2139,7 @@
         "paypalSecureHint": "Secure transaction processed by PayPal."
     },
     "aura": {
-        "welcome": "Hello, I am Aura. Your digital luxury concierge. How can I elevate your event today?",
+        "welcome": "Hello! How can I help?",
         "placeholder": "Talk to Aura...",
         "tooltip": "Talk to Aura AI",
         "brandingTitle": "Branding Consulting",
