@@ -1275,9 +1275,6 @@ export default function Home() {
       {/* Social Proof Section */}
       < SocialProof />
 
-      {/* Team Section - Leadership Authority */}
-      < TeamSection />
-
       {/* Blog Preview Section */}
       < BlogPreviewSection />
 
@@ -1289,6 +1286,9 @@ export default function Home() {
 
       {/* Testimonials Section */}
       < Testimonials />
+
+      {/* Team Section - Leadership Authority */}
+      < TeamSection />
 
       {/* Tesla-inspired Minimalist Footer with Developer Credits */}
       < Footer />
