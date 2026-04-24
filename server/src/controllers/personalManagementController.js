@@ -21,8 +21,8 @@ exports.addTransaction = async (req, res) => {
             date: date || new Date(),
             isRecurring: isRecurring || false,
             status: status || 'paid',
-            project: project ? project : undefined,
-            client: client ? client : undefined
+            project: project || null,
+            client: client || null
         });
 
         await transaction.save();
@@ -61,8 +61,8 @@ exports.updateTransaction = async (req, res) => {
             { _id: req.params.id, user: req.user.id },
             { 
                 type, category, amount, currency, description, date,
-                project: project ? project : undefined,
-                client: client ? client : undefined
+                project: project || null,
+                client: client || null
             },
             { new: true, runValidators: true }
         );
@@ -110,9 +110,9 @@ exports.addTask = async (req, res) => {
             user: req.user.id,
             title,
             description: description || '',
-            deadline: deadline ? deadline : undefined,
+            deadline: deadline || null,
             priority: priority || 'medium',
-            project: project ? project : undefined
+            project: project || null
         });
 
         await task.save();
@@ -180,8 +180,8 @@ exports.updateTask = async (req, res) => {
             { _id: req.params.id, user: req.user.id },
             { 
                 title, description, priority,
-                deadline: deadline ? deadline : undefined,
-                project: project ? project : undefined
+                deadline: deadline || null,
+                project: project || null
             },
             { new: true, runValidators: true }
         );
@@ -205,8 +205,8 @@ exports.addProject = async (req, res) => {
             description,
             totalBudget: totalBudget || 0,
             currency: currency || 'MZN',
-            deadline: deadline ? deadline : undefined,
-            client: client ? client : undefined
+            deadline: deadline || null,
+            client: client || null
         });
 
         await project.save();
@@ -253,8 +253,8 @@ exports.updateProject = async (req, res) => {
             { _id: req.params.id, user: req.user.id },
             { 
                 name, description, totalBudget, currency, 
-                deadline: deadline ? deadline : undefined,
-                client: client ? client : undefined
+                deadline: deadline || null,
+                client: client || null
             },
             { new: true, runValidators: true }
         );
