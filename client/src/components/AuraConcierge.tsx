@@ -28,6 +28,9 @@ export default function AuraConcierge() {
     const [uploadingFile, setUploadingFile] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(false);
+    const [isEmailFormOpen, setIsEmailFormOpen] = useState(false);
+    const [emailFormData, setEmailFormData] = useState({ name: '', email: '', subject: '', message: '' });
+    const [isSendingEmail, setIsSendingEmail] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -139,6 +142,38 @@ export default function AuraConcierge() {
             setUploadingFile(false);
         }
     };
+
+    const handleEmailSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSendingEmail(true);
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/support/contact`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(emailFormData)
+            });
+
+            if (!response.ok) throw new Error('Erro ao enviar mensagem');
+
+            toast.success(t('feedback.form.success') || 'Mensagem enviada com sucesso!');
+            setIsEmailFormOpen(false);
+            setEmailFormData({ name: '', email: '', subject: '', message: '' });
+            
+            // Add a confirmation message from Aura in the chat
+            setMessages(prev => [...prev, {
+                id: Date.now().toString(),
+                text: "Recebi o seu e-mail! 📧 Nossa equipa entrará em contacto em breve. Em que mais posso ajudar?",
+                sender: 'aura',
+                timestamp: new Date()
+            }]);
+        } catch (error) {
+            console.error(error);
+            toast.error(t('feedback.form.error') || 'Erro ao enviar mensagem');
+        } finally {
+            setIsSendingEmail(false);
+        }
+    };
+
 
     return (
         <div style={{ position: 'fixed', bottom: '20px', left: '20px', zIndex: 1000 }}>
@@ -304,16 +339,13 @@ export default function AuraConcierge() {
                                             </div>
                                         </a>
 
-                                        <a 
-                                            href="mailto:info@inscrevase.com" 
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                window.location.href = "mailto:info@inscrevase.com";
-                                            }}
+                                        <button 
+                                            onClick={() => setIsEmailFormOpen(true)}
                                             style={{
                                                 display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
                                                 background: '#000', borderRadius: '16px', color: '#fff', textDecoration: 'none',
-                                                border: '1px solid rgba(212, 175, 55, 0.3)', transition: 'all 0.2s ease', cursor: 'pointer'
+                                                border: '1px solid rgba(212, 175, 55, 0.3)', transition: 'all 0.2s ease', cursor: 'pointer',
+                                                width: '100%', textAlign: 'left'
                                             }}
                                             onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
                                             onMouseOut={(e) => { e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)'; e.currentTarget.style.transform = 'translateY(0)'; }}
@@ -323,9 +355,9 @@ export default function AuraConcierge() {
                                             </div>
                                             <div>
                                                 <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>E-mail</div>
-                                                <div style={{ fontSize: '0.75rem', color: '#aaa' }}>Suporte detalhado</div>
+                                                <div style={{ fontSize: '0.75rem', color: '#aaa' }}>Suporte direto via formulário</div>
                                             </div>
-                                        </a>
+                                        </button>
 
                                         <a href="tel:+258847877405" style={{
                                             display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
@@ -385,6 +417,62 @@ export default function AuraConcierge() {
                                 </motion.div>
                             )}
                         </div>
+
+                        {/* Email Form Overlay */}
+                        <AnimatePresence>
+                            {isEmailFormOpen && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 20 }}
+                                    style={{
+                                        position: 'absolute', inset: 0, zIndex: 50,
+                                        background: '#fff', padding: '1.5rem',
+                                        display: 'flex', flexDirection: 'column'
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#000' }}>Enviar E-mail</h3>
+                                        <button onClick={() => setIsEmailFormOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}>
+                                            <X size={20} />
+                                        </button>
+                                    </div>
+
+                                    <form onSubmit={handleEmailSubmit} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', overflowY: 'auto' }}>
+                                        <input 
+                                            type="text" placeholder="Seu Nome" required
+                                            value={emailFormData.name} onChange={e => setEmailFormData({...emailFormData, name: e.target.value})}
+                                            style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #eee', outline: 'none' }}
+                                        />
+                                        <input 
+                                            type="email" placeholder="Seu E-mail" required
+                                            value={emailFormData.email} onChange={e => setEmailFormData({...emailFormData, email: e.target.value})}
+                                            style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #eee', outline: 'none' }}
+                                        />
+                                        <input 
+                                            type="text" placeholder="Assunto" required
+                                            value={emailFormData.subject} onChange={e => setEmailFormData({...emailFormData, subject: e.target.value})}
+                                            style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #eee', outline: 'none' }}
+                                        />
+                                        <textarea 
+                                            placeholder="Sua mensagem..." required rows={4}
+                                            value={emailFormData.message} onChange={e => setEmailFormData({...emailFormData, message: e.target.value})}
+                                            style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #eee', outline: 'none', resize: 'none', flex: 1 }}
+                                        />
+                                        <button 
+                                            type="submit" disabled={isSendingEmail}
+                                            style={{
+                                                width: '100%', padding: '14px', background: '#000', color: '#FFD700',
+                                                border: 'none', borderRadius: '12px', fontWeight: 800, cursor: 'pointer',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                                            }}
+                                        >
+                                            {isSendingEmail ? <Loader2 className="animate-spin" size={20} /> : <><Send size={18} /> Enviar Mensagem</>}
+                                        </button>
+                                    </form>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
                         {/* Input Area */}
                         <div style={{ padding: isMobile ? '1rem' : '1.5rem', borderTop: '1px solid rgba(0,0,0,0.05)', background: '#fff' }}>
