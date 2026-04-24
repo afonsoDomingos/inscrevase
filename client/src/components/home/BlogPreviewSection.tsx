@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, ArrowRight, Calendar, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, Calendar, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { blogService, BlogPost } from '@/lib/blogService';
 
@@ -32,9 +32,6 @@ export default function BlogPreviewSection() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-
-    if (loading) return null;
-    if (posts.length === 0) return null;
 
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -109,7 +106,7 @@ export default function BlogPreviewSection() {
                             width: '100%'
                         }}
                     >
-                        {posts.map((post, index) => (
+                        {posts.map((post) => (
                             <div
                                 key={post._id}
                                 style={{
