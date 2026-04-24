@@ -3,10 +3,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useTranslate } from '@/context/LanguageContext';
 
 export default function FAQSection() {
-    const { t } = useTranslate();
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     const faqs = [
