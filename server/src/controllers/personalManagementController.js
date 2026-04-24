@@ -120,8 +120,14 @@ exports.addTask = async (req, res) => {
         await task.save();
         res.status(201).json({ success: true, task });
     } catch (error) {
-        console.error("🔴 [addTask Error]:", error);
-        res.status(500).json({ success: false, message: error.message });
+        console.error("🔴 [addTask ERRO FATAL]:", error);
+        console.error("🔴 [addTask PAYLOAD RECEBIDO]:", req.body);
+        res.status(500).json({ 
+            success: false, 
+            message: error.message,
+            stack: error.stack,
+            receivedPayload: req.body
+        });
     }
 };
 
