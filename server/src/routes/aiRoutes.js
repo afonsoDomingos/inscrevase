@@ -60,7 +60,8 @@ router.post('/chat', authMiddleware, async (req, res) => {
         const genAI = new GoogleGenerativeAI(apiKey);
 
         // Try these models in order based on what's available in the key
-        const modelsToTry = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-flash-latest", "gemini-pro"];
+        const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash", "gemini-pro"];
+        let lastError = null;
         let text = "";
         let attemptSuccess = false;
 
@@ -77,15 +78,19 @@ router.post('/chat', authMiddleware, async (req, res) => {
                 console.log(`Success with model: ${modelName}! Response length:`, text.length);
                 break;
             } catch (e) {
+                lastError = e.message;
                 console.error(`Model ${modelName} failed:`, e.message);
-                // If it's a 404, we continue. If it's something else (like quota), we might want to stop, 
-                // but for now let's just try all.
+                // Log full error for critical issues like 403/401
+                if (e.message.includes('403') || e.message.includes('401') || e.message.includes('permission')) {
+                    console.error("PERMISSION ERROR DETECTED:", e);
+                }
             }
         }
 
         if (!attemptSuccess) {
-            throw new Error("Aura could not connect to any AI models. Please check API Key permissions.");
+            throw new Error(`Aura could not connect to any AI models. Last error: ${lastError}`);
         }
+
 
         res.json({ reply: text });
     } catch (error) {
