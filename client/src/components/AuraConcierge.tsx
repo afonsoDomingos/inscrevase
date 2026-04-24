@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Sparkles, Paperclip, FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { X, Send, Sparkles, Paperclip, FileText, Image as ImageIcon, Loader2, MessageCircle, Mail, Phone } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useTranslate } from '@/context/LanguageContext';
 import { aiService } from '@/lib/aiService';
@@ -283,39 +283,59 @@ export default function AuraConcierge() {
                                     }}
                                 >
                                     <div style={{ fontSize: '0.75rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                        {t('aura.suggestions.title')}
+                                        Como podemos ajudar?
                                     </div>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                                        {['q1', 'q2', 'q3', 'q4'].map((key) => (
-                                            <button
-                                                key={key}
-                                                onClick={() => {
-                                                    const text = t(`aura.suggestions.${key}`);
-                                                    handleSend(undefined, text);
-                                                }}
-                                                style={{
-                                                    background: 'rgba(212, 175, 55, 0.1)',
-                                                    border: '1px solid rgba(212, 175, 55, 0.3)',
-                                                    color: '#000',
-                                                    padding: isMobile ? '0.3rem 0.6rem' : '0.5rem 1rem',
-                                                    borderRadius: '20px',
-                                                    fontSize: isMobile ? '0.7rem' : '0.8rem',
-                                                    cursor: 'pointer',
-                                                    transition: 'all 0.2s ease',
-                                                    textAlign: 'left'
-                                                }}
-                                                onMouseOver={(e) => {
-                                                    e.currentTarget.style.background = 'rgba(212, 175, 55, 0.2)';
-                                                    e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.5)';
-                                                }}
-                                                onMouseOut={(e) => {
-                                                    e.currentTarget.style.background = 'rgba(212, 175, 55, 0.1)';
-                                                    e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)';
-                                                }}
-                                            >
-                                                {t(`aura.suggestions.${key}`)}
-                                            </button>
-                                        ))}
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        <a href="https://wa.me/258847877405" target="_blank" rel="noopener noreferrer" style={{
+                                            display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
+                                            background: '#000', borderRadius: '16px', color: '#fff', textDecoration: 'none',
+                                            border: '1px solid rgba(212, 175, 55, 0.3)', transition: 'all 0.2s ease', cursor: 'pointer'
+                                        }}
+                                        onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                                        onMouseOut={(e) => { e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                                        >
+                                            <div style={{ background: 'rgba(255,255,255,0.1)', padding: '8px', borderRadius: '50%' }}>
+                                                <MessageCircle size={20} color="#FFD700" />
+                                            </div>
+                                            <div>
+                                                <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>WhatsApp</div>
+                                                <div style={{ fontSize: '0.75rem', color: '#aaa' }}>Resposta rápida</div>
+                                            </div>
+                                        </a>
+
+                                        <a href="mailto:info@inscrevase.com" style={{
+                                            display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
+                                            background: '#000', borderRadius: '16px', color: '#fff', textDecoration: 'none',
+                                            border: '1px solid rgba(212, 175, 55, 0.3)', transition: 'all 0.2s ease', cursor: 'pointer'
+                                        }}
+                                        onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                                        onMouseOut={(e) => { e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                                        >
+                                            <div style={{ background: 'rgba(255,255,255,0.1)', padding: '8px', borderRadius: '50%' }}>
+                                                <Mail size={20} color="#FFD700" />
+                                            </div>
+                                            <div>
+                                                <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>E-mail</div>
+                                                <div style={{ fontSize: '0.75rem', color: '#aaa' }}>Suporte detalhado</div>
+                                            </div>
+                                        </a>
+
+                                        <a href="tel:+258847877405" style={{
+                                            display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
+                                            background: '#000', borderRadius: '16px', color: '#fff', textDecoration: 'none',
+                                            border: '1px solid rgba(212, 175, 55, 0.3)', transition: 'all 0.2s ease', cursor: 'pointer'
+                                        }}
+                                        onMouseOver={(e) => { e.currentTarget.style.borderColor = '#FFD700'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                                        onMouseOut={(e) => { e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                                        >
+                                            <div style={{ background: 'rgba(255,255,255,0.1)', padding: '8px', borderRadius: '50%' }}>
+                                                <Phone size={20} color="#FFD700" />
+                                            </div>
+                                            <div>
+                                                <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Telefone</div>
+                                                <div style={{ fontSize: '0.75rem', color: '#aaa' }}>Seg-Sex: 8h-18h</div>
+                                            </div>
+                                        </a>
                                     </div>
                                 </motion.div>
                             )}
