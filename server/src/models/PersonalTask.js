@@ -38,7 +38,7 @@ const personalTaskSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Middleware to calculate 'late' status automatically during save if applicable
-personalTaskSchema.pre('save', function(next) {
+personalTaskSchema.pre('save', function() {
     if (this.deadline && this.status !== 'completed' && this.deadline < new Date()) {
         this.status = 'late';
     }
@@ -46,7 +46,6 @@ personalTaskSchema.pre('save', function(next) {
     if (this.isModified('status') && this.status === 'completed' && !this.completedAt) {
         this.completedAt = new Date();
     }
-    next();
 });
 
 module.exports = mongoose.model('PersonalTask', personalTaskSchema);
