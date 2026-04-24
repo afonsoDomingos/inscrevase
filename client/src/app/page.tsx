@@ -25,6 +25,7 @@ import CommunicationHubSection from "@/components/home/CommunicationHubSection";
 import PlansSection from "@/components/common/PlansSection";
 import FAQSection from "@/components/home/FAQSection";
 import InstitutionalSection from "@/components/home/InstitutionalSection";
+import BlogPreviewSection from "@/components/home/BlogPreviewSection";
 import WeatherWidget from "@/components/home/WeatherWidget";
 import CurrencyWidget from "@/components/home/CurrencyWidget";
 
@@ -1276,6 +1277,9 @@ export default function Home() {
 
       {/* Team Section - Leadership Authority */}
       < TeamSection />
+
+      {/* Blog Preview Section */}
+      < BlogPreviewSection />
 
       {/* Institutional Section */}
       < InstitutionalSection />
