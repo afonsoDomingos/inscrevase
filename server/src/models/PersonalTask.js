@@ -10,6 +10,10 @@ const personalTaskSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'PersonalProject'
     },
+    client: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PersonalClient'
+    },
     title: {
         type: String,
         required: true,

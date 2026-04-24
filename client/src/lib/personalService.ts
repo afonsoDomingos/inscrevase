@@ -25,6 +25,7 @@ export interface PersonalTask {
     status: 'pending' | 'in_progress' | 'completed' | 'late';
     priority: 'low' | 'medium' | 'high';
     project?: string | { _id: string; name: string };
+    client?: string | { _id: string; name: string };
 }
 
 export interface PersonalProject {

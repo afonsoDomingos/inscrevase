@@ -100,7 +100,7 @@ exports.getFinanceSummary = async (req, res) => {
 
 exports.addTask = async (req, res) => {
     try {
-        const { title, description, deadline, priority, project } = req.body;
+        const { title, description, deadline, priority, project, client } = req.body;
         
         if (!title) {
             return res.status(400).json({ success: false, message: 'O título da tarefa é obrigatório.' });
@@ -114,6 +114,7 @@ exports.addTask = async (req, res) => {
         };
         if (deadline) taskData.deadline = deadline;
         if (project) taskData.project = project;
+        if (client) taskData.client = client;
 
         const task = new PersonalTask(taskData);
 
@@ -135,6 +136,7 @@ exports.getTasks = async (req, res) => {
     try {
         const tasks = await PersonalTask.find({ user: req.user.id })
             .populate('project', 'name')
+            .populate('client', 'name')
             .sort({ createdAt: -1 });
 
         // Update late tasks dynamically before returning
@@ -183,13 +185,14 @@ exports.deleteTask = async (req, res) => {
 
 exports.updateTask = async (req, res) => {
     try {
-        const { title, description, deadline, priority, project } = req.body;
+        const { title, description, deadline, priority, status, project, client } = req.body;
         const task = await PersonalTask.findOneAndUpdate(
             { _id: req.params.id, user: req.user.id },
             { 
-                title, description, priority,
+                title, description, priority, status,
                 deadline: deadline || null,
-                project: project || null
+                project: project || null,
+                client: client || null
             },
             { new: true, runValidators: true }
         );
@@ -502,7 +505,7 @@ exports.processAICommand = async (req, res) => {
             } else if (prompt.includes('cliente') || prompt.includes('parceiro')) {
                 reply = `👥 **Clientes de ${firstName}**\n\nTotal registado: **${clients.length} cliente(s)**\n\n` +
                     (clients.length > 0 
-                        ? clients.slice(0, 5).map(c => `• ${c.name} (${c.type === 'company' ? 'Empresa' : 'Individual'})`).join('\n')
+                        ? clients.map(c => `• ${c.name} (${c.type === 'company' ? 'Empresa' : 'Individual'})`).join('\n')
                         : `Ainda não tens clientes registados. Usa /Registar-Cliente para adicionar.`);
             } else if (prompt.includes('dica') || prompt.includes('conselho') || prompt.includes('sugestão') || prompt.includes('sugestao')) {
                 const tips = [];

@@ -231,6 +231,7 @@ interface TaskFormState {
     deadline: string;
     priority: 'low' | 'medium' | 'high';
     project: string;
+    client: string;
 }
 
 interface ProjectFormState {
@@ -415,7 +416,7 @@ export default function PersonalDashboard() {
 
 
     const defaultTxForm: TxFormState = { type: 'income', category: '', amount: '', description: '', date: '', project: '', client: '' };
-    const defaultTaskForm: TaskFormState = { title: '', deadline: '', priority: 'medium', project: '' };
+    const defaultTaskForm: TaskFormState = { title: '', deadline: '', priority: 'medium', project: '', client: '' };
     const defaultProjectForm: ProjectFormState = { name: '', totalBudget: '', description: '', deadline: '', client: '' };
     const defaultClientForm: Partial<PersonalClient> = { name: '', type: 'individual', email: '', phone: '', address: '', taxId: '', notes: '' };
 
@@ -571,7 +572,8 @@ export default function PersonalDashboard() {
             title: task.title,
             deadline: task.deadline ? new Date(task.deadline).toISOString().split('T')[0] : '',
             priority: task.priority,
-            project: (projectVal as string) || ''
+            project: (projectVal as string) || '',
+            client: (typeof task.client === 'object' ? task.client?._id : task.client) || ''
         });
         setIsAddTaskOpen(true);
     };
@@ -2232,6 +2234,11 @@ export default function PersonalDashboard() {
                                                 <Briefcase size={14} /> {(task.project as PersonalProject).name}
                                             </div>
                                         )}
+                                        {task.client && (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                                                <Users size={14} /> {(task.client as PersonalClient).name}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -2457,12 +2464,20 @@ export default function PersonalDashboard() {
                             </StyledSelect>
                         </Field>
                     </div>
-                    <Field label="Projecto Associado">
-                        <StyledSelect value={taskForm.project} onChange={e => setTaskForm({ ...taskForm, project: e.target.value })}>
-                            <option value="">Tarefa Independente</option>
-                            {projects.map(p => <option key={p._id} value={p._id}>{p.name}</option>)}
-                        </StyledSelect>
-                    </Field>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <Field label="Projecto Associado">
+                            <StyledSelect value={taskForm.project} onChange={e => setTaskForm({ ...taskForm, project: e.target.value })}>
+                                <option value="">Tarefa Independente</option>
+                                {projects.map(p => <option key={p._id} value={p._id}>{p.name}</option>)}
+                            </StyledSelect>
+                        </Field>
+                        <Field label="Cliente Associado">
+                            <StyledSelect value={taskForm.client} onChange={e => setTaskForm({ ...taskForm, client: e.target.value })}>
+                                <option value="">Nenhum Cliente</option>
+                                {clients.map(cl => <option key={cl._id} value={cl._id}>{cl.name}</option>)}
+                            </StyledSelect>
+                        </Field>
+                    </div>
                 </Modal>
             )}
 
