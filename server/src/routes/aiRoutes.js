@@ -60,7 +60,7 @@ router.post('/chat', authMiddleware, async (req, res) => {
         const genAI = new GoogleGenerativeAI(apiKey);
 
         // Try these models in order based on what's available in the key
-        const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash", "gemini-pro"];
+        const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
         let lastError = null;
         let text = "";
         let attemptSuccess = false;
