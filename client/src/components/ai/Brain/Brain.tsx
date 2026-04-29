@@ -301,6 +301,8 @@ export default function Brain() {
             <AnimatePresence>
                 {isVisible && (
                     <motion.div
+                        drag
+                        dragMomentum={false}
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -314,8 +316,10 @@ export default function Brain() {
                             width: '260px',
                             transition: 'all 0.5s ease',
                             display: 'flex',
-                            flexDirection: 'column'
+                            flexDirection: 'column',
+                            cursor: 'grab'
                         }}
+                        whileDrag={{ cursor: 'grabbing', scale: 1.02 }}
                     >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                             <div style={{ 
@@ -328,10 +332,20 @@ export default function Brain() {
                                 textTransform: 'uppercase', 
                                 color: isAlert ? '#ef4444' : '#eab308' 
                             }}>
-                                <Command size={12} />
+                                <motion.div
+                                    animate={{ opacity: [0.4, 1, 0.4] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                >
+                                    <Command size={12} />
+                                </motion.div>
                                 {isAlert ? 'Urgent' : 'Neural'}
                             </div>
-                            <div style={{ display: 'flex', gap: '8px' }}>
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <div style={{ color: '#374151', marginRight: '4px' }}>
+                                    <div style={{ width: '2px', height: '2px', background: 'currentColor', borderRadius: '50%', margin: '2px 0' }} />
+                                    <div style={{ width: '2px', height: '2px', background: 'currentColor', borderRadius: '50%', margin: '2px 0' }} />
+                                    <div style={{ width: '2px', height: '2px', background: 'currentColor', borderRadius: '50%', margin: '2px 0' }} />
+                                </div>
                                 <button 
                                     onClick={() => {
                                         speak("Desativando sistemas neurais. Até logo, Mestre.");
