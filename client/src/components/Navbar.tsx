@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle, Home, Users, Info, LifeBuoy, Newspaper, Sparkles, MessageSquare, Calendar as CalendarIcon, Library, Briefcase } from 'lucide-react';
 import { SUPPORT_WHATSAPP } from '@/lib/constants';
 import { useState, useEffect } from 'react';
@@ -15,6 +16,7 @@ import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const { t } = useTranslate();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -241,13 +243,57 @@ export default function Navbar() {
           <div className="mobile-menu-spacer"></div>
 
           {isLoggedIn ? (
-            <Link href={getDashboardLink()} className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: 'var(--gold-gradient)', color: '#fff', borderRadius: '15px', padding: '0.8rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', marginBottom: '1rem', fontFamily: 'var(--font-poppins)', boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)' }}>
+            <button 
+              onClick={() => {
+                setIsOpen(false);
+                router.push(getDashboardLink());
+              }} 
+              className="mobile-action-btn" 
+              style={{ 
+                width: '100%',
+                border: 'none',
+                background: 'var(--gold-gradient)', 
+                color: '#fff', 
+                borderRadius: '15px', 
+                padding: '0.8rem', 
+                fontWeight: 700, 
+                textAlign: 'center', 
+                textDecoration: 'none', 
+                marginTop: 'auto', 
+                marginBottom: '1rem', 
+                fontFamily: 'var(--font-poppins)', 
+                boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)',
+                cursor: 'pointer'
+              }}
+            >
               {t('nav.dashboard')}
-            </Link>
+            </button>
           ) : (
-            <Link href="/entrar" className="mobile-action-btn" onClick={() => setIsOpen(false)} style={{ background: 'var(--gold-gradient)', color: '#fff', borderRadius: '15px', padding: '0.8rem', fontWeight: 700, textAlign: 'center', textDecoration: 'none', marginTop: 'auto', marginBottom: '1rem', fontFamily: 'var(--font-poppins)', boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)' }}>
+            <button 
+              onClick={() => {
+                setIsOpen(false);
+                router.push('/entrar');
+              }} 
+              className="mobile-action-btn" 
+              style={{ 
+                width: '100%',
+                border: 'none',
+                background: 'var(--gold-gradient)', 
+                color: '#fff', 
+                borderRadius: '15px', 
+                padding: '0.8rem', 
+                fontWeight: 700, 
+                textAlign: 'center', 
+                textDecoration: 'none', 
+                marginTop: 'auto', 
+                marginBottom: '1rem', 
+                fontFamily: 'var(--font-poppins)', 
+                boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)',
+                cursor: 'pointer'
+              }}
+            >
               {t('auth.login')}
-            </Link>
+            </button>
           )}
 
           <div className="mobile-footer" style={{ borderTop: '1px solid #f0f0f0', paddingTop: '1rem', paddingBottom: '0.5rem' }}>
