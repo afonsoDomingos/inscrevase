@@ -352,7 +352,12 @@ export default function Brain() {
 
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
                             <div style={{ scale: '0.8' }}>
-                                <CerberusVisual isListening={isListening || isThinking || isAlert || isSpeaking} />
+                                <CerberusVisual 
+                                isListening={isListening} 
+                                isThinking={isThinking} 
+                                isAlert={isAlert} 
+                                isSpeaking={isSpeaking} 
+                            />
                             </div>
                             
                             <VoiceVisualizer />

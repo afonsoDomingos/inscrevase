@@ -1,169 +1,155 @@
 "use client";
 
-import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
-import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 
-export default function CerberusVisual({ isListening = false }: { isListening?: boolean }) {
-    // Parallax effect values
-    const mouseX = useMotionValue(0);
-    const mouseY = useMotionValue(0);
-    
-    // Smooth transitions
-    const springConfig = { damping: 20, stiffness: 150 };
-    const dx = useSpring(mouseX, springConfig);
-    const dy = useSpring(mouseY, springConfig);
-
-    useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            const { innerWidth, innerHeight } = window;
-            const x = (e.clientX / innerWidth - 0.5) * 20;
-            const y = (e.clientY / innerHeight - 0.5) * 20;
-            mouseX.set(x);
-            mouseY.set(y);
-        };
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, [mouseX, mouseY]);
-
-    const goldGradient = "url(#gold-grad)";
-    const eyeColor = isListening ? "#FFD700" : "#ff3333";
-
-    const headVariants = {
-        idle: (i: number) => ({
-            y: [0, -8, 0],
-            rotate: i === 0 ? [-3, 3, -3] : i === 2 ? [3, -3, 3] : 0,
-            transition: { duration: 4 + i, repeat: Infinity, ease: "easeInOut" }
-        }),
-        listening: {
-            scale: [1, 1.08, 1],
-            filter: ["brightness(1)", "brightness(1.5)", "brightness(1)"],
-            transition: { duration: 0.8, repeat: Infinity, ease: "easeInOut" }
-        }
-    };
+export default function CerberusVisual({ 
+    isListening = false, 
+    isThinking = false, 
+    isAlert = false,
+    isSpeaking = false 
+}: { 
+    isListening?: boolean; 
+    isThinking?: boolean; 
+    isAlert?: boolean;
+    isSpeaking?: boolean;
+}) {
+    // Cores dinâmicas baseadas no estado
+    const mainColor = isAlert ? "#ef4444" : "#eab308";
+    const glowColor = isAlert ? "rgba(239, 68, 68, 0.5)" : "rgba(234, 179, 8, 0.5)";
 
     return (
-        <div style={{ position: 'relative', width: '160px', height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', perspective: '1000px' }}>
-            {/* Neural Mesh Background */}
-            <motion.div 
-                animate={{ opacity: isListening ? [0.1, 0.4, 0.1] : 0.1 }}
-                style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', opacity: 0.2 }}
-            >
-                <svg width="100%" height="100%" viewBox="0 0 100 100">
-                    <defs>
-                        <pattern id="hexagons" width="10" height="10" patternUnits="userSpaceOnUse">
-                            <path d="M5 0L10 2.5V7.5L5 10L0 7.5V2.5L5 0Z" fill="none" stroke="gold" strokeWidth="0.1" />
-                        </pattern>
-                    </defs>
-                    <rect width="100" height="100" fill="url(#hexagons)" />
-                </svg>
-            </motion.div>
-
-            {/* Cabeça Esquerda */}
+        <div style={{ 
+            position: 'relative', 
+            width: '120px', 
+            height: '100px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            perspective: '1000px'
+        }}>
+            {/* Efeito de Brilho de Fundo (Aura) */}
             <motion.div
-                style={{ x: dx, y: dy, position: 'absolute', left: 0, top: '24px' }}
-                custom={0}
-                variants={headVariants}
-                animate={isListening ? "listening" : "idle"}
-            >
-                <HeadSVG color={goldGradient} eyeColor={eyeColor} isListening={isListening} />
-            </motion.div>
+                animate={{
+                    scale: isThinking ? [1, 1.2, 1] : isListening ? [1, 1.1, 1] : 1,
+                    opacity: isThinking || isListening ? [0.2, 0.5, 0.2] : 0.1
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+                style={{
+                    position: 'absolute',
+                    width: '140%',
+                    height: '140%',
+                    background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)`,
+                    borderRadius: '50%',
+                    filter: 'blur(20px)',
+                    zIndex: 0
+                }}
+            />
 
-            {/* Cabeça Direita */}
-            <motion.div
-                style={{ x: dx, y: dy, position: 'absolute', right: 0, top: '24px' }}
-                custom={2}
-                variants={headVariants}
-                animate={isListening ? "listening" : "idle"}
-            >
-                <HeadSVG color={goldGradient} eyeColor={eyeColor} isListening={isListening} />
-            </motion.div>
+            <svg viewBox="0 0 200 160" width="100%" height="100%" style={{ zIndex: 1, filter: 'drop-shadow(0 0 10px rgba(0,0,0,0.5))' }}>
+                <defs>
+                    <linearGradient id="brain-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor={isAlert ? "#991b1b" : "#713f12"} />
+                        <stop offset="50%" stopColor={isAlert ? "#ef4444" : "#eab308"} />
+                        <stop offset="100%" stopColor={isAlert ? "#7f1d1d" : "#422006"} />
+                    </linearGradient>
+                    
+                    <filter id="neural-glow">
+                        <feGaussianBlur stdDeviation="1.5" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                </defs>
 
-            {/* Cabeça Central */}
-            <motion.div
-                style={{ x: dx, y: dy, position: 'absolute', top: '8px', zIndex: 10 }}
-                custom={1}
-                variants={headVariants}
-                animate={isListening ? "listening" : "idle"}
-            >
-                <HeadSVG color={goldGradient} eyeColor={eyeColor} isListening={isListening} isMain />
-            </motion.div>
+                {/* Estrutura Principal do Cérebro (Lado Esquerdo) */}
+                <motion.path
+                    d="M100 30 C 60 30, 30 50, 30 90 C 30 130, 60 140, 100 140 C 95 120, 90 80, 100 30"
+                    fill="url(#brain-grad)"
+                    stroke={mainColor}
+                    strokeWidth="1"
+                    animate={isThinking ? { scale: [1, 1.02, 1] } : {}}
+                    transition={{ repeat: Infinity, duration: 0.5 }}
+                />
 
-            {/* Glow Aura */}
-            <AnimatePresence>
-                {isListening && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={{ opacity: [0, 0.5, 0], scale: 1.5 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ repeat: Infinity, duration: 2 }}
-                        style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'rgba(234, 179, 8, 0.2)', filter: 'blur(48px)' }}
-                    />
+                {/* Estrutura Principal do Cérebro (Lado Direito) */}
+                <motion.path
+                    d="M100 30 C 140 30, 170 50, 170 90 C 170 130, 140 140, 100 140 C 105 120, 110 80, 100 30"
+                    fill="url(#brain-grad)"
+                    stroke={mainColor}
+                    strokeWidth="1"
+                    animate={isThinking ? { scale: [1, 1.02, 1] } : {}}
+                    transition={{ repeat: Infinity, duration: 0.5, delay: 0.1 }}
+                />
+
+                {/* Convoluções e Sulcos (Detalhes Realistas) */}
+                <g stroke="rgba(0,0,0,0.3)" fill="none" strokeWidth="1.5" strokeLinecap="round">
+                    {/* Linhas de Textura Cerebral */}
+                    <path d="M60 50 Q 80 60, 70 80" />
+                    <path d="M140 50 Q 120 60, 130 80" />
+                    <path d="M50 90 Q 75 95, 60 110" />
+                    <path d="M150 90 Q 125 95, 140 110" />
+                    <path d="M85 45 Q 100 55, 115 45" />
+                    <path d="M85 125 Q 100 115, 115 125" />
+                </g>
+
+                {/* Redes Neurais Ativas (Pontos de Luz) */}
+                <g filter="url(#neural-glow)">
+                    {[...Array(12)].map((_, i) => (
+                        <motion.circle
+                            key={i}
+                            cx={40 + Math.random() * 120}
+                            cy={45 + Math.random() * 80}
+                            r={isThinking ? 2.5 : 1.5}
+                            fill={mainColor}
+                            initial={{ opacity: 0.1 }}
+                            animate={{
+                                opacity: isThinking ? [0.2, 1, 0.2] : isListening ? [0.1, 0.6, 0.1] : 0.2,
+                                scale: isThinking ? [1, 1.5, 1] : 1,
+                            }}
+                            transition={{
+                                duration: isThinking ? 0.3 + Math.random() * 0.5 : 2,
+                                repeat: Infinity,
+                                delay: Math.random() * 2
+                            }}
+                        />
+                    ))}
+                </g>
+
+                {/* Sinapses Cruzadas (Linhas de Energia) */}
+                {isThinking && (
+                    <g stroke={mainColor} strokeWidth="0.5" opacity="0.4">
+                        <motion.path
+                            d="M60 60 L 140 100"
+                            initial={{ pathLength: 0 }}
+                            animate={{ pathLength: [0, 1, 0] }}
+                            transition={{ duration: 0.8, repeat: Infinity }}
+                        />
+                        <motion.path
+                            d="M140 60 L 60 100"
+                            initial={{ pathLength: 0 }}
+                            animate={{ pathLength: [0, 1, 0] }}
+                            transition={{ duration: 0.8, repeat: Infinity, delay: 0.4 }}
+                        />
+                    </g>
                 )}
-            </AnimatePresence>
+            </svg>
+
+            {/* Pulsação de Processamento Central */}
+            {isThinking && (
+                <motion.div
+                    animate={{
+                        scale: [0.8, 1.5],
+                        opacity: [0.5, 0]
+                    }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                    style={{
+                        position: 'absolute',
+                        width: '40px',
+                        height: '40px',
+                        border: `2px solid ${mainColor}`,
+                        borderRadius: '50%',
+                        zIndex: 2
+                    }}
+                />
+            )}
         </div>
-    );
-}
-
-
-function HeadSVG({ color, eyeColor, isListening, isMain = false }: { color: string; eyeColor: string; isListening: boolean; isMain?: boolean }) {
-    return (
-        <svg width={isMain ? "80" : "65"} height={isMain ? "80" : "65"} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#FFD700" />
-                    <stop offset="50%" stopColor="#B8860B" />
-                    <stop offset="100%" stopColor="#8B4513" />
-                </linearGradient>
-                <filter id="glow">
-                    <feGaussianBlur stdDeviation="2" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-            </defs>
-            
-            {/* Skull Structure */}
-            <motion.path
-                d="M50 15C32 15 18 28 18 45C18 62 30 82 50 88C70 82 82 62 82 45C82 28 68 15 50 15Z"
-                fill="#0a0a0a"
-                stroke={color}
-                strokeWidth="2.5"
-                filter="url(#glow)"
-                animate={isListening ? { strokeWidth: [2.5, 4, 2.5] } : {}}
-            />
-
-            {/* Neural Lines on Skull */}
-            <path d="M30 30L40 40M70 30L60 40" stroke={color} strokeWidth="0.5" opacity="0.3" />
-
-            {/* Eyes */}
-            <motion.circle
-                cx="35" cy="45" r="5"
-                fill={eyeColor}
-                animate={{
-                    scale: isListening ? [1, 1.4, 1] : [1, 0.9, 1],
-                    opacity: isListening ? 1 : [0.6, 1, 0.6]
-                }}
-                transition={{ repeat: Infinity, duration: isListening ? 0.6 : 3 }}
-                style={{ filter: `drop-shadow(0 0 8px ${eyeColor})` }}
-            />
-            <motion.circle
-                cx="65" cy="45" r="5"
-                fill={eyeColor}
-                animate={{
-                    scale: isListening ? [1, 1.4, 1] : [1, 0.9, 1],
-                    opacity: isListening ? 1 : [0.6, 1, 0.6]
-                }}
-                transition={{ repeat: Infinity, duration: isListening ? 0.6 : 3, delay: 0.2 }}
-                style={{ filter: `drop-shadow(0 0 8px ${eyeColor})` }}
-            />
-
-            {/* Mouth / Teeth Detail */}
-            <path d="M42 75H58" stroke={color} strokeWidth="1.5" opacity="0.4" strokeLinecap="round" />
-            <motion.path 
-                d="M45 75V80M50 75V82M55 75V80" 
-                stroke={color} 
-                strokeWidth="1" 
-                opacity="0.4" 
-                animate={isListening ? { opacity: [0.4, 0.8, 0.4] } : {}}
-            />
-        </svg>
     );
 }
