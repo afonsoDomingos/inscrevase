@@ -303,7 +303,7 @@ export default function Brain() {
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        <div style={{
+                        style={{
                             background: 'rgba(0, 0, 0, 0.98)',
                             backdropFilter: 'blur(20px)',
                             border: `1px solid ${isAlert ? '#ef4444' : 'rgba(255, 215, 0, 0.3)'}`,
