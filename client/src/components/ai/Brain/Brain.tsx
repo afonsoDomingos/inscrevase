@@ -108,7 +108,7 @@ export default function Brain() {
 
     // Componente de Visualização de Voz (Barras de Gráfico)
     const VoiceVisualizer = () => (
-        <div className="flex items-end justify-center gap-[3px] h-8 w-full px-4">
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '3px', height: '32px', width: '100%', padding: '0 16px' }}>
             {[...Array(15)].map((_, i) => (
                 <motion.div
                     key={i}
@@ -121,8 +121,12 @@ export default function Brain() {
                         duration: 0.5 + Math.random() * 0.3,
                         delay: i * 0.05
                     }}
-                    className={`w-1.5 rounded-full ${isAlert ? 'bg-red-500' : 'bg-yellow-500'}`}
-                    style={{ boxShadow: isSpeaking || isListening ? `0 0 10px ${isAlert ? '#ef4444' : '#eab308'}` : 'none' }}
+                    style={{ 
+                        width: '6px', 
+                        borderRadius: '9999px', 
+                        background: isAlert ? '#ef4444' : '#eab308',
+                        boxShadow: isSpeaking || isListening ? `0 0 10px ${isAlert ? '#ef4444' : '#eab308'}` : 'none' 
+                    }}
                 />
             ))}
         </div>
@@ -232,38 +236,73 @@ export default function Brain() {
     if (isHibernated) return null;
 
     return (
-        <div className="fixed top-24 right-6 z-[9999] flex flex-col items-end gap-4">
+        <div style={{ position: 'fixed', bottom: '100px', right: '30px', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '16px' }}>
             {/* Modal de Feedback do Brain */}
             <AnimatePresence>
                 {isVisible && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: -20 }}
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: -20 }}
-                        className={`bg-black/95 backdrop-blur-2xl border-2 p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] w-80 mt-4 transition-colors duration-500 ${
-                            isAlert ? 'border-red-500 shadow-red-500/20' : 'border-yellow-500/30'
-                        }`}
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        style={{
+                            background: 'rgba(0, 0, 0, 0.95)',
+                            backdropFilter: 'blur(20px)',
+                            border: `2px solid ${isAlert ? '#ef4444' : 'rgba(255, 215, 0, 0.3)'}`,
+                            padding: '24px',
+                            borderRadius: '24px',
+                            boxShadow: isAlert ? '0 20px 50px rgba(239, 68, 68, 0.2)' : '0 20px 50px rgba(0, 0, 0, 0.5)',
+                            width: '320px',
+                            transition: 'all 0.5s ease',
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}
                     >
-                        <div className="flex justify-between items-center mb-6">
-                            <div className={`flex items-center gap-2 font-bold tracking-widest text-[10px] uppercase ${isAlert ? 'text-red-500' : 'text-yellow-500'}`}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                            <div style={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                gap: '8px', 
+                                fontWeight: 'bold', 
+                                letterSpacing: '0.1em', 
+                                fontSize: '10px', 
+                                textTransform: 'uppercase', 
+                                color: isAlert ? '#ef4444' : '#eab308' 
+                            }}>
                                 <Command size={14} />
                                 {isAlert ? 'Urgent Alert' : 'Neural Interface'}
                             </div>
-                            <button onClick={() => setIsVisible(false)} className="text-gray-500 hover:text-white transition-colors">
+                            <button 
+                                onClick={() => setIsVisible(false)} 
+                                style={{ 
+                                    color: '#6b7280', 
+                                    background: 'none', 
+                                    border: 'none', 
+                                    cursor: 'pointer', 
+                                    padding: '4px',
+                                    transition: 'color 0.2s ease'
+                                }}
+                                onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
+                                onMouseLeave={(e) => (e.currentTarget.style.color = '#6b7280')}
+                            >
                                 <X size={18} />
                             </button>
                         </div>
 
-                        <div className="flex flex-col items-center gap-6">
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
                             <CerberusVisual isListening={isListening || isThinking || isAlert || isSpeaking} />
                             
                             <VoiceVisualizer />
 
-                            <div className="text-center">
-                                <h3 className={`font-bold mb-1 ${isAlert ? 'text-red-500' : 'text-white'}`}>
+                            <div style={{ textAlign: 'center' }}>
+                                <h3 style={{ 
+                                    fontWeight: 'bold', 
+                                    marginBottom: '4px', 
+                                    color: isAlert ? '#ef4444' : '#fff',
+                                    fontSize: '1rem'
+                                }}>
                                     {isThinking ? "Consultando Gemini..." : isListening ? "Ouvindo Mestre..." : isAlert ? "Atenção Requerida" : "Cérbero Vigilante"}
                                 </h3>
-                                <p className="text-gray-500 text-[11px] px-2 leading-relaxed">
+                                <p style={{ color: '#9ca3af', fontSize: '11px', padding: '0 8px', lineHeight: '1.5' }}>
                                     {!hasSupport 
                                         ? "Seu navegador não suporta comandos de voz. Tente usar o Chrome ou Edge." 
                                         : isAlert 
@@ -276,10 +315,18 @@ export default function Brain() {
                                 <motion.div 
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
-                                    className="bg-yellow-500/10 border border-yellow-500/20 py-2 px-4 rounded-full flex items-center gap-2"
+                                    style={{
+                                        background: 'rgba(234, 179, 8, 0.1)',
+                                        border: '1px solid rgba(234, 179, 8, 0.2)',
+                                        padding: '8px 16px',
+                                        borderRadius: '9999px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px'
+                                    }}
                                 >
-                                    <Terminal size={12} className="text-yellow-500" />
-                                    <span className="text-yellow-500 text-xs font-mono">{lastCommand}</span>
+                                    <Terminal size={12} style={{ color: '#eab308' }} />
+                                    <span style={{ color: '#eab308', fontSize: '0.75rem', fontFamily: 'monospace' }}>{lastCommand}</span>
                                 </motion.div>
                             )}
 
@@ -287,21 +334,32 @@ export default function Brain() {
                                 <button
                                     onClick={startListening}
                                     disabled={isListening}
-                                    className={`w-full py-4 rounded-2xl flex items-center justify-center gap-3 transition-all ${
-                                        isListening 
-                                        ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/50' 
-                                        : 'bg-yellow-500 text-black font-bold hover:bg-yellow-400'
-                                    }`}
+                                    style={{
+                                        width: '100%',
+                                        padding: '16px',
+                                        borderRadius: '16px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '12px',
+                                        transition: 'all 0.3s ease',
+                                        border: isListening ? '1px solid rgba(234, 179, 8, 0.5)' : 'none',
+                                        background: isListening ? 'rgba(234, 179, 8, 0.2)' : '#eab308',
+                                        color: isListening ? '#eab308' : '#000',
+                                        fontWeight: 'bold',
+                                        cursor: isListening ? 'default' : 'pointer',
+                                        outline: 'none'
+                                    }}
                                 >
                                     {isListening ? (
                                         <>
-                                            <div className="flex gap-1">
+                                            <div style={{ display: 'flex', gap: '4px' }}>
                                                 {[1, 2, 3].map(i => (
                                                     <motion.div
                                                         key={i}
                                                         animate={{ height: [4, 12, 4] }}
                                                         transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.1 }}
-                                                        className="w-1 bg-yellow-500 rounded-full"
+                                                        style={{ width: '4px', background: '#eab308', borderRadius: '9999px' }}
                                                     />
                                                 ))}
                                             </div>
@@ -325,19 +383,48 @@ export default function Brain() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsVisible(!isVisible)}
-                className={`relative group p-1 rounded-full bg-black border-2 transition-colors duration-500 ${
-                    isVisible ? 'border-yellow-500 shadow-[0_0_20px_rgba(255,215,0,0.6)]' : 'border-yellow-500/40 shadow-[0_0_15px_rgba(255,215,0,0.1)]'
-                }`}
+                style={{
+                    position: 'relative',
+                    padding: '4px',
+                    borderRadius: '9999px',
+                    background: '#000',
+                    border: `2px solid ${isVisible ? '#eab308' : 'rgba(234, 179, 8, 0.4)'}`,
+                    transition: 'all 0.5s ease',
+                    boxShadow: isVisible ? '0 0 20px rgba(255, 215, 0, 0.6)' : '0 0 15px rgba(255, 215, 0, 0.1)',
+                    cursor: 'pointer',
+                    outline: 'none'
+                }}
             >
-                <div className="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-gray-900 to-black flex items-center justify-center">
-                    <div className="relative">
+                <div style={{ 
+                    width: '56px', 
+                    height: '56px', 
+                    borderRadius: '9999px', 
+                    overflow: 'hidden', 
+                    background: 'linear-gradient(to bottom right, #111827, #000)', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center' 
+                }}>
+                    <div style={{ position: 'relative' }}>
                          {/* Mini Cérbero / Brain Icon */}
-                        <div className={`w-8 h-8 rounded-full border-2 transition-all duration-700 ${
-                            isVisible ? 'border-yellow-500 scale-110' : 'border-gray-700'
-                        }`} />
-                        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-700 ${
-                            isVisible ? 'text-yellow-500' : 'text-gray-700'
-                        }`}>
+                        <div style={{
+                            width: '32px',
+                            height: '32px',
+                            borderRadius: '9999px',
+                            border: '2px solid',
+                            borderColor: isVisible ? '#eab308' : '#374151',
+                            transform: isVisible ? 'scale(1.1)' : 'scale(1)',
+                            transition: 'all 0.7s ease'
+                        }} />
+                        <div style={{
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: isVisible ? '#eab308' : '#374151',
+                            transition: 'all 0.7s ease'
+                        }}>
                             <Command size={18} />
                         </div>
                     </div>

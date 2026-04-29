@@ -42,11 +42,11 @@ export default function CerberusVisual({ isListening = false }: { isListening?: 
     };
 
     return (
-        <div className="relative w-40 h-40 flex items-center justify-center perspective-1000">
+        <div style={{ position: 'relative', width: '160px', height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', perspective: '1000px' }}>
             {/* Neural Mesh Background */}
             <motion.div 
                 animate={{ opacity: isListening ? [0.1, 0.4, 0.1] : 0.1 }}
-                className="absolute inset-0 z-0 pointer-events-none opacity-20"
+                style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', opacity: 0.2 }}
             >
                 <svg width="100%" height="100%" viewBox="0 0 100 100">
                     <defs>
@@ -60,33 +60,30 @@ export default function CerberusVisual({ isListening = false }: { isListening?: 
 
             {/* Cabeça Esquerda */}
             <motion.div
-                style={{ x: dx, y: dy }}
+                style={{ x: dx, y: dy, position: 'absolute', left: 0, top: '24px' }}
                 custom={0}
                 variants={headVariants}
                 animate={isListening ? "listening" : "idle"}
-                className="absolute left-0 top-6"
             >
                 <HeadSVG color={goldGradient} eyeColor={eyeColor} isListening={isListening} />
             </motion.div>
 
             {/* Cabeça Direita */}
             <motion.div
-                style={{ x: dx, y: dy }}
+                style={{ x: dx, y: dy, position: 'absolute', right: 0, top: '24px' }}
                 custom={2}
                 variants={headVariants}
                 animate={isListening ? "listening" : "idle"}
-                className="absolute right-0 top-6"
             >
                 <HeadSVG color={goldGradient} eyeColor={eyeColor} isListening={isListening} />
             </motion.div>
 
             {/* Cabeça Central */}
             <motion.div
-                style={{ x: dx, y: dy }}
+                style={{ x: dx, y: dy, position: 'absolute', top: '8px', zIndex: 10 }}
                 custom={1}
                 variants={headVariants}
                 animate={isListening ? "listening" : "idle"}
-                className="absolute top-2 z-10"
             >
                 <HeadSVG color={goldGradient} eyeColor={eyeColor} isListening={isListening} isMain />
             </motion.div>
@@ -99,7 +96,7 @@ export default function CerberusVisual({ isListening = false }: { isListening?: 
                         animate={{ opacity: [0, 0.5, 0], scale: 1.5 }}
                         exit={{ opacity: 0 }}
                         transition={{ repeat: Infinity, duration: 2 }}
-                        className="absolute inset-0 rounded-full bg-yellow-500/20 blur-3xl"
+                        style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'rgba(234, 179, 8, 0.2)', filter: 'blur(48px)' }}
                     />
                 )}
             </AnimatePresence>
