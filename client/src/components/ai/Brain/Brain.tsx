@@ -289,7 +289,7 @@ export default function Brain() {
     useEffect(() => {
         console.log("%c🧠 [BRAIN] Interface Neural Ativa", "color: #FFD700; font-weight: bold; font-size: 14px;");
         console.log("-> Suporte de Voz:", hasSupport);
-        console.log("-> Posicionamento: Bottom-Left (Above Aura)");
+        console.log("-> Posicionamento: Top-Left (Floating)");
     }, [hasSupport]);
 
     if (isHibernated) return null;
