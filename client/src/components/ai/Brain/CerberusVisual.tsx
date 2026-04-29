@@ -14,7 +14,6 @@ export default function CerberusVisual({
     isSpeaking?: boolean;
 }) {
     const mainColor = isAlert ? "#ef4444" : "#eab308";
-    const glowColor = isAlert ? "rgba(239, 68, 68, 0.6)" : "rgba(234, 179, 8, 0.6)";
 
     return (
         <div style={{ 

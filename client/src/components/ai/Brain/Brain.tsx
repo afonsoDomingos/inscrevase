@@ -2,9 +2,10 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, Terminal, X, Command, Power } from 'lucide-react';
+import { Mic, Terminal, X, Command, Power, Square } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { toast } from 'sonner';
+import ReactMarkdown from 'react-markdown';
 import CerberusVisual from './CerberusVisual';
 import { useSpeechRecognition } from './useSpeechRecognition';
 import { aiService } from '@/lib/aiService';
@@ -21,6 +22,7 @@ export default function Brain() {
     const [isThinking, setIsThinking] = useState(false);
     const [isAlert, setIsAlert] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
+    const [chatHistory, setChatHistory] = useState<{role: 'user' | 'ai', text: string}[]>([]);
 
     const speak = useCallback((text: string) => {
         if (!window.speechSynthesis) return;
@@ -48,6 +50,18 @@ export default function Brain() {
         setIsAlert(false);
 
         const lowerTranscript = transcript.toLowerCase();
+
+        // Comando Especial: Interrupção de Fala
+        if (lowerTranscript.includes('cala-te') || lowerTranscript.includes('calar') || lowerTranscript.includes('parar') || lowerTranscript.includes('silêncio') || lowerTranscript.includes('chega')) {
+            window.speechSynthesis?.cancel();
+            setIsSpeaking(false);
+            setIsThinking(false);
+            toast.info("A fala foi interrompida.");
+            return;
+        }
+
+        // Adiciona histórico de usuário
+        setChatHistory(prev => [...prev, { role: 'user', text: transcript }]);
 
         // Comando Especial: Hibernação
         if (lowerTranscript.includes('dormir') || lowerTranscript.includes('desativar brain') || lowerTranscript.includes('desligar cérbero')) {
@@ -90,9 +104,29 @@ export default function Brain() {
                 toast.info("Abrindo interface de criação...");
                 window.dispatchEvent(new Event('open-create-event-modal'));
             } else {
+                // Construção do contexto visual (Página atual e texto principal)
+                let pageContext = `Rota atual: ${pathname}\n`;
+                const mainContainer = document.querySelector('main') || document.body;
+                if (mainContainer) {
+                    // Extrai até 1500 caracteres de texto legível da tela para dar contexto à IA
+                    pageContext += `Conteúdo visível no ecrã: ${mainContainer.innerText.substring(0, 1500)}`;
+                }
+
                 // Inteligência Contextual via Gemini
-                const result = await aiService.brainCommand(transcript);
-                speak(result.reply);
+                const result = await aiService.brainCommand(transcript, pageContext);
+                const reply = result.reply;
+                setChatHistory(prev => [...prev, { role: 'ai', text: reply }]);
+                
+                // Resumo para fala (primeira frase ou limite curto)
+                const firstSentence = reply.split(/[.!?\n]/)[0];
+                const spokenSummary = firstSentence.length > 5 ? firstSentence + "." : reply.substring(0, 100) + "...";
+                
+                if (reply.length > 150) {
+                    speak(spokenSummary + " Pode ler a resposta completa no terminal.");
+                } else {
+                    speak(reply);
+                }
+                
                 toast.info("BRAIN processou sua consulta.");
             }
         } catch (error) {
@@ -348,6 +382,18 @@ export default function Brain() {
                                     <div style={{ width: '2px', height: '2px', background: 'currentColor', borderRadius: '50%', margin: '2px 0' }} />
                                     <div style={{ width: '2px', height: '2px', background: 'currentColor', borderRadius: '50%', margin: '2px 0' }} />
                                 </div>
+                                {isSpeaking && (
+                                    <button 
+                                        onClick={() => {
+                                            window.speechSynthesis?.cancel();
+                                            setIsSpeaking(false);
+                                        }}
+                                        title="Silenciar IA"
+                                        style={{ color: '#eab308', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                                    >
+                                        <Square size={14} fill="currentColor" />
+                                    </button>
+                                )}
                                 <button 
                                     onClick={() => {
                                         speak("Desativando sistemas neurais. Até logo, Mestre.");
@@ -404,12 +450,55 @@ export default function Brain() {
                                         borderRadius: '9999px',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '8px'
+                                        gap: '8px',
+                                        width: '100%',
+                                        whiteSpace: 'nowrap',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis'
                                     }}
                                 >
-                                    <Terminal size={12} style={{ color: '#eab308' }} />
-                                    <span style={{ color: '#eab308', fontSize: '0.75rem', fontFamily: 'monospace' }}>{lastCommand}</span>
+                                    <Terminal size={12} style={{ color: '#eab308', minWidth: '12px' }} />
+                                    <span style={{ color: '#eab308', fontSize: '0.75rem', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lastCommand}</span>
                                 </motion.div>
+                            )}
+
+                            {chatHistory.length > 0 && (
+                                <div style={{
+                                    width: '100%',
+                                    maxHeight: '180px',
+                                    overflowY: 'auto',
+                                    background: 'rgba(0, 0, 0, 0.6)',
+                                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                                    borderRadius: '12px',
+                                    padding: '10px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '10px',
+                                    fontSize: '0.75rem',
+                                    color: '#d1d5db',
+                                    scrollbarWidth: 'thin',
+                                    scrollbarColor: 'rgba(255,255,255,0.2) transparent'
+                                }}>
+                                    {chatHistory.map((msg, idx) => (
+                                        <div key={idx} style={{ 
+                                            alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                                            background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(55, 65, 81, 0.4)',
+                                            border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.05)'}`,
+                                            padding: '8px 12px',
+                                            borderRadius: '12px',
+                                            maxWidth: '90%',
+                                            wordBreak: 'break-word'
+                                        }}>
+                                            {msg.role === 'ai' ? (
+                                                <div className="prose prose-invert prose-sm" style={{ margin: 0, fontSize: '0.75rem' }}>
+                                                   <ReactMarkdown>{msg.text}</ReactMarkdown>
+                                                </div>
+                                            ) : (
+                                                <span style={{ color: '#fef08a' }}>{msg.text}</span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
                             )}
 
                             {hasSupport && (

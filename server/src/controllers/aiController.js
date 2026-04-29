@@ -28,7 +28,7 @@ DADOS DISPONÍVEIS NO CONTEXTO:
 `;
 
 exports.handleBrainCommand = async (req, res) => {
-    const { transcript, locale = 'pt' } = req.body;
+    const { transcript, locale = 'pt', pageContext = '' } = req.body;
     const userId = req.user.id;
     const role = req.user.role;
 
@@ -80,12 +80,16 @@ exports.handleBrainCommand = async (req, res) => {
             `;
         }
 
+        if (pageContext) {
+            statsContext += `\n\nCONTEXTO VISUAL DO UTILIZADOR (Página Atual):\n${pageContext}\n`;
+        }
+
         // Gemini Integration
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const prompt = BRAIN_SYSTEM_PROMPT.replace('{CONTEXT_DATA}', statsContext) + 
-                       `\\n\\nUsuário diz: "${transcript}"\\n\\nResposta do BRAIN:`;
+                       `\n\nUsuário diz: "${transcript}"\n\nResposta do BRAIN:`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
