@@ -349,18 +349,19 @@ export default function Brain() {
                             padding: '20px',
                             borderRadius: '24px',
                             boxShadow: isAlert ? '0 0 40px rgba(239, 68, 68, 0.2)' : '0 20px 50px rgba(0, 0, 0, 0.5)',
-                            width: '300px',
-                            transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                            width: '360px',
+                            transition: 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
                             display: 'flex',
                             flexDirection: 'column',
                             cursor: 'grab',
                             overflow: 'hidden',
                             position: 'relative',
-                            transform: 'perspective(1200px) rotateY(-10deg)',
-                            transformStyle: 'preserve-3d'
+                            transform: 'perspective(1000px) rotateY(-15deg) rotateX(2deg)',
+                            transformStyle: 'preserve-3d',
+                            borderRight: `3px solid ${isAlert ? 'rgba(239, 68, 68, 0.6)' : 'rgba(234, 179, 8, 0.4)'}`
                         }}
-                        whileHover={{ transform: 'perspective(1200px) rotateY(-2deg)', scale: 1.02 }}
-                        whileDrag={{ cursor: 'grabbing', scale: 1.05, rotateY: 0 }}
+                        whileHover={{ transform: 'perspective(1000px) rotateY(-5deg) rotateX(0deg)', scale: 1.02 }}
+                        whileDrag={{ cursor: 'grabbing', scale: 1.05, rotateY: 0, rotateX: 0 }}
                     >
                         {/* Efeito de Vidro Curvado (Vignette) */}
                         <div style={{
