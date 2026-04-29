@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+
 import { Menu, X, LogIn, LayoutDashboard, Linkedin, Youtube, Facebook, MessageCircle, Home, Users, Info, LifeBuoy, Newspaper, Sparkles, MessageSquare, Calendar as CalendarIcon, Library, Briefcase } from 'lucide-react';
 import { SUPPORT_WHATSAPP } from '@/lib/constants';
 import { useState, useEffect } from 'react';
@@ -16,7 +16,6 @@ import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const { t } = useTranslate();
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -243,11 +242,9 @@ export default function Navbar() {
           <div className="mobile-menu-spacer"></div>
 
           {isLoggedIn ? (
-            <button 
-              onClick={() => {
-                setIsOpen(false);
-                router.push(getDashboardLink());
-              }} 
+            <Link 
+              href={getDashboardLink()}
+              onClick={() => setIsOpen(false)} 
               className="mobile-action-btn" 
               style={{ 
                 width: '100%',
@@ -263,17 +260,18 @@ export default function Navbar() {
                 marginBottom: '1rem', 
                 fontFamily: 'var(--font-poppins)', 
                 boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
               {t('nav.dashboard')}
-            </button>
+            </Link>
           ) : (
-            <button 
-              onClick={() => {
-                setIsOpen(false);
-                router.push('/entrar');
-              }} 
+            <Link 
+              href="/entrar"
+              onClick={() => setIsOpen(false)} 
               className="mobile-action-btn" 
               style={{ 
                 width: '100%',
@@ -289,11 +287,14 @@ export default function Navbar() {
                 marginBottom: '1rem', 
                 fontFamily: 'var(--font-poppins)', 
                 boxShadow: '0 10px 25px rgba(212, 175, 55, 0.4)',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
               {t('auth.login')}
-            </button>
+            </Link>
           )}
 
           <div className="mobile-footer" style={{ borderTop: '1px solid #f0f0f0', paddingTop: '1rem', paddingBottom: '0.5rem' }}>
@@ -369,7 +370,7 @@ export default function Navbar() {
             height: 100vh;
             height: 100dvh; /* Para navegadores mobile modernos */
             background: #ffffff;
-            z-index: 9999;
+            z-index: 10000;
             display: flex;
             flex-direction: column;
             opacity: 0;

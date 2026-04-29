@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import { useEffect } from 'react';
 
 export default function CerberusVisual({ isListening = false }: { isListening?: boolean }) {
@@ -107,7 +107,6 @@ export default function CerberusVisual({ isListening = false }: { isListening?: 
     );
 }
 
-import { AnimatePresence } from 'framer-motion';
 
 function HeadSVG({ color, eyeColor, isListening, isMain = false }: { color: string; eyeColor: string; isListening: boolean; isMain?: boolean }) {
     return (

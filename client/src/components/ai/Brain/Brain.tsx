@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, Terminal, X, Command } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -9,14 +9,39 @@ import CerberusVisual from './CerberusVisual';
 import { useSpeechRecognition } from './useSpeechRecognition';
 import { aiService } from '@/lib/aiService';
 import { useSocket } from '@/context/SocketContext';
-import { useEffect } from 'react';
 
 export default function Brain() {
     const router = useRouter();
     const { socket } = useSocket();
     
-    // Mover para o topo para disponibilidade global no componente
-    const handleCommand = async (transcript: string) => {
+    const [isVisible, setIsVisible] = useState(false);
+    const [isHibernated, setIsHibernated] = useState(false);
+    const [lastCommand, setLastCommand] = useState("");
+    const [isThinking, setIsThinking] = useState(false);
+    const [isAlert, setIsAlert] = useState(false);
+    const [isSpeaking, setIsSpeaking] = useState(false);
+
+    const speak = useCallback((text: string) => {
+        if (!window.speechSynthesis) return;
+        
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'pt-PT';
+        utterance.rate = 1.0;
+        utterance.pitch = 0.8;
+
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v => v.name.includes('Premium') || v.name.includes('Google')) || voices[0];
+        if (preferredVoice) utterance.voice = preferredVoice;
+
+        window.speechSynthesis.speak(utterance);
+    }, []);
+
+    const handleCommand = useCallback(async (transcript: string) => {
         setLastCommand(transcript);
         setIsThinking(true);
         setIsAlert(false);
@@ -75,36 +100,11 @@ export default function Brain() {
         } finally {
             setIsThinking(false);
         }
-    };
+    }, [router, speak]);
 
     const { isListening, startListening, hasSupport } = useSpeechRecognition(handleCommand);
 
-    const [isVisible, setIsVisible] = useState(false);
-    const [isHibernated, setIsHibernated] = useState(false);
-    const [lastCommand, setLastCommand] = useState("");
-    const [isThinking, setIsThinking] = useState(false);
-    const [isAlert, setIsAlert] = useState(false);
-    const [isSpeaking, setIsSpeaking] = useState(false);
 
-    const speak = (text: string) => {
-        if (!window.speechSynthesis) return;
-        
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'pt-PT';
-        utterance.rate = 1.0;
-        utterance.pitch = 0.8;
-
-        utterance.onstart = () => setIsSpeaking(true);
-        utterance.onend = () => setIsSpeaking(false);
-        utterance.onerror = () => setIsSpeaking(false);
-
-        const voices = window.speechSynthesis.getVoices();
-        const preferredVoice = voices.find(v => v.name.includes('Premium') || v.name.includes('Google')) || voices[0];
-        if (preferredVoice) utterance.voice = preferredVoice;
-
-        window.speechSynthesis.speak(utterance);
-    };
 
     // Componente de Visualização de Voz (Barras de Gráfico)
     const VoiceVisualizer = () => (
@@ -199,7 +199,7 @@ export default function Brain() {
         return () => {
             wakeRecognition.stop();
         };
-    }, [hasSupport, isVisible, isListening, startListening]);
+    }, [hasSupport, isVisible, isListening, startListening, speak]);
 
     // Monitoramento Proativo via Sockets
     useEffect(() => {
@@ -223,7 +223,7 @@ export default function Brain() {
         return () => {
             socket.off('new_notification', handleNewNotification);
         };
-    }, [socket]);
+    }, [socket, speak]);
 
     useEffect(() => {
         console.log("🧠 [BRAIN] Interface Neural Montada. Suporte de Voz:", hasSupport);
