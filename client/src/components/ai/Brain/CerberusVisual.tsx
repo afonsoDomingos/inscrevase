@@ -1,117 +1,173 @@
 "use client";
 
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useEffect } from 'react';
 
 export default function CerberusVisual({ isListening = false }: { isListening?: boolean }) {
-    // Definimos cores premium baseadas no design atual (Preto, Ouro, Vermelho sutil)
-    const goldColor = "#FFD700";
-    const darkGold = "#D4AF37";
-    const eyeColor = isListening ? "#FFD700" : "#ff4d4d"; // Ouro quando ouve, Vermelho quando "dorme"
+    // Parallax effect values
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
+    
+    // Smooth transitions
+    const springConfig = { damping: 20, stiffness: 150 };
+    const dx = useSpring(mouseX, springConfig);
+    const dy = useSpring(mouseY, springConfig);
 
-    // Variantes de animação orgânica (respiração e oscilação)
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            const { innerWidth, innerHeight } = window;
+            const x = (e.clientX / innerWidth - 0.5) * 20;
+            const y = (e.clientY / innerHeight - 0.5) * 20;
+            mouseX.set(x);
+            mouseY.set(y);
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => window.removeEventListener('mousemove', handleMouseMove);
+    }, [mouseX, mouseY]);
+
+    const goldGradient = "url(#gold-grad)";
+    const eyeColor = isListening ? "#FFD700" : "#ff3333";
+
     const headVariants = {
         idle: (i: number) => ({
-            y: [0, -5, 0],
-            rotate: i === 0 ? [-2, 2, -2] : i === 2 ? [2, -2, 2] : 0,
-            transition: {
-                duration: 3 + i,
-                repeat: Infinity,
-                ease: "easeInOut"
-            }
+            y: [0, -8, 0],
+            rotate: i === 0 ? [-3, 3, -3] : i === 2 ? [3, -3, 3] : 0,
+            transition: { duration: 4 + i, repeat: Infinity, ease: "easeInOut" }
         }),
         listening: {
-            scale: [1, 1.05, 1],
-            transition: {
-                duration: 0.5,
-                repeat: Infinity,
-                ease: "linear"
-            }
+            scale: [1, 1.08, 1],
+            filter: ["brightness(1)", "brightness(1.5)", "brightness(1)"],
+            transition: { duration: 0.8, repeat: Infinity, ease: "easeInOut" }
         }
     };
 
     return (
-        <div className="relative w-32 h-32 flex items-center justify-center">
+        <div className="relative w-40 h-40 flex items-center justify-center perspective-1000">
+            {/* Neural Mesh Background */}
+            <motion.div 
+                animate={{ opacity: isListening ? [0.1, 0.4, 0.1] : 0.1 }}
+                className="absolute inset-0 z-0 pointer-events-none opacity-20"
+            >
+                <svg width="100%" height="100%" viewBox="0 0 100 100">
+                    <defs>
+                        <pattern id="hexagons" width="10" height="10" patternUnits="userSpaceOnUse">
+                            <path d="M5 0L10 2.5V7.5L5 10L0 7.5V2.5L5 0Z" fill="none" stroke="gold" strokeWidth="0.1" />
+                        </pattern>
+                    </defs>
+                    <rect width="100" height="100" fill="url(#hexagons)" />
+                </svg>
+            </motion.div>
+
             {/* Cabeça Esquerda */}
             <motion.div
+                style={{ x: dx, y: dy }}
                 custom={0}
                 variants={headVariants}
                 animate={isListening ? "listening" : "idle"}
-                className="absolute left-0 top-4"
+                className="absolute left-0 top-6"
             >
-                <HeadSVG color={goldColor} eyeColor={eyeColor} isListening={isListening} />
+                <HeadSVG color={goldGradient} eyeColor={eyeColor} isListening={isListening} />
             </motion.div>
 
             {/* Cabeça Direita */}
             <motion.div
+                style={{ x: dx, y: dy }}
                 custom={2}
                 variants={headVariants}
                 animate={isListening ? "listening" : "idle"}
-                className="absolute right-0 top-4"
+                className="absolute right-0 top-6"
             >
-                <HeadSVG color={goldColor} eyeColor={eyeColor} isListening={isListening} />
+                <HeadSVG color={goldGradient} eyeColor={eyeColor} isListening={isListening} />
             </motion.div>
 
-            {/* Cabeça Central (A mais importante) */}
+            {/* Cabeça Central */}
             <motion.div
+                style={{ x: dx, y: dy }}
                 custom={1}
                 variants={headVariants}
                 animate={isListening ? "listening" : "idle"}
-                className="absolute top-0 z-10"
+                className="absolute top-2 z-10"
             >
-                <HeadSVG color={darkGold} eyeColor={eyeColor} isListening={isListening} />
+                <HeadSVG color={goldGradient} eyeColor={eyeColor} isListening={isListening} isMain />
             </motion.div>
 
-            {/* Aura/Brilho de Atividade */}
-            {isListening && (
-                <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1.5, opacity: [0, 0.3, 0] }}
-                    transition={{ repeat: Infinity, duration: 1.5 }}
-                    className="absolute inset-0 rounded-full bg-yellow-400 blur-2xl z-0"
-                />
-            )}
+            {/* Glow Aura */}
+            <AnimatePresence>
+                {isListening && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: [0, 0.5, 0], scale: 1.5 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ repeat: Infinity, duration: 2 }}
+                        className="absolute inset-0 rounded-full bg-yellow-500/20 blur-3xl"
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 }
 
-function HeadSVG({ color, eyeColor, isListening }: { color: string; eyeColor: string; isListening: boolean }) {
+import { AnimatePresence } from 'framer-motion';
+
+function HeadSVG({ color, eyeColor, isListening, isMain = false }: { color: string; eyeColor: string; isListening: boolean; isMain?: boolean }) {
     return (
-        <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-2xl">
-            {/* Crânio Estilizado */}
-            <path
-                d="M50 10C30 10 15 25 15 45C15 65 30 85 50 90C70 85 85 65 85 45C85 25 70 10 50 10Z"
-                fill="#1a1a1a"
-                stroke={color}
-                strokeWidth="2"
-            />
-            {/* Detalhes da Face */}
-            <path d="M30 40Q35 35 40 40" stroke={color} strokeWidth="1" />
-            <path d="M60 40Q65 35 70 40" stroke={color} strokeWidth="1" />
+        <svg width={isMain ? "80" : "65"} height={isMain ? "80" : "65"} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FFD700" />
+                    <stop offset="50%" stopColor="#B8860B" />
+                    <stop offset="100%" stopColor="#8B4513" />
+                </linearGradient>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="2" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+            </defs>
             
-            {/* Olhos (A parte "viva") */}
-            <motion.circle
-                cx="35" cy="45" r="4"
-                fill={eyeColor}
-                animate={isListening 
-                    ? { scale: [1, 1.5, 1], filter: "blur(1px)" } 
-                    : { opacity: [0.4, 1, 0.4], scale: [0.8, 1, 0.8] }
-                }
-                transition={isListening ? {} : { repeat: Infinity, duration: 4 }}
-            />
-            <motion.circle
-                cx="65" cy="45" r="4"
-                fill={eyeColor}
-                animate={isListening 
-                    ? { scale: [1, 1.5, 1], filter: "blur(1px)" } 
-                    : { opacity: [0.4, 1, 0.4], scale: [0.8, 1, 0.8] }
-                }
-                transition={isListening ? {} : { repeat: Infinity, duration: 4, delay: 0.5 }}
+            {/* Skull Structure */}
+            <motion.path
+                d="M50 15C32 15 18 28 18 45C18 62 30 82 50 88C70 82 82 62 82 45C82 28 68 15 50 15Z"
+                fill="#0a0a0a"
+                stroke={color}
+                strokeWidth="2.5"
+                filter="url(#glow)"
+                animate={isListening ? { strokeWidth: [2.5, 4, 2.5] } : {}}
             />
 
-            {/* Mandíbula/Dentes sutil */}
-            <path d="M40 70H60" stroke={color} strokeWidth="1" opacity="0.5" />
-            <path d="M45 70V75" stroke={color} strokeWidth="1" opacity="0.5" />
-            <path d="M55 70V75" stroke={color} strokeWidth="1" opacity="0.5" />
+            {/* Neural Lines on Skull */}
+            <path d="M30 30L40 40M70 30L60 40" stroke={color} strokeWidth="0.5" opacity="0.3" />
+
+            {/* Eyes */}
+            <motion.circle
+                cx="35" cy="45" r="5"
+                fill={eyeColor}
+                animate={{
+                    scale: isListening ? [1, 1.4, 1] : [1, 0.9, 1],
+                    opacity: isListening ? 1 : [0.6, 1, 0.6]
+                }}
+                transition={{ repeat: Infinity, duration: isListening ? 0.6 : 3 }}
+                style={{ filter: `drop-shadow(0 0 8px ${eyeColor})` }}
+            />
+            <motion.circle
+                cx="65" cy="45" r="5"
+                fill={eyeColor}
+                animate={{
+                    scale: isListening ? [1, 1.4, 1] : [1, 0.9, 1],
+                    opacity: isListening ? 1 : [0.6, 1, 0.6]
+                }}
+                transition={{ repeat: Infinity, duration: isListening ? 0.6 : 3, delay: 0.2 }}
+                style={{ filter: `drop-shadow(0 0 8px ${eyeColor})` }}
+            />
+
+            {/* Mouth / Teeth Detail */}
+            <path d="M42 75H58" stroke={color} strokeWidth="1.5" opacity="0.4" strokeLinecap="round" />
+            <motion.path 
+                d="M45 75V80M50 75V82M55 75V80" 
+                stroke={color} 
+                strokeWidth="1" 
+                opacity="0.4" 
+                animate={isListening ? { opacity: [0.4, 0.8, 0.4] } : {}}
+            />
         </svg>
     );
 }

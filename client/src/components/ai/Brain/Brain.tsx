@@ -7,85 +7,158 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import CerberusVisual from './CerberusVisual';
 import { useSpeechRecognition } from './useSpeechRecognition';
+import { aiService } from '@/lib/aiService';
+import { useSocket } from '@/context/SocketContext';
+import { useEffect } from 'react';
 
 export default function Brain() {
     const router = useRouter();
-    const [isVisible, setIsVisible] = useState(false);
-    const [lastCommand, setLastCommand] = useState("");
-    // const [isProcessing, setIsProcessing] = useState(false);
-
-    const handleCommand = (transcript: string) => {
+    const { socket } = useSocket();
+    
+    // Mover para o topo para disponibilidade global no componente
+    const handleCommand = async (transcript: string) => {
         setLastCommand(transcript);
-        // setIsProcessing(true);
+        setIsThinking(true);
+        setIsAlert(false);
 
         const lowerTranscript = transcript.toLowerCase();
 
-        // Mapeamento Abrangente de Rotas (Submenus Completos)
-        const routes: Record<string, string[]> = {
-            // Mentor Dashboard Routes
-            '/dashboard/mentor?tab=overview': ['visão geral', 'resumo', 'dashboard mentor', 'painel mentor'],
-            '/dashboard/mentor?tab=workspace': ['saúde profissional', 'workspace', 'espaço de trabalho'],
-            '/dashboard/mentor?tab=forms': ['meus eventos', 'meus formulários', 'ver eventos'],
-            '/dashboard/mentor?tab=submissions': ['ver inscrições', 'participantes', 'lista de inscritos'],
-            '/dashboard/mentor?tab=lessons': ['aulas', 'meus cursos', 'conteúdo', 'tutoriais'],
-            '/dashboard/mentor?tab=earnings': ['meus ganhos', 'finanças mentor', 'dinheiro', 'receita'],
-            '/dashboard/mentor?tab=reports': ['relatórios', 'estatísticas de vendas'],
-            '/dashboard/mentor?tab=ads': ['meus anúncios', 'publicidade'],
-            '/dashboard/mentor?tab=smartlinks': ['meus smartlinks', 'links inteligentes'],
-            '/dashboard/mentor?tab=marketing': ['impulsionar vendas', 'marketing'],
-            '/dashboard/mentor?tab=services': ['meus serviços', 'gestão de serviços'],
-            '/dashboard/mentor?tab=referral': ['indicações', 'impacto', 'referência'],
-            '/dashboard/mentor?tab=library': ['meus livros', 'biblioteca'],
-            '/dashboard/mentor?tab=mysales': ['minhas vendas', 'histórico de vendas'],
-            '/dashboard/mentor?tab=plans': ['ver planos', 'mudar plano', 'upgrade'],
-            '/dashboard/mentor?tab=settings': ['minha conta', 'definições mentor', 'ajustes'],
-            '/dashboard/mentor?tab=liveboard': ['sala de eventos', 'liveboard', 'lab'],
-            '/dashboard/mentor?tab=vacancies': ['vagas mentor', 'gestão de vagas'],
-            
-            // Admin Dashboard Routes
-            '/dashboard/admin?tab=overview': ['painel admin', 'dashboard admin', 'estatísticas globais'],
-            '/dashboard/admin?tab=users': ['gestão de usuários', 'ver utilizadores', 'lista de pessoas'],
-            '/dashboard/admin?tab=finance': ['financeiro global', 'receita da plataforma', 'caixa'],
-            '/dashboard/admin?tab=payouts': ['pagamentos', 'payouts'],
-            '/dashboard/admin?tab=support': ['suporte técnico', 'tickets', 'ajuda', 'mensagens de suporte'],
-            '/dashboard/admin?tab=blog': ['gerenciar blog', 'postagens', 'artigos'],
-            '/dashboard/admin?tab=newsletter': ['e-mail marketing', 'newsletter'],
-            '/dashboard/admin?tab=vacancies': ['vagas admin', 'gestão de vagas global'],
-            '/dashboard/admin?tab=whatsapp': ['automação whatsapp', 'logs whatsapp', 'mensagens whatsapp'],
-            '/dashboard/admin?tab=motiva': ['prémio motiva', 'motiva'],
-            '/dashboard/admin?tab=settings': ['definições do sistema', 'ajustes admin', 'configurações'],
-            
-            // Shared/Common
-            '/dashboard/perfil': ['meu perfil', 'perfil profissional'],
-            '/': ['ir para home', 'sair da dashboard', 'página inicial', 'site']
+        // Mapeamento Abrangente de Rotas (Atalhos Rápidos)
+        const routes: Record<string, { path: string, response: string, keywords: string[] }> = {
+            '/dashboard/mentor?tab=overview': { path: '/dashboard/mentor?tab=overview', response: 'Entendido, Mestre. Carregando sua visão geral.', keywords: ['visão geral', 'resumo', 'dashboard mentor', 'painel mentor'] },
+            '/dashboard/mentor?tab=forms': { path: '/dashboard/mentor?tab=forms', response: 'Abrindo seus eventos e formulários.', keywords: ['meus eventos', 'meus formulários', 'ver eventos'] },
+            '/dashboard/mentor?tab=submissions': { path: '/dashboard/mentor?tab=submissions', response: 'Consultando a lista de participantes.', keywords: ['ver inscrições', 'participantes', 'lista de inscritos'] },
+            '/dashboard/admin?tab=overview': { path: '/dashboard/admin?tab=overview', response: 'Acessando o centro de comando administrativo.', keywords: ['painel admin', 'dashboard admin', 'estatísticas globais'] },
+            '/dashboard/admin?tab=users': { path: '/dashboard/admin?tab=users', response: 'Carregando a base de utilizadores da plataforma.', keywords: ['gestão de usuários', 'ver utilizadores', 'lista de pessoas'] },
+            '/dashboard/perfil': { path: '/dashboard/perfil', response: 'Abrindo seu perfil profissional.', keywords: ['meu perfil', 'perfil profissional'] },
+            '/': { path: '/', response: 'Retornando à página inicial. Até breve, Mestre.', keywords: ['ir para home', 'sair da dashboard', 'página inicial', 'site'] }
         };
 
-        let foundRoute = "";
-        for (const [route, keywords] of Object.entries(routes)) {
-            if (keywords.some(keyword => lowerTranscript.includes(keyword))) {
-                foundRoute = route;
+        let foundEntry = null;
+        for (const entry of Object.values(routes)) {
+            if (entry.keywords.some(keyword => lowerTranscript.includes(keyword))) {
+                foundEntry = entry;
                 break;
             }
         }
 
-        setTimeout(() => {
-            if (foundRoute) {
-                router.push(foundRoute);
-                toast.success(`Navegando para: ${foundRoute.split('tab=')[1] || 'Início'}`);
+        try {
+            if (foundEntry) {
+                speak(foundEntry.response);
+                router.push(foundEntry.path);
+                toast.success(foundEntry.response);
             } else if (lowerTranscript.includes('evento') || lowerTranscript.includes('criar')) {
-                toast.info("Abrindo interface de criação de evento...");
-                // Aqui poderíamos disparar um evento customizado
+                speak("Iniciando interface de criação de evento. O que deseja criar?");
+                toast.info("Abrindo interface de criação...");
                 window.dispatchEvent(new Event('open-create-event-modal'));
             } else {
-                toast.error(`Não entendi o comando: "${transcript}". Tente algo como "Ver Inscritos" ou "Painel Admin".`);
+                // Inteligência Contextual via Gemini
+                const result = await aiService.brainCommand(transcript);
+                speak(result.reply);
+                toast.info("BRAIN processou sua consulta.");
             }
-            // setIsProcessing(false);
-        }, 800);
+        } catch (error) {
+            console.error("Brain Error:", error);
+            speak("Peço desculpas, Mestre. Houve uma falha nos meus circuitos neurais.");
+        } finally {
+            setIsThinking(false);
+        }
     };
 
     const { isListening, startListening, hasSupport } = useSpeechRecognition(handleCommand);
 
-    if (!hasSupport) return null;
+    const [isVisible, setIsVisible] = useState(false);
+    const [lastCommand, setLastCommand] = useState("");
+    const [isThinking, setIsThinking] = useState(false);
+    const [isAlert, setIsAlert] = useState(false);
+
+    const speak = (text: string) => {
+        if (!window.speechSynthesis) return;
+        
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'pt-PT';
+        utterance.rate = 1.0;
+        utterance.pitch = 0.8;
+
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v => v.name.includes('Premium') || v.name.includes('Google')) || voices[0];
+        if (preferredVoice) utterance.voice = preferredVoice;
+
+        window.speechSynthesis.speak(utterance);
+    };
+
+    // Sistema de Ativação por Voz (Wake-Word)
+    useEffect(() => {
+        if (!hasSupport) return;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        const wakeRecognition = new SpeechRecognition();
+        wakeRecognition.continuous = true;
+        wakeRecognition.interimResults = false;
+        wakeRecognition.lang = 'pt-PT';
+
+        wakeRecognition.onresult = (event: any) => {
+            const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+            
+            if (transcript.includes('brain') || transcript.includes('cérbero') || transcript.includes('cerbero')) {
+                if (!isVisible) {
+                    setIsVisible(true);
+                    speak("Sim, Mestre. Estou às suas ordens.");
+                    // Inicia o reconhecimento principal após um pequeno delay para não captar a própria palavra de ativação
+                    setTimeout(() => {
+                        startListening();
+                    }, 1000);
+                }
+            }
+        };
+
+        wakeRecognition.onend = () => {
+            // Reinicia automaticamente para manter o Brain sempre atento
+            if (!isListening) {
+                try {
+                    wakeRecognition.start();
+                } catch (e) {
+                    // Já está rodando
+                }
+            }
+        };
+
+        wakeRecognition.start();
+
+        return () => {
+            wakeRecognition.stop();
+        };
+    }, [hasSupport, isVisible, isListening]);
+
+    // Monitoramento Proativo via Sockets
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleNewNotification = (data: { title: string, content: string, type: string }) => {
+            // Se for algo urgente ou pessoal, o Brain intervém
+            setIsAlert(true);
+            setIsVisible(true);
+            
+            const message = `Mestre, desculpe a interrupção. ${data.title}. ${data.content}`;
+            speak(message);
+            setLastCommand(`ALERTA: ${data.title}`);
+
+            setTimeout(() => {
+                setIsAlert(false);
+            }, 5000);
+        };
+
+        socket.on('new_notification', handleNewNotification);
+        return () => {
+            socket.off('new_notification', handleNewNotification);
+        };
+    }, [socket]);
+
+    useEffect(() => {
+        console.log("🧠 [BRAIN] Interface Neural Montada. Suporte de Voz:", hasSupport);
+    }, [hasSupport]);
 
     return (
         <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-4">
@@ -96,12 +169,14 @@ export default function Brain() {
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="bg-black/90 backdrop-blur-xl border border-yellow-500/30 p-6 rounded-3xl shadow-2xl w-80 mb-4"
+                        className={`bg-black/95 backdrop-blur-2xl border-2 p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] w-80 mb-4 transition-colors duration-500 ${
+                            isAlert ? 'border-red-500 shadow-red-500/20' : 'border-yellow-500/30'
+                        }`}
                     >
                         <div className="flex justify-between items-center mb-6">
-                            <div className="flex items-center gap-2 text-yellow-500 font-bold tracking-widest text-xs uppercase">
+                            <div className={`flex items-center gap-2 font-bold tracking-widest text-[10px] uppercase ${isAlert ? 'text-red-500' : 'text-yellow-500'}`}>
                                 <Command size={14} />
-                                Neural Interface
+                                {isAlert ? 'Urgent Alert' : 'Neural Interface'}
                             </div>
                             <button onClick={() => setIsVisible(false)} className="text-gray-500 hover:text-white transition-colors">
                                 <X size={18} />
@@ -109,14 +184,18 @@ export default function Brain() {
                         </div>
 
                         <div className="flex flex-col items-center gap-6">
-                            <CerberusVisual isListening={isListening} />
+                            <CerberusVisual isListening={isListening || isThinking || isAlert} />
                             
                             <div className="text-center">
-                                <h3 className="text-white font-medium mb-1">
-                                    {isListening ? "O Cérbero está ouvindo..." : "Interface Adormecida"}
+                                <h3 className={`font-bold mb-1 ${isAlert ? 'text-red-500' : 'text-white'}`}>
+                                    {isThinking ? "Consultando Gemini..." : isListening ? "Ouvindo Mestre..." : isAlert ? "Atenção Requerida" : "Cérbero Vigilante"}
                                 </h3>
-                                <p className="text-gray-500 text-xs px-4">
-                                    Diga comandos como &quot;Ir para Dashboard&quot; ou &quot;Ver Inscritos&quot;
+                                <p className="text-gray-500 text-[11px] px-2 leading-relaxed">
+                                    {!hasSupport 
+                                        ? "Seu navegador não suporta comandos de voz. Tente usar o Chrome ou Edge." 
+                                        : isAlert 
+                                            ? "Uma nova notificação importante acaba de chegar." 
+                                            : "Como posso otimizar seus resultados hoje, Mestre?"}
                                 </p>
                             </div>
 
@@ -131,36 +210,38 @@ export default function Brain() {
                                 </motion.div>
                             )}
 
-                            <button
-                                onClick={startListening}
-                                disabled={isListening}
-                                className={`w-full py-4 rounded-2xl flex items-center justify-center gap-3 transition-all ${
-                                    isListening 
-                                    ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/50' 
-                                    : 'bg-yellow-500 text-black font-bold hover:bg-yellow-400'
-                                }`}
-                            >
-                                {isListening ? (
-                                    <>
-                                        <div className="flex gap-1">
-                                            {[1, 2, 3].map(i => (
-                                                <motion.div
-                                                    key={i}
-                                                    animate={{ height: [4, 12, 4] }}
-                                                    transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.1 }}
-                                                    className="w-1 bg-yellow-500 rounded-full"
-                                                />
-                                            ))}
-                                        </div>
-                                        <span>Ouvindo...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Mic size={20} />
-                                        <span>Falar Comando</span>
-                                    </>
-                                )}
-                            </button>
+                            {hasSupport && (
+                                <button
+                                    onClick={startListening}
+                                    disabled={isListening}
+                                    className={`w-full py-4 rounded-2xl flex items-center justify-center gap-3 transition-all ${
+                                        isListening 
+                                        ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/50' 
+                                        : 'bg-yellow-500 text-black font-bold hover:bg-yellow-400'
+                                    }`}
+                                >
+                                    {isListening ? (
+                                        <>
+                                            <div className="flex gap-1">
+                                                {[1, 2, 3].map(i => (
+                                                    <motion.div
+                                                        key={i}
+                                                        animate={{ height: [4, 12, 4] }}
+                                                        transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.1 }}
+                                                        className="w-1 bg-yellow-500 rounded-full"
+                                                    />
+                                                ))}
+                                            </div>
+                                            <span>Ouvindo...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Mic size={20} />
+                                            <span>Falar Comando</span>
+                                        </>
+                                    )}
+                                </button>
+                            )}
                         </div>
                     </motion.div>
                 )}
@@ -172,7 +253,7 @@ export default function Brain() {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsVisible(!isVisible)}
                 className={`relative group p-1 rounded-full bg-black border-2 transition-colors duration-500 ${
-                    isVisible ? 'border-yellow-500 shadow-[0_0_20px_rgba(255,215,0,0.4)]' : 'border-gray-800'
+                    isVisible ? 'border-yellow-500 shadow-[0_0_20px_rgba(255,215,0,0.6)]' : 'border-yellow-500/40 shadow-[0_0_15px_rgba(255,215,0,0.1)]'
                 }`}
             >
                 <div className="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-gray-900 to-black flex items-center justify-center">

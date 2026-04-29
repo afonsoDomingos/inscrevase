@@ -29,5 +29,23 @@ export const aiService = {
             console.error("AI Service Error:", error);
             throw error;
         }
+    },
+    brainCommand: async (transcript: string) => {
+        try {
+            const response = await fetch(`${API_URL}/ai/brain/command`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({ transcript })
+            });
+
+            if (!response.ok) {
+                throw new Error('Falha neural no BRAIN');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Brain Service Error:", error);
+            throw error;
+        }
     }
 };
