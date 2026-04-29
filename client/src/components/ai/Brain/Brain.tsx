@@ -203,11 +203,11 @@ export default function Brain() {
                     key={i}
                     animate={{ 
                         height: isListening 
-                            ? Math.max(4, (audioLevel / 100) * (32 - Math.abs(i - 6) * 3))
+                            ? Math.max(4, (audioLevel / 100) * 45 - Math.abs(i - 6) * 2)
                             : isSpeaking 
                                 ? [8, Math.random() * 20 + 8, 8] 
                                 : 4,
-                        opacity: isSpeaking || isListening ? 1 : 0.2
+                        opacity: isSpeaking || (isListening && audioLevel > 5) ? 1 : 0.3
                     }}
                     transition={{ 
                         type: 'spring',
@@ -429,23 +429,31 @@ export default function Brain() {
                                 <h3 style={{ 
                                     fontWeight: 'bold', 
                                     marginBottom: '2px', 
-                                    color: isAlert ? '#ef4444' : '#fff',
-                                    fontSize: '0.85rem'
+                                    color: isAlert ? '#ef4444' : isThinking ? '#38bdf8' : '#fff',
+                                    fontSize: '0.85rem',
+                                    textTransform: isThinking ? 'uppercase' : 'none',
+                                    letterSpacing: isThinking ? '1px' : '0'
                                 }}>
-                                    {isThinking ? "Consultando..." : isListening ? "Ouvindo..." : "Cérbero"}
+                                    {isThinking ? "A Processar Diretiva..." : isListening ? (audioLevel > 5 ? "A Escutar..." : "Aguardando Voz...") : "Cérbero"}
                                 </h3>
                                 <p style={{ color: '#9ca3af', fontSize: '10px', padding: '0 4px', lineHeight: '1.4' }}>
-                                    {isAlert ? "Alerta urgente recebido." : "Diga seu comando, Mestre."}
+                                    {isAlert ? "Alerta urgente recebido." : isThinking ? "A decodificar a sua intenção e a consultar dados sistémicos." : "Diga o seu comando, Mestre."}
                                 </p>
                             </div>
 
                             {lastCommand && (
                                 <motion.div 
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ 
+                                        opacity: 1, 
+                                        scale: 1,
+                                        borderColor: isThinking ? ['rgba(56, 189, 248, 0.2)', 'rgba(56, 189, 248, 0.8)', 'rgba(56, 189, 248, 0.2)'] : 'rgba(234, 179, 8, 0.2)',
+                                        boxShadow: isThinking ? ['0 0 0px rgba(56,189,248,0)', '0 0 15px rgba(56,189,248,0.5)', '0 0 0px rgba(56,189,248,0)'] : 'none'
+                                    }}
+                                    transition={isThinking ? { duration: 1.5, repeat: Infinity } : {}}
                                     style={{
-                                        background: 'rgba(234, 179, 8, 0.1)',
-                                        border: '1px solid rgba(234, 179, 8, 0.2)',
+                                        background: isThinking ? 'rgba(56, 189, 248, 0.15)' : 'rgba(234, 179, 8, 0.1)',
+                                        border: '1px solid',
                                         padding: '8px 16px',
                                         borderRadius: '9999px',
                                         display: 'flex',
@@ -457,8 +465,8 @@ export default function Brain() {
                                         textOverflow: 'ellipsis'
                                     }}
                                 >
-                                    <Terminal size={12} style={{ color: '#eab308', minWidth: '12px' }} />
-                                    <span style={{ color: '#eab308', fontSize: '0.75rem', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lastCommand}</span>
+                                    <Terminal size={12} style={{ color: isThinking ? '#38bdf8' : '#eab308', minWidth: '12px' }} />
+                                    <span style={{ color: isThinking ? '#38bdf8' : '#eab308', fontSize: '0.75rem', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lastCommand}</span>
                                 </motion.div>
                             )}
 
