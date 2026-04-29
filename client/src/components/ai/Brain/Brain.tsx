@@ -205,15 +205,15 @@ export default function Brain() {
     if (isHibernated) return null;
 
     return (
-        <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-4">
+        <div className="fixed top-24 right-6 z-[9999] flex flex-col items-end gap-4">
             {/* Modal de Feedback do Brain */}
             <AnimatePresence>
                 {isVisible && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        initial={{ opacity: 0, scale: 0.9, y: -20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className={`bg-black/95 backdrop-blur-2xl border-2 p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] w-80 mb-4 transition-colors duration-500 ${
+                        exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                        className={`bg-black/95 backdrop-blur-2xl border-2 p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] w-80 mt-4 transition-colors duration-500 ${
                             isAlert ? 'border-red-500 shadow-red-500/20' : 'border-yellow-500/30'
                         }`}
                     >
