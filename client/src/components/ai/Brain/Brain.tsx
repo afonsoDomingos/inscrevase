@@ -236,7 +236,7 @@ export default function Brain() {
     if (isHibernated) return null;
 
     return (
-        <div style={{ position: 'fixed', bottom: '100px', right: '30px', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '16px' }}>
+        <div style={{ position: 'fixed', bottom: '100px', left: '30px', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '16px' }}>
             {/* Modal de Feedback do Brain */}
             <AnimatePresence>
                 {isVisible && (
@@ -432,7 +432,17 @@ export default function Brain() {
 
                 {/* Pulse Effect */}
                 {!isVisible && (
-                    <span className="absolute inset-0 rounded-full border border-yellow-500/50 animate-ping" />
+                    <motion.span 
+                        animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
+                        transition={{ repeat: Infinity, duration: 2 }}
+                        style={{
+                            position: 'absolute',
+                            inset: 0,
+                            borderRadius: '9999px',
+                            border: '1px solid rgba(234, 179, 8, 0.5)',
+                            pointerEvents: 'none'
+                        }}
+                    />
                 )}
             </motion.button>
         </div>
