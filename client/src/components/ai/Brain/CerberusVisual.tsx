@@ -140,21 +140,35 @@ export default function CerberusVisual({
                     ))}
                 </g>
 
-                {/* Impulsos Elétricos (Sinapses) */}
-                {(isThinking || isSpeaking) && (
-                    <g stroke="#fff" strokeWidth="0.8" opacity="0.6">
-                        <motion.path
-                            d="M50 70 Q 100 40, 150 70"
-                            initial={{ pathLength: 0 }}
-                            animate={{ pathLength: [0, 1, 0] }}
-                            transition={{ duration: 1, repeat: Infinity }}
-                        />
-                        <motion.path
-                            d="M40 100 Q 100 140, 160 100"
-                            initial={{ pathLength: 0 }}
-                            animate={{ pathLength: [0, 1, 0] }}
-                            transition={{ duration: 1.2, repeat: Infinity, delay: 0.5 }}
-                        />
+                {/* Impulsos Elétricos Multicolores (Sinapses / Energia) */}
+                {(isThinking || isSpeaking || isListening) && (
+                    <g fill="none" strokeWidth="1.5" style={{ filter: 'drop-shadow(0 0 3px currentColor)' }}>
+                        {[
+                            { d: "M50 70 Q 100 40, 150 70", color: "#38bdf8", duration: 1.5, delay: 0 },       // Cyan
+                            { d: "M40 100 Q 100 140, 160 100", color: "#f472b6", duration: 1.2, delay: 0.5 },    // Pink
+                            { d: "M90 30 Q 70 35, 65 50 T 40 60", color: "#a78bfa", duration: 1.8, delay: 0.2 }, // Purple
+                            { d: "M110 30 Q 130 35, 135 50 T 160 60", color: "#34d399", duration: 1.4, delay: 0.7 }, // Emerald
+                            { d: "M75 75 Q 65 95, 70 115 T 90 135", color: "#fcd34d", duration: 1.6, delay: 0.3 }, // Yellow
+                            { d: "M125 75 Q 135 95, 130 115 T 110 135", color: "#fb923c", duration: 1.7, delay: 0.6 }, // Orange
+                            { d: "M100 35 L 100 125", color: "#eab308", duration: 1.0, delay: 0.8 }              // Ouro central
+                        ].map((path, index) => (
+                            <motion.path
+                                key={index}
+                                d={path.d}
+                                stroke={isAlert ? "#ef4444" : path.color}
+                                initial={{ pathLength: 0, opacity: 0 }}
+                                animate={{ 
+                                    pathLength: [0, 1, 0],
+                                    opacity: [0, 0.8, 0]
+                                }}
+                                transition={{ 
+                                    duration: path.duration, 
+                                    repeat: Infinity, 
+                                    delay: path.delay,
+                                    ease: "easeInOut"
+                                }}
+                            />
+                        ))}
                     </g>
                 )}
             </svg>
