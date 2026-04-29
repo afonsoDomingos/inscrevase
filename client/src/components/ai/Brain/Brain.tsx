@@ -135,7 +135,7 @@ export default function Brain() {
         } finally {
             setIsThinking(false);
         }
-    }, [router, speak]);
+    }, [router, speak, pathname]);
 
     const { isListening, currentTranscript, startListening, hasSupport } = useSpeechRecognition(handleCommand);
 
@@ -459,7 +459,7 @@ export default function Brain() {
                                         wordBreak: 'break-word'
                                     }}
                                 >
-                                    "{currentTranscript}..."
+                                    &quot;{currentTranscript}...&quot;
                                 </motion.div>
                             )}
 

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 interface SpeechRecognitionEvent extends Event {
     results: SpeechRecognitionResultList;
+    resultIndex: number;
 }
 
 interface SpeechRecognitionResultList {
@@ -76,7 +77,7 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
                 let finalStr = '';
                 
                 // fallback para navegadores antigos que não suportam resultIndex
-                const startIndex = (event as any).resultIndex || 0;
+                const startIndex = event.resultIndex || 0;
                 
                 for (let i = startIndex; i < event.results.length; i++) {
                     const result = event.results[i];
