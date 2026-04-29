@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, Terminal, X, Command } from 'lucide-react';
+import { Mic, Terminal, X, Command, Power } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import CerberusVisual from './CerberusVisual';
@@ -106,26 +106,83 @@ export default function Brain() {
 
 
 
-    // Componente de Visualização de Voz (Barras de Gráfico)
+    const [audioLevel, setAudioLevel] = useState(0);
+
+    // Analisador de Áudio em Tempo Real
+    useEffect(() => {
+        if (!isListening) {
+            setAudioLevel(0);
+            return;
+        }
+
+        let audioContext: AudioContext | null = null;
+        let analyser: AnalyserNode | null = null;
+        let microphone: MediaStreamAudioSourceNode | null = null;
+        let animationFrame: number;
+
+        const startAnalyzing = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(stream);
+                analyser.fftSize = 32;
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+
+                microphone.connect(analyser);
+
+                const updateVolume = () => {
+                    if (!analyser) return;
+                    analyser.getByteFrequencyData(dataArray);
+                    let sum = 0;
+                    for (let i = 0; i < bufferLength; i++) {
+                        sum += dataArray[i];
+                    }
+                    const average = sum / bufferLength;
+                    setAudioLevel(average);
+                    animationFrame = requestAnimationFrame(updateVolume);
+                };
+
+                updateVolume();
+            } catch (err) {
+                console.error("Erro ao acessar microfone para visualizer:", err);
+            }
+        };
+
+        startAnalyzing();
+
+        return () => {
+            if (animationFrame) cancelAnimationFrame(animationFrame);
+            if (audioContext) audioContext.close();
+            if (microphone) microphone.disconnect();
+        };
+    }, [isListening]);
+
+    // Componente de Visualização de Voz (Barras Reais)
     const VoiceVisualizer = () => (
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '3px', height: '32px', width: '100%', padding: '0 16px' }}>
-            {[...Array(15)].map((_, i) => (
+            {[...Array(12)].map((_, i) => (
                 <motion.div
                     key={i}
                     animate={{ 
-                        height: isSpeaking || isListening ? [8, Math.random() * 24 + 8, 8] : 4,
-                        opacity: isSpeaking || isListening ? 1 : 0.3
+                        height: isListening 
+                            ? Math.max(4, (audioLevel / 100) * (32 - Math.abs(i - 6) * 3))
+                            : isSpeaking 
+                                ? [8, Math.random() * 20 + 8, 8] 
+                                : 4,
+                        opacity: isSpeaking || isListening ? 1 : 0.2
                     }}
                     transition={{ 
-                        repeat: Infinity, 
-                        duration: 0.5 + Math.random() * 0.3,
-                        delay: i * 0.05
+                        type: 'spring',
+                        stiffness: 300,
+                        damping: 20
                     }}
                     style={{ 
-                        width: '6px', 
+                        width: '4px', 
                         borderRadius: '9999px', 
                         background: isAlert ? '#ef4444' : '#eab308',
-                        boxShadow: isSpeaking || isListening ? `0 0 10px ${isAlert ? '#ef4444' : '#eab308'}` : 'none' 
+                        boxShadow: (isSpeaking || isListening) && audioLevel > 10 ? `0 0 15px ${isAlert ? '#ef4444' : '#eab308'}` : 'none' 
                     }}
                 />
             ))}
@@ -238,7 +295,7 @@ export default function Brain() {
     if (isHibernated) return null;
 
     return (
-        <div style={{ position: 'fixed', bottom: '160px', left: '20px', zIndex: 99999, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '16px' }}>
+        <div style={{ position: 'fixed', top: '80px', left: '20px', zIndex: 99999, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '12px' }}>
             {/* Modal de Feedback do Brain */}
             <AnimatePresence>
                 {isVisible && (
@@ -246,70 +303,71 @@ export default function Brain() {
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        style={{
-                            background: 'rgba(0, 0, 0, 0.95)',
+                        <div style={{
+                            background: 'rgba(0, 0, 0, 0.98)',
                             backdropFilter: 'blur(20px)',
-                            border: `2px solid ${isAlert ? '#ef4444' : 'rgba(255, 215, 0, 0.3)'}`,
-                            padding: '24px',
-                            borderRadius: '24px',
-                            boxShadow: isAlert ? '0 20px 50px rgba(239, 68, 68, 0.2)' : '0 20px 50px rgba(0, 0, 0, 0.5)',
-                            width: '320px',
+                            border: `1px solid ${isAlert ? '#ef4444' : 'rgba(255, 215, 0, 0.3)'}`,
+                            padding: '16px',
+                            borderRadius: '20px',
+                            boxShadow: isAlert ? '0 15px 40px rgba(239, 68, 68, 0.3)' : '0 15px 40px rgba(0, 0, 0, 0.5)',
+                            width: '260px',
                             transition: 'all 0.5s ease',
                             display: 'flex',
                             flexDirection: 'column'
                         }}
                     >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                             <div style={{ 
                                 display: 'flex', 
                                 alignItems: 'center', 
-                                gap: '8px', 
+                                gap: '6px', 
                                 fontWeight: 'bold', 
                                 letterSpacing: '0.1em', 
-                                fontSize: '10px', 
+                                fontSize: '9px', 
                                 textTransform: 'uppercase', 
                                 color: isAlert ? '#ef4444' : '#eab308' 
                             }}>
-                                <Command size={14} />
-                                {isAlert ? 'Urgent Alert' : 'Neural Interface'}
+                                <Command size={12} />
+                                {isAlert ? 'Urgent' : 'Neural'}
                             </div>
-                            <button 
-                                onClick={() => setIsVisible(false)} 
-                                style={{ 
-                                    color: '#6b7280', 
-                                    background: 'none', 
-                                    border: 'none', 
-                                    cursor: 'pointer', 
-                                    padding: '4px',
-                                    transition: 'color 0.2s ease'
-                                }}
-                                onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
-                                onMouseLeave={(e) => (e.currentTarget.style.color = '#6b7280')}
-                            >
-                                <X size={18} />
-                            </button>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <button 
+                                    onClick={() => {
+                                        speak("Desativando sistemas neurais. Até logo, Mestre.");
+                                        setTimeout(() => setIsHibernated(true), 1500);
+                                    }}
+                                    title="Desligar BRAIN"
+                                    style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.7 }}
+                                >
+                                    <Power size={14} />
+                                </button>
+                                <button 
+                                    onClick={() => setIsVisible(false)} 
+                                    style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer' }}
+                                >
+                                    <X size={16} />
+                                </button>
+                            </div>
                         </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
-                            <CerberusVisual isListening={isListening || isThinking || isAlert || isSpeaking} />
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                            <div style={{ scale: '0.8' }}>
+                                <CerberusVisual isListening={isListening || isThinking || isAlert || isSpeaking} />
+                            </div>
                             
                             <VoiceVisualizer />
 
                             <div style={{ textAlign: 'center' }}>
                                 <h3 style={{ 
                                     fontWeight: 'bold', 
-                                    marginBottom: '4px', 
+                                    marginBottom: '2px', 
                                     color: isAlert ? '#ef4444' : '#fff',
-                                    fontSize: '1rem'
+                                    fontSize: '0.85rem'
                                 }}>
-                                    {isThinking ? "Consultando Gemini..." : isListening ? "Ouvindo Mestre..." : isAlert ? "Atenção Requerida" : "Cérbero Vigilante"}
+                                    {isThinking ? "Consultando..." : isListening ? "Ouvindo..." : "Cérbero"}
                                 </h3>
-                                <p style={{ color: '#9ca3af', fontSize: '11px', padding: '0 8px', lineHeight: '1.5' }}>
-                                    {!hasSupport 
-                                        ? "Seu navegador não suporta comandos de voz. Tente usar o Chrome ou Edge." 
-                                        : isAlert 
-                                            ? "Uma nova notificação importante acaba de chegar." 
-                                            : "Como posso otimizar seus resultados hoje, Mestre?"}
+                                <p style={{ color: '#9ca3af', fontSize: '10px', padding: '0 4px', lineHeight: '1.4' }}>
+                                    {isAlert ? "Alerta urgente recebido." : "Diga seu comando, Mestre."}
                                 </p>
                             </div>
 
