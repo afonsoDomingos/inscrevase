@@ -84,6 +84,7 @@ export default function Brain() {
     const [lastCommand, setLastCommand] = useState("");
     const [isThinking, setIsThinking] = useState(false);
     const [isAlert, setIsAlert] = useState(false);
+    const [isSpeaking, setIsSpeaking] = useState(false);
 
     const speak = (text: string) => {
         if (!window.speechSynthesis) return;
@@ -94,12 +95,38 @@ export default function Brain() {
         utterance.rate = 1.0;
         utterance.pitch = 0.8;
 
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+
         const voices = window.speechSynthesis.getVoices();
         const preferredVoice = voices.find(v => v.name.includes('Premium') || v.name.includes('Google')) || voices[0];
         if (preferredVoice) utterance.voice = preferredVoice;
 
         window.speechSynthesis.speak(utterance);
     };
+
+    // Componente de Visualização de Voz (Barras de Gráfico)
+    const VoiceVisualizer = () => (
+        <div className="flex items-end justify-center gap-[3px] h-8 w-full px-4">
+            {[...Array(15)].map((_, i) => (
+                <motion.div
+                    key={i}
+                    animate={{ 
+                        height: isSpeaking || isListening ? [8, Math.random() * 24 + 8, 8] : 4,
+                        opacity: isSpeaking || isListening ? 1 : 0.3
+                    }}
+                    transition={{ 
+                        repeat: Infinity, 
+                        duration: 0.5 + Math.random() * 0.3,
+                        delay: i * 0.05
+                    }}
+                    className={`w-1.5 rounded-full ${isAlert ? 'bg-red-500' : 'bg-yellow-500'}`}
+                    style={{ boxShadow: isSpeaking || isListening ? `0 0 10px ${isAlert ? '#ef4444' : '#eab308'}` : 'none' }}
+                />
+            ))}
+        </div>
+    );
 
     // Sistema de Ativação por Voz (Wake-Word)
     useEffect(() => {
@@ -228,8 +255,10 @@ export default function Brain() {
                         </div>
 
                         <div className="flex flex-col items-center gap-6">
-                            <CerberusVisual isListening={isListening || isThinking || isAlert} />
+                            <CerberusVisual isListening={isListening || isThinking || isAlert || isSpeaking} />
                             
+                            <VoiceVisualizer />
+
                             <div className="text-center">
                                 <h3 className={`font-bold mb-1 ${isAlert ? 'text-red-500' : 'text-white'}`}>
                                     {isThinking ? "Consultando Gemini..." : isListening ? "Ouvindo Mestre..." : isAlert ? "Atenção Requerida" : "Cérbero Vigilante"}
