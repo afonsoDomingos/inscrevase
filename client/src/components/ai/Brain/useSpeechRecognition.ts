@@ -40,8 +40,25 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
     const [recognition, setRecognition] = useState<IRecognition | null>(null);
 
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        interface SpeechRecognitionInstance {
+            continuous: boolean;
+            interimResults: boolean;
+            lang: string;
+            onstart: () => void;
+            onend: () => void;
+            onresult: (event: SpeechRecognitionEvent) => void;
+            start: () => void;
+            stop: () => void;
+        }
+
+        type WindowWithSpeech = Window & typeof globalThis & {
+            SpeechRecognition?: new () => SpeechRecognitionInstance;
+            webkitSpeechRecognition?: new () => SpeechRecognitionInstance;
+        };
+
+        const win = window as unknown as WindowWithSpeech;
+        const SpeechRecognition = win.SpeechRecognition || win.webkitSpeechRecognition;
+
         if (SpeechRecognition) {
             const rec = new SpeechRecognition();
             rec.continuous = false;
@@ -55,7 +72,7 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
                 onCommand(transcript);
             };
 
-            setRecognition(rec);
+            setRecognition(rec as unknown as IRecognition);
         }
     }, [onCommand]);
 

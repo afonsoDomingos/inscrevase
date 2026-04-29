@@ -23,6 +23,18 @@ export default function Brain() {
 
         const lowerTranscript = transcript.toLowerCase();
 
+        // Comando Especial: Hibernação
+        if (lowerTranscript.includes('dormir') || lowerTranscript.includes('desativar brain') || lowerTranscript.includes('desligar cérbero')) {
+            speak("Entendido, Mestre. Entrando em modo de hibernação profunda. Estarei aqui se precisar de mim novamente.");
+            setTimeout(() => {
+                setIsVisible(false);
+                setIsHibernated(true);
+                toast.info("BRAIN entrou em hibernação.");
+            }, 2000);
+            setIsThinking(false);
+            return;
+        }
+
         // Mapeamento Abrangente de Rotas (Atalhos Rápidos)
         const routes: Record<string, { path: string, response: string, keywords: string[] }> = {
             '/dashboard/mentor?tab=overview': { path: '/dashboard/mentor?tab=overview', response: 'Entendido, Mestre. Carregando sua visão geral.', keywords: ['visão geral', 'resumo', 'dashboard mentor', 'painel mentor'] },
@@ -68,6 +80,7 @@ export default function Brain() {
     const { isListening, startListening, hasSupport } = useSpeechRecognition(handleCommand);
 
     const [isVisible, setIsVisible] = useState(false);
+    const [isHibernated, setIsHibernated] = useState(false);
     const [lastCommand, setLastCommand] = useState("");
     const [isThinking, setIsThinking] = useState(false);
     const [isAlert, setIsAlert] = useState(false);
@@ -92,21 +105,51 @@ export default function Brain() {
     useEffect(() => {
         if (!hasSupport) return;
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        interface SpeechRecognitionEvent {
+            results: {
+                [key: number]: {
+                    [key: number]: {
+                        transcript: string;
+                    };
+                };
+                length: number;
+            };
+        }
+
+        interface SpeechRecognitionInstance {
+            continuous: boolean;
+            interimResults: boolean;
+            lang: string;
+            onresult: (event: SpeechRecognitionEvent) => void;
+            onend: () => void;
+            start: () => void;
+            stop: () => void;
+        }
+
+        // Definindo tipo para o Window com as extensões necessárias
+        type WindowWithSpeech = Window & typeof globalThis & {
+            SpeechRecognition?: new () => SpeechRecognitionInstance;
+            webkitSpeechRecognition?: new () => SpeechRecognitionInstance;
+        };
+
+        const win = window as unknown as WindowWithSpeech;
+        const SpeechRecognition = win.SpeechRecognition || win.webkitSpeechRecognition;
+        
+        if (!SpeechRecognition) return;
+
         const wakeRecognition = new SpeechRecognition();
+        
         wakeRecognition.continuous = true;
         wakeRecognition.interimResults = false;
         wakeRecognition.lang = 'pt-PT';
 
-        wakeRecognition.onresult = (event: any) => {
+        wakeRecognition.onresult = (event: SpeechRecognitionEvent) => {
             const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
             
             if (transcript.includes('brain') || transcript.includes('cérbero') || transcript.includes('cerbero')) {
                 if (!isVisible) {
                     setIsVisible(true);
                     speak("Sim, Mestre. Estou às suas ordens.");
-                    // Inicia o reconhecimento principal após um pequeno delay para não captar a própria palavra de ativação
                     setTimeout(() => {
                         startListening();
                     }, 1000);
@@ -115,11 +158,10 @@ export default function Brain() {
         };
 
         wakeRecognition.onend = () => {
-            // Reinicia automaticamente para manter o Brain sempre atento
             if (!isListening) {
                 try {
                     wakeRecognition.start();
-                } catch (e) {
+                } catch {
                     // Já está rodando
                 }
             }
@@ -130,7 +172,7 @@ export default function Brain() {
         return () => {
             wakeRecognition.stop();
         };
-    }, [hasSupport, isVisible, isListening]);
+    }, [hasSupport, isVisible, isListening, startListening]);
 
     // Monitoramento Proativo via Sockets
     useEffect(() => {
@@ -159,6 +201,8 @@ export default function Brain() {
     useEffect(() => {
         console.log("🧠 [BRAIN] Interface Neural Montada. Suporte de Voz:", hasSupport);
     }, [hasSupport]);
+
+    if (isHibernated) return null;
 
     return (
         <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-4">
