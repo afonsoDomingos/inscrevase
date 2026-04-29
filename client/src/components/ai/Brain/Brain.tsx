@@ -343,21 +343,40 @@ export default function Brain() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
                         style={{
-                            background: 'rgba(0, 0, 0, 0.98)',
-                            backdropFilter: 'blur(20px)',
-                            border: `1px solid ${isAlert ? '#ef4444' : 'rgba(255, 215, 0, 0.3)'}`,
-                            padding: '16px',
-                            borderRadius: '20px',
-                            boxShadow: isAlert ? '0 15px 40px rgba(239, 68, 68, 0.3)' : '0 15px 40px rgba(0, 0, 0, 0.5)',
-                            width: '260px',
-                            transition: 'all 0.5s ease',
+                            background: 'rgba(0, 0, 0, 0.7)',
+                            backdropFilter: 'blur(16px) saturate(180%)',
+                            border: `1px solid ${isAlert ? 'rgba(239, 68, 68, 0.5)' : 'rgba(234, 179, 8, 0.3)'}`,
+                            padding: '20px',
+                            borderRadius: '24px',
+                            boxShadow: isAlert ? '0 0 40px rgba(239, 68, 68, 0.2)' : '0 20px 50px rgba(0, 0, 0, 0.5)',
+                            width: '280px',
+                            transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
                             display: 'flex',
                             flexDirection: 'column',
-                            cursor: 'grab'
+                            cursor: 'grab',
+                            overflow: 'hidden',
+                            position: 'relative'
                         }}
                         whileDrag={{ cursor: 'grabbing', scale: 1.02 }}
                     >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                        {/* Efeito de Scanlines Futuristas */}
+                        <div style={{
+                            position: 'absolute',
+                            top: 0, left: 0, right: 0, bottom: 0,
+                            background: 'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02))',
+                            backgroundSize: '100% 3px, 3px 100%',
+                            pointerEvents: 'none',
+                            zIndex: 10,
+                            opacity: 0.4
+                        }} />
+
+                        {/* Cantoneiras HUD */}
+                        <div style={{ position: 'absolute', top: '10px', left: '10px', width: '15px', height: '15px', borderLeft: '2px solid rgba(234, 179, 8, 0.5)', borderTop: '2px solid rgba(234, 179, 8, 0.5)', pointerEvents: 'none' }} />
+                        <div style={{ position: 'absolute', top: '10px', right: '10px', width: '15px', height: '15px', borderRight: '2px solid rgba(234, 179, 8, 0.5)', borderTop: '2px solid rgba(234, 179, 8, 0.5)', pointerEvents: 'none' }} />
+                        <div style={{ position: 'absolute', bottom: '10px', left: '10px', width: '15px', height: '15px', borderLeft: '2px solid rgba(234, 179, 8, 0.5)', borderBottom: '2px solid rgba(234, 179, 8, 0.5)', pointerEvents: 'none' }} />
+                        <div style={{ position: 'absolute', bottom: '10px', right: '10px', width: '15px', height: '15px', borderRight: '2px solid rgba(234, 179, 8, 0.5)', borderBottom: '2px solid rgba(234, 179, 8, 0.5)', pointerEvents: 'none' }} />
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', position: 'relative', zIndex: 11 }}>
                             <div style={{ 
                                 display: 'flex', 
                                 alignItems: 'center', 
