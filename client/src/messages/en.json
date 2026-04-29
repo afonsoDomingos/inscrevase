@@ -101,6 +101,7 @@
         }
     },
     "common": {
+        "installApp": "Install Application",
         "step": "Step",
         "language": "English",
         "welcome": "Welcome",

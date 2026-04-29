@@ -47,8 +47,9 @@ export default function Navbar() {
 
   const getDashboardLink = () => {
     if (!user) return '/entrar';
-    if (user.role === 'admin' || user.role === 'SuperAdmin') return '/dashboard/admin';
-    if (user.role === 'participant') return '/dashboard/participant';
+    const role = user.role?.toLowerCase();
+    if (role === 'admin' || role === 'superadmin') return '/dashboard/admin';
+    if (role === 'participant') return '/dashboard/participant';
     return '/dashboard/mentor';
   };
 
