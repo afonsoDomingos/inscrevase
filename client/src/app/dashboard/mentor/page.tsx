@@ -176,6 +176,15 @@ function MentorDashboardContent() {
         }));
     };
 
+    // Listener para o BRAIN
+    useEffect(() => {
+        const handleOpenCreateModal = () => {
+            setIsEventModalOpen(true);
+        };
+        window.addEventListener('open-create-event-modal', handleOpenCreateModal);
+        return () => window.removeEventListener('open-create-event-modal', handleOpenCreateModal);
+    }, []);
+
     const getTrialDaysRemaining = () => {
         if (!user?.trialEndedAt) return 0;
         const end = new Date(user.trialEndedAt);

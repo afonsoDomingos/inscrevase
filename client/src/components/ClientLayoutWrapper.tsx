@@ -5,6 +5,7 @@ import ScrollToTop from '@/components/ScrollToTop';
 import AuraConcierge from '@/components/AuraConcierge';
 import CookieConsent from '@/components/CookieConsent';
 import WhatsAppFloat from '@/components/common/WhatsAppFloat';
+import Brain from '@/components/ai/Brain/Brain';
 
 export default function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -25,6 +26,7 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
             {!isPublicForm && !isBioPage && <ScrollToTop />}
             {!isPublicForm && !isHub && !isBioPage && !isAuthPage && <AuraConcierge />}
             {!isPublicForm && !isHub && !isBioPage && !isAuthPage && <WhatsAppFloat />}
+            {!isPublicForm && !isHub && !isBioPage && !isAuthPage && <Brain />}
             <CookieConsent />
         </>
     );
