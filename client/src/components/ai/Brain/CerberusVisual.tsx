@@ -63,40 +63,58 @@ export default function CerberusVisual({
 
                 {/* Hemisfério Esquerdo */}
                 <motion.path
-                    d="M100 25 C 50 25, 20 50, 20 95 C 20 135, 60 145, 100 145 C 90 120, 85 80, 100 25"
+                    d="M98 25 C 70 20, 40 35, 28 65 C 18 90, 22 120, 45 140 C 65 155, 85 148, 98 145 C 92 110, 95 60, 98 25"
                     fill="url(#brain-depth)"
-                    stroke="rgba(255,255,255,0.1)"
-                    strokeWidth="0.5"
+                    stroke="rgba(255,255,255,0.15)"
+                    strokeWidth="0.8"
                     filter="url(#inner-shadow)"
                     animate={isThinking ? { x: [-1, 1, -1] } : {}}
-                    transition={{ repeat: Infinity, duration: 0.1 }}
+                    transition={{ repeat: Infinity, duration: 0.2 }}
                 />
 
                 {/* Hemisfério Direito */}
                 <motion.path
-                    d="M100 25 C 150 25, 180 50, 180 95 C 180 135, 140 145, 100 145 C 110 120, 115 80, 100 25"
+                    d="M102 25 C 130 20, 160 35, 172 65 C 182 90, 178 120, 155 140 C 135 155, 115 148, 102 145 C 108 110, 105 60, 102 25"
                     fill="url(#brain-depth)"
-                    stroke="rgba(255,255,255,0.1)"
-                    strokeWidth="0.5"
+                    stroke="rgba(255,255,255,0.15)"
+                    strokeWidth="0.8"
                     filter="url(#inner-shadow)"
                     animate={isThinking ? { x: [1, -1, 1] } : {}}
-                    transition={{ repeat: Infinity, duration: 0.1 }}
+                    transition={{ repeat: Infinity, duration: 0.2 }}
                 />
 
-                {/* Convoluções Anatómicas Detalhadas */}
-                <g fill="none" stroke="rgba(0,0,0,0.5)" strokeWidth="1.2" strokeLinecap="round">
-                    {/* Sulcos Frontais */}
-                    <path d="M60 45 Q 80 55, 75 75" />
-                    <path d="M140 45 Q 120 55, 125 75" />
-                    {/* Sulcos Parietais */}
-                    <path d="M40 85 Q 70 80, 65 105" />
-                    <path d="M160 85 Q 130 80, 135 105" />
-                    {/* Sulcos Temporais */}
-                    <path d="M70 120 Q 100 130, 130 120" />
-                    <path d="M100 40 L 100 135" strokeWidth="0.8" opacity="0.3" />
-                    {/* Micro Detalhes */}
-                    <path d="M45 60 Q 55 65, 50 75" strokeWidth="0.5" />
-                    <path d="M155 60 Q 145 65, 150 75" strokeWidth="0.5" />
+                {/* Convoluções Anatómicas Detalhadas (Aspecto Biológico) */}
+                <g fill="none" stroke="rgba(0,0,0,0.6)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    {/* Sulcos Complexos Hemisfério Esquerdo */}
+                    <path d="M90 30 Q 70 35, 65 50 T 40 60 T 35 85" />
+                    <path d="M85 50 Q 60 65, 50 80 T 45 110 T 60 130" />
+                    <path d="M75 75 Q 65 95, 70 115 T 90 135" />
+                    <path d="M95 55 Q 80 80, 85 105" />
+                    <path d="M98 35 Q 92 60, 95 85" />
+                    <path d="M30 70 Q 50 75, 45 95" />
+                    <path d="M55 40 Q 40 55, 35 75" />
+                    <path d="M70 135 Q 80 120, 95 125" />
+                    <path d="M50 100 Q 65 105, 60 125" />
+
+                    {/* Sulcos Complexos Hemisfério Direito */}
+                    <path d="M110 30 Q 130 35, 135 50 T 160 60 T 165 85" />
+                    <path d="M115 50 Q 140 65, 150 80 T 155 110 T 140 130" />
+                    <path d="M125 75 Q 135 95, 130 115 T 110 135" />
+                    <path d="M105 55 Q 120 80, 115 105" />
+                    <path d="M102 35 Q 108 60, 105 85" />
+                    <path d="M170 70 Q 150 75, 155 95" />
+                    <path d="M145 40 Q 160 55, 165 75" />
+                    <path d="M130 135 Q 120 120, 105 125" />
+                    <path d="M150 100 Q 135 105, 140 125" />
+
+                    {/* Fissura Longitudinal (Centro) */}
+                    <path d="M100 25 Q 98 50, 100 85 T 100 145" strokeWidth="2.5" stroke="rgba(0,0,0,0.8)" />
+                    
+                    {/* Micro Detalhes Opcionais */}
+                    <path d="M45 60 Q 55 65, 50 75" strokeWidth="0.8" />
+                    <path d="M155 60 Q 145 65, 150 75" strokeWidth="0.8" />
+                    <path d="M60 110 Q 55 120, 65 125" strokeWidth="0.8" />
+                    <path d="M140 110 Q 145 120, 135 125" strokeWidth="0.8" />
                 </g>
 
                 {/* Rede Neural de Alta Frequência */}

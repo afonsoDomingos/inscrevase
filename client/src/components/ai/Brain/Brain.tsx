@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, Terminal, X, Command, Power } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { toast } from 'sonner';
 import CerberusVisual from './CerberusVisual';
 import { useSpeechRecognition } from './useSpeechRecognition';
@@ -12,6 +12,7 @@ import { useSocket } from '@/context/SocketContext';
 
 export default function Brain() {
     const router = useRouter();
+    const pathname = usePathname();
     const { socket } = useSocket();
     
     const [isVisible, setIsVisible] = useState(false);
@@ -294,6 +295,7 @@ export default function Brain() {
     }, [hasSupport]);
 
     if (isHibernated) return null;
+    if (!pathname?.startsWith('/dashboard')) return null;
 
     return (
         <div style={{ position: 'fixed', top: '80px', left: '20px', zIndex: 99999, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '12px' }}>
@@ -479,8 +481,8 @@ export default function Brain() {
                 }}
             >
                 <div style={{ 
-                    width: '56px', 
-                    height: '56px', 
+                    width: '40px', 
+                    height: '40px', 
                     borderRadius: '9999px', 
                     overflow: 'hidden', 
                     background: 'linear-gradient(to bottom right, #111827, #000)', 
@@ -491,8 +493,8 @@ export default function Brain() {
                     <div style={{ position: 'relative' }}>
                          {/* Mini Cérbero / Brain Icon */}
                         <div style={{
-                            width: '32px',
-                            height: '32px',
+                            width: '24px',
+                            height: '24px',
                             borderRadius: '9999px',
                             border: '2px solid',
                             borderColor: isVisible ? '#eab308' : '#374151',
@@ -508,7 +510,7 @@ export default function Brain() {
                             color: isVisible ? '#eab308' : '#374151',
                             transition: 'all 0.7s ease'
                         }}>
-                            <Command size={18} />
+                            <Command size={14} />
                         </div>
                     </div>
                 </div>
