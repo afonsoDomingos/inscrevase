@@ -38,7 +38,7 @@ export default function CerberusVisual({ isListening = false }: { isListening?: 
                 animate={isListening ? "listening" : "idle"}
                 className="absolute left-0 top-4"
             >
-                <HeadSVG color={goldColor} eyeColor={eyeColor} side="left" />
+                <HeadSVG color={goldColor} eyeColor={eyeColor} isListening={isListening} />
             </motion.div>
 
             {/* Cabeça Direita */}
@@ -48,7 +48,7 @@ export default function CerberusVisual({ isListening = false }: { isListening?: 
                 animate={isListening ? "listening" : "idle"}
                 className="absolute right-0 top-4"
             >
-                <HeadSVG color={goldColor} eyeColor={eyeColor} side="right" />
+                <HeadSVG color={goldColor} eyeColor={eyeColor} isListening={isListening} />
             </motion.div>
 
             {/* Cabeça Central (A mais importante) */}
@@ -58,7 +58,7 @@ export default function CerberusVisual({ isListening = false }: { isListening?: 
                 animate={isListening ? "listening" : "idle"}
                 className="absolute top-0 z-10"
             >
-                <HeadSVG color={darkGold} eyeColor={eyeColor} side="center" />
+                <HeadSVG color={darkGold} eyeColor={eyeColor} isListening={isListening} />
             </motion.div>
 
             {/* Aura/Brilho de Atividade */}
@@ -74,7 +74,7 @@ export default function CerberusVisual({ isListening = false }: { isListening?: 
     );
 }
 
-function HeadSVG({ color, eyeColor, side }: { color: string; eyeColor: string; side: 'left' | 'right' | 'center' }) {
+function HeadSVG({ color, eyeColor, isListening }: { color: string; eyeColor: string; isListening: boolean }) {
     return (
         <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-2xl">
             {/* Crânio Estilizado */}

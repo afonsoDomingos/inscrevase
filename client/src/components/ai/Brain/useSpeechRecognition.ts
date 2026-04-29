@@ -24,17 +24,29 @@ interface SpeechRecognitionAlternative {
     confidence: number;
 }
 
+interface IRecognition {
+    start: () => void;
+    stop: () => void;
+    continuous: boolean;
+    interimResults: boolean;
+    lang: string;
+    onstart: () => void;
+    onend: () => void;
+    onresult: (event: SpeechRecognitionEvent) => void;
+}
+
 export const useSpeechRecognition = (onCommand: (command: string) => void) => {
     const [isListening, setIsListening] = useState(false);
-    const [recognition, setRecognition] = useState<any>(null);
+    const [recognition, setRecognition] = useState<IRecognition | null>(null);
 
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         if (SpeechRecognition) {
             const rec = new SpeechRecognition();
             rec.continuous = false;
             rec.interimResults = false;
-            rec.lang = 'pt-PT'; // Ou pt-BR dependendo da preferência
+            rec.lang = 'pt-PT'; 
 
             rec.onstart = () => setIsListening(true);
             rec.onend = () => setIsListening(false);

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, MicOff, Terminal, X, Command } from 'lucide-react';
+import { Mic, Terminal, X, Command } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import CerberusVisual from './CerberusVisual';
@@ -12,11 +12,11 @@ export default function Brain() {
     const router = useRouter();
     const [isVisible, setIsVisible] = useState(false);
     const [lastCommand, setLastCommand] = useState("");
-    const [isProcessing, setIsProcessing] = useState(false);
+    // const [isProcessing, setIsProcessing] = useState(false);
 
     const handleCommand = (transcript: string) => {
         setLastCommand(transcript);
-        setIsProcessing(true);
+        // setIsProcessing(true);
 
         const lowerTranscript = transcript.toLowerCase();
 
@@ -79,7 +79,7 @@ export default function Brain() {
             } else {
                 toast.error(`Não entendi o comando: "${transcript}". Tente algo como "Ver Inscritos" ou "Painel Admin".`);
             }
-            setIsProcessing(false);
+            // setIsProcessing(false);
         }, 800);
     };
 
@@ -116,7 +116,7 @@ export default function Brain() {
                                     {isListening ? "O Cérbero está ouvindo..." : "Interface Adormecida"}
                                 </h3>
                                 <p className="text-gray-500 text-xs px-4">
-                                    Diga comandos como "Ir para Dashboard" ou "Ver Inscritos"
+                                    Diga comandos como &quot;Ir para Dashboard&quot; ou &quot;Ver Inscritos&quot;
                                 </p>
                             </div>
 
