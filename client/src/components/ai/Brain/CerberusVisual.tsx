@@ -30,8 +30,8 @@ export default function CerberusVisual({
             {/* Efeito de Brilho de Fundo (Aura) */}
             <motion.div
                 animate={{
-                    scale: isThinking ? [1, 1.2, 1] : isListening ? [1, 1.1, 1] : 1,
-                    opacity: isThinking || isListening ? [0.2, 0.5, 0.2] : 0.1
+                    scale: isThinking ? [1, 1.2, 1] : isListening || isSpeaking ? [1, 1.1, 1] : 1,
+                    opacity: isThinking || isListening || isSpeaking ? [0.2, 0.5, 0.2] : 0.1
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
                 style={{
