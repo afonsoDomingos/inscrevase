@@ -349,16 +349,28 @@ export default function Brain() {
                             padding: '20px',
                             borderRadius: '24px',
                             boxShadow: isAlert ? '0 0 40px rgba(239, 68, 68, 0.2)' : '0 20px 50px rgba(0, 0, 0, 0.5)',
-                            width: '280px',
+                            width: '300px',
                             transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
                             display: 'flex',
                             flexDirection: 'column',
                             cursor: 'grab',
                             overflow: 'hidden',
-                            position: 'relative'
+                            position: 'relative',
+                            transform: 'perspective(1200px) rotateY(-10deg)',
+                            transformStyle: 'preserve-3d'
                         }}
-                        whileDrag={{ cursor: 'grabbing', scale: 1.02 }}
+                        whileHover={{ transform: 'perspective(1200px) rotateY(-2deg)', scale: 1.02 }}
+                        whileDrag={{ cursor: 'grabbing', scale: 1.05, rotateY: 0 }}
                     >
+                        {/* Efeito de Vidro Curvado (Vignette) */}
+                        <div style={{
+                            position: 'absolute',
+                            top: 0, left: 0, right: 0, bottom: 0,
+                            background: 'radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.4) 100%)',
+                            pointerEvents: 'none',
+                            zIndex: 12
+                        }} />
+
                         {/* Efeito de Scanlines Futuristas */}
                         <div style={{
                             position: 'absolute',
