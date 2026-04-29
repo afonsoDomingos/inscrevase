@@ -230,13 +230,15 @@ export default function Brain() {
     }, [socket, speak]);
 
     useEffect(() => {
-        console.log("🧠 [BRAIN] Interface Neural Montada. Suporte de Voz:", hasSupport);
+        console.log("%c🧠 [BRAIN] Interface Neural Ativa", "color: #FFD700; font-weight: bold; font-size: 14px;");
+        console.log("-> Suporte de Voz:", hasSupport);
+        console.log("-> Posicionamento: Bottom-Left (Above Aura)");
     }, [hasSupport]);
 
     if (isHibernated) return null;
 
     return (
-        <div style={{ position: 'fixed', bottom: '100px', left: '30px', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '16px' }}>
+        <div style={{ position: 'fixed', bottom: '160px', left: '20px', zIndex: 99999, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '16px' }}>
             {/* Modal de Feedback do Brain */}
             <AnimatePresence>
                 {isVisible && (
@@ -380,19 +382,22 @@ export default function Brain() {
 
             {/* Trigger Button (O Cérebro) */}
             <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.1, boxShadow: '0 0 30px rgba(255, 215, 0, 0.8)' }}
+                whileTap={{ scale: 0.9 }}
                 onClick={() => setIsVisible(!isVisible)}
                 style={{
                     position: 'relative',
-                    padding: '4px',
+                    padding: '3px',
                     borderRadius: '9999px',
-                    background: '#000',
-                    border: `2px solid ${isVisible ? '#eab308' : 'rgba(234, 179, 8, 0.4)'}`,
-                    transition: 'all 0.5s ease',
-                    boxShadow: isVisible ? '0 0 20px rgba(255, 215, 0, 0.6)' : '0 0 15px rgba(255, 215, 0, 0.1)',
+                    background: isVisible ? 'var(--gold-gradient)' : 'linear-gradient(135deg, #1a1a1a 0%, #000 100%)',
+                    border: `2px solid ${isVisible ? '#fff' : '#FFD700'}`,
+                    transition: 'all 0.3s ease',
+                    boxShadow: isVisible ? '0 0 30px rgba(255, 215, 0, 0.6)' : '0 10px 25px rgba(0, 0, 0, 0.5)',
                     cursor: 'pointer',
-                    outline: 'none'
+                    outline: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                 }}
             >
                 <div style={{ 
