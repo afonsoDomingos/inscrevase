@@ -37,6 +37,7 @@ interface IRecognition {
 
 export const useSpeechRecognition = (onCommand: (command: string) => void) => {
     const [isListening, setIsListening] = useState(false);
+    const [currentTranscript, setCurrentTranscript] = useState("");
     const [recognition, setRecognition] = useState<IRecognition | null>(null);
 
     useEffect(() => {
@@ -62,14 +63,36 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
         if (SpeechRecognition) {
             const rec = new SpeechRecognition();
             rec.continuous = false;
-            rec.interimResults = false;
+            rec.interimResults = true;
             rec.lang = 'pt-PT'; 
 
-            rec.onstart = () => setIsListening(true);
+            rec.onstart = () => {
+                setIsListening(true);
+                setCurrentTranscript("");
+            };
             rec.onend = () => setIsListening(false);
             rec.onresult = (event: SpeechRecognitionEvent) => {
-                const transcript = event.results[0][0].transcript.toLowerCase();
-                onCommand(transcript);
+                let interim = '';
+                let finalStr = '';
+                
+                // fallback para navegadores antigos que não suportam resultIndex
+                const startIndex = (event as any).resultIndex || 0;
+                
+                for (let i = startIndex; i < event.results.length; i++) {
+                    const result = event.results[i];
+                    if (result.isFinal) {
+                        finalStr += result[0].transcript;
+                    } else {
+                        interim += result[0].transcript;
+                    }
+                }
+                
+                if (finalStr) {
+                    setCurrentTranscript(finalStr);
+                    onCommand(finalStr.toLowerCase());
+                } else {
+                    setCurrentTranscript(interim);
+                }
             };
 
             setRecognition(rec as unknown as IRecognition);
@@ -92,5 +115,5 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
         }
     }, [recognition]);
 
-    return { isListening, startListening, stopListening, hasSupport: !!recognition };
+    return { isListening, currentTranscript, startListening, stopListening, hasSupport: !!recognition };
 };

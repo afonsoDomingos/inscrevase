@@ -137,7 +137,7 @@ export default function Brain() {
         }
     }, [router, speak]);
 
-    const { isListening, startListening, hasSupport } = useSpeechRecognition(handleCommand);
+    const { isListening, currentTranscript, startListening, hasSupport } = useSpeechRecognition(handleCommand);
 
 
 
@@ -441,7 +441,29 @@ export default function Brain() {
                                 </p>
                             </div>
 
-                            {lastCommand && (
+                            {/* Transcrição em Tempo Real */}
+                            {currentTranscript && isListening && (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    style={{
+                                        color: '#fef08a',
+                                        fontSize: '0.85rem',
+                                        fontStyle: 'italic',
+                                        textAlign: 'center',
+                                        background: 'rgba(234, 179, 8, 0.1)',
+                                        padding: '6px 12px',
+                                        borderRadius: '8px',
+                                        border: '1px dotted rgba(234, 179, 8, 0.5)',
+                                        width: '100%',
+                                        wordBreak: 'break-word'
+                                    }}
+                                >
+                                    "{currentTranscript}..."
+                                </motion.div>
+                            )}
+
+                            {lastCommand && !isListening && (
                                 <motion.div 
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ 
