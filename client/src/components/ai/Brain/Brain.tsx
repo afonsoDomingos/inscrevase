@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, Terminal, X, Command, Power, Square } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
@@ -328,7 +328,7 @@ export default function Brain() {
         return () => {
             socket.off('new_notification', handleNewNotification);
         };
-    }, [socket, speak]);
+    }, [socket, speak, playSystemSound]);
 
     useEffect(() => {
         console.log("%c🧠 [BRAIN] Interface Neural Ativa", "color: #FFD700; font-weight: bold; font-size: 14px;");

@@ -78,7 +78,7 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
                 setCurrentTranscript("");
             };
 
-            rec.onerror = (event: any) => {
+            rec.onerror = (event: { error: string }) => {
                 console.error("Speech Recognition Error:", event.error);
                 if (event.error === 'no-speech') {
                     // Ignora silêncio momentâneo se contínuo for true
