@@ -48,7 +48,7 @@ export default function Brain() {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'pt-PT';
         utterance.rate = 1.0;
-        utterance.pitch = 0.8;
+        utterance.pitch = 1.0; // Pitch 1.0 é mais natural e humano
 
         utterance.onstart = () => {
             console.log("%c🔊 [VOICE] Iniciando fala...", "color: #38bdf8; font-weight: bold;");
@@ -63,18 +63,22 @@ export default function Brain() {
             setIsSpeaking(false);
         };
 
-        // Double Check: Prioridade absoluta para pt-PT
+        // Algoritmo de voz aprimorado para focar em vozes Neurais / Online
         const availableVoices = voices.length > 0 ? voices : window.speechSynthesis.getVoices();
         const ptPTVoices = availableVoices.filter(v => v.lang === 'pt-PT' || v.lang === 'pt_PT');
+        const ptVoices = availableVoices.filter(v => v.lang.startsWith('pt'));
         
-        const preferredVoice = ptPTVoices.find(v => v.name.includes('Google') || v.name.includes('Premium')) || 
+        const preferredVoice = ptPTVoices.find(v => v.name.toLowerCase().includes('natural')) ||
+                               ptPTVoices.find(v => v.name.toLowerCase().includes('online')) ||
+                               ptPTVoices.find(v => v.name.includes('Google') || v.name.includes('Premium')) || 
                                ptPTVoices[0] || 
-                               availableVoices.find(v => v.lang.startsWith('pt')) || 
+                               ptVoices.find(v => v.name.toLowerCase().includes('natural')) ||
+                               ptVoices.find(v => v.name.includes('Google')) ||
+                               ptVoices[0] || 
                                availableVoices[0];
         
         if (preferredVoice) {
             utterance.voice = preferredVoice;
-            // Força o idioma pt-PT na utterance também
             utterance.lang = 'pt-PT';
             console.log(`%c🗣️ [VOICE] Matriz Neural configurada para: ${preferredVoice.name} (${preferredVoice.lang})`, "color: #10b981; font-weight: bold;");
         }
@@ -415,6 +419,47 @@ export default function Brain() {
 
     return (
         <>
+            <style>{`
+                @keyframes spin-gemini-border {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                .gemini-ai-wrapper {
+                    position: relative;
+                    flex: 1;
+                    border-radius: 50px;
+                    padding: 2px;
+                    display: flex;
+                    overflow: hidden;
+                    background: #111;
+                    width: 100%;
+                }
+                .gemini-ai-wrapper::before {
+                    content: "";
+                    position: absolute;
+                    top: -150%; right: -50%; bottom: -150%; left: -50%;
+                    background: conic-gradient(from 0deg, transparent 0%, transparent 40%, #4285f4 60%, #ea4335 70%, #fbbc05 80%, #34a853 90%, transparent 100%);
+                    animation: spin-gemini-border 3s linear infinite;
+                    z-index: 0;
+                }
+                .gemini-ai-input {
+                    position: relative;
+                    z-index: 1;
+                    width: 100%;
+                    background: rgba(15,15,15,0.9);
+                    border: none;
+                    border-radius: 48px;
+                    padding: 10px 15px;
+                    color: #fff;
+                    font-size: 0.8rem;
+                    outline: none;
+                    font-weight: 500;
+                    letter-spacing: 0.3px;
+                }
+                .gemini-ai-input::placeholder {
+                    color: #9aa0a6;
+                }
+            `}</style>
             {/* Monitor HUD — Centered */}
             <div style={{ 
                 position: 'fixed', 
@@ -618,46 +663,64 @@ export default function Brain() {
 
                                     <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.75rem', color: '#d1d5db', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent', paddingRight: '5px' }}>
                                         {chatHistory.length > 0 ? chatHistory.map((msg, idx) => (
-                                            <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(12px)', border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`, padding: '10px 14px', borderRadius: '12px', maxWidth: '90%', wordBreak: 'break-word', boxShadow: '0 4px 15px rgba(0,0,0,0.15)' }}>{msg.role === 'ai' ? <div className="prose-sm prose-invert" style={{ fontSize: '0.75rem' }}><ReactMarkdown>{msg.text}</ReactMarkdown></div> : <span style={{ color: '#fef08a' }}>{msg.text}</span>}</div>
+                                            <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(12px)', border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`, padding: '10px 14px', borderRadius: '12px', maxWidth: '90%', wordBreak: 'break-word', boxShadow: '0 4px 15px rgba(0,0,0,0.15)' }}>
+                                                {msg.role === 'ai' ? (
+                                                    <div style={{ fontSize: '0.75rem', color: '#e2e8f0', lineHeight: '1.6' }}>
+                                                        <ReactMarkdown components={{ p: ({node, ...props}) => <p style={{ margin: 0, paddingBottom: '6px', color: '#e2e8f0' }} {...props} />, strong: ({node, ...props}) => <strong style={{ color: '#fff', fontWeight: 800 }} {...props} />, a: ({node, ...props}) => <a style={{ color: '#38bdf8', textDecoration: 'underline' }} {...props} /> }}>{msg.text}</ReactMarkdown>
+                                                    </div>
+                                                ) : <span style={{ color: '#fef08a' }}>{msg.text}</span>}
+                                            </div>
                                         )) : (
                                             <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0.3, gap: '8px' }}><div style={{ padding: '20px', textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}><p style={{ margin: 0, fontSize: '11px' }}>Sistemas Prontos.</p><p style={{ margin: 0, fontSize: '9px', marginTop: '4px' }}>Diga {"\""}Cérbero{"\""} ou clique no botão para testar.</p></div></div>
                                         )}
                                     </div>
 
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '95%', margin: '0 auto', flexShrink: 0 }}>
-                                        <div style={{ position: 'relative', width: '100%' }}>
-                                            <input 
-                                                type="text" 
-                                                value={textInput} 
-                                                onChange={(e) => setTextInput(e.target.value)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter' && textInput.trim()) {
+                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '100%' }}>
+                                            <div className="gemini-ai-wrapper">
+                                                <input 
+                                                    type="text" 
+                                                    className="gemini-ai-input"
+                                                    value={textInput} 
+                                                    onChange={(e) => setTextInput(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' && textInput.trim()) {
+                                                            handleCommand(textInput.trim());
+                                                            setTextInput("");
+                                                        }
+                                                    }}
+                                                    placeholder="Para começar a orquestrar, digite..."
+                                                />
+                                            </div>
+                                            <button 
+                                                type="button" 
+                                                disabled={isThinking || !textInput.trim()} 
+                                                onClick={() => {
+                                                    if (textInput.trim()) {
                                                         handleCommand(textInput.trim());
                                                         setTextInput("");
                                                     }
                                                 }}
-                                                placeholder="Escrever comando manual..."
                                                 style={{
-                                                    width: '100%',
-                                                    background: 'rgba(0,0,0,0.5)',
-                                                    border: '1px solid rgba(234, 179, 8, 0.3)',
-                                                    borderRadius: '12px',
-                                                    padding: '10px 15px',
-                                                    color: '#fff',
-                                                    outline: 'none',
-                                                    fontSize: '0.8rem',
-                                                    transition: 'all 0.3s',
-                                                    boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.3)'
+                                                    background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)',
+                                                    color: '#000',
+                                                    border: 'none',
+                                                    width: '44px',
+                                                    height: '44px',
+                                                    minWidth: '44px',
+                                                    borderRadius: '50%',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: (!textInput.trim() || isThinking) ? 'not-allowed' : 'pointer',
+                                                    opacity: (!textInput.trim() || isThinking) ? 0.3 : 1,
+                                                    transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                                                    boxShadow: '0 4px 10px rgba(234, 179, 8, 0.4), inset 0 2px 4px rgba(255,255,255,0.4)',
+                                                    zIndex: 10
                                                 }}
-                                                onFocus={(e) => {
-                                                    e.target.style.borderColor = 'rgba(234, 179, 8, 0.8)';
-                                                    e.target.style.boxShadow = '0 0 10px rgba(234, 179, 8, 0.2), inset 0 2px 10px rgba(0,0,0,0.3)';
-                                                }}
-                                                onBlur={(e) => {
-                                                    e.target.style.borderColor = 'rgba(234, 179, 8, 0.3)';
-                                                    e.target.style.boxShadow = 'inset 0 2px 10px rgba(0,0,0,0.3)';
-                                                }}
-                                            />
+                                            >
+                                                <Terminal size={18} />
+                                            </button>
                                         </div>
                                         
                                         {hasSupport && (
@@ -736,8 +799,8 @@ export default function Brain() {
                             }}
                             style={{
                                 position: 'relative',
-                                width: '50px',
-                                height: '50px',
+                                width: '44px',
+                                height: '44px',
                                 borderRadius: '9999px',
                                 background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)',
                                 border: '2px solid #fff',
@@ -751,10 +814,9 @@ export default function Brain() {
                             }}
                         >
                             <div style={{ position: 'relative' }}>
-                                <Command size={22} color="#000" />
+                                <Command size={20} color="#000" />
                             </div>
 
-                            {/* Proximity / Status Glow */}
                             <motion.span 
                                 animate={{ scale: [1, 1.8, 1], opacity: [0.4, 0, 0.4] }}
                                 transition={{ repeat: Infinity, duration: 2.5 }}
