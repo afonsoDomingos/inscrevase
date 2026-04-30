@@ -24,6 +24,7 @@ export default function Brain() {
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [chatHistory, setChatHistory] = useState<{role: 'user' | 'ai', text: string}[]>([]);
     const [isMobile, setIsMobile] = useState(false);
+    const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -54,8 +55,7 @@ export default function Brain() {
             setIsSpeaking(false);
         };
 
-        const voices = window.speechSynthesis.getVoices();
-        const preferredVoice = voices.find(v => v.name.includes('Premium') || v.name.includes('Google')) || voices[0];
+        const preferredVoice = voices.find(v => v.lang.startsWith('pt-PT') && (v.name.includes('Premium') || v.name.includes('Google'))) || voices.find(v => v.lang.startsWith('pt')) || voices[0];
         if (preferredVoice) utterance.voice = preferredVoice;
 
         window.speechSynthesis.speak(utterance);
@@ -174,11 +174,17 @@ export default function Brain() {
         closeSound.current.load();
         console.log("%c🎵 [AUDIO] Sons de sistema carregados.", "color: #a78bfa; font-weight: bold;");
 
-        // Pre-warm Speech Synthesis (evita atraso no primeiro clique)
-        if (typeof window !== 'undefined' && window.speechSynthesis) {
-            const warmUp = new SpeechSynthesisUtterance("");
-            window.speechSynthesis.speak(warmUp);
-            window.speechSynthesis.getVoices();
+        // Carregar vozes corretamente
+        const loadVoices = () => {
+            const availableVoices = window.speechSynthesis.getVoices();
+            if (availableVoices.length > 0) {
+                setVoices(availableVoices);
+                console.log("%c🗣️ [VOICE] Vozes carregadas:", "color: #10b981;", availableVoices.length);
+            }
+        };
+        loadVoices();
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
         }
     }, []);
 
