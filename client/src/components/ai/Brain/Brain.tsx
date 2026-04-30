@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, Terminal, X, Command, Power, Square } from 'lucide-react';
+import { Mic, Terminal, X, Command, Square } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
