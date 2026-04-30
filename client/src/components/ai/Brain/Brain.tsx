@@ -360,90 +360,107 @@ export default function Brain() {
                         {/* SVG Monitor Frame */}
                         <svg width="820" height="440" viewBox="0 0 820 440" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', zIndex: 1 }}>
                             <defs>
-                                <linearGradient id="bezelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stopColor="#2e2e2e" />
-                                    <stop offset="100%" stopColor="#181818" />
+                                <linearGradient id="bezelGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor="#1a1a1a" />
+                                    <stop offset="10%" stopColor="#2e2e2e" />
+                                    <stop offset="50%" stopColor="#3a3a3a" />
+                                    <stop offset="90%" stopColor="#2e2e2e" />
+                                    <stop offset="100%" stopColor="#1a1a1a" />
                                 </linearGradient>
                                 <linearGradient id="screenGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" stopColor="rgba(0,0,0,0.97)" />
-                                    <stop offset="14%" stopColor={isAlert ? "rgba(25,4,4,0.82)" : "rgba(4,7,18,0.82)"} />
-                                    <stop offset="86%" stopColor={isAlert ? "rgba(25,4,4,0.82)" : "rgba(4,7,18,0.82)"} />
-                                    <stop offset="100%" stopColor="rgba(0,0,0,0.97)" />
+                                    <stop offset="0%" stopColor="rgba(0,0,0,0.99)" />
+                                    <stop offset="15%" stopColor={isAlert ? "rgba(40,10,10,0.8)" : "rgba(10,15,30,0.8)"} />
+                                    <stop offset="50%" stopColor={isAlert ? "rgba(20,5,5,0.35)" : "rgba(5,10,25,0.35)"} />
+                                    <stop offset="85%" stopColor={isAlert ? "rgba(40,10,10,0.8)" : "rgba(10,15,30,0.8)"} />
+                                    <stop offset="100%" stopColor="rgba(0,0,0,0.99)" />
                                 </linearGradient>
-                                <linearGradient id="glossGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stopColor="rgba(255,255,255,0.07)" />
+                                <radialGradient id="screenGlow" cx="50%" cy="50%" r="50%">
+                                    <stop offset="0%" stopColor={isAlert ? "rgba(239,68,68,0.12)" : "rgba(234,179,8,0.08)"} />
+                                    <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+                                </radialGradient>
+                                <linearGradient id="glossGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stopColor="rgba(255,255,255,0.12)" />
                                     <stop offset="40%" stopColor="rgba(255,255,255,0)" />
                                 </linearGradient>
                             </defs>
 
-                            {/* Outer bezel — concave inward (Odyssey G9 shape) */}
-                            <path d="M 2,32 Q 410,6 818,32 L 818,348 Q 410,374 2,348 Z" fill="url(#bezelGrad)" />
+                            {/* Stand base shadow */}
+                            <ellipse cx="410" cy="425" rx="180" ry="15" fill="rgba(0,0,0,0.5)" />
 
-                            {/* Screen inner glass */}
-                            <path d="M 20,45 Q 410,20 800,45 L 800,335 Q 410,360 20,335 Z" fill="url(#screenGrad)" />
+                            {/* Bezel Glow (Power state) */}
+                            <path d="M 0,0 Q 410,24 820,0 L 820,340 Q 410,316 0,340 Z" fill="none" stroke={isAlert ? "rgba(239,68,68,0.15)" : "rgba(234,179,8,0.08)"} strokeWidth="4" filter="blur(4px)" />
 
-                            {/* Glossy top-half reflection */}
-                            <path d="M 20,45 Q 410,20 800,45 L 800,190 Q 410,195 20,190 Z" fill="url(#glossGrad)" />
+                            {/* Outer bezel — Concave Inward (Odyssey G9 front perspective) */}
+                            <path d="M 0,0 Q 410,24 820,0 L 820,340 Q 410,316 0,340 Z" fill="url(#bezelGrad)" stroke="#111" strokeWidth="1" />
 
-                            {/* Scanlines */}
-                            {Array.from({length: 60}).map((_, i) => (
-                                <line key={i} x1="20" y1={50 + i * 5} x2="800" y2={50 + i * 5} stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
-                            ))}
+                            {/* Screen inner area */}
+                            <path d="M 12,14 Q 410,34 808,14 L 808,326 Q 410,306 12,326 Z" fill="url(#screenGrad)" />
+                            <path d="M 12,14 Q 410,34 808,14 L 808,326 Q 410,306 12,326 Z" fill="url(#screenGlow)" />
 
-                            {/* LED accent strip — top */}
-                            <path d="M 20,45 Q 410,20 800,45" fill="none" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.5)"} strokeWidth="1.5" />
-                            {/* LED accent strip — bottom */}
-                            <path d="M 20,335 Q 410,360 800,335" fill="none" stroke={isAlert ? "rgba(239,68,68,0.3)" : "rgba(255,255,255,0.06)"} strokeWidth="1" />
+                            {/* Glass Reflection */}
+                            <path d="M 12,14 Q 410,34 808,14 L 808,140 Q 410,160 12,140 Z" fill="url(#glossGrad)" />
 
-                            {/* HUD corner markers */}
-                            <line x1="48" y1="68" x2="72" y2="68" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
-                            <line x1="48" y1="68" x2="48" y2="92" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
-                            <line x1="748" y1="68" x2="772" y2="68" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
-                            <line x1="772" y1="68" x2="772" y2="92" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
-                            <line x1="48" y1="310" x2="72" y2="310" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
-                            <line x1="48" y1="288" x2="48" y2="310" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
-                            <line x1="748" y1="310" x2="772" y2="310" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
-                            <line x1="772" y1="288" x2="772" y2="310" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
+                            {/* Scanlines layer */}
+                            <mask id="scanlineMask">
+                                <rect x="0" y="0" width="820" height="440" fill="white" />
+                                {Array.from({length: 80}).map((_, i) => (
+                                    <rect key={i} x="12" y={14 + i * 4} width="796" height="1" fill="black" fillOpacity="0.15" />
+                                ))}
+                            </mask>
+                            <path d="M 12,14 Q 410,34 808,14 L 808,326 Q 410,306 12,326 Z" fill="rgba(255,255,255,0.03)" mask="url(#scanlineMask)" />
 
-                            {/* Stand neck */}
-                            <path d="M 374,348 L 390,388 L 430,388 L 446,348 Z" fill="#222" />
-                            <rect x="374" y="345" width="72" height="6" fill="#2e2e2e" rx="2" />
+                            {/* Bezel Edge Light (Upper) */}
+                            <path d="M 0,0 Q 410,24 820,0" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="0.8" />
+                            {/* Bezel Edge Light (Lower) */}
+                            <path d="M 0,340 Q 410,316 820,340" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
 
-                            {/* Stand base */}
-                            <ellipse cx="410" cy="410" rx="170" ry="20" fill="#1a1a1a" />
-                            <ellipse cx="410" cy="408" rx="170" ry="20" fill="none" stroke="#2e2e2e" strokeWidth="1.5" />
+                            {/* Stand - Refined 3D Look */}
+                            <path d="M 370,335 L 390,395 L 430,395 L 450,335 Z" fill="#222" />
+                            <path d="M 390,395 L 430,395 L 440,410 L 380,410 Z" fill="#151515" />
+                            <ellipse cx="410" cy="415" rx="160" ry="18" fill="#2a2a2a" stroke="#3a3a3a" strokeWidth="1" />
+                            <ellipse cx="410" cy="412" rx="155" ry="15" fill="#111" />
+                            
+                            {/* Logo area */}
+                            <rect x="395" y="318" width="30" height="12" rx="2" fill="#0a0a0a" />
+                            <text x="410" y="326" textAnchor="middle" fontSize="6" fontWeight="bold" fill="#333" fontFamily="Arial" letterSpacing="2">MUV</text>
+
+                            {/* HUD Indicators on screen */}
+                            <g opacity="0.4">
+                                <path d="M 40,60 L 40,40 L 60,40" fill="none" stroke={isAlert ? "#ef4444" : "#eab308"} strokeWidth="2" />
+                                <path d="M 760,40 L 780,40 L 780,60" fill="none" stroke={isAlert ? "#ef4444" : "#eab308"} strokeWidth="2" />
+                                <path d="M 40,280 L 40,300 L 60,300" fill="none" stroke={isAlert ? "#ef4444" : "#eab308"} strokeWidth="2" />
+                                <path d="M 760,300 L 780,300 L 780,280" fill="none" stroke={isAlert ? "#ef4444" : "#eab308"} strokeWidth="2" />
+                            </g>
                         </svg>
 
                         {/* Screen Content — 2-column ultra-wide layout */}
-                        <div style={{ position: 'absolute', top: '52px', left: '58px', right: '58px', bottom: '100px', zIndex: 5, display: 'flex', gap: '20px', padding: '10px 16px', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: '48px', left: '55px', right: '55px', bottom: '110px', zIndex: 5, display: 'flex', gap: '25px', padding: '15px 20px', overflow: 'hidden' }}>
 
                             {/* Left Column: Brain + Status */}
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', minWidth: '160px' }}>
-                                <div style={{ transform: 'scale(0.65)', transformOrigin: 'top center' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px', minWidth: '180px' }}>
+                                <div style={{ transform: 'scale(0.75)', transformOrigin: 'center center' }}>
                                     <CerberusVisual isListening={isListening} isThinking={isThinking} isAlert={isAlert} isSpeaking={isSpeaking} />
                                 </div>
-                                <h3 style={{ fontWeight: 'bold', color: isAlert ? '#ef4444' : isThinking ? '#38bdf8' : '#fff', fontSize: '0.8rem', textTransform: isThinking ? 'uppercase' : 'none', letterSpacing: isThinking ? '1px' : '0', margin: 0, marginTop: '-30px', textAlign: 'center' }}>
-                                    {isThinking ? 'A Processar...' : isListening ? (audioLevel > 5 ? 'A Escutar...' : 'Aguardando...') : 'Cérbero'}
-                                </h3>
-                                <p style={{ color: '#6b7280', fontSize: '9px', textAlign: 'center', margin: 0, lineHeight: '1.3' }}>
-                                    {isAlert ? 'Alerta urgente.' : isThinking ? 'A consultar dados...' : 'Diga o comando, Mestre.'}
-                                </p>
-                                {/* Header buttons */}
-                                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                                    <div style={{ fontSize: '8px', fontWeight: 'bold', letterSpacing: '0.1em', textTransform: 'uppercase', color: isAlert ? '#ef4444' : '#eab308', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                        <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 2, repeat: Infinity }}><Command size={10} /></motion.div>
-                                        {isAlert ? 'URGENT' : 'NEURAL'}
-                                    </div>
+                                <div style={{ textAlign: 'center', marginTop: '5px' }}>
+                                    <h3 style={{ fontWeight: 'bold', color: isAlert ? '#ef4444' : isThinking ? '#38bdf8' : '#fff', fontSize: '0.9rem', textTransform: isThinking ? 'uppercase' : 'none', letterSpacing: '1px', margin: 0 }}>
+                                        {isThinking ? 'Processando...' : isListening ? (audioLevel > 5 ? 'Escutando...' : 'Aguardando...') : 'Cérbero'}
+                                    </h3>
+                                    <p style={{ color: '#9ca3af', fontSize: '10px', margin: '4px 0 0', lineHeight: '1.4', maxWidth: '140px' }}>
+                                        {isAlert ? 'Alerta Urgente!' : isThinking ? 'Analisando diretivas...' : 'Comando de voz ativo.'}
+                                    </p>
+                                </div>
+                                {/* Controls Row */}
+                                <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
                                     {isSpeaking && (
-                                        <button onClick={() => { window.speechSynthesis?.cancel(); setIsSpeaking(false); }} title="Silenciar" style={{ color: '#eab308', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: 0 }}>
-                                            <Square size={10} fill="currentColor" />
+                                        <button onClick={() => { window.speechSynthesis?.cancel(); setIsSpeaking(false); }} style={{ color: '#eab308', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Mute">
+                                            <Square size={14} fill="currentColor" />
                                         </button>
                                     )}
-                                    <button onClick={() => { speak("Desativando sistemas neurais. Até logo, Mestre."); setTimeout(() => setIsHibernated(true), 1500); }} title="Desligar" style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.8, padding: 0 }}>
-                                        <Power size={12} />
+                                    <button onClick={() => { speak("Desativando sistemas neurais."); setTimeout(() => setIsHibernated(true), 1500); }} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Hibernate">
+                                        <Power size={16} />
                                     </button>
-                                    <button onClick={() => setIsVisible(false)} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                                        <X size={14} />
+                                    <button onClick={() => setIsVisible(false)} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Close HUD">
+                                        <X size={18} />
                                     </button>
                                 </div>
                             </div>
@@ -452,12 +469,32 @@ export default function Brain() {
                             <div style={{ width: '1px', background: 'rgba(255,255,255,0.06)', flexShrink: 0 }} />
 
                             {/* Right Column: Visualizer + Chat + Controls */}
-                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', overflow: 'hidden' }}>
-                                <VoiceVisualizer />
+                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', overflow: 'hidden' }}>
+                                {/* Beta / Development Indicator */}
+                                <div style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'space-between',
+                                    background: 'rgba(234, 179, 8, 0.05)',
+                                    padding: '4px 10px',
+                                    borderRadius: '6px',
+                                    border: '1px solid rgba(234, 179, 8, 0.15)',
+                                    marginBottom: '2px'
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <div style={{ width: '6px', height: '6px', background: '#eab308', borderRadius: '50%', boxShadow: '0 0 8px #eab308' }} />
+                                        <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#eab308', letterSpacing: '0.5px' }}>BETA / EM DESENVOLVIMENTO</span>
+                                    </div>
+                                    <span style={{ fontSize: '8px', color: '#6b7280' }}>v2.4.0-neural</span>
+                                </div>
+
+                                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.03)' }}>
+                                    <VoiceVisualizer />
+                                </div>
 
                                 {/* Live transcript */}
                                 {currentTranscript && isListening && (
-                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ color: '#fef08a', fontSize: '0.78rem', fontStyle: 'italic', background: 'rgba(234,179,8,0.08)', padding: '4px 10px', borderRadius: '6px', border: '1px dotted rgba(234,179,8,0.4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} style={{ color: '#fef08a', fontSize: '0.85rem', fontStyle: 'italic', background: 'rgba(234, 179, 8, 0.1)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(234, 179, 8, 0.2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }}>
                                         &quot;{currentTranscript}...&quot;
                                     </motion.div>
                                 )}
@@ -465,40 +502,86 @@ export default function Brain() {
                                 {/* Last command badge */}
                                 {lastCommand && !isListening && (
                                     <motion.div
-                                        initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1, borderColor: isThinking ? ['rgba(56,189,248,0.2)','rgba(56,189,248,0.8)','rgba(56,189,248,0.2)'] : 'rgba(234,179,8,0.2)', boxShadow: isThinking ? ['0 0 0px rgba(56,189,248,0)','0 0 12px rgba(56,189,248,0.5)','0 0 0px rgba(56,189,248,0)'] : 'none' }}
+                                        initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1, borderColor: isThinking ? ['rgba(56,189,248,0.2)','rgba(56,189,248,0.8)','rgba(56,189,248,0.2)'] : 'rgba(234,179,8,0.2)', boxShadow: isThinking ? ['0 0 0px rgba(56,189,248,0)','0 0 15px rgba(56,189,248,0.3)','0 0 0px rgba(56,189,248,0)'] : 'none' }}
                                         transition={isThinking ? { duration: 1.5, repeat: Infinity } : {}}
-                                        style={{ background: isThinking ? 'rgba(56,189,248,0.12)' : 'rgba(234,179,8,0.08)', border: '1px solid', padding: '4px 12px', borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}
+                                        style={{ background: isThinking ? 'rgba(56, 189, 248, 0.15)' : 'rgba(234, 179, 8, 0.1)', border: '1px solid', padding: '6px 15px', borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}
                                     >
-                                        <Terminal size={10} style={{ color: isThinking ? '#38bdf8' : '#eab308', minWidth: '10px' }} />
-                                        <span style={{ color: isThinking ? '#38bdf8' : '#eab308', fontSize: '0.7rem', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lastCommand}</span>
+                                        <Terminal size={12} style={{ color: isThinking ? '#38bdf8' : '#eab308', minWidth: '12px' }} />
+                                        <span style={{ color: isThinking ? '#38bdf8' : '#eab308', fontSize: '0.75rem', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lastCommand}</span>
                                     </motion.div>
                                 )}
 
                                 {/* Chat history */}
-                                {chatHistory.length > 0 && (
-                                    <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.7rem', color: '#d1d5db', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.15) transparent' }}>
-                                        {chatHistory.map((msg, idx) => (
-                                            <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'rgba(234,179,8,0.12)' : 'rgba(55,65,81,0.35)', border: `1px solid ${msg.role === 'user' ? 'rgba(234,179,8,0.25)' : 'rgba(255,255,255,0.04)'}`, padding: '5px 10px', borderRadius: '10px', maxWidth: '85%', wordBreak: 'break-word' }}>
-                                                {msg.role === 'ai' ? <ReactMarkdown>{msg.text}</ReactMarkdown> : <span style={{ color: '#fef08a' }}>{msg.text}</span>}
+                                <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.75rem', color: '#d1d5db', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent', paddingRight: '5px' }}>
+                                    {chatHistory.length > 0 ? chatHistory.map((msg, idx) => (
+                                        <div key={idx} style={{ 
+                                            alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', 
+                                            background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.05)', 
+                                            backdropFilter: 'blur(12px)',
+                                            border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`, 
+                                            padding: '10px 14px', 
+                                            borderRadius: '12px', 
+                                            maxWidth: '90%', 
+                                            wordBreak: 'break-word',
+                                            boxShadow: '0 4px 15px rgba(0,0,0,0.15)'
+                                        }}>
+                                            {msg.role === 'ai' ? (
+                                                <div className="prose-sm prose-invert" style={{ fontSize: '0.75rem' }}>
+                                                    <ReactMarkdown>{msg.text}</ReactMarkdown>
+                                                </div>
+                                            ) : (
+                                                <span style={{ color: '#fef08a' }}>{msg.text}</span>
+                                            )}
+                                        </div>
+                                    )) : (
+                                        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0.3, gap: '8px' }}>
+                                            <div style={{ padding: '20px', textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}>
+                                                <p style={{ margin: 0, fontSize: '11px' }}>Sistemas Prontos.</p>
+                                                <p style={{ margin: 0, fontSize: '9px', marginTop: '4px' }}>Diga "Cérbero" ou clique no botão para testar.</p>
                                             </div>
-                                        ))}
-                                    </div>
-                                )}
+                                        </div>
+                                    )}
+                                </div>
 
                                 {/* Mic button */}
                                 {hasSupport && (
-                                    <button onClick={startListening} disabled={isListening} style={{ width: '100%', padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', border: isListening ? '1px solid rgba(234,179,8,0.5)' : 'none', background: isListening ? 'rgba(234,179,8,0.15)' : '#eab308', color: isListening ? '#eab308' : '#000', fontWeight: 'bold', fontSize: '0.8rem', cursor: isListening ? 'default' : 'pointer', outline: 'none', transition: 'all 0.3s ease', flexShrink: 0 }}>
+                                    <motion.button 
+                                        whileHover={{ scale: 1.02, boxShadow: '0 8px 25px rgba(234, 179, 8, 0.4)' }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={startListening} 
+                                        disabled={isListening} 
+                                        style={{ 
+                                            width: '100%', 
+                                            padding: '14px', 
+                                            borderRadius: '14px', 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            justifyContent: 'center', 
+                                            gap: '12px', 
+                                            border: isListening ? '1px solid rgba(234, 179, 8, 0.5)' : 'none', 
+                                            background: isListening ? 'rgba(234, 179, 8, 0.2)' : 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', 
+                                            color: isListening ? '#eab308' : '#000', 
+                                            fontWeight: '900', 
+                                            fontSize: '0.9rem', 
+                                            letterSpacing: '1px',
+                                            cursor: isListening ? 'default' : 'pointer', 
+                                            outline: 'none', 
+                                            transition: 'all 0.3s cubic-bezier(0.23, 1, 0.32, 1)', 
+                                            flexShrink: 0,
+                                            boxShadow: isListening ? 'none' : '0 6px 20px rgba(234, 179, 8, 0.25)'
+                                        }}
+                                    >
                                         {isListening ? (
                                             <>
-                                                <div style={{ display: 'flex', gap: '3px' }}>
-                                                    {[1,2,3].map(i => <motion.div key={i} animate={{ height: [3, 10, 3] }} transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.1 }} style={{ width: '3px', background: '#eab308', borderRadius: '9999px' }} />)}
+                                                <div style={{ display: 'flex', gap: '4px' }}>
+                                                    {[1,2,3].map(i => <motion.div key={i} animate={{ height: [4, 14, 4] }} transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.1 }} style={{ width: '4px', background: '#eab308', borderRadius: '9999px' }} />)}
                                                 </div>
-                                                <span>A Ouvir...</span>
+                                                <span>ESCUTANDO...</span>
                                             </>
                                         ) : (
-                                            <><Mic size={16} /><span>Falar Comando</span></>
+                                            <><Mic size={20} /><span>FALAR COMANDO</span></>
                                         )}
-                                    </button>
+                                    </motion.button>
                                 )}
                             </div>
                         </div>
