@@ -41,6 +41,12 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
     const [currentTranscript, setCurrentTranscript] = useState("");
     const [recognition, setRecognition] = useState<IRecognition | null>(null);
 
+    const onCommandRef = useRef(onCommand);
+    
+    useEffect(() => {
+        onCommandRef.current = onCommand;
+    }, [onCommand]);
+
     useEffect(() => {
         interface SpeechRecognitionInstance {
             continuous: boolean;
@@ -90,7 +96,9 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
                 
                 if (finalStr) {
                     setCurrentTranscript(finalStr);
-                    onCommand(finalStr.toLowerCase());
+                    if (onCommandRef.current) {
+                        onCommandRef.current(finalStr.toLowerCase());
+                    }
                 } else {
                     setCurrentTranscript(interim);
                 }
@@ -98,7 +106,7 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
 
             setRecognition(rec as unknown as IRecognition);
         }
-    }, [onCommand]);
+    }, []);
 
     const startListening = useCallback(() => {
         if (recognition) {
