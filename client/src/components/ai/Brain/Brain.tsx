@@ -142,7 +142,7 @@ export default function Brain() {
     // Som de Intro ao Abrir o Monitor
     useEffect(() => {
         if (isVisible) {
-            const introAudio = new Audio('/braindsound/1 Universo Inscreva-se.mp3');
+            const introAudio = new Audio('/braindsound/1intro.mp3');
             introAudio.volume = 0.4;
             introAudio.play().catch(err => console.log("Intro sound skipped or blocked by browser."));
         }
