@@ -67,7 +67,10 @@ export default function CerberusVisual({
                     stroke="rgba(255,255,255,0.15)"
                     strokeWidth="0.8"
                     filter="url(#inner-shadow)"
-                    animate={isThinking ? { x: [-1, 1, -1] } : {}}
+                    animate={isThinking ? { 
+                        x: [-1, 1, -1],
+                        filter: ['brightness(1) blur(0px)', 'brightness(1.5) blur(2px)', 'brightness(1) blur(0px)']
+                    } : {}}
                     transition={{ repeat: Infinity, duration: 0.2 }}
                 />
 
@@ -78,93 +81,98 @@ export default function CerberusVisual({
                     stroke="rgba(255,255,255,0.15)"
                     strokeWidth="0.8"
                     filter="url(#inner-shadow)"
-                    animate={isThinking ? { x: [1, -1, 1] } : {}}
+                    animate={isThinking ? { 
+                        x: [1, -1, 1],
+                        filter: ['brightness(1) blur(0px)', 'brightness(1.5) blur(2px)', 'brightness(1) blur(0px)']
+                    } : {}}
                     transition={{ repeat: Infinity, duration: 0.2 }}
                 />
 
-                {/* Convoluções Anatómicas Detalhadas (Aspecto Biológico) */}
-                <g fill="none" stroke="rgba(0,0,0,0.6)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    {/* Sulcos Complexos Hemisfério Esquerdo */}
-                    <path d="M90 30 Q 70 35, 65 50 T 40 60 T 35 85" />
-                    <path d="M85 50 Q 60 65, 50 80 T 45 110 T 60 130" />
-                    <path d="M75 75 Q 65 95, 70 115 T 90 135" />
-                    <path d="M95 55 Q 80 80, 85 105" />
-                    <path d="M98 35 Q 92 60, 95 85" />
-                    <path d="M30 70 Q 50 75, 45 95" />
-                    <path d="M55 40 Q 40 55, 35 75" />
-                    <path d="M70 135 Q 80 120, 95 125" />
-                    <path d="M50 100 Q 65 105, 60 125" />
+                {/* Convoluções Anatómicas (Veias/Sulcos) */}
+                <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+                    <motion.g 
+                        animate={isThinking ? { 
+                            stroke: ["rgba(0,0,0,0.6)", "rgba(56,189,248,0.9)", "rgba(0,0,0,0.6)"],
+                            strokeWidth: [1.5, 2.5, 1.5]
+                        } : { stroke: "rgba(0,0,0,0.6)", strokeWidth: 1.5 }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                        {/* Sulcos Complexos Hemisfério Esquerdo */}
+                        <path d="M90 30 Q 70 35, 65 50 T 40 60 T 35 85" />
+                        <path d="M85 50 Q 60 65, 50 80 T 45 110 T 60 130" />
+                        <path d="M75 75 Q 65 95, 70 115 T 90 135" />
+                        <path d="M95 55 Q 80 80, 85 105" />
+                        <path d="M98 35 Q 92 60, 95 85" />
+                        <path d="M30 70 Q 50 75, 45 95" />
+                        <path d="M55 40 Q 40 55, 35 75" />
+                        <path d="M70 135 Q 80 120, 95 125" />
+                        <path d="M50 100 Q 65 105, 60 125" />
 
-                    {/* Sulcos Complexos Hemisfério Direito */}
-                    <path d="M110 30 Q 130 35, 135 50 T 160 60 T 165 85" />
-                    <path d="M115 50 Q 140 65, 150 80 T 155 110 T 140 130" />
-                    <path d="M125 75 Q 135 95, 130 115 T 110 135" />
-                    <path d="M105 55 Q 120 80, 115 105" />
-                    <path d="M102 35 Q 108 60, 105 85" />
-                    <path d="M170 70 Q 150 75, 155 95" />
-                    <path d="M145 40 Q 160 55, 165 75" />
-                    <path d="M130 135 Q 120 120, 105 125" />
-                    <path d="M150 100 Q 135 105, 140 125" />
+                        {/* Sulcos Complexos Hemisfério Direito */}
+                        <path d="M110 30 Q 130 35, 135 50 T 160 60 T 165 85" />
+                        <path d="M115 50 Q 140 65, 150 80 T 155 110 T 140 130" />
+                        <path d="M125 75 Q 135 95, 130 115 T 110 135" />
+                        <path d="M105 55 Q 120 80, 115 105" />
+                        <path d="M102 35 Q 108 60, 105 85" />
+                        <path d="M170 70 Q 150 75, 155 95" />
+                        <path d="M145 40 Q 160 55, 165 75" />
+                        <path d="M130 135 Q 120 120, 105 125" />
+                        <path d="M150 100 Q 135 105, 140 125" />
+                    </motion.g>
 
                     {/* Fissura Longitudinal (Centro) */}
                     <path d="M100 25 Q 98 50, 100 85 T 100 145" strokeWidth="2.5" stroke="rgba(0,0,0,0.8)" />
-                    
-                    {/* Micro Detalhes Opcionais */}
-                    <path d="M45 60 Q 55 65, 50 75" strokeWidth="0.8" />
-                    <path d="M155 60 Q 145 65, 150 75" strokeWidth="0.8" />
-                    <path d="M60 110 Q 55 120, 65 125" strokeWidth="0.8" />
-                    <path d="M140 110 Q 145 120, 135 125" strokeWidth="0.8" />
                 </g>
 
-                {/* Rede Neural de Alta Frequência */}
+                {/* Rede Neural de Alta Frequência (Sinapses) */}
                 <g>
-                    {[...Array(20)].map((_, i) => (
+                    {[...Array(25)].map((_, i) => (
                         <motion.circle
                             key={i}
                             cx={30 + Math.random() * 140}
                             cy={40 + Math.random() * 95}
-                            r={Math.random() * 2 + 0.5}
-                            fill="#fff"
+                            r={Math.random() * 2.5 + 0.5}
+                            fill={isThinking ? "#38bdf8" : "#fff"}
                             initial={{ opacity: 0 }}
                             animate={{
                                 opacity: isThinking ? [0, 1, 0] : isSpeaking || isListening ? [0, 0.6, 0] : [0, 0.2, 0],
-                                scale: isThinking ? [0.5, 1.5, 0.5] : 1
+                                scale: isThinking ? [0.5, 2, 0.5] : 1,
+                                fill: isThinking ? ["#38bdf8", "#eab308", "#fff"] : "#fff"
                             }}
                             transition={{
-                                duration: isThinking ? 0.2 + Math.random() * 0.4 : 1.5 + Math.random(),
+                                duration: isThinking ? 0.15 + Math.random() * 0.3 : 1.5 + Math.random(),
                                 repeat: Infinity,
                                 delay: Math.random() * 2
                             }}
-                            style={{ filter: `drop-shadow(0 0 5px ${mainColor})` }}
+                            style={{ filter: `drop-shadow(0 0 8px ${isThinking ? '#38bdf8' : mainColor})` }}
                         />
                     ))}
                 </g>
 
-                {/* Impulsos Elétricos Multicolores (Sinapses / Energia) */}
+                {/* Impulsos Elétricos e Veias Energizadas */}
                 {(isThinking || isSpeaking || isListening) && (
-                    <g fill="none" strokeWidth="1.5" style={{ filter: 'drop-shadow(0 0 3px currentColor)' }}>
+                    <g fill="none" strokeWidth="2" style={{ filter: 'drop-shadow(0 0 5px currentColor)' }}>
                         {[
-                            { d: "M50 70 Q 100 40, 150 70", color: "#38bdf8", duration: 1.5, delay: 0 },       // Cyan
-                            { d: "M40 100 Q 100 140, 160 100", color: "#f472b6", duration: 1.2, delay: 0.5 },    // Pink
-                            { d: "M90 30 Q 70 35, 65 50 T 40 60", color: "#a78bfa", duration: 1.8, delay: 0.2 }, // Purple
-                            { d: "M110 30 Q 130 35, 135 50 T 160 60", color: "#34d399", duration: 1.4, delay: 0.7 }, // Emerald
-                            { d: "M75 75 Q 65 95, 70 115 T 90 135", color: "#fcd34d", duration: 1.6, delay: 0.3 }, // Yellow
-                            { d: "M125 75 Q 135 95, 130 115 T 110 135", color: "#fb923c", duration: 1.7, delay: 0.6 }, // Orange
-                            { d: "M100 35 L 100 125", color: "#eab308", duration: 1.0, delay: 0.8 }              // Ouro central
+                            { d: "M50 70 Q 100 40, 150 70", color: "#38bdf8", duration: 1.2 },       // Cyan
+                            { d: "M40 100 Q 100 140, 160 100", color: "#f472b6", duration: 1.0 },    // Pink
+                            { d: "M90 30 Q 70 35, 65 50 T 40 60", color: "#a78bfa", duration: 1.5 }, // Purple
+                            { d: "M110 30 Q 130 35, 135 50 T 160 60", color: "#34d399", duration: 1.1 }, // Emerald
+                            { d: "M75 75 Q 65 95, 70 115 T 90 135", color: "#fcd34d", duration: 1.3 }, // Yellow
+                            { d: "M100 35 L 100 125", color: "#eab308", duration: 0.8 }              // Ouro central
                         ].map((path, index) => (
                             <motion.path
                                 key={index}
                                 d={path.d}
-                                stroke={isAlert ? "#ef4444" : path.color}
+                                stroke={isAlert ? "#ef4444" : isThinking ? ["#38bdf8", "#f472b6", "#eab308"] : path.color}
                                 initial={{ pathLength: 0, opacity: 0 }}
                                 animate={{ 
                                     pathLength: [0, 1, 0],
-                                    opacity: [0, 0.8, 0]
+                                    opacity: [0, 1, 0]
                                 }}
                                 transition={{ 
-                                    duration: path.duration, 
+                                    duration: isThinking ? path.duration * 0.5 : path.duration, 
                                     repeat: Infinity, 
-                                    delay: path.delay,
+                                    delay: Math.random(),
                                     ease: "easeInOut"
                                 }}
                             />

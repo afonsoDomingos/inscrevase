@@ -478,7 +478,43 @@ export default function Brain() {
                                     </div>
 
                                     {hasSupport && (
-                                        <motion.button whileHover={{ scale: 1.02, boxShadow: '0 8px 25px rgba(234, 179, 8, 0.4)' }} whileTap={{ scale: 0.98 }} onClick={startListening} disabled={isListening} style={{ width: '100%', padding: '14px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', border: isListening ? '1px solid rgba(234, 179, 8, 0.5)' : 'none', background: isListening ? 'rgba(234, 179, 8, 0.2)' : 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', color: isListening ? '#eab308' : '#000', fontWeight: '900', fontSize: '0.9rem', letterSpacing: '1px', cursor: isListening ? 'default' : 'pointer', outline: 'none', transition: 'all 0.3s cubic-bezier(0.23, 1, 0.32, 1)', flexShrink: 0, boxShadow: isListening ? 'none' : '0 6px 20px rgba(234, 179, 8, 0.25)' }}>{isListening ? (<><div style={{ display: 'flex', gap: '4px' }}>{[1,2,3].map(i => <motion.div key={i} animate={{ height: [4, 14, 4] }} transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.1 }} style={{ width: '4px', background: '#eab308', borderRadius: '9999px' }} />)}</div><span>ESCUTANDO...</span></>) : (<><Mic size={20} /><span>FALAR COMANDO</span></>)}</motion.button>
+                                        <motion.button 
+                                            whileHover={{ scale: 1.02, boxShadow: isListening ? '0 8px 25px rgba(239, 68, 68, 0.4)' : '0 8px 25px rgba(234, 179, 8, 0.4)' }} 
+                                            whileTap={{ scale: 0.98 }} 
+                                            onClick={startListening} 
+                                            disabled={isListening} 
+                                            style={{ 
+                                                width: '100%', 
+                                                padding: '14px', 
+                                                borderRadius: '14px', 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                justifyContent: 'center', 
+                                                gap: '12px', 
+                                                border: 'none', 
+                                                background: isListening ? 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' : 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', 
+                                                color: isListening ? '#fff' : '#000', 
+                                                fontWeight: '900', 
+                                                fontSize: '0.9rem', 
+                                                letterSpacing: '1px', 
+                                                cursor: isListening ? 'default' : 'pointer', 
+                                                outline: 'none', 
+                                                transition: 'all 0.3s cubic-bezier(0.23, 1, 0.32, 1)', 
+                                                flexShrink: 0, 
+                                                boxShadow: isListening ? '0 0 20px rgba(239, 68, 68, 0.4)' : '0 6px 20px rgba(234, 179, 8, 0.25)' 
+                                            }}
+                                        >
+                                            {isListening ? (
+                                                <>
+                                                    <div style={{ display: 'flex', gap: '4px' }}>
+                                                        {[1,2,3,4,5].map(i => <motion.div key={i} animate={{ height: [4, 18, 4] }} transition={{ repeat: Infinity, duration: 0.4, delay: i * 0.1 }} style={{ width: '3px', background: '#fff', borderRadius: '9999px' }} />)}
+                                                    </div>
+                                                    <span>GRAVANDO...</span>
+                                                </>
+                                            ) : (
+                                                <><Mic size={20} /><span>FALAR COMANDO</span></>
+                                            )}
+                                        </motion.button>
                                     )}
                                 </div>
                             </div>
@@ -487,61 +523,61 @@ export default function Brain() {
                 </AnimatePresence>
             </div>
 
-            {/* Trigger Button — Bottom Right */}
-            <div style={{ 
-                position: 'fixed', 
-                bottom: '30px', 
-                right: '30px', 
-                zIndex: 100000,
-                pointerEvents: 'auto'
-            }}>
-                <motion.button
-                    whileHover={{ scale: 1.1, boxShadow: '0 0 40px rgba(234, 179, 8, 0.6)' }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => setIsVisible(!isVisible)}
-                    style={{
-                        position: 'relative',
-                        width: '56px',
-                        height: '56px',
-                        borderRadius: '9999px',
-                        background: isVisible ? 'linear-gradient(135deg, #1a1a1a 0%, #000 100%)' : 'var(--gold-gradient, linear-gradient(135deg, #eab308 0%, #ca8a04 100%))',
-                        border: `2px solid ${isVisible ? '#eab308' : '#fff'}`,
-                        transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
-                        boxShadow: isVisible ? '0 0 20px rgba(0,0,0,0.5)' : '0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(234, 179, 8, 0.3)',
-                        cursor: 'pointer',
-                        outline: 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}
-                >
-                    <div style={{ position: 'relative' }}>
-                        <Command size={24} color={isVisible ? '#eab308' : '#000'} />
-                        {isListening && (
-                            <motion.div
-                                animate={{ scale: [1, 1.4, 1], opacity: [1, 0.5, 1] }}
-                                transition={{ repeat: Infinity, duration: 1 }}
-                                style={{ position: 'absolute', inset: -8, borderRadius: '50%', border: '2px solid #eab308' }}
-                            />
-                        )}
-                    </div>
-
-                    {/* Proximity / Status Glow */}
-                    {!isVisible && (
-                        <motion.span 
-                            animate={{ scale: [1, 1.8, 1], opacity: [0.4, 0, 0.4] }}
-                            transition={{ repeat: Infinity, duration: 2.5 }}
+            {/* Trigger Button — Top Right (Only visible when HUD is closed) */}
+            <AnimatePresence>
+                {!isVisible && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -20, scale: 0.8 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -20, scale: 0.8 }}
+                        style={{ 
+                            position: 'fixed', 
+                            top: '30px', 
+                            right: '30px', 
+                            zIndex: 100000,
+                            pointerEvents: 'auto'
+                        }}
+                    >
+                        <motion.button
+                            whileHover={{ scale: 1.1, boxShadow: '0 0 40px rgba(234, 179, 8, 0.6)' }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => setIsVisible(true)}
                             style={{
-                                position: 'absolute',
-                                inset: 0,
+                                position: 'relative',
+                                width: '50px',
+                                height: '50px',
                                 borderRadius: '9999px',
-                                border: '1px solid rgba(234, 179, 8, 0.6)',
-                                pointerEvents: 'none'
+                                background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)',
+                                border: '2px solid #fff',
+                                transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+                                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(234, 179, 8, 0.3)',
+                                cursor: 'pointer',
+                                outline: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
                             }}
-                        />
-                    )}
-                </motion.button>
-            </div>
+                        >
+                            <div style={{ position: 'relative' }}>
+                                <Command size={22} color="#000" />
+                            </div>
+
+                            {/* Proximity / Status Glow */}
+                            <motion.span 
+                                animate={{ scale: [1, 1.8, 1], opacity: [0.4, 0, 0.4] }}
+                                transition={{ repeat: Infinity, duration: 2.5 }}
+                                style={{
+                                    position: 'absolute',
+                                    inset: 0,
+                                    borderRadius: '9999px',
+                                    border: '1px solid rgba(234, 179, 8, 0.6)',
+                                    pointerEvents: 'none'
+                                }}
+                            />
+                        </motion.button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </>
     );
 }
