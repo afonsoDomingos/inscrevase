@@ -55,11 +55,18 @@ export default function Brain() {
             setIsSpeaking(false);
         };
 
-        const preferredVoice = voices.find(v => v.lang.startsWith('pt-PT') && (v.name.includes('Premium') || v.name.includes('Google'))) || voices.find(v => v.lang.startsWith('pt')) || voices[0];
-        if (preferredVoice) utterance.voice = preferredVoice;
+        const availableVoices = voices.length > 0 ? voices : window.speechSynthesis.getVoices();
+        const preferredVoice = availableVoices.find(v => v.lang.startsWith('pt-PT') && (v.name.includes('Premium') || v.name.includes('Google'))) || 
+                               availableVoices.find(v => v.lang.startsWith('pt')) || 
+                               availableVoices[0];
+        
+        if (preferredVoice) {
+            utterance.voice = preferredVoice;
+            console.log(`%c🗣️ [VOICE] Usando voz: ${preferredVoice.name}`, "color: #10b981;");
+        }
 
         window.speechSynthesis.speak(utterance);
-    }, []);
+    }, [voices]);
 
     const handleCommand = useCallback(async (transcript: string) => {
         setLastCommand(transcript);
