@@ -163,9 +163,9 @@ export default function CerberusVisual({
                             <motion.path
                                 key={index}
                                 d={path.d}
-                                stroke={isAlert ? "#ef4444" : isThinking ? ["#38bdf8", "#f472b6", "#eab308"] : path.color}
                                 initial={{ pathLength: 0, opacity: 0 }}
                                 animate={{ 
+                                    stroke: isAlert ? "#ef4444" : isThinking ? ["#38bdf8", "#f472b6", "#eab308"] : path.color,
                                     pathLength: [0, 1, 0],
                                     opacity: [0, 1, 0]
                                 }}
