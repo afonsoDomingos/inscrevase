@@ -139,25 +139,12 @@ export default function Brain() {
 
     const { isListening, currentTranscript, startListening, hasSupport } = useSpeechRecognition(handleCommand);
 
-    const isFirstRender = useRef(true);
-
-    // Sons de Sistema (Intro e Fecho)
-    useEffect(() => {
-        if (isFirstRender.current) {
-            isFirstRender.current = false;
-            return;
-        }
-
-        if (isVisible) {
-            const introAudio = new Audio('/braindsound/1intro.mp3');
-            introAudio.volume = 0.4;
-            introAudio.play().catch(() => {});
-        } else {
-            const closeAudio = new Audio('/braindsound/2Fecho.mp3');
-            closeAudio.volume = 0.4;
-            closeAudio.play().catch(() => {});
-        }
-    }, [isVisible]);
+    // Função utilitária para tocar sons de sistema
+    const playSystemSound = useCallback((path: string) => {
+        const audio = new Audio(path);
+        audio.volume = 0.8;
+        audio.play().catch(() => {});
+    }, []);
 
 
 
@@ -293,6 +280,7 @@ export default function Brain() {
             if (transcript.includes('brain') || transcript.includes('cérbero') || transcript.includes('cerbero')) {
                 if (!isVisible) {
                     setIsVisible(true);
+                    playSystemSound('/braindsound/1intro.mp3');
                     speak("Sim, Mestre. Estou às suas ordens.");
                     setTimeout(() => {
                         startListening();
@@ -458,10 +446,10 @@ export default function Brain() {
                                                 <Square size={14} fill="currentColor" />
                                             </button>
                                         )}
-                                        <button onClick={() => { speak("Desativando sistemas neurais."); setTimeout(() => setIsHibernated(true), 1500); }} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Hibernate">
+                                        <button onClick={() => { playSystemSound('/braindsound/2Fecho.mp3'); speak("Desativando sistemas neurais."); setTimeout(() => setIsHibernated(true), 1500); }} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Hibernate">
                                             <Power size={16} />
                                         </button>
-                                        <button onClick={() => setIsVisible(false)} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Close HUD">
+                                        <button onClick={() => { setIsVisible(false); playSystemSound('/braindsound/2Fecho.mp3'); }} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Close HUD">
                                             <X size={18} />
                                         </button>
                                     </div>
@@ -562,7 +550,10 @@ export default function Brain() {
                         <motion.button
                             whileHover={{ scale: 1.1, boxShadow: '0 0 40px rgba(234, 179, 8, 0.6)' }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => setIsVisible(true)}
+                            onClick={() => { 
+                                setIsVisible(true); 
+                                playSystemSound('/braindsound/1intro.mp3');
+                            }}
                             style={{
                                 position: 'relative',
                                 width: '50px',
