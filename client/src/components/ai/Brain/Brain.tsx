@@ -424,15 +424,15 @@ export default function Brain() {
                         <motion.div
                             drag={!isMobile}
                             dragMomentum={false}
-                            initial={{ opacity: 0, scale: 0, perspective: 1000, rotateX: -15 }}
-                            animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-                            exit={{ opacity: 0, scale: 0, rotateX: 15 }}
+                            initial={{ opacity: 0, scale: 0.1, perspective: 2000, rotateX: -25, filter: 'blur(20px)' }}
+                            animate={{ opacity: 1, scale: 1, rotateX: 0, filter: 'blur(0px)' }}
+                            exit={{ opacity: 0, scale: 0, rotateX: 25, filter: 'blur(20px)' }}
                             transition={{ 
                                 type: "spring", 
-                                damping: 25, 
-                                stiffness: 120,
-                                mass: 1,
-                                opacity: { duration: 0.3 }
+                                damping: 22, 
+                                stiffness: 100,
+                                mass: 0.8,
+                                filter: { duration: 0.4 }
                             }}
                             style={{ 
                                 position: 'relative', 
@@ -509,19 +509,24 @@ export default function Brain() {
                             </svg>
 
                             {/* Content Overlays - Adjusted offsets for mobile to fit within curve */}
-                            <div style={{ 
-                                position: 'absolute', 
-                                top: isMobile ? '5.5%' : '48px', 
-                                left: isMobile ? '6.5%' : '55px', 
-                                right: isMobile ? '6.5%' : '55px', 
-                                bottom: isMobile ? '23%' : '110px', 
-                                zIndex: 5, 
-                                display: 'flex', 
-                                flexDirection: isMobile ? 'column' : 'row',
-                                gap: isMobile ? '5px' : '25px', 
-                                padding: isMobile ? '10px' : '15px 20px', 
-                                overflow: 'hidden'
-                            }}>
+                            <motion.div 
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5, duration: 0.5 }}
+                                style={{ 
+                                    position: 'absolute', 
+                                    top: isMobile ? '5.5%' : '48px', 
+                                    left: isMobile ? '6.5%' : '55px', 
+                                    right: isMobile ? '6.5%' : '55px', 
+                                    bottom: isMobile ? '23%' : '110px', 
+                                    zIndex: 5, 
+                                    display: 'flex', 
+                                    flexDirection: isMobile ? 'column' : 'row',
+                                    gap: isMobile ? '5px' : '25px', 
+                                    padding: isMobile ? '10px' : '15px 20px', 
+                                    overflow: 'hidden'
+                                }}
+                            >
                                 {/* Left Column: Brain + Status */}
                                 <div style={{ 
                                     display: 'flex', 
@@ -634,7 +639,7 @@ export default function Brain() {
                                         </motion.button>
                                     )}
                                 </div>
-                            </div>
+                            </motion.div>
                         </motion.div>
                     )}
                 </AnimatePresence>
