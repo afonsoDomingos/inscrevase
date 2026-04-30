@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, Terminal, X, Command, Power, Square } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
@@ -139,11 +139,25 @@ export default function Brain() {
 
     const { isListening, currentTranscript, startListening, hasSupport } = useSpeechRecognition(handleCommand);
 
-    // Função utilitária para tocar sons de sistema
-    const playSystemSound = useCallback((path: string) => {
-        const audio = new Audio(path);
-        audio.volume = 0.8;
-        audio.play().catch(() => {});
+    const introSound = useRef<HTMLAudioElement | null>(null);
+    const closeSound = useRef<HTMLAudioElement | null>(null);
+
+    useEffect(() => {
+        introSound.current = new Audio('/braindsound/1intro.mp3');
+        closeSound.current = new Audio('/braindsound/2Fecho.mp3');
+        // Pre-carregar para latência zero
+        introSound.current.load();
+        closeSound.current.load();
+    }, []);
+
+    // Função utilitária para tocar sons de sistema com latência zero
+    const playSystemSound = useCallback((type: 'intro' | 'close') => {
+        const audio = type === 'intro' ? introSound.current : closeSound.current;
+        if (audio) {
+            audio.currentTime = 0;
+            audio.volume = 0.8;
+            audio.play().catch(() => {});
+        }
     }, []);
 
 
@@ -280,7 +294,7 @@ export default function Brain() {
             if (transcript.includes('brain') || transcript.includes('cérbero') || transcript.includes('cerbero')) {
                 if (!isVisible) {
                     setIsVisible(true);
-                    playSystemSound('/braindsound/1intro.mp3');
+                    playSystemSound('intro');
                     speak("Sim, Mestre. Estou às suas ordens.");
                     setTimeout(() => {
                         startListening();
@@ -446,10 +460,10 @@ export default function Brain() {
                                                 <Square size={14} fill="currentColor" />
                                             </button>
                                         )}
-                                        <button onClick={() => { playSystemSound('/braindsound/2Fecho.mp3'); speak("Desativando sistemas neurais."); setTimeout(() => setIsHibernated(true), 1500); }} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Hibernate">
+                                        <button onClick={() => { playSystemSound('close'); speak("Desativando sistemas neurais."); setTimeout(() => setIsHibernated(true), 1500); }} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Hibernate">
                                             <Power size={16} />
                                         </button>
-                                        <button onClick={() => { setIsVisible(false); playSystemSound('/braindsound/2Fecho.mp3'); }} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Close HUD">
+                                        <button onClick={() => { setIsVisible(false); playSystemSound('close'); }} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Close HUD">
                                             <X size={18} />
                                         </button>
                                     </div>
@@ -552,7 +566,7 @@ export default function Brain() {
                             whileTap={{ scale: 0.9 }}
                             onClick={() => { 
                                 setIsVisible(true); 
-                                playSystemSound('/braindsound/1intro.mp3');
+                                playSystemSound('intro');
                             }}
                             style={{
                                 position: 'relative',
