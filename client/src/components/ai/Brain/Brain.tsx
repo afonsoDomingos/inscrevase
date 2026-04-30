@@ -503,7 +503,10 @@ export default function Brain() {
                                         <motion.button 
                                             whileHover={{ scale: 1.02, boxShadow: isListening ? '0 8px 25px rgba(239, 68, 68, 0.4)' : '0 8px 25px rgba(234, 179, 8, 0.4)' }} 
                                             whileTap={{ scale: 0.98 }} 
-                                            onClick={startListening} 
+                                            onClick={() => {
+                                                speak("Comando de voz ativo.");
+                                                startListening();
+                                            }} 
                                             disabled={isListening} 
                                             style={{ 
                                                 width: '95%', 
