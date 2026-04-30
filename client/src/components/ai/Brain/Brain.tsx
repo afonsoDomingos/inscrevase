@@ -173,6 +173,13 @@ export default function Brain() {
         introSound.current.load();
         closeSound.current.load();
         console.log("%c🎵 [AUDIO] Sons de sistema carregados.", "color: #a78bfa; font-weight: bold;");
+
+        // Pre-warm Speech Synthesis (evita atraso no primeiro clique)
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            const warmUp = new SpeechSynthesisUtterance("");
+            window.speechSynthesis.speak(warmUp);
+            window.speechSynthesis.getVoices();
+        }
     }, []);
 
     const playSystemSound = useCallback((type: 'intro' | 'close') => {
