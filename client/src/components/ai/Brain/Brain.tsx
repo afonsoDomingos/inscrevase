@@ -25,6 +25,7 @@ export default function Brain() {
     const [chatHistory, setChatHistory] = useState<{role: 'user' | 'ai', text: string}[]>([]);
     const [isMobile, setIsMobile] = useState(false);
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+    const [textInput, setTextInput] = useState("");
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -623,49 +624,84 @@ export default function Brain() {
                                         )}
                                     </div>
 
-                                    {hasSupport && (
-                                        <motion.button 
-                                            whileHover={{ scale: 1.02, boxShadow: isListening ? '0 8px 25px rgba(239, 68, 68, 0.4)' : '0 8px 25px rgba(234, 179, 8, 0.4)' }} 
-                                            whileTap={{ scale: 0.98 }} 
-                                            onClick={() => {
-                                                speak("Comando de voz ativo.");
-                                                startListening();
-                                            }} 
-                                            disabled={isListening} 
-                                            style={{ 
-                                                width: '95%', 
-                                                margin: '0 auto',
-                                                padding: '10px', 
-                                                borderRadius: '12px', 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
-                                                justifyContent: 'center', 
-                                                gap: '10px', 
-                                                border: 'none', 
-                                                background: isListening ? 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' : 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', 
-                                                color: isListening ? '#fff' : '#000', 
-                                                fontWeight: '900', 
-                                                fontSize: '0.8rem', 
-                                                letterSpacing: '1px', 
-                                                cursor: isListening ? 'default' : 'pointer', 
-                                                outline: 'none', 
-                                                transition: 'all 0.3s cubic-bezier(0.23, 1, 0.32, 1)', 
-                                                flexShrink: 0, 
-                                                boxShadow: isListening ? '0 0 20px rgba(239, 68, 68, 0.4)' : '0 6px 20px rgba(234, 179, 8, 0.25)' 
-                                            }}
-                                        >
-                                            {isListening ? (
-                                                <>
-                                                    <div style={{ display: 'flex', gap: '4px' }}>
-                                                        {[1,2,3,4,5].map(i => <motion.div key={i} animate={{ height: [4, 18, 4] }} transition={{ repeat: Infinity, duration: 0.4, delay: i * 0.1 }} style={{ width: '3px', background: '#fff', borderRadius: '9999px' }} />)}
-                                                    </div>
-                                                    <span>GRAVANDO...</span>
-                                                </>
-                                            ) : (
-                                                <><Mic size={20} /><span>FALAR COMANDO</span></>
-                                            )}
-                                        </motion.button>
-                                    )}
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '95%', margin: '0 auto', flexShrink: 0 }}>
+                                        <div style={{ position: 'relative', width: '100%' }}>
+                                            <input 
+                                                type="text" 
+                                                value={textInput} 
+                                                onChange={(e) => setTextInput(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && textInput.trim()) {
+                                                        handleCommand(textInput.trim());
+                                                        setTextInput("");
+                                                    }
+                                                }}
+                                                placeholder="Escrever comando manual..."
+                                                style={{
+                                                    width: '100%',
+                                                    background: 'rgba(0,0,0,0.5)',
+                                                    border: '1px solid rgba(234, 179, 8, 0.3)',
+                                                    borderRadius: '12px',
+                                                    padding: '10px 15px',
+                                                    color: '#fff',
+                                                    outline: 'none',
+                                                    fontSize: '0.8rem',
+                                                    transition: 'all 0.3s',
+                                                    boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.3)'
+                                                }}
+                                                onFocus={(e) => {
+                                                    e.target.style.borderColor = 'rgba(234, 179, 8, 0.8)';
+                                                    e.target.style.boxShadow = '0 0 10px rgba(234, 179, 8, 0.2), inset 0 2px 10px rgba(0,0,0,0.3)';
+                                                }}
+                                                onBlur={(e) => {
+                                                    e.target.style.borderColor = 'rgba(234, 179, 8, 0.3)';
+                                                    e.target.style.boxShadow = 'inset 0 2px 10px rgba(0,0,0,0.3)';
+                                                }}
+                                            />
+                                        </div>
+                                        
+                                        {hasSupport && (
+                                            <motion.button 
+                                                whileHover={{ scale: 1.02, boxShadow: isListening ? '0 8px 25px rgba(239, 68, 68, 0.4)' : '0 8px 25px rgba(234, 179, 8, 0.4)' }} 
+                                                whileTap={{ scale: 0.98 }} 
+                                                onClick={() => {
+                                                    speak("Comando de voz ativo.");
+                                                    startListening();
+                                                }} 
+                                                disabled={isListening} 
+                                                style={{ 
+                                                    width: '100%', 
+                                                    padding: '10px', 
+                                                    borderRadius: '12px', 
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    justifyContent: 'center', 
+                                                    gap: '10px', 
+                                                    border: 'none', 
+                                                    background: isListening ? 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' : 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', 
+                                                    color: isListening ? '#fff' : '#000', 
+                                                    fontWeight: '900', 
+                                                    fontSize: '0.8rem', 
+                                                    letterSpacing: '1px', 
+                                                    cursor: isListening ? 'default' : 'pointer', 
+                                                    outline: 'none', 
+                                                    transition: 'all 0.3s cubic-bezier(0.23, 1, 0.32, 1)', 
+                                                    boxShadow: isListening ? '0 0 20px rgba(239, 68, 68, 0.4)' : '0 6px 20px rgba(234, 179, 8, 0.25)' 
+                                                }}
+                                            >
+                                                {isListening ? (
+                                                    <>
+                                                        <div style={{ display: 'flex', gap: '4px' }}>
+                                                            {[1,2,3,4,5].map(i => <motion.div key={i} animate={{ height: [4, 18, 4] }} transition={{ repeat: Infinity, duration: 0.4, delay: i * 0.1 }} style={{ width: '3px', background: '#fff', borderRadius: '9999px' }} />)}
+                                                        </div>
+                                                        <span>GRAVANDO...</span>
+                                                    </>
+                                                ) : (
+                                                    <><Mic size={20} /><span>FALAR COMANDO</span></>
+                                                )}
+                                            </motion.button>
+                                        )}
+                                    </div>
                                 </div>
                             </motion.div>
                         </motion.div>
