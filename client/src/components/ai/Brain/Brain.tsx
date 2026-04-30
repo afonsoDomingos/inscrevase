@@ -462,7 +462,7 @@ export default function Brain() {
                                     <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.03)' }}><VoiceVisualizer /></div>
 
                                     {currentTranscript && isListening && (
-                                        <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} style={{ color: '#fef08a', fontSize: '0.85rem', fontStyle: 'italic', background: 'rgba(234, 179, 8, 0.1)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(234, 179, 8, 0.2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }}>&quot;{currentTranscript}...&quot;</motion.div>
+                                        <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} style={{ color: '#fef08a', fontSize: '0.85rem', fontStyle: 'italic', background: 'rgba(234, 179, 8, 0.1)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(234, 179, 8, 0.2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }}>{"\""}{currentTranscript}...{"\""}</motion.div>
                                     )}
 
                                     {lastCommand && !isListening && (
@@ -473,7 +473,7 @@ export default function Brain() {
                                         {chatHistory.length > 0 ? chatHistory.map((msg, idx) => (
                                             <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(12px)', border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`, padding: '10px 14px', borderRadius: '12px', maxWidth: '90%', wordBreak: 'break-word', boxShadow: '0 4px 15px rgba(0,0,0,0.15)' }}>{msg.role === 'ai' ? <div className="prose-sm prose-invert" style={{ fontSize: '0.75rem' }}><ReactMarkdown>{msg.text}</ReactMarkdown></div> : <span style={{ color: '#fef08a' }}>{msg.text}</span>}</div>
                                         )) : (
-                                            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0.3, gap: '8px' }}><div style={{ padding: '20px', textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}><p style={{ margin: 0, fontSize: '11px' }}>Sistemas Prontos.</p><p style={{ margin: 0, fontSize: '9px', marginTop: '4px' }}>Diga "Cérbero" ou clique no botão para testar.</p></div></div>
+                                            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0.3, gap: '8px' }}><div style={{ padding: '20px', textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}><p style={{ margin: 0, fontSize: '11px' }}>Sistemas Prontos.</p><p style={{ margin: 0, fontSize: '9px', marginTop: '4px' }}>Diga {"\""}Cérbero{"\""} ou clique no botão para testar.</p></div></div>
                                         )}
                                     </div>
 
