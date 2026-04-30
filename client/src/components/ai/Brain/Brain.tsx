@@ -132,7 +132,14 @@ export default function Brain() {
             }
         } catch (error) {
             console.error("Brain Error:", error);
-            speak("Peço desculpas, Mestre. Houve uma falha nos meus circuitos neurais.");
+            const errorMessages = [
+                "Peço desculpas, Mestre. Encontrei uma interferência nos meus subsistemas e não consigo completar esta tarefa no momento.",
+                "Houve uma falha na sincronização neural. Não foi possível processar esse comando agora.",
+                "Mestre, os meus protocolos de execução encontraram uma barreira técnica imprevista."
+            ];
+            const randomError = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+            speak(randomError);
+            toast.error("Erro na matriz neural do Cérbero.");
         } finally {
             setIsThinking(false);
         }
