@@ -570,6 +570,7 @@ export default function Brain() {
                             onClick={() => { 
                                 setIsVisible(true); 
                                 playSystemSound('intro');
+                                speak("Sistemas neurais online. Como posso ajudar, Mestre?");
                             }}
                             style={{
                                 position: 'relative',
