@@ -424,9 +424,16 @@ export default function Brain() {
                         <motion.div
                             drag={!isMobile}
                             dragMomentum={false}
-                            initial={{ opacity: 0, scale: 0.85, y: 30 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.85, y: 30 }}
+                            initial={{ opacity: 0, scale: 0, perspective: 1000, rotateX: -15 }}
+                            animate={{ opacity: 1, scale: 1, rotateX: 0 }}
+                            exit={{ opacity: 0, scale: 0, rotateX: 15 }}
+                            transition={{ 
+                                type: "spring", 
+                                damping: 25, 
+                                stiffness: 120,
+                                mass: 1,
+                                opacity: { duration: 0.3 }
+                            }}
                             style={{ 
                                 position: 'relative', 
                                 width: isMobile ? '98vw' : '820px', 
