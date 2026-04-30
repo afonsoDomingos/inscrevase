@@ -666,7 +666,18 @@ export default function Brain() {
                                             <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(12px)', border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`, padding: '10px 14px', borderRadius: '12px', maxWidth: '90%', wordBreak: 'break-word', boxShadow: '0 4px 15px rgba(0,0,0,0.15)' }}>
                                                 {msg.role === 'ai' ? (
                                                     <div style={{ fontSize: '0.75rem', color: '#e2e8f0', lineHeight: '1.6' }}>
-                                                        <ReactMarkdown components={{ p: ({node: _node, ...props}) => <p style={{ margin: 0, paddingBottom: '6px', color: '#e2e8f0' }} {...props} />, strong: ({node: _node, ...props}) => <strong style={{ color: '#fff', fontWeight: 800 }} {...props} />, a: ({node: _node, ...props}) => <a style={{ color: '#38bdf8', textDecoration: 'underline' }} {...props} /> }}>{msg.text}</ReactMarkdown>
+                                                        <ReactMarkdown 
+                                                            components={{ 
+                                                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                                                p: ({node, ...props}) => <p style={{ margin: 0, paddingBottom: '6px', color: '#e2e8f0' }} {...props} />, 
+                                                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                                                strong: ({node, ...props}) => <strong style={{ color: '#fff', fontWeight: 800 }} {...props} />, 
+                                                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                                                a: ({node, ...props}) => <a style={{ color: '#38bdf8', textDecoration: 'underline' }} {...props} /> 
+                                                            }}
+                                                        >
+                                                            {msg.text}
+                                                        </ReactMarkdown>
                                                     </div>
                                                 ) : <span style={{ color: '#fef08a' }}>{msg.text}</span>}
                                             </div>
