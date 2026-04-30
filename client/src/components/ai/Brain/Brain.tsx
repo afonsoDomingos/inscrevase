@@ -332,7 +332,19 @@ export default function Brain() {
     if (!pathname?.startsWith('/dashboard')) return null;
 
     return (
-        <div style={{ position: 'fixed', top: '80px', left: '20px', zIndex: 99999, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '12px' }}>
+        <div style={{ 
+            position: 'fixed', 
+            top: '50%', 
+            left: '50%', 
+            transform: 'translate(-50%, -50%)', 
+            zIndex: 99999, 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            gap: '12px',
+            pointerEvents: 'none' // Allow clicking through the container when not visible
+        }}>
+            <div style={{ pointerEvents: 'auto' }}> {/* Re-enable events for children */}
             {/* Modal de Feedback do Brain */}
             <AnimatePresence>
                 {isVisible && (
@@ -681,6 +693,7 @@ export default function Brain() {
                     />
                 )}
             </motion.button>
+            </div>
         </div>
     );
 }
