@@ -355,31 +355,43 @@ export default function Brain() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
                         style={{
-                            background: 'rgba(0, 0, 0, 0.7)',
-                            backdropFilter: 'blur(16px) saturate(180%)',
+                            background: 'linear-gradient(180deg, rgba(10, 10, 10, 0.7) 0%, rgba(0, 0, 0, 0.8) 100%)',
+                            backdropFilter: 'blur(20px) saturate(180%)',
                             border: `1px solid ${isAlert ? 'rgba(239, 68, 68, 0.5)' : 'rgba(234, 179, 8, 0.3)'}`,
-                            padding: '20px',
+                            padding: '24px',
                             borderRadius: '24px',
-                            boxShadow: isAlert ? '0 0 40px rgba(239, 68, 68, 0.2)' : '0 20px 50px rgba(0, 0, 0, 0.5)',
-                            width: '360px',
-                            transition: 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                            boxShadow: isAlert 
+                                ? '0 0 60px rgba(239, 68, 68, 0.3), inset 0 0 40px rgba(0,0,0,0.8)' 
+                                : '0 30px 100px rgba(0, 0, 0, 0.7), inset 0 0 50px rgba(0,0,0,0.9)',
+                            width: '500px',
+                            transition: 'all 0.6s cubic-bezier(0.23, 1, 0.32, 1)',
                             display: 'flex',
                             flexDirection: 'column',
                             cursor: 'grab',
                             overflow: 'hidden',
                             position: 'relative',
-                            transform: 'perspective(1000px) rotateY(-15deg) rotateX(2deg)',
+                            transform: 'perspective(1500px) rotateX(4deg)',
                             transformStyle: 'preserve-3d',
-                            borderRight: `3px solid ${isAlert ? 'rgba(239, 68, 68, 0.6)' : 'rgba(234, 179, 8, 0.4)'}`
+                            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
                         }}
-                        whileHover={{ transform: 'perspective(1000px) rotateY(-5deg) rotateX(0deg)', scale: 1.02 }}
-                        whileDrag={{ cursor: 'grabbing', scale: 1.05, rotateY: 0, rotateX: 0 }}
+                        whileHover={{ transform: 'perspective(1500px) rotateX(1deg)', scale: 1.01 }}
+                        whileDrag={{ cursor: 'grabbing', scale: 1.05, rotateX: 0 }}
                     >
-                        {/* Efeito de Vidro Curvado (Vignette) */}
+                        {/* Reflexo de Vidro Curvo (Glossy Effect) */}
+                        <div style={{
+                            position: 'absolute',
+                            top: '-50%', left: '-50%', width: '200%', height: '200%',
+                            background: 'linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.03) 50%, transparent 55%)',
+                            pointerEvents: 'none',
+                            zIndex: 13,
+                            transform: 'rotate(-20deg)'
+                        }} />
+
+                        {/* Efeito de Vidro Curvado (Deep Vignette) */}
                         <div style={{
                             position: 'absolute',
                             top: 0, left: 0, right: 0, bottom: 0,
-                            background: 'radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.4) 100%)',
+                            background: 'radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.6) 100%)',
                             pointerEvents: 'none',
                             zIndex: 12
                         }} />
