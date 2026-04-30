@@ -345,287 +345,162 @@ export default function Brain() {
             pointerEvents: 'none' // Allow clicking through the container when not visible
         }}>
             <div style={{ pointerEvents: 'auto' }}> {/* Re-enable events for children */}
-            {/* Modal de Feedback do Brain */}
+            {/* Monitor SVG + Conteúdo */}
             <AnimatePresence>
                 {isVisible && (
                     <motion.div
                         drag
                         dragMomentum={false}
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        initial={{ opacity: 0, scale: 0.85, y: 30 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        style={{
-                            // Fundo: escuro nas bordas, quase transparente no centro (simula curvatura)
-                            background: `linear-gradient(to right, 
-                                rgba(0,0,0,0.95) 0%, 
-                                ${isAlert ? 'rgba(30,5,5,0.15)' : 'rgba(5,8,15,0.15)'} 18%, 
-                                ${isAlert ? 'rgba(30,5,5,0.12)' : 'rgba(5,8,15,0.12)'} 82%, 
-                                rgba(0,0,0,0.95) 100%
-                            )`,
-                            backdropFilter: 'blur(24px) saturate(200%)',
-                            // Borda: linha fina como o bezel do monitor
-                            border: `1px solid ${isAlert ? 'rgba(239,68,68,0.4)' : 'rgba(234,179,8,0.25)'}`,
-                            borderTop: `2px solid ${isAlert ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.12)'}`,
-                            padding: '22px 40px',
-                            // clip-path com bezier para simular o arco do ecrã curvo
-                            clipPath: 'path("M 20,18 Q 310,0 600,18 L 600,362 Q 310,380 20,362 Z")',
-                            // Sombras internas nas laterais para escurecer e simular curvatura
-                            boxShadow: isAlert 
-                                ? 'inset 90px 0 110px rgba(0,0,0,1), inset -90px 0 110px rgba(0,0,0,1), 0 0 60px rgba(239,68,68,0.3)'
-                                : 'inset 90px 0 110px rgba(0,0,0,1), inset -90px 0 110px rgba(0,0,0,1), 0 40px 100px rgba(0,0,0,0.8), 0 0 40px rgba(234,179,8,0.08)',
-                            width: '620px',
-                            minHeight: '380px',
-                            transition: 'all 0.6s cubic-bezier(0.23, 1, 0.32, 1)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            cursor: 'grab',
-                            overflow: 'visible',
-                            position: 'relative',
-                        }}
-                        whileHover={{ scale: 1.01, boxShadow: isAlert ? 'inset 90px 0 110px rgba(0,0,0,1), inset -90px 0 110px rgba(0,0,0,1), 0 0 80px rgba(239,68,68,0.4)' : 'inset 90px 0 110px rgba(0,0,0,1), inset -90px 0 110px rgba(0,0,0,1), 0 0 60px rgba(234,179,8,0.2)' }}
-                        whileDrag={{ cursor: 'grabbing', scale: 1.02 }}
+                        exit={{ opacity: 0, scale: 0.85, y: 30 }}
+                        style={{ position: 'relative', width: '820px', height: '440px', cursor: 'grab', filter: isAlert ? 'drop-shadow(0 0 30px rgba(239,68,68,0.5))' : 'drop-shadow(0 0 20px rgba(234,179,8,0.15))' }}
+                        whileDrag={{ cursor: 'grabbing', scale: 1.01 }}
                     >
-                        {/* Reflexo diagonal de vidro (Glossy) */}
-                        <div style={{
-                            position: 'absolute',
-                            top: 0, left: 0, right: 0, bottom: 0,
-                            background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.02) 100%)',
-                            pointerEvents: 'none',
-                            zIndex: 13,
-                        }} />
+                        {/* SVG Monitor Frame */}
+                        <svg width="820" height="440" viewBox="0 0 820 440" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', zIndex: 1 }}>
+                            <defs>
+                                <linearGradient id="bezelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stopColor="#2e2e2e" />
+                                    <stop offset="100%" stopColor="#181818" />
+                                </linearGradient>
+                                <linearGradient id="screenGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor="rgba(0,0,0,0.97)" />
+                                    <stop offset="14%" stopColor={isAlert ? "rgba(25,4,4,0.82)" : "rgba(4,7,18,0.82)"} />
+                                    <stop offset="86%" stopColor={isAlert ? "rgba(25,4,4,0.82)" : "rgba(4,7,18,0.82)"} />
+                                    <stop offset="100%" stopColor="rgba(0,0,0,0.97)" />
+                                </linearGradient>
+                                <linearGradient id="glossGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stopColor="rgba(255,255,255,0.07)" />
+                                    <stop offset="40%" stopColor="rgba(255,255,255,0)" />
+                                </linearGradient>
+                            </defs>
 
-                        {/* Scanlines sutis */}
-                        <div style={{
-                            position: 'absolute',
-                            top: 0, left: 0, right: 0, bottom: 0,
-                            background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px)',
-                            pointerEvents: 'none',
-                            zIndex: 10,
-                        }} />
+                            {/* Outer bezel — concave inward (Odyssey G9 shape) */}
+                            <path d="M 2,32 Q 410,6 818,32 L 818,348 Q 410,374 2,348 Z" fill="url(#bezelGrad)" />
 
-                        {/* Cantoneiras HUD */}
-                        <div style={{ position: 'absolute', top: '14px', left: '28px', width: '14px', height: '14px', borderLeft: '2px solid rgba(234, 179, 8, 0.6)', borderTop: '2px solid rgba(234, 179, 8, 0.6)', pointerEvents: 'none', zIndex: 14 }} />
-                        <div style={{ position: 'absolute', top: '14px', right: '28px', width: '14px', height: '14px', borderRight: '2px solid rgba(234, 179, 8, 0.6)', borderTop: '2px solid rgba(234, 179, 8, 0.6)', pointerEvents: 'none', zIndex: 14 }} />
-                        <div style={{ position: 'absolute', bottom: '22px', left: '28px', width: '14px', height: '14px', borderLeft: '2px solid rgba(234, 179, 8, 0.6)', borderBottom: '2px solid rgba(234, 179, 8, 0.6)', pointerEvents: 'none', zIndex: 14 }} />
-                        <div style={{ position: 'absolute', bottom: '22px', right: '28px', width: '14px', height: '14px', borderRight: '2px solid rgba(234, 179, 8, 0.6)', borderBottom: '2px solid rgba(234, 179, 8, 0.6)', pointerEvents: 'none', zIndex: 14 }} />
+                            {/* Screen inner glass */}
+                            <path d="M 20,45 Q 410,20 800,45 L 800,335 Q 410,360 20,335 Z" fill="url(#screenGrad)" />
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', position: 'relative', zIndex: 11 }}>
-                            <div style={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                gap: '6px', 
-                                fontWeight: 'bold', 
-                                letterSpacing: '0.1em', 
-                                fontSize: '9px', 
-                                textTransform: 'uppercase', 
-                                color: isAlert ? '#ef4444' : '#eab308' 
-                            }}>
-                                <motion.div
-                                    animate={{ opacity: [0.4, 1, 0.4] }}
-                                    transition={{ duration: 2, repeat: Infinity }}
-                                >
-                                    <Command size={12} />
-                                </motion.div>
-                                {isAlert ? 'Urgent' : 'Neural'}
-                            </div>
-                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                <div style={{ color: '#374151', marginRight: '4px' }}>
-                                    <div style={{ width: '2px', height: '2px', background: 'currentColor', borderRadius: '50%', margin: '2px 0' }} />
-                                    <div style={{ width: '2px', height: '2px', background: 'currentColor', borderRadius: '50%', margin: '2px 0' }} />
-                                    <div style={{ width: '2px', height: '2px', background: 'currentColor', borderRadius: '50%', margin: '2px 0' }} />
+                            {/* Glossy top-half reflection */}
+                            <path d="M 20,45 Q 410,20 800,45 L 800,190 Q 410,195 20,190 Z" fill="url(#glossGrad)" />
+
+                            {/* Scanlines */}
+                            {Array.from({length: 60}).map((_, i) => (
+                                <line key={i} x1="20" y1={50 + i * 5} x2="800" y2={50 + i * 5} stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
+                            ))}
+
+                            {/* LED accent strip — top */}
+                            <path d="M 20,45 Q 410,20 800,45" fill="none" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.5)"} strokeWidth="1.5" />
+                            {/* LED accent strip — bottom */}
+                            <path d="M 20,335 Q 410,360 800,335" fill="none" stroke={isAlert ? "rgba(239,68,68,0.3)" : "rgba(255,255,255,0.06)"} strokeWidth="1" />
+
+                            {/* HUD corner markers */}
+                            <line x1="48" y1="68" x2="72" y2="68" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
+                            <line x1="48" y1="68" x2="48" y2="92" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
+                            <line x1="748" y1="68" x2="772" y2="68" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
+                            <line x1="772" y1="68" x2="772" y2="92" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
+                            <line x1="48" y1="310" x2="72" y2="310" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
+                            <line x1="48" y1="288" x2="48" y2="310" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
+                            <line x1="748" y1="310" x2="772" y2="310" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
+                            <line x1="772" y1="288" x2="772" y2="310" stroke={isAlert ? "rgba(239,68,68,0.7)" : "rgba(234,179,8,0.6)"} strokeWidth="2"/>
+
+                            {/* Stand neck */}
+                            <path d="M 374,348 L 390,388 L 430,388 L 446,348 Z" fill="#222" />
+                            <rect x="374" y="345" width="72" height="6" fill="#2e2e2e" rx="2" />
+
+                            {/* Stand base */}
+                            <ellipse cx="410" cy="410" rx="170" ry="20" fill="#1a1a1a" />
+                            <ellipse cx="410" cy="408" rx="170" ry="20" fill="none" stroke="#2e2e2e" strokeWidth="1.5" />
+                        </svg>
+
+                        {/* Screen Content — 2-column ultra-wide layout */}
+                        <div style={{ position: 'absolute', top: '52px', left: '58px', right: '58px', bottom: '100px', zIndex: 5, display: 'flex', gap: '20px', padding: '10px 16px', overflow: 'hidden' }}>
+
+                            {/* Left Column: Brain + Status */}
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', minWidth: '160px' }}>
+                                <div style={{ transform: 'scale(0.65)', transformOrigin: 'top center' }}>
+                                    <CerberusVisual isListening={isListening} isThinking={isThinking} isAlert={isAlert} isSpeaking={isSpeaking} />
                                 </div>
-                                {isSpeaking && (
-                                    <button 
-                                        onClick={() => {
-                                            window.speechSynthesis?.cancel();
-                                            setIsSpeaking(false);
-                                        }}
-                                        title="Silenciar IA"
-                                        style={{ color: '#eab308', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                                <h3 style={{ fontWeight: 'bold', color: isAlert ? '#ef4444' : isThinking ? '#38bdf8' : '#fff', fontSize: '0.8rem', textTransform: isThinking ? 'uppercase' : 'none', letterSpacing: isThinking ? '1px' : '0', margin: 0, marginTop: '-30px', textAlign: 'center' }}>
+                                    {isThinking ? 'A Processar...' : isListening ? (audioLevel > 5 ? 'A Escutar...' : 'Aguardando...') : 'Cérbero'}
+                                </h3>
+                                <p style={{ color: '#6b7280', fontSize: '9px', textAlign: 'center', margin: 0, lineHeight: '1.3' }}>
+                                    {isAlert ? 'Alerta urgente.' : isThinking ? 'A consultar dados...' : 'Diga o comando, Mestre.'}
+                                </p>
+                                {/* Header buttons */}
+                                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                    <div style={{ fontSize: '8px', fontWeight: 'bold', letterSpacing: '0.1em', textTransform: 'uppercase', color: isAlert ? '#ef4444' : '#eab308', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 2, repeat: Infinity }}><Command size={10} /></motion.div>
+                                        {isAlert ? 'URGENT' : 'NEURAL'}
+                                    </div>
+                                    {isSpeaking && (
+                                        <button onClick={() => { window.speechSynthesis?.cancel(); setIsSpeaking(false); }} title="Silenciar" style={{ color: '#eab308', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: 0 }}>
+                                            <Square size={10} fill="currentColor" />
+                                        </button>
+                                    )}
+                                    <button onClick={() => { speak("Desativando sistemas neurais. Até logo, Mestre."); setTimeout(() => setIsHibernated(true), 1500); }} title="Desligar" style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.8, padding: 0 }}>
+                                        <Power size={12} />
+                                    </button>
+                                    <button onClick={() => setIsVisible(false)} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Divider */}
+                            <div style={{ width: '1px', background: 'rgba(255,255,255,0.06)', flexShrink: 0 }} />
+
+                            {/* Right Column: Visualizer + Chat + Controls */}
+                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', overflow: 'hidden' }}>
+                                <VoiceVisualizer />
+
+                                {/* Live transcript */}
+                                {currentTranscript && isListening && (
+                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ color: '#fef08a', fontSize: '0.78rem', fontStyle: 'italic', background: 'rgba(234,179,8,0.08)', padding: '4px 10px', borderRadius: '6px', border: '1px dotted rgba(234,179,8,0.4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        &quot;{currentTranscript}...&quot;
+                                    </motion.div>
+                                )}
+
+                                {/* Last command badge */}
+                                {lastCommand && !isListening && (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1, borderColor: isThinking ? ['rgba(56,189,248,0.2)','rgba(56,189,248,0.8)','rgba(56,189,248,0.2)'] : 'rgba(234,179,8,0.2)', boxShadow: isThinking ? ['0 0 0px rgba(56,189,248,0)','0 0 12px rgba(56,189,248,0.5)','0 0 0px rgba(56,189,248,0)'] : 'none' }}
+                                        transition={isThinking ? { duration: 1.5, repeat: Infinity } : {}}
+                                        style={{ background: isThinking ? 'rgba(56,189,248,0.12)' : 'rgba(234,179,8,0.08)', border: '1px solid', padding: '4px 12px', borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}
                                     >
-                                        <Square size={14} fill="currentColor" />
+                                        <Terminal size={10} style={{ color: isThinking ? '#38bdf8' : '#eab308', minWidth: '10px' }} />
+                                        <span style={{ color: isThinking ? '#38bdf8' : '#eab308', fontSize: '0.7rem', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lastCommand}</span>
+                                    </motion.div>
+                                )}
+
+                                {/* Chat history */}
+                                {chatHistory.length > 0 && (
+                                    <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.7rem', color: '#d1d5db', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.15) transparent' }}>
+                                        {chatHistory.map((msg, idx) => (
+                                            <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'rgba(234,179,8,0.12)' : 'rgba(55,65,81,0.35)', border: `1px solid ${msg.role === 'user' ? 'rgba(234,179,8,0.25)' : 'rgba(255,255,255,0.04)'}`, padding: '5px 10px', borderRadius: '10px', maxWidth: '85%', wordBreak: 'break-word' }}>
+                                                {msg.role === 'ai' ? <ReactMarkdown>{msg.text}</ReactMarkdown> : <span style={{ color: '#fef08a' }}>{msg.text}</span>}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Mic button */}
+                                {hasSupport && (
+                                    <button onClick={startListening} disabled={isListening} style={{ width: '100%', padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', border: isListening ? '1px solid rgba(234,179,8,0.5)' : 'none', background: isListening ? 'rgba(234,179,8,0.15)' : '#eab308', color: isListening ? '#eab308' : '#000', fontWeight: 'bold', fontSize: '0.8rem', cursor: isListening ? 'default' : 'pointer', outline: 'none', transition: 'all 0.3s ease', flexShrink: 0 }}>
+                                        {isListening ? (
+                                            <>
+                                                <div style={{ display: 'flex', gap: '3px' }}>
+                                                    {[1,2,3].map(i => <motion.div key={i} animate={{ height: [3, 10, 3] }} transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.1 }} style={{ width: '3px', background: '#eab308', borderRadius: '9999px' }} />)}
+                                                </div>
+                                                <span>A Ouvir...</span>
+                                            </>
+                                        ) : (
+                                            <><Mic size={16} /><span>Falar Comando</span></>
+                                        )}
                                     </button>
                                 )}
-                                <button 
-                                    onClick={() => {
-                                        speak("Desativando sistemas neurais. Até logo, Mestre.");
-                                        setTimeout(() => setIsHibernated(true), 1500);
-                                    }}
-                                    title="Desligar BRAIN"
-                                    style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.7 }}
-                                >
-                                    <Power size={14} />
-                                </button>
-                                <button 
-                                    onClick={() => setIsVisible(false)} 
-                                    style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer' }}
-                                >
-                                    <X size={16} />
-                                </button>
                             </div>
-                        </div>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-                            <div style={{ scale: '0.8' }}>
-                                <CerberusVisual 
-                                isListening={isListening} 
-                                isThinking={isThinking} 
-                                isAlert={isAlert} 
-                                isSpeaking={isSpeaking} 
-                            />
-                            </div>
-                            
-                            <VoiceVisualizer />
-
-                            <div style={{ textAlign: 'center' }}>
-                                <h3 style={{ 
-                                    fontWeight: 'bold', 
-                                    marginBottom: '2px', 
-                                    color: isAlert ? '#ef4444' : isThinking ? '#38bdf8' : '#fff',
-                                    fontSize: '0.85rem',
-                                    textTransform: isThinking ? 'uppercase' : 'none',
-                                    letterSpacing: isThinking ? '1px' : '0'
-                                }}>
-                                    {isThinking ? "A Processar Diretiva..." : isListening ? (audioLevel > 5 ? "A Escutar..." : "Aguardando Voz...") : "Cérbero"}
-                                </h3>
-                                <p style={{ color: '#9ca3af', fontSize: '10px', padding: '0 4px', lineHeight: '1.4' }}>
-                                    {isAlert ? "Alerta urgente recebido." : isThinking ? "A decodificar a sua intenção e a consultar dados sistémicos." : "Diga o seu comando, Mestre."}
-                                </p>
-                            </div>
-
-                            {/* Transcrição em Tempo Real */}
-                            {currentTranscript && isListening && (
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    style={{
-                                        color: '#fef08a',
-                                        fontSize: '0.85rem',
-                                        fontStyle: 'italic',
-                                        textAlign: 'center',
-                                        background: 'rgba(234, 179, 8, 0.1)',
-                                        padding: '6px 12px',
-                                        borderRadius: '8px',
-                                        border: '1px dotted rgba(234, 179, 8, 0.5)',
-                                        width: '100%',
-                                        wordBreak: 'break-word'
-                                    }}
-                                >
-                                    &quot;{currentTranscript}...&quot;
-                                </motion.div>
-                            )}
-
-                            {lastCommand && !isListening && (
-                                <motion.div 
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ 
-                                        opacity: 1, 
-                                        scale: 1,
-                                        borderColor: isThinking ? ['rgba(56, 189, 248, 0.2)', 'rgba(56, 189, 248, 0.8)', 'rgba(56, 189, 248, 0.2)'] : 'rgba(234, 179, 8, 0.2)',
-                                        boxShadow: isThinking ? ['0 0 0px rgba(56,189,248,0)', '0 0 15px rgba(56,189,248,0.5)', '0 0 0px rgba(56,189,248,0)'] : 'none'
-                                    }}
-                                    transition={isThinking ? { duration: 1.5, repeat: Infinity } : {}}
-                                    style={{
-                                        background: isThinking ? 'rgba(56, 189, 248, 0.15)' : 'rgba(234, 179, 8, 0.1)',
-                                        border: '1px solid',
-                                        padding: '8px 16px',
-                                        borderRadius: '9999px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        width: '100%',
-                                        whiteSpace: 'nowrap',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis'
-                                    }}
-                                >
-                                    <Terminal size={12} style={{ color: isThinking ? '#38bdf8' : '#eab308', minWidth: '12px' }} />
-                                    <span style={{ color: isThinking ? '#38bdf8' : '#eab308', fontSize: '0.75rem', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lastCommand}</span>
-                                </motion.div>
-                            )}
-
-                            {chatHistory.length > 0 && (
-                                <div style={{
-                                    width: '100%',
-                                    maxHeight: '180px',
-                                    overflowY: 'auto',
-                                    background: 'rgba(0, 0, 0, 0.6)',
-                                    border: '1px solid rgba(255, 255, 255, 0.05)',
-                                    borderRadius: '12px',
-                                    padding: '10px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '10px',
-                                    fontSize: '0.75rem',
-                                    color: '#d1d5db',
-                                    scrollbarWidth: 'thin',
-                                    scrollbarColor: 'rgba(255,255,255,0.2) transparent'
-                                }}>
-                                    {chatHistory.map((msg, idx) => (
-                                        <div key={idx} style={{ 
-                                            alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                                            background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(55, 65, 81, 0.4)',
-                                            border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.05)'}`,
-                                            padding: '8px 12px',
-                                            borderRadius: '12px',
-                                            maxWidth: '90%',
-                                            wordBreak: 'break-word'
-                                        }}>
-                                            {msg.role === 'ai' ? (
-                                                <div className="prose prose-invert prose-sm" style={{ margin: 0, fontSize: '0.75rem' }}>
-                                                   <ReactMarkdown>{msg.text}</ReactMarkdown>
-                                                </div>
-                                            ) : (
-                                                <span style={{ color: '#fef08a' }}>{msg.text}</span>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {hasSupport && (
-                                <button
-                                    onClick={startListening}
-                                    disabled={isListening}
-                                    style={{
-                                        width: '100%',
-                                        padding: '16px',
-                                        borderRadius: '16px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '12px',
-                                        transition: 'all 0.3s ease',
-                                        border: isListening ? '1px solid rgba(234, 179, 8, 0.5)' : 'none',
-                                        background: isListening ? 'rgba(234, 179, 8, 0.2)' : '#eab308',
-                                        color: isListening ? '#eab308' : '#000',
-                                        fontWeight: 'bold',
-                                        cursor: isListening ? 'default' : 'pointer',
-                                        outline: 'none'
-                                    }}
-                                >
-                                    {isListening ? (
-                                        <>
-                                            <div style={{ display: 'flex', gap: '4px' }}>
-                                                {[1, 2, 3].map(i => (
-                                                    <motion.div
-                                                        key={i}
-                                                        animate={{ height: [4, 12, 4] }}
-                                                        transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.1 }}
-                                                        style={{ width: '4px', background: '#eab308', borderRadius: '9999px' }}
-                                                    />
-                                                ))}
-                                            </div>
-                                            <span>Ouvindo...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Mic size={20} />
-                                            <span>Falar Comando</span>
-                                        </>
-                                    )}
-                                </button>
-                            )}
                         </div>
                     </motion.div>
                 )}
