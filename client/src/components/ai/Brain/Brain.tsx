@@ -55,14 +55,20 @@ export default function Brain() {
             setIsSpeaking(false);
         };
 
+        // Double Check: Prioridade absoluta para pt-PT
         const availableVoices = voices.length > 0 ? voices : window.speechSynthesis.getVoices();
-        const preferredVoice = availableVoices.find(v => v.lang.startsWith('pt-PT') && (v.name.includes('Premium') || v.name.includes('Google'))) || 
+        const ptPTVoices = availableVoices.filter(v => v.lang === 'pt-PT' || v.lang === 'pt_PT');
+        
+        const preferredVoice = ptPTVoices.find(v => v.name.includes('Google') || v.name.includes('Premium')) || 
+                               ptPTVoices[0] || 
                                availableVoices.find(v => v.lang.startsWith('pt')) || 
                                availableVoices[0];
         
         if (preferredVoice) {
             utterance.voice = preferredVoice;
-            console.log(`%c🗣️ [VOICE] Usando voz: ${preferredVoice.name}`, "color: #10b981;");
+            // Força o idioma pt-PT na utterance também
+            utterance.lang = 'pt-PT';
+            console.log(`%c🗣️ [VOICE] Matriz Neural configurada para: ${preferredVoice.name} (${preferredVoice.lang})`, "color: #10b981; font-weight: bold;");
         }
 
         window.speechSynthesis.speak(utterance);
