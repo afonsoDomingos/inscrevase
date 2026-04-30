@@ -304,7 +304,7 @@ export default function Brain() {
         return () => {
             wakeRecognition.stop();
         };
-    }, [hasSupport, isVisible, isListening, startListening, speak]);
+    }, [hasSupport, isVisible, isListening, startListening, speak, playSystemSound]);
 
     // Monitoramento Proativo via Sockets
     useEffect(() => {

@@ -33,6 +33,7 @@ interface IRecognition {
     lang: string;
     onstart: () => void;
     onend: () => void;
+    onerror: (event: { error: string }) => void;
     onresult: (event: SpeechRecognitionEvent) => void;
 }
 
@@ -54,6 +55,7 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
             lang: string;
             onstart: () => void;
             onend: () => void;
+            onerror: (event: { error: string }) => void;
             onresult: (event: SpeechRecognitionEvent) => void;
             start: () => void;
             stop: () => void;
