@@ -410,8 +410,8 @@ export default function Brain() {
                             exit={{ opacity: 0, scale: 0.85, y: 30 }}
                             style={{ 
                                 position: 'relative', 
-                                width: isMobile ? '95vw' : '820px', 
-                                height: isMobile ? '85vh' : '440px', 
+                                width: isMobile ? '98vw' : '820px', 
+                                height: isMobile ? '53vw' : '440px', 
                                 cursor: isMobile ? 'default' : 'grab', 
                                 filter: isAlert ? 'drop-shadow(0 0 40px rgba(239,68,68,0.4))' : 'drop-shadow(0 0 30px rgba(234,179,8,0.2))', 
                                 pointerEvents: 'auto',
@@ -421,9 +421,8 @@ export default function Brain() {
                             }}
                             whileDrag={isMobile ? {} : { cursor: 'grabbing', scale: 1.01 }}
                         >
-                            {/* SVG Monitor Frame - Hidden or scaled on mobile */}
-                            {!isMobile ? (
-                                <svg width="820" height="440" viewBox="0 0 820 440" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', zIndex: 1 }}>
+                            {/* SVG Monitor Frame - Same for both desktop & mobile */}
+                            <svg width="100%" height="100%" viewBox="0 0 820 440" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', zIndex: 1 }}>
                                 <defs>
                                     <linearGradient id="bezelGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                                         <stop offset="0%" stopColor="#1a1a1a" />
@@ -482,32 +481,19 @@ export default function Brain() {
                                     <path d="M 760,300 L 780,300 L 780,280" fill="none" stroke={isAlert ? "#ef4444" : "#eab308"} strokeWidth="2" />
                                 </g>
                             </svg>
-                            ) : (
-                                <div style={{ 
-                                    position: 'absolute', 
-                                    inset: 0, 
-                                    background: 'rgba(10,15,30,0.95)', 
-                                    backdropFilter: 'blur(25px)', 
-                                    borderRadius: '28px', 
-                                    border: '1px solid rgba(234,179,8,0.25)', 
-                                    boxShadow: 'inset 0 0 50px rgba(0,0,0,0.9), 0 20px 60px rgba(0,0,0,0.5)' 
-                                }} />
-                            )}
 
-                            {/* Content Overlays */}
+                            {/* Content Overlays - Adjusted offsets for mobile to fit within curve */}
                             <div style={{ 
-                                position: isMobile ? 'relative' : 'absolute', 
-                                top: isMobile ? '0' : '48px', 
-                                left: isMobile ? '0' : '55px', 
-                                right: isMobile ? '0' : '55px', 
-                                bottom: isMobile ? '0' : '110px', 
+                                position: 'absolute', 
+                                top: isMobile ? '5.5%' : '48px', 
+                                left: isMobile ? '6.5%' : '55px', 
+                                right: isMobile ? '6.5%' : '55px', 
+                                bottom: isMobile ? '23%' : '110px', 
                                 zIndex: 5, 
                                 display: 'flex', 
                                 flexDirection: isMobile ? 'column' : 'row',
-                                gap: isMobile ? '15px' : '25px', 
-                                padding: isMobile ? '20px' : '15px 20px', 
-                                width: '100%',
-                                height: '100%',
+                                gap: isMobile ? '5px' : '25px', 
+                                padding: isMobile ? '10px' : '15px 20px', 
                                 overflow: 'hidden'
                             }}>
                                 {/* Left Column: Brain + Status */}
