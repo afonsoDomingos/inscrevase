@@ -33,9 +33,18 @@ export default function Brain() {
         utterance.rate = 1.0;
         utterance.pitch = 0.8;
 
-        utterance.onstart = () => setIsSpeaking(true);
-        utterance.onend = () => setIsSpeaking(false);
-        utterance.onerror = () => setIsSpeaking(false);
+        utterance.onstart = () => {
+            console.log("%c🔊 [VOICE] Iniciando fala...", "color: #38bdf8; font-weight: bold;");
+            setIsSpeaking(true);
+        };
+        utterance.onend = () => {
+            console.log("%c🔇 [VOICE] Fala concluída.", "color: #94a3b8;");
+            setIsSpeaking(false);
+        };
+        utterance.onerror = (e) => {
+            console.error("%c❌ [VOICE] Erro na síntese de voz:", "color: #ef4444;", e);
+            setIsSpeaking(false);
+        };
 
         const voices = window.speechSynthesis.getVoices();
         const preferredVoice = voices.find(v => v.name.includes('Premium') || v.name.includes('Google')) || voices[0];
@@ -153,18 +162,18 @@ export default function Brain() {
     useEffect(() => {
         introSound.current = new Audio('/braindsound/1intro.mp3');
         closeSound.current = new Audio('/braindsound/2Fecho.mp3');
-        // Pre-carregar para latência zero
         introSound.current.load();
         closeSound.current.load();
+        console.log("%c🎵 [AUDIO] Sons de sistema carregados.", "color: #a78bfa; font-weight: bold;");
     }, []);
 
-    // Função utilitária para tocar sons de sistema com latência zero
     const playSystemSound = useCallback((type: 'intro' | 'close') => {
+        console.log(`%c🔔 [AUDIO] Executando som: ${type}`, "color: #fcd34d;");
         const audio = type === 'intro' ? introSound.current : closeSound.current;
         if (audio) {
             audio.currentTime = 0;
             audio.volume = 0.8;
-            audio.play().catch(() => {});
+            audio.play().catch(err => console.warn("%c⚠️ [AUDIO] Play bloqueado pelo browser.", "color: #fbbf24;", err));
         }
     }, []);
 
@@ -300,6 +309,7 @@ export default function Brain() {
             const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
             
             if (transcript.includes('brain') || transcript.includes('cérbero') || transcript.includes('cerbero')) {
+                console.log("%c🤖 [WAKE-WORD] Cérbero detectado! Ativando HUD...", "color: #eab308; font-weight: bold;");
                 if (!isVisible) {
                     setIsVisible(true);
                     playSystemSound('intro');

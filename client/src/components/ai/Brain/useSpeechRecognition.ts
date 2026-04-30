@@ -76,12 +76,13 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
             rec.lang = 'pt-PT'; 
 
             rec.onstart = () => {
+                console.log("%c🎙️ [MIC] Reconhecimento iniciado. Escutando...", "color: #ef4444; font-weight: bold;");
                 setIsListening(true);
                 setCurrentTranscript("");
             };
 
             rec.onerror = (event: { error: string }) => {
-                console.error("Speech Recognition Error:", event.error);
+                console.error("%c❌ [MIC] Erro no reconhecimento:", "color: #ef4444;", event.error);
                 if (event.error === 'no-speech') {
                     // Ignora silêncio momentâneo se contínuo for true
                 } else {
@@ -90,11 +91,12 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
             };
 
             rec.onend = () => {
-                // No modo contínuo, só paramos manualmente ou em erro fatal
+                console.log("%c💤 [MIC] Reconhecimento encerrado.", "color: #94a3b8;");
                 setIsListening(false);
             };
 
             rec.onresult = (event: SpeechRecognitionEvent) => {
+                console.log("%c📝 [MIC] Capturando resultado...", "color: #38bdf8;");
                 let interim = '';
                 let finalStr = '';
                 
