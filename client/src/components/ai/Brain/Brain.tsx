@@ -33,6 +33,13 @@ export default function Brain() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
+    const getTimeGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) return "Bom dia";
+        if (hour >= 12 && hour < 18) return "Boa tarde";
+        return "Boa noite";
+    };
+
     const speak = useCallback((text: string) => {
         if (!window.speechSynthesis) return;
         
@@ -472,11 +479,32 @@ export default function Brain() {
                                         <stop offset="0%" stopColor="rgba(255,255,255,0.12)" />
                                         <stop offset="40%" stopColor="rgba(255,255,255,0)" />
                                     </linearGradient>
+                                    <filter id="glowSpeaking">
+                                        <feGaussianBlur stdDeviation="4" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
                                 </defs>
 
                                 <ellipse cx="410" cy="425" rx="180" ry="15" fill="rgba(0,0,0,0.5)" />
-                                <path d="M 0,0 Q 410,24 820,0 L 820,340 Q 410,316 0,340 Z" fill="none" stroke={isAlert ? "rgba(239,68,68,0.15)" : "rgba(234,179,8,0.08)"} strokeWidth="4" filter="blur(4px)" />
+                                <path 
+                                    d="M 0,0 Q 410,24 820,0 L 820,340 Q 410,316 0,340 Z" 
+                                    fill="none" 
+                                    stroke={isSpeaking ? "#eab308" : isAlert ? "rgba(239,68,68,0.15)" : "rgba(234,179,8,0.08)"} 
+                                    strokeWidth={isSpeaking ? "2" : "4"} 
+                                    filter={isSpeaking ? "url(#glowSpeaking)" : "blur(4px)"} 
+                                    style={{ transition: 'all 0.5s ease' }}
+                                />
                                 <path d="M 0,0 Q 410,24 820,0 L 820,340 Q 410,316 0,340 Z" fill="url(#bezelGrad)" stroke="#111" strokeWidth="1" />
+                                
+                                {/* Background Neural Grid */}
+                                <g opacity="0.05">
+                                    <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+                                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#eab308" strokeWidth="0.5" />
+                                        <circle cx="0" cy="0" r="1" fill="#eab308" />
+                                    </pattern>
+                                    <rect x="12" y="14" width="796" height="312" fill="url(#gridPattern)" />
+                                </g>
+
                                 <path d="M 12,14 Q 410,34 808,14 L 808,326 Q 410,306 12,326 Z" fill="url(#screenGrad)" />
                                 <path d="M 12,14 Q 410,34 808,14 L 808,326 Q 410,306 12,326 Z" fill="url(#screenGlow)" />
                                 <path d="M 12,14 Q 410,34 808,14 L 808,140 Q 410,160 12,140 Z" fill="url(#glossGrad)" />
@@ -666,7 +694,9 @@ export default function Brain() {
                             onClick={() => { 
                                 setIsVisible(true); 
                                 playSystemSound('intro');
-                                speak("Sistemas neurais online. Como posso ajudar, Mestre?");
+                                const greeting = `${getTimeGreeting()}, Mestre. Sistemas neurais online. Como posso ajudar?`;
+                                speak(greeting);
+                                setChatHistory([{ role: 'ai', text: greeting }]);
                             }}
                             style={{
                                 position: 'relative',
