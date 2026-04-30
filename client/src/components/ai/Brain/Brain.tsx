@@ -139,6 +139,15 @@ export default function Brain() {
 
     const { isListening, currentTranscript, startListening, hasSupport } = useSpeechRecognition(handleCommand);
 
+    // Som de Intro ao Abrir o Monitor
+    useEffect(() => {
+        if (isVisible) {
+            const introAudio = new Audio('/braindsound/1 Universo Inscreva-se.mp3');
+            introAudio.volume = 0.4;
+            introAudio.play().catch(err => console.log("Intro sound skipped or blocked by browser."));
+        }
+    }, [isVisible]);
+
 
 
     const [audioLevel, setAudioLevel] = useState(0);
