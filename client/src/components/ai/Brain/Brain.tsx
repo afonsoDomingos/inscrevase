@@ -406,8 +406,8 @@ export default function Brain() {
                                 <ellipse cx="410" cy="415" rx="160" ry="18" fill="#2a2a2a" stroke="#3a3a3a" strokeWidth="1" />
                                 <ellipse cx="410" cy="412" rx="155" ry="15" fill="#111" />
                                 
-                                <rect x="395" y="318" width="30" height="12" rx="2" fill="#0a0a0a" />
-                                <text x="410" y="326" textAnchor="middle" fontSize="6" fontWeight="bold" fill="#333" fontFamily="Arial" letterSpacing="2">MUV</text>
+                                <rect x="390" y="318" width="40" height="12" rx="2" fill="#0a0a0a" />
+                                <text x="410" y="326" textAnchor="middle" fontSize="6" fontWeight="bold" fill="#333" fontFamily="Arial" letterSpacing="2">BRAIN</text>
 
                                 <g opacity="0.4">
                                     <path d="M 40,60 L 40,40 L 60,40" fill="none" stroke={isAlert ? "#ef4444" : "#eab308"} strokeWidth="2" />
