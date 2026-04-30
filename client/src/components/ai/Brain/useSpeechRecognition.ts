@@ -69,7 +69,7 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
 
         if (SpeechRecognition) {
             const rec = new SpeechRecognition();
-            rec.continuous = false;
+            rec.continuous = true; // Mantém a escuta ativa mesmo com pausas
             rec.interimResults = true;
             rec.lang = 'pt-PT'; 
 
@@ -77,18 +77,33 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
                 setIsListening(true);
                 setCurrentTranscript("");
             };
-            rec.onend = () => setIsListening(false);
+
+            rec.onerror = (event: any) => {
+                console.error("Speech Recognition Error:", event.error);
+                if (event.error === 'no-speech') {
+                    // Ignora silêncio momentâneo se contínuo for true
+                } else {
+                    setIsListening(false);
+                }
+            };
+
+            rec.onend = () => {
+                // No modo contínuo, só paramos manualmente ou em erro fatal
+                setIsListening(false);
+            };
+
             rec.onresult = (event: SpeechRecognitionEvent) => {
                 let interim = '';
                 let finalStr = '';
                 
-                // fallback para navegadores antigos que não suportam resultIndex
-                const startIndex = event.resultIndex || 0;
+                const startIndex = event.resultIndex;
                 
                 for (let i = startIndex; i < event.results.length; i++) {
                     const result = event.results[i];
                     if (result.isFinal) {
-                        finalStr += result[0].transcript;
+                        finalStr = result[0].transcript;
+                        // No modo contínuo, paramos após o primeiro comando finalizado para processar
+                        rec.stop();
                     } else {
                         interim += result[0].transcript;
                     }
