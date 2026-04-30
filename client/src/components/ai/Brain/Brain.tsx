@@ -23,6 +23,14 @@ export default function Brain() {
     const [isAlert, setIsAlert] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [chatHistory, setChatHistory] = useState<{role: 'user' | 'ai', text: string}[]>([]);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const speak = useCallback((text: string) => {
         if (!window.speechSynthesis) return;
@@ -87,13 +95,13 @@ export default function Brain() {
 
         // Mapeamento Abrangente de Rotas (Atalhos Rápidos)
         const routes: Record<string, { path: string, response: string, keywords: string[] }> = {
-            '/dashboard/mentor?tab=overview': { path: '/dashboard/mentor?tab=overview', response: 'Entendido, Mestre. Carregando sua visão geral.', keywords: ['visão geral', 'resumo', 'dashboard mentor', 'painel mentor'] },
-            '/dashboard/mentor?tab=forms': { path: '/dashboard/mentor?tab=forms', response: 'Abrindo seus eventos e formulários.', keywords: ['meus eventos', 'meus formulários', 'ver eventos'] },
-            '/dashboard/mentor?tab=submissions': { path: '/dashboard/mentor?tab=submissions', response: 'Consultando a lista de participantes.', keywords: ['ver inscrições', 'participantes', 'lista de inscritos'] },
-            '/dashboard/admin?tab=overview': { path: '/dashboard/admin?tab=overview', response: 'Acessando o centro de comando administrativo.', keywords: ['painel admin', 'dashboard admin', 'estatísticas globais'] },
-            '/dashboard/admin?tab=users': { path: '/dashboard/admin?tab=users', response: 'Carregando a base de utilizadores da plataforma.', keywords: ['gestão de usuários', 'ver utilizadores', 'lista de pessoas'] },
-            '/dashboard/perfil': { path: '/dashboard/perfil', response: 'Abrindo seu perfil profissional.', keywords: ['meu perfil', 'perfil profissional'] },
-            '/': { path: '/', response: 'Retornando à página inicial. Até breve, Mestre.', keywords: ['ir para home', 'sair da dashboard', 'página inicial', 'site'] }
+            '/dashboard/mentor?tab=overview': { path: '/dashboard/mentor?tab=overview', response: 'Entendido, Mestre. A carregar a sua visão geral.', keywords: ['visão geral', 'resumo', 'dashboard mentor', 'painel mentor'] },
+            '/dashboard/mentor?tab=forms': { path: '/dashboard/mentor?tab=forms', response: 'A abrir os seus eventos e formulários.', keywords: ['meus eventos', 'meus formulários', 'ver eventos'] },
+            '/dashboard/mentor?tab=submissions': { path: '/dashboard/mentor?tab=submissions', response: 'A consultar a lista de participantes.', keywords: ['ver inscrições', 'participantes', 'lista de inscritos'] },
+            '/dashboard/admin?tab=overview': { path: '/dashboard/admin?tab=overview', response: 'A aceder ao centro de comando administrativo.', keywords: ['painel admin', 'dashboard admin', 'estatísticas globais'] },
+            '/dashboard/admin?tab=users': { path: '/dashboard/admin?tab=users', response: 'A carregar a base de utilizadores da plataforma.', keywords: ['gestão de utilizadores', 'ver utilizadores', 'lista de pessoas'] },
+            '/dashboard/perfil': { path: '/dashboard/perfil', response: 'A abrir o seu perfil profissional.', keywords: ['meu perfil', 'perfil profissional'] },
+            '/': { path: '/', response: 'A retornar à página inicial. Até breve, Mestre.', keywords: ['ir para home', 'sair da dashboard', 'página inicial', 'site'] }
         };
 
         let foundEntry = null;
@@ -142,7 +150,7 @@ export default function Brain() {
         } catch (error) {
             console.error("Brain Error:", error);
             const errorMessages = [
-                "Peço desculpas, Mestre. Encontrei uma interferência nos meus subsistemas e não consigo completar esta tarefa no momento.",
+                "Peço desculpa, Mestre. Encontrei uma interferência nos meus subsistemas e não consigo completar esta tarefa no momento.",
                 "Houve uma falha na sincronização neural. Não foi possível processar esse comando agora.",
                 "Mestre, os meus protocolos de execução encontraram uma barreira técnica imprevista."
             ];
@@ -347,7 +355,7 @@ export default function Brain() {
             setIsAlert(true);
             setIsVisible(true);
             
-            const message = `Mestre, desculpe a interrupção. ${data.title}. ${data.content}`;
+            const message = `Mestre, peço desculpa pela interrupção. ${data.title}. ${data.content}`;
             speak(message);
             setLastCommand(`ALERTA: ${data.title}`);
 
@@ -388,16 +396,27 @@ export default function Brain() {
                 <AnimatePresence>
                     {isVisible && (
                         <motion.div
-                            drag
+                            drag={!isMobile}
                             dragMomentum={false}
                             initial={{ opacity: 0, scale: 0.85, y: 30 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.85, y: 30 }}
-                            style={{ position: 'relative', width: '820px', height: '440px', cursor: 'grab', filter: isAlert ? 'drop-shadow(0 0 40px rgba(239,68,68,0.4))' : 'drop-shadow(0 0 30px rgba(234,179,8,0.2))', pointerEvents: 'auto' }}
-                            whileDrag={{ cursor: 'grabbing', scale: 1.01 }}
+                            style={{ 
+                                position: 'relative', 
+                                width: isMobile ? '95vw' : '820px', 
+                                height: isMobile ? '85vh' : '440px', 
+                                cursor: isMobile ? 'default' : 'grab', 
+                                filter: isAlert ? 'drop-shadow(0 0 40px rgba(239,68,68,0.4))' : 'drop-shadow(0 0 30px rgba(234,179,8,0.2))', 
+                                pointerEvents: 'auto',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                            whileDrag={isMobile ? {} : { cursor: 'grabbing', scale: 1.01 }}
                         >
-                            {/* SVG Monitor Frame (Previous logic remains identical) */}
-                            <svg width="820" height="440" viewBox="0 0 820 440" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', zIndex: 1 }}>
+                            {/* SVG Monitor Frame - Hidden or scaled on mobile */}
+                            {!isMobile ? (
+                                <svg width="820" height="440" viewBox="0 0 820 440" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', zIndex: 1 }}>
                                 <defs>
                                     <linearGradient id="bezelGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                                         <stop offset="0%" stopColor="#1a1a1a" />
@@ -456,47 +475,79 @@ export default function Brain() {
                                     <path d="M 760,300 L 780,300 L 780,280" fill="none" stroke={isAlert ? "#ef4444" : "#eab308"} strokeWidth="2" />
                                 </g>
                             </svg>
+                            ) : (
+                                <div style={{ 
+                                    position: 'absolute', 
+                                    inset: 0, 
+                                    background: 'rgba(10,15,30,0.95)', 
+                                    backdropFilter: 'blur(25px)', 
+                                    borderRadius: '28px', 
+                                    border: '1px solid rgba(234,179,8,0.25)', 
+                                    boxShadow: 'inset 0 0 50px rgba(0,0,0,0.9), 0 20px 60px rgba(0,0,0,0.5)' 
+                                }} />
+                            )}
 
                             {/* Content Overlays */}
-                            <div style={{ position: 'absolute', top: '48px', left: '55px', right: '55px', bottom: '110px', zIndex: 5, display: 'flex', gap: '25px', padding: '15px 20px', overflow: 'hidden' }}>
+                            <div style={{ 
+                                position: isMobile ? 'relative' : 'absolute', 
+                                top: isMobile ? '0' : '48px', 
+                                left: isMobile ? '0' : '55px', 
+                                right: isMobile ? '0' : '55px', 
+                                bottom: isMobile ? '0' : '110px', 
+                                zIndex: 5, 
+                                display: 'flex', 
+                                flexDirection: isMobile ? 'column' : 'row',
+                                gap: isMobile ? '15px' : '25px', 
+                                padding: isMobile ? '20px' : '15px 20px', 
+                                width: '100%',
+                                height: '100%',
+                                overflow: 'hidden'
+                            }}>
                                 {/* Left Column: Brain + Status */}
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px', minWidth: '180px' }}>
-                                    <div style={{ transform: 'scale(0.75)', transformOrigin: 'center center' }}>
+                                <div style={{ 
+                                    display: 'flex', 
+                                    flexDirection: isMobile ? 'row' : 'column', 
+                                    alignItems: 'center', 
+                                    justifyContent: isMobile ? 'space-between' : 'center', 
+                                    gap: '10px', 
+                                    minWidth: isMobile ? '0' : '180px',
+                                    padding: isMobile ? '5px 10px' : '0',
+                                    background: isMobile ? 'rgba(255,255,255,0.03)' : 'none',
+                                    borderRadius: '12px'
+                                }}>
+                                    <div style={{ transform: isMobile ? 'scale(0.5)' : 'scale(0.75)', transformOrigin: 'center center' }}>
                                         <CerberusVisual isListening={isListening} isThinking={isThinking} isAlert={isAlert} isSpeaking={isSpeaking} />
                                     </div>
-                                    <div style={{ textAlign: 'center', marginTop: '5px' }}>
-                                        <h3 style={{ fontWeight: 'bold', color: isAlert ? '#ef4444' : isThinking ? '#38bdf8' : '#fff', fontSize: '0.9rem', textTransform: isThinking ? 'uppercase' : 'none', letterSpacing: '1px', margin: 0 }}>
-                                            {isThinking ? 'Processando...' : isListening ? (audioLevel > 5 ? 'Escutando...' : 'Aguardando...') : 'Cérbero'}
+                                    <div style={{ textAlign: isMobile ? 'left' : 'center', flex: isMobile ? 1 : 'none', marginLeft: isMobile ? '10px' : '0' }}>
+                                        <h3 style={{ fontWeight: 'bold', color: isAlert ? '#ef4444' : isThinking ? '#38bdf8' : '#fff', fontSize: isMobile ? '0.8rem' : '0.9rem', textTransform: isThinking ? 'uppercase' : 'none', letterSpacing: '1px', margin: 0 }}>
+                                            {isThinking ? 'Processando...' : isListening ? 'Escutando...' : 'Cérbero'}
                                         </h3>
-                                        <p style={{ color: '#9ca3af', fontSize: '10px', margin: '4px 0 0', lineHeight: '1.4', maxWidth: '140px' }}>
-                                            {isAlert ? 'Alerta Urgente!' : isThinking ? 'Analisando diretivas...' : 'Comando de voz ativo.'}
+                                        <p style={{ color: '#9ca3af', fontSize: '9px', margin: '4px 0 0', lineHeight: '1.4' }}>
+                                            {isAlert ? 'Alerta!' : isThinking ? 'Analisando...' : 'IA Ativa.'}
                                         </p>
                                     </div>
-                                    <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
+                                    <div style={{ display: 'flex', gap: '10px' }}>
                                         {isSpeaking && (
-                                            <button onClick={() => { window.speechSynthesis?.cancel(); setIsSpeaking(false); }} style={{ color: '#eab308', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Mute">
+                                            <button onClick={() => { window.speechSynthesis?.cancel(); setIsSpeaking(false); }} style={{ color: '#eab308', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}>
                                                 <Square size={14} fill="currentColor" />
                                             </button>
                                         )}
-                                        <button onClick={() => { playSystemSound('close'); speak("Desativando sistemas neurais."); setTimeout(() => setIsHibernated(true), 1500); }} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Hibernate">
-                                            <Power size={16} />
-                                        </button>
-                                        <button onClick={() => { setIsVisible(false); playSystemSound('close'); speak("Sistemas em standby."); }} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Close HUD">
-                                            <X size={18} />
+                                        <button onClick={() => { playSystemSound('close'); speak("Sistemas em standby."); setIsVisible(false); }} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}>
+                                            <X size={20} />
                                         </button>
                                     </div>
                                 </div>
 
-                                <div style={{ width: '1px', background: 'rgba(255,255,255,0.06)', flexShrink: 0 }} />
+                                {!isMobile && <div style={{ width: '1px', background: 'rgba(255,255,255,0.06)', flexShrink: 0 }} />}
 
                                 {/* Right Column: Chat/Interaction */}
-                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', overflow: 'hidden' }}>
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: isMobile ? '8px' : '12px', overflow: 'hidden' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(234, 179, 8, 0.05)', padding: '4px 10px', borderRadius: '6px', border: '1px solid rgba(234, 179, 8, 0.15)', marginBottom: '2px' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                             <div style={{ width: '6px', height: '6px', background: '#eab308', borderRadius: '50%', boxShadow: '0 0 8px #eab308' }} />
-                                            <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#eab308', letterSpacing: '0.5px' }}>BETA / EM DESENVOLVIMENTO</span>
+                                            <span style={{ fontSize: '8px', fontWeight: 'bold', color: '#eab308', letterSpacing: '0.5px' }}>{isMobile ? 'MODO MOBILE' : 'BETA / EM DESENVOLVIMENTO'}</span>
                                         </div>
-                                        <span style={{ fontSize: '8px', color: '#6b7280' }}>v2.4.0-neural</span>
+                                        <span style={{ fontSize: '8px', color: '#6b7280' }}>v2.4.8</span>
                                     </div>
 
                                     <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.03)' }}><VoiceVisualizer /></div>
