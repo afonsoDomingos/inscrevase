@@ -56,6 +56,7 @@ export default function Brain() {
             window.speechSynthesis?.cancel();
             setIsSpeaking(false);
             setIsThinking(false);
+            speak("Entendido. Silenciando.");
             toast.info("A fala foi interrompida.");
             return;
         }
@@ -463,7 +464,7 @@ export default function Brain() {
                                         <button onClick={() => { playSystemSound('close'); speak("Desativando sistemas neurais."); setTimeout(() => setIsHibernated(true), 1500); }} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Hibernate">
                                             <Power size={16} />
                                         </button>
-                                        <button onClick={() => { setIsVisible(false); playSystemSound('close'); }} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Close HUD">
+                                        <button onClick={() => { setIsVisible(false); playSystemSound('close'); speak("Sistemas em standby."); }} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Close HUD">
                                             <X size={18} />
                                         </button>
                                     </div>
