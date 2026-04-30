@@ -139,12 +139,23 @@ export default function Brain() {
 
     const { isListening, currentTranscript, startListening, hasSupport } = useSpeechRecognition(handleCommand);
 
-    // Som de Intro ao Abrir o Monitor
+    const isFirstRender = useRef(true);
+
+    // Sons de Sistema (Intro e Fecho)
     useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
         if (isVisible) {
             const introAudio = new Audio('/braindsound/1intro.mp3');
             introAudio.volume = 0.4;
-            introAudio.play().catch(err => console.log("Intro sound skipped or blocked by browser."));
+            introAudio.play().catch(() => {});
+        } else {
+            const closeAudio = new Audio('/braindsound/2Fecho.mp3');
+            closeAudio.volume = 0.4;
+            closeAudio.play().catch(() => {});
         }
     }, [isVisible]);
 
