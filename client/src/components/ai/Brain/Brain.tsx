@@ -355,63 +355,59 @@ export default function Brain() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
                         style={{
-                            background: 'linear-gradient(180deg, rgba(10, 10, 10, 0.7) 0%, rgba(0, 0, 0, 0.8) 100%)',
-                            backdropFilter: 'blur(20px) saturate(180%)',
-                            border: `1px solid ${isAlert ? 'rgba(239, 68, 68, 0.5)' : 'rgba(234, 179, 8, 0.3)'}`,
-                            padding: '24px',
-                            borderRadius: '24px',
+                            // Fundo: escuro nas bordas, quase transparente no centro (simula curvatura)
+                            background: `linear-gradient(to right, 
+                                rgba(0,0,0,0.95) 0%, 
+                                ${isAlert ? 'rgba(30,5,5,0.15)' : 'rgba(5,8,15,0.15)'} 18%, 
+                                ${isAlert ? 'rgba(30,5,5,0.12)' : 'rgba(5,8,15,0.12)'} 82%, 
+                                rgba(0,0,0,0.95) 100%
+                            )`,
+                            backdropFilter: 'blur(24px) saturate(200%)',
+                            // Borda: linha fina como o bezel do monitor
+                            border: `1px solid ${isAlert ? 'rgba(239,68,68,0.4)' : 'rgba(234,179,8,0.25)'}`,
+                            borderTop: `2px solid ${isAlert ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.12)'}`,
+                            padding: '22px 40px',
+                            // clip-path com bezier para simular o arco do ecrã curvo
+                            clipPath: 'path("M 20,18 Q 310,0 600,18 L 600,362 Q 310,380 20,362 Z")',
+                            // Sombras internas nas laterais para escurecer e simular curvatura
                             boxShadow: isAlert 
-                                ? '0 0 60px rgba(239, 68, 68, 0.3), inset 0 0 40px rgba(0,0,0,0.8)' 
-                                : '0 30px 100px rgba(0, 0, 0, 0.7), inset 0 0 50px rgba(0,0,0,0.9)',
-                            width: '500px',
+                                ? 'inset 90px 0 110px rgba(0,0,0,1), inset -90px 0 110px rgba(0,0,0,1), 0 0 60px rgba(239,68,68,0.3)'
+                                : 'inset 90px 0 110px rgba(0,0,0,1), inset -90px 0 110px rgba(0,0,0,1), 0 40px 100px rgba(0,0,0,0.8), 0 0 40px rgba(234,179,8,0.08)',
+                            width: '620px',
+                            minHeight: '380px',
                             transition: 'all 0.6s cubic-bezier(0.23, 1, 0.32, 1)',
                             display: 'flex',
                             flexDirection: 'column',
                             cursor: 'grab',
-                            overflow: 'hidden',
+                            overflow: 'visible',
                             position: 'relative',
-                            transform: 'perspective(1500px) rotateX(4deg)',
-                            transformStyle: 'preserve-3d',
-                            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
                         }}
-                        whileHover={{ transform: 'perspective(1500px) rotateX(1deg)', scale: 1.01 }}
-                        whileDrag={{ cursor: 'grabbing', scale: 1.05, rotateX: 0 }}
+                        whileHover={{ scale: 1.01, boxShadow: isAlert ? 'inset 90px 0 110px rgba(0,0,0,1), inset -90px 0 110px rgba(0,0,0,1), 0 0 80px rgba(239,68,68,0.4)' : 'inset 90px 0 110px rgba(0,0,0,1), inset -90px 0 110px rgba(0,0,0,1), 0 0 60px rgba(234,179,8,0.2)' }}
+                        whileDrag={{ cursor: 'grabbing', scale: 1.02 }}
                     >
-                        {/* Reflexo de Vidro Curvo (Glossy Effect) */}
+                        {/* Reflexo diagonal de vidro (Glossy) */}
                         <div style={{
                             position: 'absolute',
-                            top: '-50%', left: '-50%', width: '200%', height: '200%',
-                            background: 'linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.03) 50%, transparent 55%)',
+                            top: 0, left: 0, right: 0, bottom: 0,
+                            background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.02) 100%)',
                             pointerEvents: 'none',
                             zIndex: 13,
-                            transform: 'rotate(-20deg)'
                         }} />
 
-                        {/* Efeito de Vidro Curvado (Deep Vignette) */}
+                        {/* Scanlines sutis */}
                         <div style={{
                             position: 'absolute',
                             top: 0, left: 0, right: 0, bottom: 0,
-                            background: 'radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.6) 100%)',
-                            pointerEvents: 'none',
-                            zIndex: 12
-                        }} />
-
-                        {/* Efeito de Scanlines Futuristas */}
-                        <div style={{
-                            position: 'absolute',
-                            top: 0, left: 0, right: 0, bottom: 0,
-                            background: 'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02))',
-                            backgroundSize: '100% 3px, 3px 100%',
+                            background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px)',
                             pointerEvents: 'none',
                             zIndex: 10,
-                            opacity: 0.4
                         }} />
 
                         {/* Cantoneiras HUD */}
-                        <div style={{ position: 'absolute', top: '10px', left: '10px', width: '15px', height: '15px', borderLeft: '2px solid rgba(234, 179, 8, 0.5)', borderTop: '2px solid rgba(234, 179, 8, 0.5)', pointerEvents: 'none' }} />
-                        <div style={{ position: 'absolute', top: '10px', right: '10px', width: '15px', height: '15px', borderRight: '2px solid rgba(234, 179, 8, 0.5)', borderTop: '2px solid rgba(234, 179, 8, 0.5)', pointerEvents: 'none' }} />
-                        <div style={{ position: 'absolute', bottom: '10px', left: '10px', width: '15px', height: '15px', borderLeft: '2px solid rgba(234, 179, 8, 0.5)', borderBottom: '2px solid rgba(234, 179, 8, 0.5)', pointerEvents: 'none' }} />
-                        <div style={{ position: 'absolute', bottom: '10px', right: '10px', width: '15px', height: '15px', borderRight: '2px solid rgba(234, 179, 8, 0.5)', borderBottom: '2px solid rgba(234, 179, 8, 0.5)', pointerEvents: 'none' }} />
+                        <div style={{ position: 'absolute', top: '14px', left: '28px', width: '14px', height: '14px', borderLeft: '2px solid rgba(234, 179, 8, 0.6)', borderTop: '2px solid rgba(234, 179, 8, 0.6)', pointerEvents: 'none', zIndex: 14 }} />
+                        <div style={{ position: 'absolute', top: '14px', right: '28px', width: '14px', height: '14px', borderRight: '2px solid rgba(234, 179, 8, 0.6)', borderTop: '2px solid rgba(234, 179, 8, 0.6)', pointerEvents: 'none', zIndex: 14 }} />
+                        <div style={{ position: 'absolute', bottom: '22px', left: '28px', width: '14px', height: '14px', borderLeft: '2px solid rgba(234, 179, 8, 0.6)', borderBottom: '2px solid rgba(234, 179, 8, 0.6)', pointerEvents: 'none', zIndex: 14 }} />
+                        <div style={{ position: 'absolute', bottom: '22px', right: '28px', width: '14px', height: '14px', borderRight: '2px solid rgba(234, 179, 8, 0.6)', borderBottom: '2px solid rgba(234, 179, 8, 0.6)', pointerEvents: 'none', zIndex: 14 }} />
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', position: 'relative', zIndex: 11 }}>
                             <div style={{ 
