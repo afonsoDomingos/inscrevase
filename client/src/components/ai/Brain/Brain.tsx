@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, Terminal, X, Command, Square } from 'lucide-react';
+import { Mic, Terminal, X, Command, Power, Square } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
@@ -535,10 +535,13 @@ export default function Brain() {
                                     </div>
                                     <div style={{ display: 'flex', gap: '10px' }}>
                                         {isSpeaking && (
-                                            <button onClick={() => { window.speechSynthesis?.cancel(); setIsSpeaking(false); }} style={{ color: '#eab308', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}>
+                                            <button onClick={() => { window.speechSynthesis?.cancel(); setIsSpeaking(false); speak("Entendido. Silenciando."); }} style={{ color: '#eab308', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}>
                                                 <Square size={14} fill="currentColor" />
                                             </button>
                                         )}
+                                        <button onClick={() => { playSystemSound('close'); speak("Desativando sistemas neurais."); setTimeout(() => setIsHibernated(true), 1500); }} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Hibernate">
+                                            <Power size={18} />
+                                        </button>
                                         <button onClick={() => { playSystemSound('close'); speak("Sistemas em standby."); setIsVisible(false); }} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}>
                                             <X size={20} />
                                         </button>
