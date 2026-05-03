@@ -4,6 +4,7 @@ const Form = require('../models/Form');
 const Submission = require('../models/Submission');
 const Transaction = require('../models/Transaction');
 const mongoose = require('mongoose');
+const BrainLog = require('../models/BrainLog');
 
 const BRAIN_SYSTEM_PROMPT = `
 Você é o BRAIN (Cérbero), o núcleo de inteligência artificial de elite da plataforma "Inscreva-se".
@@ -131,6 +132,19 @@ exports.handleBrainCommand = async (req, res) => {
                 const response = await result.response;
                 text = response.text();
                 attemptSuccess = true;
+
+                // Log para Auditoria (Async para não atrasar a resposta)
+                BrainLog.create({
+                    user: userId,
+                    userName: user?.name || "Mestre",
+                    userRole: role,
+                    transcript,
+                    reply: text,
+                    modelUsed: modelName,
+                    locale,
+                    pageContext
+                }).catch(err => console.error("Erro ao salvar log do Brain:", err));
+
                 break;
             } catch (e) {
                 lastError = e.message;
@@ -149,5 +163,34 @@ exports.handleBrainCommand = async (req, res) => {
             reply: "Peço desculpas, Mestre. Meus circuitos neurais falharam ao processar os dados.",
             details: error.message || "Erro desconhecido no servidor"
         });
+    }
+};
+
+exports.getBrainStats = async (req, res) => {
+    try {
+        const totalInteractions = await BrainLog.countDocuments();
+        const logs = await BrainLog.find().populate('user', 'name email').sort({ timestamp: -1 }).limit(100);
+        
+        // Estatísticas por cargo
+        const roleStats = await BrainLog.aggregate([
+            { $group: { _id: "$userRole", count: { $sum: 1 } } }
+        ]);
+
+        // Perguntas mais frequentes
+        const topQuestions = await BrainLog.aggregate([
+            { $group: { _id: "$transcript", count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 10 }
+        ]);
+
+        res.json({
+            total: totalInteractions,
+            roleStats,
+            recentLogs: logs,
+            topQuestions
+        });
+    } catch (error) {
+        console.error("Stats Error:", error);
+        res.status(500).json({ error: error.message });
     }
 };

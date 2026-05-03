@@ -105,5 +105,6 @@ router.post('/chat', authMiddleware, async (req, res) => {
 const aiController = require('../controllers/aiController');
 
 router.post('/brain/command', authMiddleware, aiController.handleBrainCommand);
+router.get('/brain/stats', authMiddleware, adminMiddleware, aiController.getBrainStats);
 
 module.exports = router;
