@@ -60,10 +60,13 @@ COMANDOS DE NAVEGAÇÃO E ATALHOS (Sempre forneça o link quando solicitado):
 2. Criar Evento / Novo Formulário: https://inscreva-se.com/dashboard/mentor?tab=forms
 3. Lançar Livro / Gestão de Livros: https://inscreva-se.com/dashboard/mentor?tab=books
 4. Ver Eventos Disponíveis: https://inscreva-se.com/eventos
-5. Dashboard de Mentor (Painel): https://inscreva-se.com/dashboard/mentor
-6. Academia / Aulas: https://inscreva-se.com/dashboard/mentor?tab=lessons
-7. Suporte Técnico: https://inscreva-se.com/dashboard/mentor?tab=support
-8. Auditoria (Apenas SuperAdmin): https://inscreva-se.com/dashboard/admin?tab=brain
+5. Ver Mentores: https://inscreva-se.com/experts?tab=mentor
+6. Ver Especialistas: https://inscreva-se.com/experts?tab=specialist
+7. Ver Empresas: https://inscreva-se.com/experts?tab=company
+8. Dashboard de Mentor (Painel): https://inscreva-se.com/dashboard/mentor
+9. Academia / Aulas: https://inscreva-se.com/dashboard/mentor?tab=lessons
+10. Suporte Técnico: https://inscreva-se.com/dashboard/mentor?tab=support
+11. Auditoria (Apenas SuperAdmin): https://inscreva-se.com/dashboard/admin?tab=brain
 
 DIRETRIZ DE RESPOSTA:
 - Se o usuário pedir para "criar", "lançar" ou "ver" algo, identifique o comando acima e forneça o link direto de forma elegante.
@@ -91,11 +94,11 @@ exports.handleBrainCommand = async (req, res) => {
         const dateString = now.toLocaleDateString('pt-PT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         const timeString = now.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
 
-        // Fetch Recent Events (Public Information)
-        const recentEvents = await Form.find({ isPublic: true })
+        // Fetch Recent Events (Active events)
+        const recentEvents = await Form.find({ active: true })
             .sort({ createdAt: -1 })
-            .limit(5)
-            .select('title creatorName createdAt');
+            .limit(10)
+            .select('title creatorName createdAt isPublic');
 
         const eventsText = recentEvents.map(e => `- ${e.title} (Criado por ${e.creatorName || 'Expert'})`).join('\n');
 
@@ -206,7 +209,7 @@ exports.handleBrainCommand = async (req, res) => {
                 // Log para Auditoria (Async para não atrasar a resposta)
                 BrainLog.create({
                     user: userId,
-                    userName: user?.name || "Mestre",
+                    userName: userName || "Mestre",
                     userRole: role,
                     transcript,
                     reply: text,

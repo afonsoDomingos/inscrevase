@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,16 +14,26 @@ import { serviceService, ServiceModel } from '@/lib/serviceService';
 
 export default function ExpertsShowcase() {
     const { t } = useTranslate();
+    const searchParams = useSearchParams();
+    const initialTab = searchParams.get('tab') as 'mentor' | 'specialist' | 'company' | null;
+    
     const [mentors, setMentors] = useState<UserData[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState<'mentor' | 'specialist' | 'company'>('company');
+    const [activeTab, setActiveTab] = useState<'mentor' | 'specialist' | 'company'>(initialTab || 'company');
     const [services, setServices] = useState<ServiceModel[]>([]);
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [minPrice, setMinPrice] = useState<string>('');
     const [maxPrice, setMaxPrice] = useState<string>('');
     const [showFilters, setShowFilters] = useState(false);
     const [focusedField, setFocusedField] = useState<string | null>(null);
+
+    useEffect(() => {
+        const tab = searchParams.get('tab');
+        if (tab && (tab === 'mentor' || tab === 'specialist' || tab === 'company')) {
+            setActiveTab(tab as any);
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         const fetchData = async () => {
