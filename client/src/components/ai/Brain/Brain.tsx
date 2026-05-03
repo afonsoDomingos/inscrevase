@@ -345,9 +345,9 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
         } catch (error) {
             console.error("Brain Error:", error);
             const errorMessages = [
-                "Peço desculpa, Mestre. Encontrei uma interferência nos meus subsistemas e não consigo completar esta tarefa no momento.",
-                "Houve uma falha na sincronização neural. Não foi possível processar esse comando agora.",
-                "Mestre, os meus protocolos de execução encontraram uma barreira técnica imprevista."
+                "Peço desculpa, Mestre. Encontrei uma interferência nos meus subsistemas. Os nossos Engenheiros estão a trabalhar na resolução do problema.",
+                "Houve uma falha na sincronização neural. Os nossos Engenheiros estão a trabalhar na resolução do problema.",
+                "Mestre, encontrei uma barreira técnica imprevista. Os nossos Engenheiros estão a trabalhar na resolução do problema."
             ];
             const randomError = errorMessages[Math.floor(Math.random() * errorMessages.length)];
             speak(randomError);
