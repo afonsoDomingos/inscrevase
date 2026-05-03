@@ -4,7 +4,7 @@ const brainLogSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false
   },
   userName: String,
   userRole: String,
@@ -22,6 +22,12 @@ const brainLogSchema = new mongoose.Schema({
     default: 'pt'
   },
   pageContext: String,
+  status: {
+    type: String,
+    enum: ['success', 'error'],
+    default: 'success'
+  },
+  errorMessage: String,
   timestamp: {
     type: Date,
     default: Date.now

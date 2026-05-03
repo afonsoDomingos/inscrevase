@@ -215,6 +215,20 @@ exports.handleBrainCommand = async (req, res) => {
 
     } catch (error) {
         console.error("BRAIN Error:", error);
+        
+        // Log Erro para Auditoria
+        BrainLog.create({
+            user: userId,
+            userName: req.user?.name || "Mestre",
+            userRole: role,
+            transcript: transcript || "Comando de Voz / Vazio",
+            reply: "Falha Neural",
+            status: 'error',
+            errorMessage: error.message,
+            locale,
+            pageContext
+        }).catch(err => console.error("Erro ao salvar log de erro do Brain:", err));
+
         res.status(500).json({ 
             reply: "Peço desculpas, Mestre. Meus circuitos neurais falharam ao processar os dados.",
             details: error.message || "Erro desconhecido no servidor"
@@ -227,6 +241,14 @@ exports.getBrainStats = async (req, res) => {
         const totalInteractions = await BrainLog.countDocuments();
         const logs = await BrainLog.find().populate('user', 'name email').sort({ timestamp: -1 }).limit(100);
         
+        // Estatísticas por status
+        const statusStats = await BrainLog.aggregate([
+            { $group: { _id: "$status", count: { $sum: 1 } } }
+        ]);
+
+        const successCount = statusStats.find(s => s._id === 'success')?.count || 0;
+        const errorCount = statusStats.find(s => s._id === 'error')?.count || 0;
+
         // Estatísticas por cargo
         const roleStats = await BrainLog.aggregate([
             { $group: { _id: "$userRole", count: { $sum: 1 } } }
@@ -234,6 +256,7 @@ exports.getBrainStats = async (req, res) => {
 
         // Perguntas mais frequentes
         const topQuestions = await BrainLog.aggregate([
+            { $match: { status: 'success' } },
             { $group: { _id: "$transcript", count: { $sum: 1 } } },
             { $sort: { count: -1 } },
             { $limit: 10 }
@@ -241,6 +264,8 @@ exports.getBrainStats = async (req, res) => {
 
         res.json({
             total: totalInteractions,
+            successCount,
+            errorCount,
             roleStats,
             recentLogs: logs,
             topQuestions

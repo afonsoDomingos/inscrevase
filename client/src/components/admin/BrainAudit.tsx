@@ -20,6 +20,8 @@ interface BrainLog {
 
 interface BrainStats {
     total: number;
+    successCount: number;
+    errorCount: number;
     roleStats: { _id: string; count: number }[];
     recentLogs: BrainLog[];
     topQuestions: { _id: string; count: number }[];
@@ -97,14 +99,20 @@ export default function BrainAudit() {
                     label="Total Interações" 
                     value={stats?.total || 0} 
                     color="#3b82f6" 
-                    trend="+12%"
                 />
                 <StatBox 
                     icon={<Bot size={22} />} 
-                    label="Eficiência IA" 
-                    value="100%" 
-                    color="#a855f7" 
-                    trend="Estável"
+                    label="Sucessos IA" 
+                    value={stats?.successCount || 0} 
+                    color="#10b981" 
+                    trend={stats?.total ? `${Math.round(((stats.successCount || 0) / stats.total) * 100)}%` : '100%'}
+                />
+                <StatBox 
+                    icon={<Target size={22} />} 
+                    label="Falhas Neurais" 
+                    value={stats?.errorCount || 0} 
+                    color="#ef4444" 
+                    trend={stats?.total ? `${Math.round(((stats.errorCount || 0) / stats.total) * 100)}%` : '0%'}
                 />
                 {stats?.roleStats.map((role) => (
                     <StatBox 
