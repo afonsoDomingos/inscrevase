@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
@@ -12,7 +12,7 @@ import { useTranslate } from '@/context/LanguageContext';
 import Navbar from '@/components/Navbar';
 import { serviceService, ServiceModel } from '@/lib/serviceService';
 
-export default function ExpertsShowcase() {
+function ExpertsContent() {
     const { t } = useTranslate();
     const searchParams = useSearchParams();
     const initialTab = searchParams.get('tab') as 'mentor' | 'specialist' | 'company' | null;
@@ -679,5 +679,17 @@ export default function ExpertsShowcase() {
                 </p>
             </div>
         </div>
+    );
+}
+
+export default function ExpertsShowcase() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+                <Loader2 className="w-12 h-12 text-[#FFD700] animate-spin" />
+            </div>
+        }>
+            <ExpertsContent />
+        </Suspense>
     );
 }
