@@ -866,7 +866,7 @@ export default function Brain() {
                         }}
                     >
                         <motion.button
-                            whileHover={{ scale: 1.1, boxShadow: '0 0 40px rgba(234, 179, 8, 0.6)' }}
+                            whileHover={{ scale: 1.1, boxShadow: '0 0 40px rgba(66, 133, 244, 0.4)' }}
                             whileTap={{ scale: 0.9 }}
                             onClick={() => { 
                                 setIsVisible(true); 
@@ -889,37 +889,37 @@ export default function Brain() {
                                 speak(greeting);
                                 setChatHistory([{ role: 'ai', text: greeting }]);
                             }}
+                            className="gemini-ai-wrapper"
                             style={{
                                 position: 'relative',
-                                width: '44px',
-                                height: '44px',
-                                borderRadius: '9999px',
-                                background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)',
-                                border: '2px solid #fff',
-                                transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
-                                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(234, 179, 8, 0.3)',
+                                width: '56px',
+                                height: '56px',
+                                borderRadius: '50%',
+                                padding: '2px',
                                 cursor: 'pointer',
                                 outline: 'none',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center'
+                                justifyContent: 'center',
+                                background: '#111',
+                                border: 'none',
+                                overflow: 'hidden',
+                                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)'
                             }}
                         >
-                            <div style={{ position: 'relative' }}>
-                                <Command size={20} color="#000" />
+                            <div style={{ 
+                                position: 'relative', 
+                                zIndex: 2, 
+                                background: '#111', 
+                                width: '100%', 
+                                height: '100%', 
+                                borderRadius: '50%', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center' 
+                            }}>
+                                <Command size={24} color="#fff" />
                             </div>
-
-                            <motion.span 
-                                animate={{ scale: [1, 1.8, 1], opacity: [0.4, 0, 0.4] }}
-                                transition={{ repeat: Infinity, duration: 2.5 }}
-                                style={{
-                                    position: 'absolute',
-                                    inset: 0,
-                                    borderRadius: '9999px',
-                                    border: '1px solid rgba(234, 179, 8, 0.6)',
-                                    pointerEvents: 'none'
-                                }}
-                            />
                         </motion.button>
                     </motion.div>
                 )}
