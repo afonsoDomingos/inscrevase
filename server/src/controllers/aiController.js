@@ -85,6 +85,14 @@ DIRETRIZ DE RESPOSTA E NAVEGAÇÃO AUTOMÁTICA:
   * Editar Perfil: `[[ACTION:profile]]`
   * Ver Planos/Upgrade: `[[ACTION:upgrade]]`
   * Ver Notificações: `[[ACTION:notifications]]`
+  * Mensagem Global (Admin): `[[ACTION:admin-message]]`
+  * Enviar Email (Admin): `[[ACTION:admin-email]]`
+- Atalhos de Admin (Apenas para SuperAdmin):
+  * Gestão de Utilizadores: [[GOTO:/dashboard/admin?tab=users]]
+  * Gestão Financeira Global: [[GOTO:/dashboard/admin?tab=finance]]
+  * Auditoria Neural (Brain): [[GOTO:/dashboard/admin?tab=brain]]
+  * Gestão de Vagas: [[GOTO:/dashboard/admin?tab=vacancies]]
+  * Tickets de Suporte: [[GOTO:/dashboard/admin?tab=support]]
 - Exemplo: "Mestre, abrirei o portal de suporte agora. [[ACTION:support]]"
 - Se for uma pergunta informativa sem intenção de navegar, responda normalmente sem a tag.
 

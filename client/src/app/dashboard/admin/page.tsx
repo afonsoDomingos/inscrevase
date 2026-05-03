@@ -187,6 +187,29 @@ function AdminDashboardContent() {
         activity: false,
         superAdmin: true
     });
+
+    // Listeners para o BRAIN (Navegação Interna e Ações de Admin)
+    useEffect(() => {
+        const handleOpenSupport = () => setIsSupportOpen(true);
+        const handleOpenProfile = () => setIsProfileOpen(true);
+        const handleOpenMessage = () => setIsMessageModalOpen(true);
+        const handleOpenEmail = () => setIsEmailModalOpen(true);
+        const handleOpenNotifications = () => setIsNotificationsOpen(true);
+
+        window.addEventListener('brain-action-support', handleOpenSupport);
+        window.addEventListener('brain-action-profile', handleOpenProfile);
+        window.addEventListener('brain-action-admin-message', handleOpenMessage);
+        window.addEventListener('brain-action-admin-email', handleOpenEmail);
+        window.addEventListener('brain-action-notifications', handleOpenNotifications);
+
+        return () => {
+            window.removeEventListener('brain-action-support', handleOpenSupport);
+            window.removeEventListener('brain-action-profile', handleOpenProfile);
+            window.removeEventListener('brain-action-admin-message', handleOpenMessage);
+            window.removeEventListener('brain-action-admin-email', handleOpenEmail);
+            window.removeEventListener('brain-action-notifications', handleOpenNotifications);
+        };
+    }, []);
     const [showValues, setShowValues] = useState(true);
     const [isMigrating, setIsMigrating] = useState(false);
     const [referralRanking, setReferralRanking] = useState<ReferralRanking[]>([]);
