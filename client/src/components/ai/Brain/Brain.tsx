@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, Terminal, X, Command, Power, Square } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
-import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import CerberusVisual from './CerberusVisual';
 import { useSpeechRecognition } from './useSpeechRecognition';
@@ -73,6 +72,17 @@ export default function Brain() {
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
     const [textInput, setTextInput] = useState("");
     const [user, setUser] = useState<UserData | null>(null);
+    const [systemAlert, setSystemAlert] = useState<{ message: string, type: 'info' | 'error' | 'success' } | null>(null);
+
+    const triggerAlert = useCallback((message: string, type: 'info' | 'error' | 'success' = 'info') => {
+        setSystemAlert({ message, type });
+        if (type === 'error') setIsAlert(true);
+        
+        setTimeout(() => {
+            setSystemAlert(null);
+            if (type === 'error') setIsAlert(false);
+        }, 4000);
+    }, []);
 
     useEffect(() => {
         const currentUser = authService.getCurrentUser();
@@ -170,7 +180,7 @@ export default function Brain() {
             setIsSpeaking(false);
             setIsThinking(false);
             speak("Entendido. Silenciando.");
-            toast.info("A fala foi interrompida.");
+            triggerAlert("A fala foi interrompida.");
             return;
         }
 
@@ -179,7 +189,7 @@ export default function Brain() {
             const lastAiMessage = [...chatHistory].reverse().find(m => m.role === 'ai');
             if (lastAiMessage) {
                 speak(lastAiMessage.text);
-                toast.info("Lendo a resposta completa...");
+                triggerAlert("Lendo a resposta completa...");
             } else {
                 speak("Ainda não temos uma resposta para eu ler, Mestre.");
             }
@@ -227,7 +237,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
             setTimeout(() => {
                 setIsVisible(false);
                 setIsHibernated(true);
-                toast.info("BRAIN entrou em hibernação.");
+                triggerAlert("BRAIN entrou em hibernação.");
             }, 2000);
             setIsThinking(false);
             return;
@@ -256,10 +266,10 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
             if (foundEntry) {
                 speak(foundEntry.response);
                 router.push(foundEntry.path);
-                toast.success(foundEntry.response);
+                triggerAlert(foundEntry.response, 'success');
             } else if (lowerTranscript.includes('evento') || lowerTranscript.includes('criar')) {
                 speak("Iniciando interface de criação de evento. O que deseja criar?");
-                toast.info("Abrindo interface de criação...");
+                triggerAlert("Abrindo interface de criação...");
                 window.dispatchEvent(new Event('open-create-event-modal'));
             } else {
                 // Construção do contexto visual (Página atual e texto principal)
@@ -278,7 +288,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                 // Inteligência Neural: Leitura completa da resposta sem interrupções
                 speak(reply);
                 
-                toast.info("BRAIN processou sua consulta.");
+                triggerAlert("BRAIN processou sua consulta.");
             }
         } catch (error) {
             console.error("Brain Error:", error);
@@ -289,7 +299,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
             ];
             const randomError = errorMessages[Math.floor(Math.random() * errorMessages.length)];
             speak(randomError);
-            toast.error(error instanceof Error ? error.message : "Erro na matriz neural do Cérbero.");
+            triggerAlert(error instanceof Error ? error.message : "Erro na matriz neural do Cérbero.", 'error');
         } finally {
             setIsThinking(false);
         }
@@ -800,6 +810,74 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                             </div>
                                         )}
                                         <div ref={messagesEndRef} />
+
+                                        {/* Overlay de Alertas de Sistema Estilizados */}
+                                        <AnimatePresence>
+                                            {systemAlert && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                    exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '35%',
+                                                        left: '50%',
+                                                        x: '-50%',
+                                                        y: '-50%',
+                                                        zIndex: 100,
+                                                        background: systemAlert.type === 'error' ? 'rgba(220, 38, 38, 0.25)' : 'rgba(234, 179, 8, 0.15)',
+                                                        backdropFilter: 'blur(25px)',
+                                                        border: `1px solid ${systemAlert.type === 'error' ? '#ef4444' : '#eab308'}`,
+                                                        padding: '25px 35px',
+                                                        borderRadius: '20px',
+                                                        boxShadow: `0 20px 50px rgba(0,0,0,0.6), 0 0 30px ${systemAlert.type === 'error' ? 'rgba(239, 68, 68, 0.4)' : 'rgba(234, 179, 8, 0.3)'}`,
+                                                        textAlign: 'center',
+                                                        width: '85%',
+                                                        maxWidth: '400px',
+                                                        pointerEvents: 'none',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        gap: '12px',
+                                                        alignItems: 'center'
+                                                    }}
+                                                >
+                                                    <motion.div 
+                                                        animate={{ scale: [1, 1.2, 1] }} 
+                                                        transition={{ repeat: Infinity, duration: 1.5 }}
+                                                        style={{ 
+                                                            width: '40px', 
+                                                            height: '40px', 
+                                                            borderRadius: '50%', 
+                                                            background: systemAlert.type === 'error' ? '#ef4444' : '#eab308',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            color: '#000',
+                                                            fontSize: '20px',
+                                                            fontWeight: 'bold',
+                                                            boxShadow: `0 0 15px ${systemAlert.type === 'error' ? '#ef4444' : '#eab308'}`
+                                                        }}
+                                                    >
+                                                        {systemAlert.type === 'error' ? '!' : systemAlert.type === 'success' ? '✓' : 'i'}
+                                                    </motion.div>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                        <h4 style={{ margin: 0, color: '#fff', fontSize: '13px', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 900 }}>
+                                                            {systemAlert.type === 'error' ? 'ERRO DE SISTEMA' : 'NOTIFICAÇÃO'}
+                                                        </h4>
+                                                        <p style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '12px', lineHeight: '1.5', fontWeight: 500 }}>
+                                                            {systemAlert.message}
+                                                        </p>
+                                                    </div>
+                                                    
+                                                    {/* Scanning line effect for alert */}
+                                                    <motion.div 
+                                                        animate={{ top: ['0%', '100%', '0%'] }} 
+                                                        transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
+                                                        style={{ position: 'absolute', left: 0, right: 0, height: '2px', background: 'rgba(255,255,255,0.1)', zIndex: 1 }} 
+                                                    />
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
 
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '95%', margin: '0 auto', flexShrink: 0 }}>
