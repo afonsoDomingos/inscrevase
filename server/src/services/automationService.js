@@ -596,6 +596,7 @@ const initAutomations = () => {
         } catch (err) {
             console.error('❌ [Automation] Subscription Lifecycle error:', err);
         }
+    });
     
     // 11. End of Month: Monthly Financial Health Report
     // Cron: 0 8 1 * * (Every 1st day of month at 8 AM)

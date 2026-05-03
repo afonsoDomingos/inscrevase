@@ -303,7 +303,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
         } finally {
             setIsThinking(false);
         }
-    }, [router, speak, pathname, chatHistory]);
+    }, [router, speak, pathname, chatHistory, triggerAlert]);
 
     const { isListening, currentTranscript, startListening, hasSupport } = useSpeechRecognition(handleCommand);
 
@@ -761,7 +761,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                         <button onClick={() => { playSystemSound('close'); speak("Desativando sistemas neurais."); setTimeout(() => setIsHibernated(true), 1500); }} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Hibernate">
                                             <Power size={18} />
                                         </button>
-                                        <button onClick={() => { setChatHistory([]); speak("Memória de chat limpa. Estou pronto para uma nova orquestração, Mestre."); toast.info("Histórico de chat reiniciado."); }} style={{ color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Limpar Chat">
+                                        <button onClick={() => { setChatHistory([]); speak("Memória de chat limpa. Estou pronto para uma nova orquestração, Mestre."); triggerAlert("Histórico de chat reiniciado.", "success"); }} style={{ color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Limpar Chat">
                                             <Square size={16} />
                                         </button>
                                         <button onClick={() => { playSystemSound('close'); speak("Desligando o Sistema."); setIsVisible(false); }} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}>
