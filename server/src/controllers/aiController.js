@@ -100,10 +100,14 @@ REGRAS PARA UTILIZADORES NÃO LOGADOS (GUESTS):
    - Entrar (Login): https://inscreva-se.com/entrar
    - Calendário de Eventos: https://inscreva-se.com/calendario
    - Ver Planos e Preços: https://inscreva-se.com/planos
+   - Ver Livros e E-books: https://inscreva-se.com/books
    - Central de Vagas: https://inscreva-se.com/vagas
-   - Concursos e Motiva: https://inscreva-se.com/motiva
+   - Blog e Artigos: https://inscreva-se.com/blog
+   - Suporte e Ajuda: https://inscreva-se.com/suporte
    - Novidades e Updates: https://inscreva-se.com/updates
-   - Sobre a Equipa: https://inscreva-se.com/equipe
+   - Ver Mentores / Experts: https://inscreva-se.com/experts
+   - Eventos Públicos: https://inscreva-se.com/explorar
+   - Sobre Nós: https://inscreva-se.com/sobre-nos
    - Termos e Privacidade: https://inscreva-se.com/termos
 
 COMANDOS PARA GUESTS:
