@@ -176,13 +176,27 @@ function MentorDashboardContent() {
         }));
     };
 
-    // Listener para o BRAIN
+    // Listeners para o BRAIN (Navegação Interna e Ações)
     useEffect(() => {
-        const handleOpenCreateModal = () => {
-            setIsEventModalOpen(true);
-        };
+        const handleOpenCreateModal = () => setIsEventModalOpen(true);
+        const handleOpenSupport = () => setIsSupportOpen(true);
+        const handleOpenProfile = () => setIsProfileModalOpen(true);
+        const handleOpenUpgrade = () => setIsUpgradeModalOpen(true);
+        const handleOpenNotifications = () => setIsNotificationsOpen(true);
+
         window.addEventListener('open-create-event-modal', handleOpenCreateModal);
-        return () => window.removeEventListener('open-create-event-modal', handleOpenCreateModal);
+        window.addEventListener('brain-action-support', handleOpenSupport);
+        window.addEventListener('brain-action-profile', handleOpenProfile);
+        window.addEventListener('brain-action-upgrade', handleOpenUpgrade);
+        window.addEventListener('brain-action-notifications', handleOpenNotifications);
+
+        return () => {
+            window.removeEventListener('open-create-event-modal', handleOpenCreateModal);
+            window.removeEventListener('brain-action-support', handleOpenSupport);
+            window.removeEventListener('brain-action-profile', handleOpenProfile);
+            window.removeEventListener('brain-action-upgrade', handleOpenUpgrade);
+            window.removeEventListener('brain-action-notifications', handleOpenNotifications);
+        };
     }, []);
 
     const getTrialDaysRemaining = () => {

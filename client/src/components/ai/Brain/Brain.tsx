@@ -313,11 +313,24 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                     const navUrl = gotoMatch[1].trim();
                     reply = reply.replace(/\[\[GOTO:.*?\]\]/g, '').trim();
                     
-                    // Navigate after a short delay to allow speech to start
+                    // Navigate after a short delay
                     setTimeout(() => {
                         router.push(navUrl);
                         triggerAlert(`A orquestrar navegação para: ${navUrl}`, 'info');
                     }, 1500);
+                }
+
+                // Action Trigger Logic
+                const actionMatch = reply.match(/\[\[ACTION:(.*?)\]\]/);
+                if (actionMatch) {
+                    const actionName = actionMatch[1].trim();
+                    reply = reply.replace(/\[\[ACTION:.*?\]\]/g, '').trim();
+                    
+                    // Dispatch the specific action event
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event(`brain-action-${actionName}`));
+                        triggerAlert(`A executar ação: ${actionName}`, 'success');
+                    }, 1000);
                 }
 
                 setChatHistory(prev => [...prev, { role: 'user', text: transcript }, { role: 'ai', text: reply }]);
