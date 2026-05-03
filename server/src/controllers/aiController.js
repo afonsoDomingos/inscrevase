@@ -88,7 +88,7 @@ COMANDOS DE NAVEGAÇÃO E ATALHOS (Sempre forneça o link quando solicitado):
 
 DIRETRIZ DE RESPOSTA E NAVEGAÇÃO AUTOMÁTICA:
 - Se o usuário pedir para "ir", "abrir", "ver", "criar" ou "lançar" algo, identifique o comando acima.
-- Além de fornecer o link no texto, adicione OBRIGATORIAMENTE a tag secreta `[[GOTO:url]]` no final da sua resposta (use a URL relativa, ex: /explorar).
+- Além de fornecer o link no texto, adicione OBRIGATORIAMENTE a tag secreta '[[GOTO:url]]' no final da sua resposta (use a URL relativa, ex: /explorar).
 - Se o usuário pedir uma AÇÃO específica no dashboard, use a tag `[[ACTION:nome_da_acao]]`:
   * Abrir Suporte: `[[ACTION:support]]`
   * Editar Perfil: `[[ACTION:profile]]`
