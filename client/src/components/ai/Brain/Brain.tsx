@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, Terminal, X, Command, Power, Square } from 'lucide-react';
+import { Mic, Terminal, X, Command, Power, Square, Copy, Check } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import CerberusVisual from './CerberusVisual';
@@ -95,7 +95,7 @@ export default function Brain() {
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
     const [textInput, setTextInput] = useState("");
     const [user, setUser] = useState<UserData | null>(null);
-    const [systemAlert, setSystemAlert] = useState<{ message: string, type: 'info' | 'error' | 'success' } | null>(null);
+    const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
     const triggerAlert = useCallback((message: string, type: 'info' | 'error' | 'success' = 'info') => {
         if (type === 'error') setIsAlert(true);
@@ -852,10 +852,39 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                 const sysMsg = parts.slice(3).join('__');
                                                 const color = sysType === 'error' ? '#f87171' : sysType === 'success' ? '#4ade80' : '#94a3b8';
                                                 const icon = sysType === 'error' ? '⚠' : sysType === 'success' ? '✓' : 'ℹ';
+                                                
+                                                const handleCopyError = () => {
+                                                    navigator.clipboard.writeText(sysMsg);
+                                                    setCopiedIndex(idx);
+                                                    setTimeout(() => setCopiedIndex(null), 2000);
+                                                };
+
                                                 return (
-                                                    <div key={idx} style={{ alignSelf: 'center', display: 'flex', alignItems: 'center', gap: '8px', color, fontSize: '0.78rem', fontFamily: 'monospace', opacity: 0.75, padding: '4px 12px', borderRadius: '6px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${color}22`, width: '100%', justifyContent: 'center' }}>
-                                                        <span>{icon}</span>
-                                                        <span>{sysMsg}</span>
+                                                    <div key={idx} style={{ alignSelf: 'center', display: 'flex', alignItems: 'center', gap: '8px', color, fontSize: '0.78rem', fontFamily: 'monospace', opacity: 0.75, padding: '4px 12px', borderRadius: '6px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${color}22`, width: '100%', justifyContent: 'space-between' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, overflow: 'hidden' }}>
+                                                            <span style={{ flexShrink: 0 }}>{icon}</span>
+                                                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sysMsg}</span>
+                                                        </div>
+                                                        {sysType === 'error' && (
+                                                            <button 
+                                                                onClick={handleCopyError}
+                                                                style={{ 
+                                                                    background: 'rgba(255,255,255,0.05)', 
+                                                                    border: 'none', 
+                                                                    borderRadius: '4px', 
+                                                                    padding: '4px', 
+                                                                    cursor: 'pointer',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    color: color,
+                                                                    transition: 'all 0.2s'
+                                                                }}
+                                                                title="Copiar erro"
+                                                            >
+                                                                {copiedIndex === idx ? <Check size={12} /> : <Copy size={12} />}
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 );
                                             }
