@@ -41,8 +41,11 @@ export default function Brain() {
         return "Boa noite";
     };
 
-    const speak = useCallback((text: string) => {
-        if (!window.speechSynthesis) return;
+    const speak = useCallback((text: string, onEndCallback?: () => void) => {
+        if (!window.speechSynthesis) {
+            if (onEndCallback) onEndCallback();
+            return;
+        }
         
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
@@ -57,10 +60,12 @@ export default function Brain() {
         utterance.onend = () => {
             console.log("%c🔇 [VOICE] Fala concluída.", "color: #94a3b8;");
             setIsSpeaking(false);
+            if (onEndCallback) onEndCallback();
         };
         utterance.onerror = (e) => {
             console.error("%c❌ [VOICE] Erro na síntese de voz:", "color: #ef4444;", e);
             setIsSpeaking(false);
+            if (onEndCallback) onEndCallback();
         };
 
         // Algoritmo de voz aprimorado para focar em vozes Neurais / Online
@@ -359,10 +364,9 @@ export default function Brain() {
                 if (!isVisible) {
                     setIsVisible(true);
                     playSystemSound('intro');
-                    speak("Sim, Mestre. Estou às suas ordens.");
-                    setTimeout(() => {
-                        startListening();
-                    }, 1000);
+                    speak("Sim, Mestre. Estou às suas ordens.", () => {
+                        setTimeout(() => startListening(), 300);
+                    });
                 }
             }
         };
