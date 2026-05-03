@@ -144,6 +144,8 @@ export default function Brain() {
         const cleanText = text
             .replace(/\*\*/g, '')      // Remove negritos
             .replace(/\*/g, '')       // Remove itálicos
+            .replace(/\[\[GOTO:.*?\]\]/g, '') // Remove tags de navegação
+            .replace(/\[\[ACTION:.*?\]\]/g, '') // Remove tags de ação
             .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Mantém apenas o texto do link, remove URL
             .replace(/#/g, '');       // Remove hashtags de títulos
 
