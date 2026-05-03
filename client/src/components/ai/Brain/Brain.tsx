@@ -11,6 +11,40 @@ import { useSpeechRecognition } from './useSpeechRecognition';
 import { aiService } from '@/lib/aiService';
 import { useSocket } from '@/context/SocketContext';
 
+// Componente para Efeito de Digitação
+const TypewriterText = ({ text, speed = 8 }: { text: string, speed?: number }) => {
+    const [displayedText, setDisplayedText] = useState("");
+    const [isComplete, setIsComplete] = useState(false);
+
+    useEffect(() => {
+        let i = 0;
+        const timer = setInterval(() => {
+            setDisplayedText(text.substring(0, i));
+            i++;
+            if (i > text.length) {
+                clearInterval(timer);
+                setIsComplete(true);
+            }
+        }, speed);
+        return () => clearInterval(timer);
+    }, [text, speed]);
+
+    return (
+        <ReactMarkdown 
+            components={{ 
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                p: ({node, ...props}) => <p style={{ margin: 0, paddingBottom: '6px', color: '#e2e8f0' }} {...props} />, 
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                strong: ({node, ...props}) => <strong style={{ color: '#fff', fontWeight: 800 }} {...props} />, 
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                a: ({node, ...props}) => <a style={{ color: '#38bdf8', textDecoration: 'underline' }} {...props} /> 
+            }}
+        >
+            {isComplete ? text : displayedText}
+        </ReactMarkdown>
+    );
+};
+
 export default function Brain() {
     const router = useRouter();
     const pathname = usePathname();
@@ -678,18 +712,7 @@ export default function Brain() {
                                             <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(12px)', border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`, padding: '12px 18px', borderRadius: '12px', maxWidth: '95%', wordBreak: 'break-word', boxShadow: '0 4px 15px rgba(0,0,0,0.15)' }}>
                                                 {msg.role === 'ai' ? (
                                                     <div style={{ fontSize: '0.95rem', color: '#f8fafc', lineHeight: '1.6' }}>
-                                                        <ReactMarkdown 
-                                                            components={{ 
-                                                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                                                                p: ({node, ...props}) => <p style={{ margin: 0, paddingBottom: '6px', color: '#e2e8f0' }} {...props} />, 
-                                                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                                                                strong: ({node, ...props}) => <strong style={{ color: '#fff', fontWeight: 800 }} {...props} />, 
-                                                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                                                                a: ({node, ...props}) => <a style={{ color: '#38bdf8', textDecoration: 'underline' }} {...props} /> 
-                                                            }}
-                                                        >
-                                                            {msg.text}
-                                                        </ReactMarkdown>
+                                                        <TypewriterText text={msg.text} />
                                                     </div>
                                                 ) : <span style={{ color: '#fef08a' }}>{msg.text}</span>}
                                             </div>
