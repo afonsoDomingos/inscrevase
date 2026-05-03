@@ -243,9 +243,9 @@ exports.handleBrainCommand = async (req, res) => {
 
         const modelsToTry = [
             { name: "gemini-2.0-flash", provider: "google" },
-            { name: "llama-3.1-70b-versatile", provider: "groq" },
+            { name: "llama-3.3-70b-versatile", provider: "groq" },
             { name: "gemini-1.5-flash", provider: "google" },
-            { name: "llama3-70b-8192", provider: "groq" },
+            { name: "llama-3.1-8b-instant", provider: "groq" },
             { name: "gemini-2.5-flash", provider: "google" }
         ];
 
@@ -319,7 +319,7 @@ exports.handleBrainCommand = async (req, res) => {
                 pageContext
             }).catch(err => console.error("Erro ao salvar log de falha do Brain:", err));
 
-            throw new Error(`Nenhum modelo Gemini suportado. Último erro: ${lastError}`);
+            throw new Error(`Nenhum motor de IA disponível. Último erro: ${lastError}`);
         }
 
         res.json({ reply: text });

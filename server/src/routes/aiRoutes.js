@@ -64,7 +64,7 @@ router.post('/chat', authMiddleware, async (req, res) => {
         // Try these models in order based on what's available in the key
         const modelsToTry = [
             { name: "gemini-2.0-flash", provider: "google" },
-            { name: "llama-3.1-70b-versatile", provider: "groq" },
+            { name: "llama-3.3-70b-versatile", provider: "groq" },
             { name: "gemini-1.5-flash", provider: "google" }
         ];
 
