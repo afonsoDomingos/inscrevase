@@ -278,8 +278,31 @@ export default function BrainAudit() {
                                                 </div>
                                                 <div style={{ display: 'flex', gap: '20px', padding: '10px', background: '#f8fafc', borderRadius: '8px' }}>
                                                     <div style={{ flex: 1 }}>
-                                                        <div style={{ fontSize: '0.6rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>Modelo Utilizado</div>
-                                                        <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569' }}>{log.modelUsed || 'Gemini-1.5-Flash'}</div>
+                                                        <div style={{ fontSize: '0.6rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>Motor de Inteligência</div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                                                            {log.modelUsed && log.modelUsed.includes(':') ? (
+                                                                <>
+                                                                    <span style={{ 
+                                                                        fontSize: '0.6rem', 
+                                                                        fontWeight: 900, 
+                                                                        background: log.modelUsed.split(':')[0] === 'groq' ? '#f59e0b' : '#3b82f6', 
+                                                                        color: '#fff',
+                                                                        padding: '1px 5px',
+                                                                        borderRadius: '3px',
+                                                                        textTransform: 'uppercase'
+                                                                    }}>
+                                                                        {log.modelUsed.split(':')[0]}
+                                                                    </span>
+                                                                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569' }}>
+                                                                        {log.modelUsed.split(':')[1]}
+                                                                    </span>
+                                                                </>
+                                                            ) : (
+                                                                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569' }}>
+                                                                    {log.modelUsed || 'Gemini-1.5-Flash'}
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                     <div style={{ flex: 1 }}>
                                                         <div style={{ fontSize: '0.6rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>Contexto de Rota</div>
