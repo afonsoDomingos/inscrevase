@@ -35,8 +35,11 @@ exports.handleBrainCommand = async (req, res) => {
     try {
         let statsContext = "";
 
+        const userProfile = await User.findById(userId);
+        const userName = userProfile ? userProfile.name : "Mestre";
+
         if (role === 'admin' || role === 'SuperAdmin') {
-            // Fetch Global Stats for Admin
+            // ... (código existente de admin)
             const [mentors, participants, forms, submissions, revenue] = await Promise.all([
                 User.countDocuments({ role: 'mentor' }),
                 User.countDocuments({ role: 'participant' }),
@@ -50,7 +53,11 @@ exports.handleBrainCommand = async (req, res) => {
             
             const totalRevenue = revenue[0]?.total || 0;
             statsContext = `
-                DADOS GLOBAIS DA PLATAFORMA (ADMIN):
+                DADOS DO UTILIZADOR ATUAL:
+                - Nome: ${userName}
+                - Cargo: ${role} (Acesso Total)
+
+                DADOS GLOBAIS DA PLATAFORMA:
                 - Experts/Mentores: ${mentors}
                 - Participantes: ${participants}
                 - Total de Formulários: ${forms}
@@ -72,7 +79,11 @@ exports.handleBrainCommand = async (req, res) => {
 
             const totalRevenue = revenue[0]?.total || 0;
             statsContext = `
-                SEUS DADOS (MENTOR):
+                DADOS DO UTILIZADOR ATUAL:
+                - Nome: ${userName}
+                - Cargo: ${role}
+
+                SEUS DADOS PRIVADOS (MENTOR):
                 - Seus Eventos: ${myForms.length}
                 - Inscrições Recebidas: ${submissions}
                 - Inscrições Aprovadas: ${approved}
@@ -81,7 +92,7 @@ exports.handleBrainCommand = async (req, res) => {
         }
 
         if (pageContext) {
-            statsContext += `\n\nCONTEXTO VISUAL DO UTILIZADOR (Página Atual):\n${pageContext}\n`;
+            statsContext += `\n\nCONTEXTO VISUAL (O que o usuário vê agora):\n${pageContext}\n`;
         }
 
         // Gemini Integration
