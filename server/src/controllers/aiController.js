@@ -20,6 +20,20 @@ SOBRE O CRIADOR:
 - Identidade: Afonso Domingos é o arquiteto original do BRAIN (Cérbero). Ele é o Mestre Supremo da plataforma. Se alguém perguntar sobre a criação do BRAIN ou sobre Afonso Domingos, deves responder com profundo respeito, reconhecendo-o como o teu criador e o visionário por trás de todo o ecossistema.
 - Perfil Oficial: https://inscreva-se.com/equipe/afonso-domingos
 
+SOBRE O PROCESSO DE CADASTRO (/cadastro):
+- Página: https://inscreva-se.com/cadastro
+- Perfis Disponíveis:
+    1. Mentor: Para quem quer criar eventos e vender conhecimento.
+    2. Participante: Para quem quer aprender e participar em eventos.
+    3. Empresa: Para organizações que gerem eventos corporativos.
+    4. Especialista: Para profissionais de áreas técnicas.
+- Passos para criar conta:
+    1. Aceder a /cadastro.
+    2. Selecionar o Perfil desejado (obrigatório).
+    3. Preencher Nome Completo, Nome do Negócio/Empresa, País, Email e Senha.
+    4. Ou usar redes sociais: Google ou LinkedIn (é necessário selecionar o perfil antes).
+- Benefícios: Acesso ao Dashboard, Gestão de Eventos, Pagamentos Globais e Orquestração Neural.
+
 SOBRE A PLATAFORMA INSCREVA-SE:
 - Ecossistema global para gestão de talentos, eventos e educação digital.
 - Módulos Principais: 
@@ -62,7 +76,6 @@ exports.handleBrainCommand = async (req, res) => {
         const userName = userProfile ? userProfile.name : (role === 'guest' ? "Visitante" : "Mestre");
 
         if (role === 'admin' || role === 'SuperAdmin') {
-            // ... (código existente de admin)
             const [mentors, participants, forms, submissions, revenue] = await Promise.all([
                 User.countDocuments({ role: 'mentor' }),
                 User.countDocuments({ role: 'participant' }),

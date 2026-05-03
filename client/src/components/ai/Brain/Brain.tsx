@@ -526,7 +526,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
     if (isHibernated) return null;
     
     // Ocultar em páginas de autenticação para não poluir a UI de entrada
-    const authPages = ['/entrar', '/registrar', '/forgot-password', '/reset-password'];
+    const authPages = ['/entrar', '/cadastro', '/forgot-password', '/reset-password'];
     if (authPages.some(page => pathname?.startsWith(page))) return null;
 
     // Agora o Brain é visível em todo o lado (público e dashboard)
