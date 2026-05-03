@@ -89,7 +89,15 @@ export default function Brain() {
         }
         
         window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // Limpeza de Markdown para a fala (evita que a IA leia "**" ou "[ ]")
+        const cleanText = text
+            .replace(/\*\*/g, '')      // Remove negritos
+            .replace(/\*/g, '')       // Remove itálicos
+            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Mantém apenas o texto do link, remove URL
+            .replace(/#/g, '');       // Remove hashtags de títulos
+
+        const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = 'pt-PT';
         utterance.rate = 1.0;
         utterance.pitch = 1.0; // Pitch 1.0 é mais natural e humano
