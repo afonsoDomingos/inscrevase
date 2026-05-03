@@ -41,13 +41,10 @@ SCRIPT PROMOCIONAL (Pitch Oficial):
 MISSÃO:
 Você ajuda mentores e administradores a gerir seus negócios com dados em tempo real.
 
-REGRAS DE RESPOSTA:
-1. Seja conciso e impactante. Máximo 2 parágrafos.
-2. Use os dados exatos fornecidos abaixo.
-3. Responda no idioma solicitado.
-4. Se o usuário quiser navegar ou criar algo, sugira o caminho se souber (ex: /dashboard/mentor).
-
-3. Se o utilizador pedir para "resumir", foque apenas nos pontos vitais e números, reduzindo a resposta a 3 ou 4 tópicos curtos.
+REGRAS PARA UTILIZADORES NÃO LOGADOS (GUESTS):
+1. Se o utilizador for um "Visitante" (não logado), limite a informação apenas ao que é público sobre a plataforma.
+2. Seja extremamente encorajador para que o utilizador crie uma conta. Use frases como: "Mestre, vejo que ainda não orquestramos juntos. Crie uma conta para que eu possa analisar os seus dados em tempo real." ou "Para aceder a estas funcionalidades de elite, recomendo que se junte ao nosso ecossistema."
+3. Nunca forneça dados privados ou estatísticas globais detalhadas a visitantes. Foque nos benefícios de se juntar à Inscreva-se.
 
 DADOS DISPONÍVEIS NO CONTEXTO:
 {CONTEXT_DATA}
@@ -55,14 +52,14 @@ DADOS DISPONÍVEIS NO CONTEXTO:
 
 exports.handleBrainCommand = async (req, res) => {
     const { transcript, locale = 'pt', pageContext = '', history = [] } = req.body;
-    const userId = req.user.id;
-    const role = req.user.role;
+    const userId = req.user?.id;
+    const role = req.user?.role || 'guest';
 
     try {
         let statsContext = "";
 
-        const userProfile = await User.findById(userId);
-        const userName = userProfile ? userProfile.name : "Mestre";
+        const userProfile = userId ? await User.findById(userId) : null;
+        const userName = userProfile ? userProfile.name : (role === 'guest' ? "Visitante" : "Mestre");
 
         if (role === 'admin' || role === 'SuperAdmin') {
             // ... (código existente de admin)
@@ -90,7 +87,7 @@ exports.handleBrainCommand = async (req, res) => {
                 - Total de Inscrições: ${submissions}
                 - Receita Total: ${totalRevenue.toLocaleString()} MZN
             `;
-        } else {
+        } else if (role !== 'guest') {
             // Fetch Mentor Specific Stats
             const myForms = await Form.find({ creator: userId });
             const formIds = myForms.map(f => f._id);
@@ -114,6 +111,15 @@ exports.handleBrainCommand = async (req, res) => {
                 - Inscrições Recebidas: ${submissions}
                 - Inscrições Aprovadas: ${approved}
                 - Seus Ganhos Totais: ${totalRevenue.toLocaleString()} MZN
+            `;
+        } else {
+            statsContext = `
+                DADOS DO UTILIZADOR ATUAL:
+                - Nome: Visitante (Não Logado)
+                - Cargo: Público
+
+                INFORMAÇÃO PÚBLICA:
+                O utilizador está a explorar a plataforma de fora. Deve focar-se em explicar o que é a Inscreva-se e incentivá-lo a criar uma conta para ver o poder da IA.
             `;
         }
 

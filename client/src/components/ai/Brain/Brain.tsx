@@ -10,6 +10,7 @@ import CerberusVisual from './CerberusVisual';
 import { useSpeechRecognition } from './useSpeechRecognition';
 import { aiService } from '@/lib/aiService';
 import { useSocket } from '@/context/SocketContext';
+import { authService } from '@/lib/authService';
 
 // Componente para Efeito de Digitação
 const TypewriterText = ({ text, speed = 8 }: { text: string, speed?: number }) => {
@@ -61,6 +62,12 @@ export default function Brain() {
     const [isMobile, setIsMobile] = useState(false);
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
     const [textInput, setTextInput] = useState("");
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        const currentUser = authService.getCurrentUser();
+        setUser(currentUser);
+    }, [pathname, isVisible]);
 
     useEffect(() => {
         if (messagesEndRef.current) {
@@ -459,7 +466,10 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                 if (!isVisible) {
                     setIsVisible(true);
                     playSystemSound('intro');
-                    speak("Sim, Mestre. Estou às suas ordens.", () => {
+                    const greeting = user 
+                        ? `Sim, Mestre. Estou às suas ordens.` 
+                        : "Bem-vindo à Inscreva-se. Sou o Cérbero, a sua inteligência neural. Como posso ajudar hoje?";
+                    speak(greeting, () => {
                         setTimeout(() => startListening(), 300);
                     });
                 }
@@ -514,7 +524,12 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
     }, [hasSupport]);
 
     if (isHibernated) return null;
-    if (!pathname?.startsWith('/dashboard')) return null;
+    
+    // Ocultar em páginas de autenticação para não poluir a UI de entrada
+    const authPages = ['/entrar', '/registrar', '/forgot-password', '/reset-password'];
+    if (authPages.some(page => pathname?.startsWith(page))) return null;
+
+    // Agora o Brain é visível em todo o lado (público e dashboard)
 
     return (
         <>

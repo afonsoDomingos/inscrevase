@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Volume2, ShieldCheck, Zap, Globe, ArrowRight } from 'lucide-react';
 import Image from 'next/image';

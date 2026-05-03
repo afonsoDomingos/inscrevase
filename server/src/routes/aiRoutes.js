@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
+const { authMiddleware, adminMiddleware, optionalAuthMiddleware } = require('../middleware/authMiddleware');
 
 // Aura's Identity and Rules
 const AURA_SYSTEM_PROMPT = `
@@ -104,7 +104,7 @@ router.post('/chat', authMiddleware, async (req, res) => {
 
 const aiController = require('../controllers/aiController');
 
-router.post('/brain/command', authMiddleware, aiController.handleBrainCommand);
+router.post('/brain/command', optionalAuthMiddleware, aiController.handleBrainCommand);
 router.get('/brain/stats', authMiddleware, adminMiddleware, aiController.getBrainStats);
 
 module.exports = router;
