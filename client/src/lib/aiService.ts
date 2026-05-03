@@ -46,7 +46,7 @@ export const aiService = {
                     if (errorJson.details || errorJson.error) {
                         errorDetails = errorJson.details || errorJson.error;
                     }
-                } catch(e) {
+                } catch {
                     errorDetails = errorText || errorDetails;
                 }
                 throw new Error(errorDetails);
