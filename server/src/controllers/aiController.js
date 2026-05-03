@@ -99,6 +99,9 @@ exports.handleBrainCommand = async (req, res) => {
 
     } catch (error) {
         console.error("BRAIN Error:", error);
-        res.status(500).json({ reply: "Peço desculpas, Mestre. Meus circuitos neurais falharam ao processar os dados." });
+        res.status(500).json({ 
+            reply: "Peço desculpas, Mestre. Meus circuitos neurais falharam ao processar os dados.",
+            details: error.message || "Erro desconhecido no servidor"
+        });
     }
 };
