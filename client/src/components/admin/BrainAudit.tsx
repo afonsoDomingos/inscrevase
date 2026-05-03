@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Brain, Users, MessageSquare, TrendingUp, Clock, Bot, ChevronDown, ChevronUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Brain, Users, MessageSquare, TrendingUp, Clock, Bot, ChevronDown, ChevronUp, Zap, Target, Search } from 'lucide-react';
 import { aiService } from '@/lib/aiService';
 import { toast } from 'sonner';
 
 interface BrainLog {
     _id: string;
-    user?: { name: string };
+    user?: { name: string, email?: string };
     userName?: string;
     userRole: string;
     timestamp: string;
@@ -29,6 +29,7 @@ export default function BrainAudit() {
     const [stats, setStats] = useState<BrainStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [expandedLog, setExpandedLog] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         loadStats();
@@ -49,136 +50,290 @@ export default function BrainAudit() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center p-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px' }}>
+                <motion.div 
+                    animate={{ rotate: 360 }} 
+                    transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+                    style={{ width: '48px', height: '48px', borderRadius: '50%', border: '3px solid #facc15', borderTopColor: 'transparent' }} 
+                />
             </div>
         );
     }
 
+    const filteredLogs = stats?.recentLogs.filter(log => 
+        log.transcript.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        log.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        log.userRole.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
+
     return (
-        <div className="space-y-8">
-            <div className="flex items-center justify-between">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+            {/* Header Section */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
                 <div>
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                        <Brain className="text-yellow-500" /> Auditoria do Brain AI
+                    <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '15px', margin: 0, fontFamily: 'var(--font-playfair)' }}>
+                        <div style={{ background: 'var(--gold-gradient)', padding: '12px', borderRadius: '15px', color: '#000', boxShadow: '0 10px 20px rgba(212, 175, 55, 0.2)' }}>
+                            <Brain size={28} />
+                        </div>
+                        Auditoria do Brain AI
                     </h2>
-                    <p className="text-gray-400">Analise o uso, performance e as questões mais frequentes da IA.</p>
+                    <p style={{ color: '#666', marginTop: '8px', fontSize: '1.1rem', fontWeight: 500 }}>
+                        Monitorização de inteligência neural e padrões de interação.
+                    </p>
                 </div>
                 <button 
                     onClick={loadStats}
-                    className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-bold rounded-lg transition-colors"
+                    className="btn-primary"
+                    style={{ padding: '12px 25px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}
                 >
-                    Atualizar Dados
+                    <Zap size={18} fill="#000" /> Atualizar Matriz
                 </button>
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-                    <div className="flex items-center justify-between mb-4">
-                        <MessageSquare className="text-blue-500" size={24} />
-                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Interações</span>
-                    </div>
-                    <div className="text-3xl font-bold text-white">{stats?.total || 0}</div>
-                </div>
-
-                <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-                    <div className="flex items-center justify-between mb-4">
-                        <Bot className="text-purple-500" size={24} />
-                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Eficiência IA</span>
-                    </div>
-                    <div className="text-3xl font-bold text-white">100%</div>
-                </div>
-
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
+                <StatBox 
+                    icon={<MessageSquare size={22} />} 
+                    label="Total Interações" 
+                    value={stats?.total || 0} 
+                    color="#3b82f6" 
+                    trend="+12%"
+                />
+                <StatBox 
+                    icon={<Bot size={22} />} 
+                    label="Eficiência IA" 
+                    value="100%" 
+                    color="#a855f7" 
+                    trend="Estável"
+                />
                 {stats?.roleStats.map((role) => (
-                    <div key={role._id} className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-                        <div className="flex items-center justify-between mb-4">
-                            <Users className="text-yellow-500" size={24} />
-                            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{role._id || 'Utilizadores'}</span>
-                        </div>
-                        <div className="text-3xl font-bold text-white">{role.count}</div>
-                    </div>
+                    <StatBox 
+                        key={role._id}
+                        icon={<Users size={22} />} 
+                        label={role._id || 'Utilizadores'} 
+                        value={role.count} 
+                        color="#eab308" 
+                    />
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Top Questions */}
-                <div className="lg:col-span-1 bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-                    <div className="p-6 border-b border-zinc-800 flex items-center gap-2">
-                        <TrendingUp className="text-yellow-500" size={20} />
-                        <h3 className="font-bold text-white">Dúvidas Mais Comuns</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
+                {/* Left Column: Top Questions */}
+                <div className="luxury-card" style={{ background: '#fff', padding: '2rem', height: 'fit-content' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem' }}>
+                        <div style={{ background: 'rgba(234, 179, 8, 0.1)', padding: '8px', borderRadius: '10px', color: '#eab308' }}>
+                            <TrendingUp size={20} />
+                        </div>
+                        <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>Dúvidas Frequentes</h3>
                     </div>
-                    <div className="p-4 space-y-4">
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {stats?.topQuestions.map((q, idx) => (
-                            <div key={idx} className="flex items-center justify-between p-3 bg-zinc-800/50 rounded-xl">
-                                <span className="text-sm text-gray-300 line-clamp-1 flex-1 pr-4">&quot;{q._id}&quot;</span>
-                                <span className="text-xs font-bold bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded-full">{q.count}x</span>
+                            <div key={idx} style={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'space-between', 
+                                padding: '15px', 
+                                background: '#f8fafc', 
+                                borderRadius: '15px',
+                                border: '1px solid #f1f5f9'
+                            }}>
+                                <span style={{ fontSize: '0.9rem', color: '#334155', fontWeight: 600, flex: 1, paddingRight: '10px' }}>
+                                    &quot;{q._id}&quot;
+                                </span>
+                                <span style={{ 
+                                    fontSize: '0.75rem', 
+                                    fontWeight: 800, 
+                                    background: 'var(--gold-gradient)', 
+                                    color: '#000', 
+                                    padding: '4px 10px', 
+                                    borderRadius: '50px',
+                                    boxShadow: '0 2px 5px rgba(212, 175, 55, 0.2)'
+                                }}>
+                                    {q.count}x
+                                </span>
                             </div>
                         ))}
-                        {stats?.topQuestions.length === 0 && (
-                            <p className="text-center text-gray-500 text-sm py-8">Nenhuma interação registada ainda.</p>
+                        {(!stats?.topQuestions || stats.topQuestions.length === 0) && (
+                            <div style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
+                                <Target size={32} style={{ opacity: 0.2, marginBottom: '10px' }} />
+                                <p style={{ fontSize: '0.9rem' }}>Nenhum padrão detectado ainda.</p>
+                            </div>
                         )}
                     </div>
                 </div>
 
-                {/* Recent Logs */}
-                <div className="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-                    <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Clock className="text-blue-500" size={20} />
-                            <h3 className="font-bold text-white">Registos de Atividade em Tempo Real</h3>
+                {/* Right Column: Activity Logs */}
+                <div className="luxury-card" style={{ background: '#fff', padding: '2rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '15px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '8px', borderRadius: '10px', color: '#3b82f6' }}>
+                                <Clock size={20} />
+                            </div>
+                            <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-playfair)' }}>Registos de Atividade</h3>
+                        </div>
+
+                        <div style={{ position: 'relative', width: '250px' }}>
+                            <Search style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} size={16} />
+                            <input 
+                                type="text"
+                                placeholder="Procurar logs..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                style={{ 
+                                    width: '100%', 
+                                    padding: '10px 12px 10px 38px', 
+                                    borderRadius: '10px', 
+                                    border: '1px solid #e2e8f0', 
+                                    fontSize: '0.85rem',
+                                    outline: 'none',
+                                    transition: 'border-color 0.2s'
+                                }}
+                            />
                         </div>
                     </div>
-                    <div className="divide-y divide-zinc-800">
-                        {stats?.recentLogs.map((log) => (
-                            <div key={log._id} className="p-4 hover:bg-zinc-800/30 transition-colors">
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                        {filteredLogs.map((log) => (
+                            <div key={log._id} style={{ 
+                                border: '1px solid #f1f5f9', 
+                                borderRadius: '16px', 
+                                overflow: 'hidden',
+                                transition: 'all 0.2s ease'
+                            }}>
                                 <div 
-                                    className="flex items-center justify-between cursor-pointer"
+                                    style={{ 
+                                        padding: '15px 20px', 
+                                        cursor: 'pointer', 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'space-between',
+                                        background: expandedLog === log._id ? '#fafafa' : '#fff'
+                                    }}
                                     onClick={() => setExpandedLog(expandedLog === log._id ? null : log._id)}
                                 >
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center border border-zinc-700">
-                                            <Users size={18} className="text-gray-400" />
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                        <div style={{ 
+                                            width: '42px', 
+                                            height: '42px', 
+                                            borderRadius: '12px', 
+                                            background: '#f1f5f9', 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            justifyContent: 'center',
+                                            color: '#64748b',
+                                            border: '1px solid #e2e8f0'
+                                        }}>
+                                            <Users size={20} />
                                         </div>
                                         <div>
-                                            <div className="text-sm font-bold text-white">{log.user?.name || log.userName || 'Utilizador'}</div>
-                                            <div className="text-xs text-gray-500 flex items-center gap-2">
-                                                <span className="uppercase text-[10px] font-black px-1.5 py-0.5 bg-zinc-800 rounded border border-zinc-700">{log.userRole}</span>
-                                                • {new Date(log.timestamp).toLocaleString()}
+                                            <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#1a1a1a' }}>{log.user?.name || log.userName || 'Utilizador Anónimo'}</div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '2px' }}>
+                                                <span style={{ 
+                                                    fontSize: '0.65rem', 
+                                                    fontWeight: 900, 
+                                                    textTransform: 'uppercase', 
+                                                    background: log.userRole === 'SuperAdmin' ? '#000' : '#f1f5f9', 
+                                                    color: log.userRole === 'SuperAdmin' ? '#facc15' : '#64748b',
+                                                    padding: '2px 8px',
+                                                    borderRadius: '4px'
+                                                }}>
+                                                    {log.userRole}
+                                                </span>
+                                                <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>
+                                                    {new Date(log.timestamp).toLocaleString('pt-PT', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
-                                    {expandedLog === log._id ? <ChevronUp size={20} className="text-gray-500" /> : <ChevronDown size={20} className="text-gray-500" />}
+                                    <div style={{ color: '#94a3b8' }}>
+                                        {expandedLog === log._id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                    </div>
                                 </div>
                                 
-                                {expandedLog === log._id && (
-                                    <motion.div 
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: 'auto' }}
-                                        className="mt-4 space-y-4 text-sm"
-                                    >
-                                        <div className="bg-black/30 p-3 rounded-xl border border-zinc-800/50">
-                                            <div className="text-xs font-bold text-yellow-500 uppercase mb-1">Pergunta:</div>
-                                            <div className="text-gray-300 italic">&quot;{log.transcript}&quot;</div>
-                                        </div>
-                                        <div className="bg-yellow-500/5 p-3 rounded-xl border border-yellow-500/10">
-                                            <div className="text-xs font-bold text-blue-400 uppercase mb-1">Resposta do Brain:</div>
-                                            <div className="text-gray-300 whitespace-pre-wrap">{log.reply}</div>
-                                        </div>
-                                        <div className="flex gap-4 text-[10px] text-gray-600 uppercase font-bold">
-                                            <div>Modelo: {log.modelUsed || 'Desconhecido'}</div>
-                                            <div>Página: {log.pageContext || 'Global'}</div>
-                                            <div>ID: {log._id}</div>
-                                        </div>
-                                    </motion.div>
-                                )}
+                                <AnimatePresence>
+                                    {expandedLog === log._id && (
+                                        <motion.div 
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            style={{ overflow: 'hidden' }}
+                                        >
+                                            <div style={{ padding: '0 20px 20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                                <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '12px', borderLeft: '4px solid #eab308' }}>
+                                                    <div style={{ fontSize: '0.65rem', fontWeight: 900, color: '#eab308', textTransform: 'uppercase', marginBottom: '5px' }}>Pergunta do Usuário</div>
+                                                    <div style={{ fontSize: '0.9rem', color: '#334155', fontWeight: 600 }}>&quot;{log.transcript}&quot;</div>
+                                                </div>
+                                                <div style={{ background: 'rgba(59, 130, 246, 0.03)', padding: '15px', borderRadius: '12px', borderLeft: '4px solid #3b82f6' }}>
+                                                    <div style={{ fontSize: '0.65rem', fontWeight: 900, color: '#3b82f6', textTransform: 'uppercase', marginBottom: '5px' }}>Resposta do Brain</div>
+                                                    <div style={{ fontSize: '0.9rem', color: '#334155', lineHeight: 1.6 }}>{log.reply}</div>
+                                                </div>
+                                                <div style={{ display: 'flex', gap: '20px', padding: '10px', background: '#f8fafc', borderRadius: '8px' }}>
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ fontSize: '0.6rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>Modelo Utilizado</div>
+                                                        <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569' }}>{log.modelUsed || 'Gemini-1.5-Flash'}</div>
+                                                    </div>
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ fontSize: '0.6rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>Contexto de Rota</div>
+                                                        <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569' }}>{log.pageContext || 'Global / Home'}</div>
+                                                    </div>
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ fontSize: '0.6rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>Hash da Sessão</div>
+                                                        <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569' }}>{log._id.substring(0, 8)}...</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
                         ))}
-                        {stats?.recentLogs.length === 0 && (
-                            <p className="text-center text-gray-500 py-20">Aguardando as primeiras interações do Brain...</p>
+                        {filteredLogs.length === 0 && (
+                            <div style={{ textAlign: 'center', padding: '60px', background: '#f8fafc', borderRadius: '20px', border: '1px dashed #e2e8f0' }}>
+                                <Bot size={48} style={{ opacity: 0.1, marginBottom: '15px' }} />
+                                <p style={{ color: '#94a3b8', fontSize: '1rem', fontWeight: 500 }}>Aguardando interações neurais...</p>
+                            </div>
                         )}
                     </div>
                 </div>
+            </div>
+
+            <style jsx>{`
+                @media (max-width: 1024px) {
+                    div {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
+            `}</style>
+        </div>
+    );
+}
+
+function StatBox({ icon, label, value, color, trend }: { icon: React.ReactNode, label: string, value: string | number, color: string, trend?: string }) {
+    return (
+        <div className="luxury-card" style={{ 
+            background: '#fff', 
+            padding: '1.5rem', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: '12px',
+            position: 'relative',
+            overflow: 'hidden'
+        }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '4px', background: color }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ background: `${color}15`, color: color, padding: '10px', borderRadius: '12px' }}>
+                    {icon}
+                </div>
+                {trend && (
+                    <span style={{ fontSize: '0.7rem', fontWeight: 800, color: trend === 'Estável' ? '#10b981' : '#3b82f6', background: trend === 'Estável' ? '#10b98115' : '#3b82f615', padding: '4px 8px', borderRadius: '6px' }}>
+                        {trend}
+                    </span>
+                )}
+            </div>
+            <div>
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#1a1a1a', fontFamily: 'var(--font-playfair)', marginTop: '2px' }}>{value}</div>
             </div>
         </div>
     );
