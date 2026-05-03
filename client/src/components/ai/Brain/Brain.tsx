@@ -468,7 +468,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                     playSystemSound('intro');
                     const greeting = user 
                         ? `Sim, Mestre. Estou às suas ordens.` 
-                        : "Bem-vindo à Inscreva-se. Sou o Cérbero, a sua inteligência neural. Como posso ajudar hoje?";
+                        : "Bem-vindo à Inscreva-se. Como posso ajudar hoje?";
                     speak(greeting, () => {
                         setTimeout(() => startListening(), 300);
                     });
