@@ -31,7 +31,7 @@ export default function ExpertsShowcase() {
     useEffect(() => {
         const tab = searchParams.get('tab');
         if (tab && (tab === 'mentor' || tab === 'specialist' || tab === 'company')) {
-            setActiveTab(tab as any);
+            setActiveTab(tab as 'mentor' | 'specialist' | 'company');
         }
     }, [searchParams]);
 
