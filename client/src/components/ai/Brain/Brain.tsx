@@ -197,7 +197,7 @@ export default function Brain() {
         } finally {
             setIsThinking(false);
         }
-    }, [router, speak, pathname]);
+    }, [router, speak, pathname, chatHistory]);
 
     const { isListening, currentTranscript, startListening, hasSupport } = useSpeechRecognition(handleCommand);
 
