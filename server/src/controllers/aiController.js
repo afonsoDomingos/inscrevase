@@ -232,9 +232,7 @@ exports.handleBrainCommand = async (req, res) => {
         const modelsToTry = [
             "gemini-1.5-flash", 
             "gemini-1.5-pro", 
-            "gemini-2.0-flash-exp", 
-            "gemini-1.5-flash-latest",
-            "gemini-pro"
+            "gemini-2.0-flash-exp"
         ];
         let text = "";
         let attemptSuccess = false;
@@ -248,6 +246,7 @@ exports.handleBrainCommand = async (req, res) => {
 
         for (const modelName of modelsToTry) {
             try {
+                console.log(`[BRAIN] Tentando modelo: ${modelName}`);
                 const model = genAI.getGenerativeModel({ model: modelName });
                 const result = await model.generateContent(prompt);
                 const response = await result.response;
@@ -266,13 +265,29 @@ exports.handleBrainCommand = async (req, res) => {
                     pageContext
                 }).catch(err => console.error("Erro ao salvar log do Brain:", err));
 
+                console.log(`[BRAIN] Sucesso com modelo: ${modelName}`);
                 break;
             } catch (e) {
+                console.error(`[BRAIN] Falha no modelo ${modelName}:`, e.message);
                 lastError = e.message;
             }
         }
 
         if (!attemptSuccess) {
+            // Log de Falha Crítica
+            BrainLog.create({
+                user: userId,
+                userName: userName || "Mestre",
+                userRole: role,
+                transcript,
+                reply: "FALHA CRÍTICA: Nenhum modelo disponível.",
+                status: 'error',
+                errorMessage: lastError,
+                modelUsed: 'all-failed',
+                locale,
+                pageContext
+            }).catch(err => console.error("Erro ao salvar log de falha do Brain:", err));
+
             throw new Error(`Nenhum modelo Gemini suportado. Último erro: ${lastError}`);
         }
 
