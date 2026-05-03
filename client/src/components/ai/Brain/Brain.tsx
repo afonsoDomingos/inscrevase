@@ -218,6 +218,7 @@ export default function Brain() {
         }
     }, []);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const playSystemSound = useCallback((type: 'intro' | 'close') => {
         // Áudios MP3 desativados para evitar conflito com a síntese de voz (TTS) do Gemini.
         // console.log(`%c🔔 [AUDIO] Executando som: ${type}`, "color: #fcd34d;");
