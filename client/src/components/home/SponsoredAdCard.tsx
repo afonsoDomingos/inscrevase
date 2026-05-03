@@ -129,7 +129,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
                         }}
                         style={{
                             position: 'fixed',
-                            top: isMobile ? '80px' : '100px',
+                            top: isMobile ? '160px' : '180px',
                             right: isMobile ? '15px' : '25px',
                             width: isMobile ? '180px' : '280px',
                             zIndex: 9999,

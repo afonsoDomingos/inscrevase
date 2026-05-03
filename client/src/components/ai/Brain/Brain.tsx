@@ -905,8 +905,8 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                         exit={{ opacity: 0, y: -20, scale: 0.8 }}
                         style={{ 
                             position: 'fixed', 
-                            top: '30px', 
-                            right: '30px', 
+                            top: '100px', 
+                            right: '25px', 
                             zIndex: 100000,
                             pointerEvents: 'auto'
                         }}
