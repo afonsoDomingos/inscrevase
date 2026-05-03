@@ -10,7 +10,7 @@ import CerberusVisual from './CerberusVisual';
 import { useSpeechRecognition } from './useSpeechRecognition';
 import { aiService } from '@/lib/aiService';
 import { useSocket } from '@/context/SocketContext';
-import { authService } from '@/lib/authService';
+import { authService, type UserData } from '@/lib/authService';
 
 // Componente para Efeito de Digitação
 const TypewriterText = ({ text, speed = 8 }: { text: string, speed?: number }) => {
@@ -62,7 +62,7 @@ export default function Brain() {
     const [isMobile, setIsMobile] = useState(false);
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
     const [textInput, setTextInput] = useState("");
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<UserData | null>(null);
 
     useEffect(() => {
         const currentUser = authService.getCurrentUser();
@@ -491,7 +491,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
         return () => {
             wakeRecognition.stop();
         };
-    }, [hasSupport, isVisible, isListening, startListening, speak, playSystemSound]);
+    }, [hasSupport, isVisible, isListening, startListening, speak, playSystemSound, user]);
 
     // Monitoramento Proativo via Sockets
     useEffect(() => {
