@@ -732,10 +732,10 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                     </div>
                                     <div style={{ textAlign: isMobile ? 'left' : 'center', flex: isMobile ? 1 : 'none', marginLeft: isMobile ? '10px' : '0', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                                         <h3 style={{ fontWeight: 'bold', color: isAlert ? '#ef4444' : isThinking ? '#38bdf8' : '#fff', fontSize: isMobile ? '0.8rem' : '0.9rem', textTransform: isThinking ? 'uppercase' : 'none', letterSpacing: '1px', margin: 0 }}>
-                                            {isThinking ? 'Processando...' : isListening ? 'Escutando...' : 'Cérbero'}
+                                            {isThinking ? 'Processando...' : isListening ? 'Escutando...' : 'Brain'}
                                         </h3>
                                         <p style={{ color: '#9ca3af', fontSize: '9px', margin: '4px 0 0', lineHeight: '1.4' }}>
-                                            {isAlert ? 'Alerta!' : isThinking ? 'Analisando...' : 'IA Ativa.'}
+                                            {isAlert ? 'Alerta!' : isThinking ? 'Analisando...' : 'Inscreva-se'}
                                         </p>
                                         {!isMobile && <div style={{ marginTop: '15px', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', width: '100%', border: '1px solid rgba(255,255,255,0.03)' }}><VoiceVisualizer /></div>}
                                     </div>
