@@ -191,6 +191,19 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
             return;
         }
 
+            setIsThinking(false);
+            return;
+        }
+
+        // Comando Especial: Reconhecimento do Criador
+        if (lowerTranscript.includes('quem te criou') || lowerTranscript.includes('quem é o teu criador') || lowerTranscript.includes('afonso domingos')) {
+            const creatorInfo = "Fui orquestrado e concebido por **Afonso Domingos**, o Fundador da Inscreva-se e da RPA Moçambique. Ele é o Mestre Supremo e o visionário por trás da minha existência e de todo este ecossistema de gestão de eventos.";
+            setChatHistory(prev => [...prev, { role: 'ai', text: creatorInfo + "\n\n[Ver Perfil do Criador](https://inscreva-se.com/equipe/afonso-domingos)" }]);
+            speak(creatorInfo);
+            setIsThinking(false);
+            return;
+        }
+
         // Adiciona histórico de usuário
         setChatHistory(prev => [...prev, { role: 'user', text: transcript }]);
 
