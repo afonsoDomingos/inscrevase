@@ -219,13 +219,14 @@ export default function Brain() {
     }, []);
 
     const playSystemSound = useCallback((type: 'intro' | 'close') => {
-        console.log(`%c🔔 [AUDIO] Executando som: ${type}`, "color: #fcd34d;");
-        const audio = type === 'intro' ? introSound.current : closeSound.current;
-        if (audio) {
-            audio.currentTime = 0;
-            audio.volume = 0.8;
-            audio.play().catch(err => console.warn("%c⚠️ [AUDIO] Play bloqueado pelo browser.", "color: #fbbf24;", err));
-        }
+        // Áudios MP3 desativados para evitar conflito com a síntese de voz (TTS) do Gemini.
+        // console.log(`%c🔔 [AUDIO] Executando som: ${type}`, "color: #fcd34d;");
+        // const audio = type === 'intro' ? introSound.current : closeSound.current;
+        // if (audio) {
+        //     audio.currentTime = 0;
+        //     audio.volume = 0.8;
+        //     audio.play().catch(err => console.warn("%c⚠️ [AUDIO] Play bloqueado pelo browser.", "color: #fbbf24;", err));
+        // }
     }, []);
 
 
@@ -638,7 +639,7 @@ export default function Brain() {
                                         <button onClick={() => { playSystemSound('close'); speak("Desativando sistemas neurais."); setTimeout(() => setIsHibernated(true), 1500); }} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Hibernate">
                                             <Power size={18} />
                                         </button>
-                                        <button onClick={() => { playSystemSound('close'); speak("Sistemas em standby."); setIsVisible(false); }} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}>
+                                        <button onClick={() => { playSystemSound('close'); speak("Desligando o Sistema."); setIsVisible(false); }} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}>
                                             <X size={20} />
                                         </button>
                                     </div>
