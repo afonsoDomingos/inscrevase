@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const Groq = require("groq-sdk");
 const { authMiddleware, adminMiddleware, optionalAuthMiddleware } = require('../middleware/authMiddleware');
 
 // Aura's Identity and Rules
@@ -57,33 +58,52 @@ router.post('/chat', authMiddleware, async (req, res) => {
     }
 
     try {
-        const genAI = new GoogleGenerativeAI(apiKey);
+        const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
+        const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
 
         // Try these models in order based on what's available in the key
-        const modelsToTry = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-2.5-flash", "gemini-2.5-pro"];
+        const modelsToTry = [
+            { name: "gemini-2.0-flash", provider: "google" },
+            { name: "llama-3.1-70b-versatile", provider: "groq" },
+            { name: "gemini-1.5-flash", provider: "google" }
+        ];
+
         let lastError = null;
         let text = "";
         let attemptSuccess = false;
 
         const formattedPrompt = `${AURA_SYSTEM_PROMPT}\n\nLocale: ${locale}\nUser Message: ${message}\n\nAura's Response:`;
 
-        for (const modelName of modelsToTry) {
+        for (const modelCfg of modelsToTry) {
             try {
-                console.log(`Attempting Aura with model: ${modelName}`);
-                const model = genAI.getGenerativeModel({ model: modelName });
-                const result = await model.generateContent(formattedPrompt);
-                const response = await result.response;
-                text = response.text();
-                attemptSuccess = true;
-                console.log(`Success with model: ${modelName}! Response length:`, text.length);
-                break;
+                if (modelCfg.provider === 'google') {
+                    if (!genAI) continue;
+                    console.log(`Attempting Aura with Google: ${modelCfg.name}`);
+                    const model = genAI.getGenerativeModel({ model: modelCfg.name });
+                    const result = await model.generateContent(formattedPrompt);
+                    const response = await result.response;
+                    text = response.text();
+                } else if (modelCfg.provider === 'groq') {
+                    if (!groq) continue;
+                    console.log(`Attempting Aura with Groq: ${modelCfg.name}`);
+                    const chatCompletion = await groq.chat.completions.create({
+                        messages: [
+                            { role: "system", content: AURA_SYSTEM_PROMPT },
+                            { role: "user", content: `Locale: ${locale}\nMessage: ${message}` }
+                        ],
+                        model: modelCfg.name,
+                    });
+                    text = chatCompletion.choices[0]?.message?.content || "";
+                }
+
+                if (text) {
+                    attemptSuccess = true;
+                    console.log(`Success with Aura (${modelCfg.provider}): ${modelCfg.name}!`);
+                    break;
+                }
             } catch (e) {
                 lastError = e.message;
-                console.error(`Model ${modelName} failed:`, e.message);
-                // Log full error for critical issues like 403/401
-                if (e.message.includes('403') || e.message.includes('401') || e.message.includes('permission')) {
-                    console.error("PERMISSION ERROR DETECTED:", e);
-                }
+                console.error(`Aura Model ${modelCfg.name} failed:`, e.message);
             }
         }
 

@@ -1,4 +1,5 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const Groq = require("groq-sdk");
 const User = require('../models/User');
 const Form = require('../models/Form');
 const Submission = require('../models/Submission');
@@ -236,9 +237,18 @@ exports.handleBrainCommand = async (req, res) => {
             statsContext += `\n\nCONTEXTO VISUAL (O que o usuário vê agora):\n${pageContext}\n`;
         }
 
-        // Gemini Integration
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        const modelsToTry = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-2.5-flash", "gemini-2.5-pro"];
+        // AI Providers Initialization
+        const genAI = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
+        const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
+
+        const modelsToTry = [
+            { name: "gemini-2.0-flash", provider: "google" },
+            { name: "llama-3.1-70b-versatile", provider: "groq" },
+            { name: "gemini-1.5-flash", provider: "google" },
+            { name: "llama3-70b-8192", provider: "groq" },
+            { name: "gemini-2.5-flash", provider: "google" }
+        ];
+
         let text = "";
         let attemptSuccess = false;
         let lastError = "";
@@ -249,31 +259,47 @@ exports.handleBrainCommand = async (req, res) => {
                        `\n\nHISTÓRICO DA CONVERSA ATUAL:\n${formattedHistory}\n\n` +
                        `Usuário diz: "${transcript}"\n\nResposta do BRAIN:`;
 
-        for (const modelName of modelsToTry) {
+        for (const modelCfg of modelsToTry) {
             try {
-                console.log(`[BRAIN] Tentando modelo: ${modelName}`);
-                const model = genAI.getGenerativeModel({ model: modelName });
-                const result = await model.generateContent(prompt);
-                const response = await result.response;
-                text = response.text();
-                attemptSuccess = true;
+                if (modelCfg.provider === 'google') {
+                    if (!genAI) continue;
+                    console.log(`[BRAIN] Tentando Google: ${modelCfg.name}`);
+                    const model = genAI.getGenerativeModel({ model: modelCfg.name });
+                    const result = await model.generateContent(prompt);
+                    const response = await result.response;
+                    text = response.text();
+                } else if (modelCfg.provider === 'groq') {
+                    if (!groq) continue;
+                    console.log(`[BRAIN] Tentando Groq: ${modelCfg.name}`);
+                    const chatCompletion = await groq.chat.completions.create({
+                        messages: [
+                            { role: "system", content: BRAIN_SYSTEM_PROMPT.replace('{CONTEXT_DATA}', statsContext) },
+                            { role: "user", content: `HISTÓRICO:\n${formattedHistory}\n\nComando: ${transcript}` }
+                        ],
+                        model: modelCfg.name,
+                    });
+                    text = chatCompletion.choices[0]?.message?.content || "";
+                }
 
-                // Log para Auditoria (Async para não atrasar a resposta)
-                BrainLog.create({
-                    user: userId,
-                    userName: userName || "Mestre",
-                    userRole: role,
-                    transcript,
-                    reply: text,
-                    modelUsed: modelName,
-                    locale,
-                    pageContext
-                }).catch(err => console.error("Erro ao salvar log do Brain:", err));
+                if (text) {
+                    attemptSuccess = true;
+                    // Log para Auditoria
+                    BrainLog.create({
+                        user: userId,
+                        userName: userName || "Mestre",
+                        userRole: role,
+                        transcript,
+                        reply: text,
+                        modelUsed: `${modelCfg.provider}:${modelCfg.name}`,
+                        locale,
+                        pageContext
+                    }).catch(err => console.error("Erro ao salvar log do Brain:", err));
 
-                console.log(`[BRAIN] Sucesso com modelo: ${modelName}`);
-                break;
+                    console.log(`[BRAIN] Sucesso com ${modelCfg.provider}: ${modelCfg.name}`);
+                    break;
+                }
             } catch (e) {
-                console.error(`[BRAIN] Falha no modelo ${modelName}:`, e.message);
+                console.error(`[BRAIN] Falha no modelo ${modelCfg.name}:`, e.message);
                 lastError = e.message;
             }
         }
