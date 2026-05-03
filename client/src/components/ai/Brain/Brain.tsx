@@ -38,7 +38,17 @@ const TypewriterText = ({ text, speed = 8 }: { text: string, speed?: number }) =
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 strong: ({node, ...props}) => <strong style={{ color: '#fff', fontWeight: 800 }} {...props} />, 
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                a: ({node, ...props}) => <a style={{ color: '#38bdf8', textDecoration: 'underline' }} {...props} /> 
+                a: ({node, ...props}) => {
+                    const isExternal = props.href?.startsWith('http');
+                    return (
+                        <a 
+                            style={{ color: '#38bdf8', textDecoration: 'underline', cursor: 'pointer' }} 
+                            target={isExternal ? "_blank" : "_self"}
+                            rel={isExternal ? "noopener noreferrer" : ""}
+                            {...props} 
+                        />
+                    );
+                }
             }}
         >
             {isComplete ? text : displayedText}
@@ -265,15 +275,8 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                 const reply = result.reply;
                 setChatHistory(prev => [...prev, { role: 'ai', text: reply }]);
                 
-                // Resumo para fala (primeira frase ou limite curto)
-                const firstSentence = reply.split(/[.!?\n]/)[0];
-                const spokenSummary = firstSentence.length > 5 ? firstSentence + "." : reply.substring(0, 100) + "...";
-                
-                if (reply.length > 400) {
-                    speak(spokenSummary + " Pode ler a resposta completa no ecrã.");
-                } else {
-                    speak(reply);
-                }
+                // Inteligência Neural: Leitura completa da resposta sem interrupções
+                speak(reply);
                 
                 toast.info("BRAIN processou sua consulta.");
             }
