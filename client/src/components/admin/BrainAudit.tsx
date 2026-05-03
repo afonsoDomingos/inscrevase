@@ -2,14 +2,26 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Users, MessageSquare, TrendingUp, Search, Clock, Bot, ChevronDown, ChevronUp } from 'lucide-react';
+import { Brain, Users, MessageSquare, TrendingUp, Clock, Bot, ChevronDown, ChevronUp } from 'lucide-react';
 import { aiService } from '@/lib/aiService';
 import { toast } from 'sonner';
+
+interface BrainLog {
+    _id: string;
+    user?: { name: string };
+    userName?: string;
+    userRole: string;
+    timestamp: string;
+    transcript: string;
+    reply: string;
+    modelUsed?: string;
+    pageContext?: string;
+}
 
 interface BrainStats {
     total: number;
     roleStats: { _id: string; count: number }[];
-    recentLogs: any[];
+    recentLogs: BrainLog[];
     topQuestions: { _id: string; count: number }[];
 }
 
@@ -29,7 +41,7 @@ export default function BrainAudit() {
             setStats(data);
         } catch (error) {
             console.error(error);
-            toast.error("Erro ao carregar estatísticas do Cérbero");
+            toast.error("Erro ao carregar estatísticas do Brain");
         } finally {
             setLoading(false);
         }
@@ -48,7 +60,7 @@ export default function BrainAudit() {
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                        <Brain className="text-yellow-500" /> Auditoria do Cérbero AI
+                        <Brain className="text-yellow-500" /> Auditoria do Brain AI
                     </h2>
                     <p className="text-gray-400">Analise o uso, performance e as questões mais frequentes da IA.</p>
                 </div>
@@ -99,7 +111,7 @@ export default function BrainAudit() {
                     <div className="p-4 space-y-4">
                         {stats?.topQuestions.map((q, idx) => (
                             <div key={idx} className="flex items-center justify-between p-3 bg-zinc-800/50 rounded-xl">
-                                <span className="text-sm text-gray-300 line-clamp-1 flex-1 pr-4">"{q._id}"</span>
+                                <span className="text-sm text-gray-300 line-clamp-1 flex-1 pr-4">&quot;{q._id}&quot;</span>
                                 <span className="text-xs font-bold bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded-full">{q.count}x</span>
                             </div>
                         ))}
@@ -147,10 +159,10 @@ export default function BrainAudit() {
                                     >
                                         <div className="bg-black/30 p-3 rounded-xl border border-zinc-800/50">
                                             <div className="text-xs font-bold text-yellow-500 uppercase mb-1">Pergunta:</div>
-                                            <div className="text-gray-300 italic">"{log.transcript}"</div>
+                                            <div className="text-gray-300 italic">&quot;{log.transcript}&quot;</div>
                                         </div>
                                         <div className="bg-yellow-500/5 p-3 rounded-xl border border-yellow-500/10">
-                                            <div className="text-xs font-bold text-blue-400 uppercase mb-1">Resposta do Cérbero:</div>
+                                            <div className="text-xs font-bold text-blue-400 uppercase mb-1">Resposta do Brain:</div>
                                             <div className="text-gray-300 whitespace-pre-wrap">{log.reply}</div>
                                         </div>
                                         <div className="flex gap-4 text-[10px] text-gray-600 uppercase font-bold">
@@ -163,7 +175,7 @@ export default function BrainAudit() {
                             </div>
                         ))}
                         {stats?.recentLogs.length === 0 && (
-                            <p className="text-center text-gray-500 py-20">Aguardando as primeiras interações do Cérbero...</p>
+                            <p className="text-center text-gray-500 py-20">Aguardando as primeiras interações do Brain...</p>
                         )}
                     </div>
                 </div>

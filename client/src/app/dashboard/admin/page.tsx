@@ -485,7 +485,7 @@ function AdminDashboardContent() {
             items: [
                 { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={18} /> },
                 { id: 'whatsapp', label: 'WhatsApp Automação', icon: <MessageCircle size={18} /> },
-                { id: 'brain', label: 'Cérbero Auditoria', icon: <Brain size={18} />, isNew: true },
+                { id: 'brain', label: 'Brain Auditoria', icon: <Brain size={18} />, isNew: true },
                 { id: 'settings', label: t('dashboard.settings.title') || 'Definições', icon: <Settings size={18} /> },
             ]
         }
