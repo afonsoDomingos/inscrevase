@@ -68,6 +68,29 @@ export default function Brain() {
     const [isAlert, setIsAlert] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [chatHistory, setChatHistory] = useState<{role: 'user' | 'ai', text: string}[]>([]);
+
+    // Persistência de Estado (Contexto e Visibilidade)
+    useEffect(() => {
+        const savedHistory = localStorage.getItem('brain_chat_history');
+        const savedVisibility = localStorage.getItem('brain_is_visible');
+        
+        if (savedHistory) {
+            try {
+                setChatHistory(JSON.parse(savedHistory));
+            } catch (e) {
+                console.error("Erro ao carregar histórico do Brain:", e);
+            }
+        }
+        
+        if (savedVisibility === 'true') {
+            setIsVisible(true);
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('brain_chat_history', JSON.stringify(chatHistory));
+        localStorage.setItem('brain_is_visible', isVisible.toString());
+    }, [chatHistory, isVisible]);
     const [isMobile, setIsMobile] = useState(false);
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
     const [textInput, setTextInput] = useState("");
