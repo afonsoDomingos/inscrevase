@@ -21,9 +21,10 @@ import BooksManager from '@/components/admin/BooksManager';
 import WhatsAppLogs from '@/components/dashboard/WhatsAppLogs';
 import VacanciesAdmin from '@/components/admin/VacanciesAdmin';
 import MotivaManager from '@/components/admin/MotivaManager';
+import BrainAudit from '@/components/admin/BrainAudit';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Book, MessageCircle, Smartphone, Briefcase } from 'lucide-react';
+import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Book, MessageCircle, Smartphone, Briefcase, Brain } from 'lucide-react';
 
 import ProfileModal from '@/components/mentor/ProfileModal';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
@@ -54,7 +55,7 @@ import CurrencySwitcher from '@/components/CurrencySwitcher';
 import Tooltip from '@/components/common/Tooltip';
 import PersonalDashboard from '@/components/personal/PersonalDashboard';
 
-type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts' | 'books' | 'whatsapp' | 'vacancies' | 'motiva' | 'workspace';
+type Tab = 'overview' | 'users' | 'forms' | 'submissions' | 'support' | 'finance' | 'newsletter' | 'blog' | 'lessons' | 'ads' | 'referrals' | 'smartlinks' | 'settings' | 'marketing' | 'payouts' | 'books' | 'whatsapp' | 'vacancies' | 'motiva' | 'workspace' | 'brain';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -484,6 +485,7 @@ function AdminDashboardContent() {
             items: [
                 { id: 'support', label: t('dashboard.support'), icon: <LifeBuoy size={18} /> },
                 { id: 'whatsapp', label: 'WhatsApp Automação', icon: <MessageCircle size={18} /> },
+                { id: 'brain', label: 'Cérbero Auditoria', icon: <Brain size={18} />, isNew: true },
                 { id: 'settings', label: t('dashboard.settings.title') || 'Definições', icon: <Settings size={18} /> },
             ]
         }
@@ -2142,6 +2144,13 @@ function AdminDashboardContent() {
                                         </tbody>
                                     </table>
                                 </div>
+                            </motion.div>
+                        )
+                    }
+                    {
+                        activeTab === 'brain' && user.role === 'SuperAdmin' && (
+                            <motion.div key="brain" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+                                <BrainAudit />
                             </motion.div>
                         )
                     }

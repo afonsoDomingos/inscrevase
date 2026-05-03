@@ -57,5 +57,22 @@ export const aiService = {
             console.error("Brain Service Error:", error);
             throw error;
         }
+    },
+    getBrainStats: async () => {
+        try {
+            const response = await fetch(`${API_URL}/ai/brain/stats`, {
+                headers: getHeaders()
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Falha ao buscar estatísticas.');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Brain Stats Error:", error);
+            throw error;
+        }
     }
 };
