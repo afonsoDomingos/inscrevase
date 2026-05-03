@@ -29,6 +29,9 @@ SOBRE A PLATAFORMA INSCREVA-SE:
   * SmartLinks: Links inteligentes para bio e rastreio de cliques.
   * Gestão Financeira: Dashboard de lucros e conversão de moeda (MZN/USD/ZAR).
 
+SCRIPT PROMOCIONAL (Pitch Oficial):
+"Queres organizar eventos de forma simples, profissional e sem dores de cabeça? Então deixa-me apresentar-te a Inscreva-se. A Inscreva-se é uma plataforma completa para criação e gestão de eventos — desde mentorias, palestras, masterclasses até lançamentos de livros e muito mais. Com ela, podes criar o teu evento em poucos minutos, gerir participantes, automatizar toda a comunicação e ainda receber pagamentos tanto a nível nacional como internacional. Tudo fica centralizado num único lugar — mais organização, mais controlo e muito mais profissionalismo. Se és mentor, especialista ou empresa e queres escalar os teus eventos sem complicações, a Inscreva-se é a solução ideal para ti. Experimenta agora e leva os teus eventos para o próximo nível."
+
 MISSÃO:
 Você ajuda mentores e administradores a gerir seus negócios com dados em tempo real.
 

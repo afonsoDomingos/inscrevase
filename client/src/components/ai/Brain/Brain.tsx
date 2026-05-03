@@ -170,6 +170,27 @@ export default function Brain() {
             return;
         }
 
+        // Comando Especial: Fala Promocional (/brainpromo)
+        if (lowerTranscript.includes('/brainpromo') || lowerTranscript.includes('fala promocional') || lowerTranscript.includes('promoção da plataforma')) {
+            const promoText = `“Queres organizar eventos de forma simples, profissional e sem dores de cabeça?
+Então deixa-me apresentar-te a Inscreva-se.
+
+A Inscreva-se é uma plataforma completa para criação e gestão de eventos — desde mentorias, palestras, masterclasses até lançamentos de livros e muito mais.
+
+Com ela, podes criar o teu evento em poucos minutos, gerir participantes, automatizar toda a comunicação e ainda receber pagamentos tanto a nível nacional como internacional.
+
+Tudo fica centralizado num único lugar — mais organização, mais controlo e muito mais profissionalismo.
+
+Se és mentor, especialista ou empresa e queres escalar os teus eventos sem complicações, a Inscreva-se é a solução ideal para ti.
+
+Experimenta agora e leva os teus eventos para o próximo nível.”`;
+            
+            setChatHistory(prev => [...prev, { role: 'ai', text: promoText + "\n\n**Nota:** Mestre, preparei também uma [apresentação visual completa em /promo](/promo)." }]);
+            speak(promoText);
+            setIsThinking(false);
+            return;
+        }
+
         // Adiciona histórico de usuário
         setChatHistory(prev => [...prev, { role: 'user', text: transcript }]);
 
