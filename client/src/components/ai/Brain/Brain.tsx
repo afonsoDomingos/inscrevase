@@ -176,8 +176,8 @@ export default function Brain() {
                 const firstSentence = reply.split(/[.!?\n]/)[0];
                 const spokenSummary = firstSentence.length > 5 ? firstSentence + "." : reply.substring(0, 100) + "...";
                 
-                if (reply.length > 150) {
-                    speak(spokenSummary + " Pode ler a resposta completa no terminal.");
+                if (reply.length > 400) {
+                    speak(spokenSummary + " Pode ler a resposta completa no ecrã.");
                 } else {
                     speak(reply);
                 }
