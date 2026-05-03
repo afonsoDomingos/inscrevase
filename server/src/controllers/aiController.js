@@ -15,10 +15,13 @@ SOBRE A PLATAFORMA INSCREVA-SE:
   * Eventos e Inscrições: Gestão completa com pagamentos.
   * Academia (LMS): Aulas, lições e cursos online.
   * Certificados: Geração automática para participantes.
+  * Livraria e E-books: Venda e gestão de livros digitais e biblioteca pessoal.
+  * Concursos (Motiva): Sistema de competições, votações (likes) e prémios.
+  * Recrutamento: Portal de vagas de emprego e gestão de candidatos.
   * Comunidade: Espaço de interação entre membros.
   * Blog e Newsletter: Gestão de conteúdo e marketing.
   * WhatsApp Business: Automatização de mensagens e notificações.
-  * Marketplace: Oferta de serviços e vagas de emprego.
+  * SmartLinks: Links inteligentes para bio e rastreio de cliques.
   * Gestão Financeira: Dashboard de lucros e conversão de moeda (MZN/USD/ZAR).
 
 MISSÃO:
