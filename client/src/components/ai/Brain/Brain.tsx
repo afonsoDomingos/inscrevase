@@ -98,13 +98,14 @@ export default function Brain() {
     const [systemAlert, setSystemAlert] = useState<{ message: string, type: 'info' | 'error' | 'success' } | null>(null);
 
     const triggerAlert = useCallback((message: string, type: 'info' | 'error' | 'success' = 'info') => {
-        setSystemAlert({ message, type });
         if (type === 'error') setIsAlert(true);
         
-        setTimeout(() => {
-            setSystemAlert(null);
-            if (type === 'error') setIsAlert(false);
-        }, 4000);
+        // Inject as inline system message in chat instead of floating overlay
+        setChatHistory(prev => [...prev, { role: 'system' as 'ai', text: `__SYSTEM__${type}__${message}` }]);
+        
+        if (type === 'error') {
+            setTimeout(() => setIsAlert(false), 4000);
+        }
     }, []);
 
     useEffect(() => {
@@ -843,7 +844,22 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                     )}
 
                                     <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.95rem', color: '#d1d5db', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent', paddingRight: '10px', minHeight: '0' }}>
-                                        {chatHistory.length > 0 ? chatHistory.map((msg, idx) => (
+                                        {chatHistory.length > 0 ? chatHistory.map((msg, idx) => {
+                                            // System inline message
+                                            if (msg.text.startsWith('__SYSTEM__')) {
+                                                const parts = msg.text.split('__');
+                                                const sysType = parts[2] as 'info' | 'error' | 'success';
+                                                const sysMsg = parts.slice(3).join('__');
+                                                const color = sysType === 'error' ? '#f87171' : sysType === 'success' ? '#4ade80' : '#94a3b8';
+                                                const icon = sysType === 'error' ? '⚠' : sysType === 'success' ? '✓' : 'ℹ';
+                                                return (
+                                                    <div key={idx} style={{ alignSelf: 'center', display: 'flex', alignItems: 'center', gap: '8px', color, fontSize: '0.78rem', fontFamily: 'monospace', opacity: 0.75, padding: '4px 12px', borderRadius: '6px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${color}22`, width: '100%', justifyContent: 'center' }}>
+                                                        <span>{icon}</span>
+                                                        <span>{sysMsg}</span>
+                                                    </div>
+                                                );
+                                            }
+                                            return (
                                             <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(12px)', border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`, padding: '12px 18px', borderRadius: '12px', maxWidth: '95%', wordBreak: 'break-word', boxShadow: '0 4px 15px rgba(0,0,0,0.15)' }}>
                                                 {msg.role === 'ai' ? (
                                                     <div style={{ fontSize: '0.95rem', color: '#f8fafc', lineHeight: '1.6' }}>
@@ -851,7 +867,8 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                     </div>
                                                 ) : <span style={{ color: '#fef08a' }}>{msg.text}</span>}
                                             </div>
-                                        )) : (
+                                            );
+                                        }) : (
                                             <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0.3, gap: '8px' }}><div style={{ padding: '20px', textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}><p style={{ margin: 0, fontSize: '11px' }}>Sistemas Prontos.</p><p style={{ margin: 0, fontSize: '9px', marginTop: '4px' }}>Diga {"\""}Cérbero{"\""} ou clique no botão para testar.</p></div></div>
                                         )}
                                         {isThinking && (
@@ -863,73 +880,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                         )}
                                         <div ref={messagesEndRef} />
 
-                                        {/* Overlay de Alertas de Sistema Estilizados */}
-                                        <AnimatePresence>
-                                            {systemAlert && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                    exit={{ opacity: 0, scale: 0.9, y: -20 }}
-                                                    style={{
-                                                        position: 'absolute',
-                                                        top: '35%',
-                                                        left: '50%',
-                                                        x: '-50%',
-                                                        y: '-50%',
-                                                        zIndex: 100,
-                                                        background: systemAlert.type === 'error' ? 'rgba(220, 38, 38, 0.25)' : 'rgba(234, 179, 8, 0.15)',
-                                                        backdropFilter: 'blur(25px)',
-                                                        border: `1px solid ${systemAlert.type === 'error' ? '#ef4444' : '#eab308'}`,
-                                                        padding: '25px 35px',
-                                                        borderRadius: '20px',
-                                                        boxShadow: `0 20px 50px rgba(0,0,0,0.6), 0 0 30px ${systemAlert.type === 'error' ? 'rgba(239, 68, 68, 0.4)' : 'rgba(234, 179, 8, 0.3)'}`,
-                                                        textAlign: 'center',
-                                                        width: '85%',
-                                                        maxWidth: '400px',
-                                                        pointerEvents: 'none',
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
-                                                        gap: '12px',
-                                                        alignItems: 'center'
-                                                    }}
-                                                >
-                                                    <motion.div 
-                                                        animate={{ scale: [1, 1.2, 1] }} 
-                                                        transition={{ repeat: Infinity, duration: 1.5 }}
-                                                        style={{ 
-                                                            width: '40px', 
-                                                            height: '40px', 
-                                                            borderRadius: '50%', 
-                                                            background: systemAlert.type === 'error' ? '#ef4444' : '#eab308',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            color: '#000',
-                                                            fontSize: '20px',
-                                                            fontWeight: 'bold',
-                                                            boxShadow: `0 0 15px ${systemAlert.type === 'error' ? '#ef4444' : '#eab308'}`
-                                                        }}
-                                                    >
-                                                        {systemAlert.type === 'error' ? '!' : systemAlert.type === 'success' ? '✓' : 'i'}
-                                                    </motion.div>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                                        <h4 style={{ margin: 0, color: '#fff', fontSize: '13px', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 900 }}>
-                                                            {systemAlert.type === 'error' ? 'ERRO DE SISTEMA' : 'NOTIFICAÇÃO'}
-                                                        </h4>
-                                                        <p style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '12px', lineHeight: '1.5', fontWeight: 500 }}>
-                                                            {systemAlert.message}
-                                                        </p>
-                                                    </div>
-                                                    
-                                                    {/* Scanning line effect for alert */}
-                                                    <motion.div 
-                                                        animate={{ top: ['0%', '100%', '0%'] }} 
-                                                        transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
-                                                        style={{ position: 'absolute', left: 0, right: 0, height: '2px', background: 'rgba(255,255,255,0.1)', zIndex: 1 }} 
-                                                    />
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
+
                                     </div>
 
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '95%', margin: '0 auto', flexShrink: 0 }}>
