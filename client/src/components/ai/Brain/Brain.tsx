@@ -157,6 +157,19 @@ export default function Brain() {
             return;
         }
 
+        // Comando Especial: Ler resposta anterior na íntegra
+        if (lowerTranscript.includes('lê para mim') || lowerTranscript.includes('le para mim') || lowerTranscript.includes('lê tudo') || lowerTranscript.includes('leia tudo')) {
+            const lastAiMessage = [...chatHistory].reverse().find(m => m.role === 'ai');
+            if (lastAiMessage) {
+                speak(lastAiMessage.text);
+                toast.info("Lendo a resposta completa...");
+            } else {
+                speak("Ainda não temos uma resposta para eu ler, Mestre.");
+            }
+            setIsThinking(false);
+            return;
+        }
+
         // Adiciona histórico de usuário
         setChatHistory(prev => [...prev, { role: 'user', text: transcript }]);
 

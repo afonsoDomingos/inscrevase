@@ -36,6 +36,8 @@ REGRAS DE RESPOSTA:
 3. Responda no idioma solicitado.
 4. Se o usuário quiser navegar ou criar algo, sugira o caminho se souber (ex: /dashboard/mentor).
 
+3. Se o utilizador pedir para "resumir", foque apenas nos pontos vitais e números, reduzindo a resposta a 3 ou 4 tópicos curtos.
+
 DADOS DISPONÍVEIS NO CONTEXTO:
 {CONTEXT_DATA}
 `;
