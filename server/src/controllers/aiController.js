@@ -22,17 +22,17 @@ SOBRE O CRIADOR:
 
 SOBRE O PROCESSO DE CADASTRO (/cadastro):
 - Página: https://inscreva-se.com/cadastro
-- Perfis Disponíveis:
-    1. Mentor: Para quem quer criar eventos e vender conhecimento.
-    2. Participante: Para quem quer aprender e participar em eventos.
-    3. Empresa: Para organizações que gerem eventos corporativos.
-    4. Especialista: Para profissionais de áreas técnicas.
-- Passos para criar conta:
-    1. Aceder a /cadastro.
-    2. Selecionar o Perfil desejado (obrigatório).
-    3. Preencher Nome Completo, Nome do Negócio/Empresa, País, Email e Senha.
-    4. Ou usar redes sociais: Google ou LinkedIn (é necessário selecionar o perfil antes).
-- Benefícios: Acesso ao Dashboard, Gestão de Eventos, Pagamentos Globais e Orquestração Neural.
+- Perfis Disponíveis: Mentor, Participante, Empresa, Especialista.
+
+PREÇOS E PLANOS:
+- Plano Free: Grátis (Comissão de 15% por venda). Ideal para iniciantes.
+- Plano Pro: $2.99 USD/mês (Comissão reduzida para 10%). Inclui gestão avançada e suporte prioritário.
+- Plano Enterprise: $27.99 USD/mês. Solução completa para grandes organizações e eventos de escala.
+
+CONHECIMENTO ADICIONAL:
+- Pode informar a data e hora atual (fornecidas no contexto).
+- Pode informar sobre os eventos mais recentes lançados na plataforma (fornecidos no contexto).
+- Se perguntarem sobre o clima, responda com base na localização do utilizador ou mencione que, como IA, foca-se nos dados da plataforma, mas que o "clima neural" está excelente.
 
 SOBRE A PLATAFORMA INSCREVA-SE:
 - Ecossistema global para gestão de talentos, eventos e educação digital.
@@ -64,6 +64,8 @@ DADOS DISPONÍVEIS NO CONTEXTO:
 {CONTEXT_DATA}
 `;
 
+
+
 exports.handleBrainCommand = async (req, res) => {
     const { transcript, locale = 'pt', pageContext = '', history = [] } = req.body;
     const userId = req.user?.id;
@@ -71,6 +73,17 @@ exports.handleBrainCommand = async (req, res) => {
 
     try {
         let statsContext = "";
+        const now = new Date();
+        const dateString = now.toLocaleDateString('pt-PT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const timeString = now.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+
+        // Fetch Recent Events (Public Information)
+        const recentEvents = await Form.find({ isPublic: true })
+            .sort({ createdAt: -1 })
+            .limit(5)
+            .select('title creatorName createdAt');
+
+        const eventsText = recentEvents.map(e => `- ${e.title} (Criado por ${e.creatorName || 'Expert'})`).join('\n');
 
         const userProfile = userId ? await User.findById(userId) : null;
         const userName = userProfile ? userProfile.name : (role === 'guest' ? "Visitante" : "Mestre");
@@ -130,11 +143,20 @@ exports.handleBrainCommand = async (req, res) => {
                 DADOS DO UTILIZADOR ATUAL:
                 - Nome: Visitante (Não Logado)
                 - Cargo: Público
-
-                INFORMAÇÃO PÚBLICA:
-                O utilizador está a explorar a plataforma de fora. Deve focar-se em explicar o que é a Inscreva-se e incentivá-lo a criar uma conta para ver o poder da IA.
             `;
         }
+
+        // Global Dynamic Context
+        const globalContext = `
+            CONTEXTO TEMPORAL:
+            - Hoje é ${dateString}.
+            - Hora Atual: ${timeString}.
+
+            EVENTOS RECENTES NA PLATAFORMA:
+            ${eventsText || "Nenhum evento recente encontrado."}
+        `;
+
+        statsContext = globalContext + "\n" + statsContext;
 
         if (pageContext) {
             statsContext += `\n\nCONTEXTO VISUAL (O que o usuário vê agora):\n${pageContext}\n`;
