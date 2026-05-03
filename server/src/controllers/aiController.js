@@ -26,8 +26,8 @@ SOBRE O PROCESSO DE CADASTRO (/cadastro):
 
 PREÇOS E PLANOS:
 - Plano Free: Grátis (Comissão de 15% por venda). Ideal para iniciantes.
-- Plano Pro: $2.99 USD/mês (Comissão reduzida para 10%). Inclui gestão avançada e suporte prioritário.
-- Plano Enterprise: $27.99 USD/mês. Solução completa para grandes organizações e eventos de escala.
+- Plano Pro: $19.59 USD/mês (Comissão reduzida para apenas 5%). Inclui gestão avançada e suporte prioritário.
+- Plano Enterprise: $79.79 USD/mês. Taxa Zero (0% de comissão). Solução completa para grandes organizações e eventos de escala.
 
 CONHECIMENTO ADICIONAL:
 - Pode informar a data e hora atual (fornecidas no contexto).
