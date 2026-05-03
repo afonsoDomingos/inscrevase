@@ -86,14 +86,30 @@ exports.handleBrainCommand = async (req, res) => {
 
         // Gemini Integration
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
+        let text = "";
+        let attemptSuccess = false;
+        let lastError = "";
 
         const prompt = BRAIN_SYSTEM_PROMPT.replace('{CONTEXT_DATA}', statsContext) + 
                        `\n\nUsuário diz: "${transcript}"\n\nResposta do BRAIN:`;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+        for (const modelName of modelsToTry) {
+            try {
+                const model = genAI.getGenerativeModel({ model: modelName });
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                text = response.text();
+                attemptSuccess = true;
+                break;
+            } catch (e) {
+                lastError = e.message;
+            }
+        }
+
+        if (!attemptSuccess) {
+            throw new Error(`Nenhum modelo Gemini suportado. Último erro: ${lastError}`);
+        }
 
         res.json({ reply: text });
 
