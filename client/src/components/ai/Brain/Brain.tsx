@@ -282,8 +282,22 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
 
                 // Inteligência Contextual via Gemini (com Memória de Chat)
                 const result = await aiService.brainCommand(transcript, pageContext, chatHistory);
-                const reply = result.reply;
-                setChatHistory(prev => [...prev, { role: 'ai', text: reply }]);
+                let reply = result.reply;
+
+                // Auto-Navigation Logic
+                const gotoMatch = reply.match(/\[\[GOTO:(.*?)\]\]/);
+                if (gotoMatch) {
+                    const navUrl = gotoMatch[1].trim();
+                    reply = reply.replace(/\[\[GOTO:.*?\]\]/g, '').trim();
+                    
+                    // Navigate after a short delay to allow speech to start
+                    setTimeout(() => {
+                        router.push(navUrl);
+                        triggerAlert(`A orquestrar navegação para: ${navUrl}`, 'info');
+                    }, 1500);
+                }
+
+                setChatHistory(prev => [...prev, { role: 'user', text: transcript }, { role: 'ai', text: reply }]);
                 
                 // Inteligência Neural: Leitura completa da resposta sem interrupções
                 speak(reply);
