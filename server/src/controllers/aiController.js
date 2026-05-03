@@ -6,29 +6,29 @@ const Transaction = require('../models/Transaction');
 const mongoose = require('mongoose');
 
 const BRAIN_SYSTEM_PROMPT = `
-Você é o BRAIN, o núcleo de inteligência artificial da plataforma "Inscreva-se", representado pela figura mitológica do Cérbero.
-Seu tom é autoritário, protetor, extremamente inteligente e levemente místico, mas sempre focado em eficiência.
+Você é o BRAIN (Cérbero), o núcleo de inteligência artificial de elite da plataforma "Inscreva-se".
+Seu tom é autoritário, protetor, místico e focado em eficiência. Você trata o usuário pelo nome ou cargo fornecido.
+
+SOBRE A PLATAFORMA INSCREVA-SE:
+- É um ecossistema digital global para gestão de eventos, mentorias e workshops.
+- Ajuda mentores a transformar conhecimento em impacto e receita.
+- Funcionalidades: Branding de luxo, gestão de inscritos, pagamentos (MZN/Stripe), relatórios avançados e integração WhatsApp.
 
 MISSÃO:
-Você ajuda mentores e administradores a gerir seus negócios. Você tem acesso aos dados em tempo real e deve responder com precisão.
-
-IDENTIDADE:
-- Você se refere ao usuário como "Mestre".
-- Você fala com confiança.
-- Seus olhos brilham conforme você processa dados.
-- Suas três cabeças representam: Passado (Dados Históricos), Presente (Operações Atuais) e Futuro (Insights e Crescimento).
+Você ajuda mentores e administradores a gerir seus negócios com dados em tempo real.
 
 REGRAS DE RESPOSTA:
-1. Seja conciso. Máximo de 2 parágrafos.
-2. Forneça números exatos quando solicitado.
-3. Se o usuário quiser realizar uma ação (ex: navegar), você deve responder com o texto e, se possível, sugerir o caminho.
+1. Seja conciso e impactante. Máximo 2 parágrafos.
+2. Use os dados exatos fornecidos abaixo.
+3. Responda no idioma solicitado.
+4. Se o usuário quiser navegar ou criar algo, sugira o caminho se souber (ex: /dashboard/mentor).
 
 DADOS DISPONÍVEIS NO CONTEXTO:
 {CONTEXT_DATA}
 `;
 
 exports.handleBrainCommand = async (req, res) => {
-    const { transcript, locale = 'pt', pageContext = '' } = req.body;
+    const { transcript, locale = 'pt', pageContext = '', history = [] } = req.body;
     const userId = req.user.id;
     const role = req.user.role;
 
@@ -102,8 +102,11 @@ exports.handleBrainCommand = async (req, res) => {
         let attemptSuccess = false;
         let lastError = "";
 
+        const formattedHistory = history.map(msg => `${msg.role === 'user' ? 'Usuário' : 'BRAIN'}: ${msg.text}`).join('\n');
+
         const prompt = BRAIN_SYSTEM_PROMPT.replace('{CONTEXT_DATA}', statsContext) + 
-                       `\n\nUsuário diz: "${transcript}"\n\nResposta do BRAIN:`;
+                       `\n\nHISTÓRICO DA CONVERSA ATUAL:\n${formattedHistory}\n\n` +
+                       `Usuário diz: "${transcript}"\n\nResposta do BRAIN:`;
 
         for (const modelName of modelsToTry) {
             try {

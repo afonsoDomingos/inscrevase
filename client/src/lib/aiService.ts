@@ -30,12 +30,12 @@ export const aiService = {
             throw error;
         }
     },
-    brainCommand: async (transcript: string, pageContext?: string) => {
+    brainCommand: async (transcript: string, pageContext?: string, history: any[] = []) => {
         try {
             const response = await fetch(`${API_URL}/ai/brain/command`, {
                 method: 'POST',
                 headers: getHeaders(),
-                body: JSON.stringify({ transcript, pageContext })
+                body: JSON.stringify({ transcript, pageContext, history })
             });
 
             if (!response.ok) {

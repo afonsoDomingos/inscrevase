@@ -167,8 +167,8 @@ export default function Brain() {
                     pageContext += `Conteúdo visível no ecrã: ${mainContainer.innerText.substring(0, 1500)}`;
                 }
 
-                // Inteligência Contextual via Gemini
-                const result = await aiService.brainCommand(transcript, pageContext);
+                // Inteligência Contextual via Gemini (com Memória de Chat)
+                const result = await aiService.brainCommand(transcript, pageContext, chatHistory);
                 const reply = result.reply;
                 setChatHistory(prev => [...prev, { role: 'ai', text: reply }]);
                 
