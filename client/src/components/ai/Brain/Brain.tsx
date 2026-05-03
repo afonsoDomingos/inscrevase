@@ -824,7 +824,21 @@ export default function Brain() {
                             onClick={() => { 
                                 setIsVisible(true); 
                                 playSystemSound('intro');
-                                const greeting = `${getTimeGreeting()}, Mestre. Sistemas neurais online. Como posso ajudar?`;
+                                
+                                // Tenta obter o nome do utilizador do localStorage
+                                let userName = "";
+                                try {
+                                    const storedUser = localStorage.getItem('user');
+                                    if (storedUser) {
+                                        const userObj = JSON.parse(storedUser);
+                                        userName = userObj.name || "";
+                                    }
+                                } catch (e) {
+                                    console.error("Erro ao ler nome do utilizador:", e);
+                                }
+
+                                const namePrefix = userName ? `! ${userName}.` : ", Mestre.";
+                                const greeting = `${getTimeGreeting()}${namePrefix} Seja bem-vindo ao Inscreva-se. Como posso ajudar?`;
                                 speak(greeting);
                                 setChatHistory([{ role: 'ai', text: greeting }]);
                             }}
