@@ -39,7 +39,17 @@ export const aiService = {
             });
 
             if (!response.ok) {
-                throw new Error('Falha neural no BRAIN');
+                const errorText = await response.text();
+                let errorDetails = 'Falha neural no BRAIN';
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    if (errorJson.details || errorJson.error) {
+                        errorDetails = errorJson.details || errorJson.error;
+                    }
+                } catch(e) {
+                    errorDetails = errorText || errorDetails;
+                }
+                throw new Error(errorDetails);
             }
 
             return await response.json();

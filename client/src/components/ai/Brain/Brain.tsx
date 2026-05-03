@@ -181,7 +181,7 @@ export default function Brain() {
             ];
             const randomError = errorMessages[Math.floor(Math.random() * errorMessages.length)];
             speak(randomError);
-            toast.error("Erro na matriz neural do Cérbero.");
+            toast.error(error instanceof Error ? error.message : "Erro na matriz neural do Cérbero.");
         } finally {
             setIsThinking(false);
         }
@@ -311,7 +311,7 @@ export default function Brain() {
 
     // Sistema de Ativação por Voz (Wake-Word)
     useEffect(() => {
-        if (!hasSupport) return;
+        if (!hasSupport || isVisible) return;
 
         interface SpeechRecognitionEvent {
             results: {
