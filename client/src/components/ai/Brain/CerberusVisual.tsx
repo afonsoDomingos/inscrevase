@@ -51,12 +51,7 @@ export default function CerberusVisual({
                     </radialGradient>
                     
                     <filter id="inner-shadow">
-                        <feOffset dx="0" dy="2" />
-                        <feGaussianBlur stdDeviation="3" result="offset-blur" />
-                        <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse" />
-                        <feFlood floodColor="black" floodOpacity="0.8" result="color" />
-                        <feComposite operator="in" in="color" in2="inverse" result="shadow" />
-                        <feComposite operator="over" in="shadow" in2="SourceGraphic" />
+                        <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.5" />
                     </filter>
                 </defs>
 
@@ -66,12 +61,8 @@ export default function CerberusVisual({
                     fill="url(#brain-depth)"
                     stroke="rgba(255,255,255,0.15)"
                     strokeWidth="0.8"
-                    filter="url(#inner-shadow)"
-                    animate={isThinking ? { 
-                        x: [-1, 1, -1],
-                        filter: ['brightness(1) blur(0px)', 'brightness(1.5) blur(2px)', 'brightness(1) blur(0px)']
-                    } : {}}
-                    transition={{ repeat: Infinity, duration: 0.2 }}
+                    animate={isThinking ? { x: [-1, 1, -1] } : {}}
+                    transition={{ repeat: Infinity, duration: 0.5 }}
                 />
 
                 {/* Hemisfério Direito */}
@@ -80,12 +71,8 @@ export default function CerberusVisual({
                     fill="url(#brain-depth)"
                     stroke="rgba(255,255,255,0.15)"
                     strokeWidth="0.8"
-                    filter="url(#inner-shadow)"
-                    animate={isThinking ? { 
-                        x: [1, -1, 1],
-                        filter: ['brightness(1) blur(0px)', 'brightness(1.5) blur(2px)', 'brightness(1) blur(0px)']
-                    } : {}}
-                    transition={{ repeat: Infinity, duration: 0.2 }}
+                    animate={isThinking ? { x: [1, -1, 1] } : {}}
+                    transition={{ repeat: Infinity, duration: 0.5 }}
                 />
 
                 {/* Convoluções Anatómicas (Veias/Sulcos) */}
@@ -124,27 +111,25 @@ export default function CerberusVisual({
                     <path d="M100 25 Q 98 50, 100 85 T 100 145" strokeWidth="2.5" stroke="rgba(0,0,0,0.8)" />
                 </g>
 
-                {/* Rede Neural de Alta Frequência (Sinapses) */}
+                {/* Rede Neural de Alta Frequência (Sinapses Otimizadas) */}
                 <g>
-                    {[...Array(25)].map((_, i) => (
+                    {[...Array(12)].map((_, i) => (
                         <motion.circle
                             key={i}
                             cx={30 + Math.random() * 140}
                             cy={40 + Math.random() * 95}
-                            r={Math.random() * 2.5 + 0.5}
+                            r={Math.random() * 2 + 1}
                             fill={isThinking ? "#38bdf8" : "#fff"}
                             initial={{ opacity: 0 }}
                             animate={{
-                                opacity: isThinking ? [0, 1, 0] : isSpeaking || isListening ? [0, 0.6, 0] : [0, 0.2, 0],
-                                scale: isThinking ? [0.5, 2, 0.5] : 1,
-                                fill: isThinking ? ["#38bdf8", "#eab308", "#fff"] : "#fff"
+                                opacity: isThinking ? [0, 0.8, 0] : isSpeaking || isListening ? [0, 0.5, 0] : [0, 0.2, 0],
+                                scale: isThinking ? [0.8, 1.5, 0.8] : 1
                             }}
                             transition={{
-                                duration: isThinking ? 0.15 + Math.random() * 0.3 : 1.5 + Math.random(),
+                                duration: isThinking ? 0.8 + Math.random() * 0.5 : 2 + Math.random(),
                                 repeat: Infinity,
                                 delay: Math.random() * 2
                             }}
-                            style={{ filter: `drop-shadow(0 0 8px ${isThinking ? '#38bdf8' : mainColor})` }}
                         />
                     ))}
                 </g>
