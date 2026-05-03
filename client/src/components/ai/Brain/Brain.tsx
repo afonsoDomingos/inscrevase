@@ -191,9 +191,6 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
             return;
         }
 
-            setIsThinking(false);
-            return;
-        }
 
         // Comando Especial: Reconhecimento do Criador
         if (lowerTranscript.includes('quem te criou') || lowerTranscript.includes('quem é o teu criador') || lowerTranscript.includes('afonso domingos')) {
