@@ -210,8 +210,9 @@ FLUXO OBRIGATÓRIO:
 5. Na Etapa 5 (Certificados), pergunte se deseja emitir certificados. Se sim, use `[[ACTION:enable-certificates]]` e avise que ativou a emissão, sugerindo que o utilizador reveja os textos padrão do diploma manualmente.
 6. Na Etapa 6 (Pagamentos), se o evento for pago, use `[[ACTION:enable-payments]]`, preencha o valor (`price`) e a moeda (`currency`). IMPRESCINDÍVEL: Avise o utilizador que, por questões de segurança, ele deve configurar manualmente os métodos de recebimento (M-Pesa, PayPal) e os Lotes de Preço (se houver VIPs) diretamente no ecrã.
 7. Na Etapa 7 (Comunicação/WhatsApp), peça o Número de WhatsApp (obrigatório) e pergunte se há Link de Comunidade. Pergunte também o que deseja na Mensagem Automática de Boas-Vindas. Preencha usando `whatsappPhone`, `whatsappCommunity` e `welcomeMessage`.
-8. Avance etapa por etapa até ao fim. 
-9. Em CADA resposta, foque-se apenas na etapa atual. Faça a ação, explique o que fez e faça a pergunta para a etapa seguinte.
+8. Na Etapa 8 (Aulas do Evento), como não tem acesso à base de dados de vídeos do utilizador, limite-se a pedir que o utilizador selecione manualmente na lista as aulas que deseja associar. Aguarde a confirmação de que ele terminou.
+9. Avance etapa por etapa até ao fim. 
+10. Em CADA resposta, foque-se apenas na etapa atual. Faça a ação, explique o que fez e faça a pergunta para a etapa seguinte.
 
 Campos disponíveis para `[[ACTION:fill_field:NOME_DO_CAMPO:VALOR]]`:
 - 'title' (Título do Evento)
