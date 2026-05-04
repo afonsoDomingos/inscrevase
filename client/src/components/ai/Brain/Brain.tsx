@@ -490,34 +490,51 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
     }, [isListening]);
 
     // Componente de Visualização de Voz (Barras Reais)
-    const VoiceVisualizer = () => (
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '3px', height: '32px', width: '100%', padding: '0 16px' }}>
-            {[...Array(12)].map((_, i) => (
-                <motion.div
-                    key={i}
-                    animate={{ 
-                        height: isListening 
-                            ? Math.max(4, (audioLevel / 100) * 45 - Math.abs(i - 6) * 2)
-                            : isSpeaking 
-                                ? [8, Math.random() * 20 + 8, 8] 
-                                : 4,
-                        opacity: isSpeaking || (isListening && audioLevel > 5) ? 1 : 0.3
-                    }}
-                    transition={{ 
-                        type: 'spring',
-                        stiffness: 300,
-                        damping: 20
-                    }}
-                    style={{ 
-                        width: '4px', 
-                        borderRadius: '9999px', 
-                        background: isAlert ? '#ef4444' : '#eab308',
-                        boxShadow: (isSpeaking || isListening) && audioLevel > 10 ? `0 0 15px ${isAlert ? '#ef4444' : '#eab308'}` : 'none' 
-                    }}
-                />
-            ))}
-        </div>
-    );
+    const VoiceVisualizer = () => {
+        const barCount = 17;
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', height: '40px', width: '100%', padding: '0 16px' }}>
+                {[...Array(barCount)].map((_, i) => {
+                    const centerOffset = Math.abs(i - (barCount - 1) / 2);
+                    const maxHeight = Math.max(12, 36 - centerOffset * 4);
+                    const midHeight = Math.max(8, 22 - centerOffset * 2.5);
+                    
+                    return (
+                        <motion.div
+                            key={i}
+                            animate={{ 
+                                height: isListening 
+                                    ? Math.max(4, (audioLevel / 100) * 45 - centerOffset * 2)
+                                    : isSpeaking 
+                                        ? [4, maxHeight, midHeight, maxHeight * 0.85, 4] 
+                                        : 4,
+                                opacity: isSpeaking ? 1 : (isListening && audioLevel > 5) ? 1 : 0.3
+                            }}
+                            transition={
+                                isSpeaking ? { 
+                                    duration: 0.6 + (i % 3) * 0.2,
+                                    repeat: Infinity,
+                                    repeatType: "mirror",
+                                    ease: "easeInOut",
+                                    delay: centerOffset * 0.08
+                                } : { 
+                                    type: 'spring',
+                                    stiffness: 300,
+                                    damping: 20
+                                }
+                            }
+                            style={{ 
+                                width: '4px', 
+                                borderRadius: '9999px', 
+                                background: isAlert ? '#ef4444' : '#eab308',
+                                boxShadow: isSpeaking || (isListening && audioLevel > 10) ? `0 0 12px ${isAlert ? 'rgba(239,68,68,0.8)' : 'rgba(234,179,8,0.8)'}` : 'none' 
+                            }}
+                        />
+                    );
+                })}
+            </div>
+        );
+    };
 
     // Sistema de Ativação por Voz (Wake-Word)
     useEffect(() => {
