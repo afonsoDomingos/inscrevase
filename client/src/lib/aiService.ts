@@ -75,12 +75,12 @@ export const aiService = {
             throw error;
         }
     },
-    generateSpeech: async (text: string, provider: 'openai' | 'elevenlabs' = 'openai') => {
+    generateSpeech: async (text: string, provider: 'openai' | 'elevenlabs' = 'openai', voiceId: string = 'onyx') => {
         try {
             const response = await fetch(`${API_URL}/ai/brain/tts`, {
                 method: 'POST',
                 headers: getHeaders(),
-                body: JSON.stringify({ text, provider })
+                body: JSON.stringify({ text, provider, voiceId })
             });
 
             if (!response.ok) {

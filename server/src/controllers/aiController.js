@@ -390,17 +390,20 @@ exports.getBrainStats = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };exports.textToSpeech = async (req, res) => {
-    const { text, provider = 'openai' } = req.body;
+    const { text, provider = 'openai', voiceId = 'onyx' } = req.body;
 
     if (!text) return res.status(400).json({ error: "Texto é obrigatório" });
 
     try {
         // 1. Tentar OpenAI TTS (Excelente custo-benefício)
         if (provider === 'openai' && process.env.OPENAI_API_KEY) {
+            const validVoices = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'];
+            const safeVoice = validVoices.includes(voiceId) ? voiceId : 'onyx';
+            
             const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
             const mp3 = await openai.audio.speech.create({
                 model: "tts-1",
-                voice: "onyx", // alloy, echo, fable, onyx, nova, shimmer
+                voice: safeVoice,
                 input: text,
             });
             const buffer = Buffer.from(await mp3.arrayBuffer());

@@ -38,6 +38,8 @@ export default function BrainAudit() {
     const [expandedLog, setExpandedLog] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [logs, setLogs] = useState<BrainLog[]>([]);
+    
+    const openAIVoices = ['onyx', 'alloy', 'echo', 'fable', 'nova', 'shimmer'];
 
     useEffect(() => {
         fetchStatsAndLogs();
@@ -130,7 +132,7 @@ export default function BrainAudit() {
         } else {
             try {
                 toast.info("A gerar pré-visualização premium...");
-                const audioBlob = await aiService.generateSpeech(testText);
+                const audioBlob = await aiService.generateSpeech(testText, 'openai', selectedVoiceName || 'onyx');
                 const audioUrl = URL.createObjectURL(audioBlob);
                 const audio = new Audio(audioUrl);
                 audio.play();
@@ -245,12 +247,37 @@ export default function BrainAudit() {
                                         fontWeight: 700,
                                         color: '#334155',
                                         outline: 'none',
-                                        cursor: 'pointer'
+                                        cursor: 'pointer',
+                                        textTransform: 'capitalize'
                                     }}
                                 >
                                     <option value="">Auto-Seleção (Melhor disponível)</option>
                                     {availableVoices.map((voice, i) => (
                                         <option key={i} value={voice.name}>{voice.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
+                        {voiceMode === 'premium' && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '10px', borderLeft: '1px solid #e2e8f0', paddingLeft: '15px' }}>
+                                <select 
+                                    value={openAIVoices.includes(selectedVoiceName) ? selectedVoiceName : 'onyx'}
+                                    onChange={(e) => handleVoiceNameChange(e.target.value)}
+                                    disabled={isUpdatingVoice}
+                                    style={{
+                                        background: 'transparent',
+                                        border: 'none',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 700,
+                                        color: '#334155',
+                                        outline: 'none',
+                                        cursor: 'pointer',
+                                        textTransform: 'capitalize'
+                                    }}
+                                >
+                                    {openAIVoices.map((voice, i) => (
+                                        <option key={i} value={voice}>{voice}</option>
                                     ))}
                                 </select>
                             </div>
