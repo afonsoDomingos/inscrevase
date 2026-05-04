@@ -325,16 +325,14 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
         };
 
         // Comando Especial: Controle Físico da Tela (Scroll)
-        if (lowerTranscript.includes('descer a página') || lowerTranscript.includes('vai para baixo') || lowerTranscript.includes('lá para baixo') || lowerTranscript.includes('faz scroll para baixo') || lowerTranscript.includes('rola para baixo') || lowerTranscript.includes('desce um pouco')) {
-            performSuperScroll(window.innerHeight * 0.8);
-            speak("A descer a página, Mestre.");
-            setIsThinking(false);
-            return;
-        }
+        const wantsToScrollUp = /(subir|cima|sobe|scroll.*cima|scrool.*cima)/.test(lowerTranscript);
+        const wantsToScrollDown = /(descer|baixo|desce|scroll|scrool|rolar)/.test(lowerTranscript);
 
-        if (lowerTranscript.includes('subir a página') || lowerTranscript.includes('vai para cima') || lowerTranscript.includes('lá para cima') || lowerTranscript.includes('faz scroll para cima') || lowerTranscript.includes('rola para cima') || lowerTranscript.includes('sobe um pouco')) {
-            performSuperScroll(-window.innerHeight * 0.8);
-            speak("Subindo a página, Mestre.");
+        if (wantsToScrollUp || wantsToScrollDown) {
+            // Se tiver ambas as palavras, assume a que está explícita. O padrão é descer se ele disser só "faz um scrool".
+            const isUp = wantsToScrollUp && !/(descer|baixo)/.test(lowerTranscript);
+            performSuperScroll(isUp ? -window.innerHeight * 0.8 : window.innerHeight * 0.8);
+            speak(isUp ? "A subir a página." : "A descer a página, Mestre.");
             setIsThinking(false);
             return;
         }
