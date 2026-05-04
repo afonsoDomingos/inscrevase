@@ -319,20 +319,29 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
 
         // Helpers para Scroll Universal
         const performSuperScroll = (amount: number) => {
-            // Tenta o scroll tradicional primeiro
-            window.scrollBy({ top: amount, behavior: 'smooth' });
-            
-            // O Dashboard e outras páginas podem ter scroll preso num contentor main ou flex
-            const mainEl = document.querySelector('main');
-            if (mainEl) mainEl.scrollBy({ top: amount, behavior: 'smooth' });
-            
-            // Varre o DOM para encontrar todos os contentores que são nativamente "scrolláveis"
-            document.querySelectorAll('*').forEach(el => {
-                const style = window.getComputedStyle(el);
-                if ((style.overflowY === 'auto' || style.overflowY === 'scroll' || style.overflow === 'auto') && el.scrollHeight > el.clientHeight) {
-                    el.scrollBy({ top: amount, behavior: 'smooth' });
+            try {
+                // 1. Tenta o scroll tradicional primeiro (Janela e Documento Base)
+                window.scrollBy({ top: amount, behavior: 'smooth' });
+                if (document.scrollingElement) {
+                    document.scrollingElement.scrollBy({ top: amount, behavior: 'smooth' });
                 }
-            });
+                
+                // 2. O Dashboard e outras páginas podem ter scroll preso num contentor main ou flex
+                const mainEl = document.querySelector('main');
+                if (mainEl) mainEl.scrollBy({ top: amount, behavior: 'smooth' });
+                
+                // 3. Varre contentores específicos de layout (Next.js wrappers) para performance em vez de "*"
+                document.querySelectorAll('div[class*="min-h-screen"], div[class*="h-screen"], .custom-scrollbar').forEach(el => {
+                    const style = window.getComputedStyle(el);
+                    if (style.overflowY === 'auto' || style.overflowY === 'scroll' || style.overflow === 'auto') {
+                        if (el.scrollHeight > el.clientHeight) {
+                            el.scrollBy({ top: amount, behavior: 'smooth' });
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Falha no SuperScroll:", error);
+            }
         };
 
         // Comando Especial: Controle Físico da Tela (Scroll)
