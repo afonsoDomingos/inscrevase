@@ -13,6 +13,7 @@ import { authService, type UserData } from '@/lib/authService';
 
 // Componente para Efeito de Digitação
 const TypewriterText = ({ text, speed = 8 }: { text: string, speed?: number }) => {
+    const router = useRouter();
     const [displayedText, setDisplayedText] = useState("");
     const [isComplete, setIsComplete] = useState(false);
 
@@ -37,15 +38,35 @@ const TypewriterText = ({ text, speed = 8 }: { text: string, speed?: number }) =
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 strong: ({node, ...props}) => <strong style={{ color: '#fff', fontWeight: 800 }} {...props} />, 
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                a: ({node, ...props}) => {
-                    const isExternal = props.href?.startsWith('http');
+                a: ({node, href, children, ...props}) => {
+                    const isExternal = href?.startsWith('http');
                     return (
                         <a 
-                            style={{ color: '#38bdf8', textDecoration: 'underline', cursor: 'pointer' }} 
-                            target={isExternal ? "_blank" : "_self"}
-                            rel={isExternal ? "noopener noreferrer" : ""}
-                            {...props} 
-                        />
+                            style={{ 
+                                color: '#facc15', 
+                                textDecoration: 'underline', 
+                                textUnderlineOffset: '3px',
+                                cursor: 'pointer',
+                                fontWeight: 700,
+                                transition: 'color 0.2s'
+                            }}
+                            href={isExternal ? href : undefined}
+                            target={isExternal ? "_blank" : undefined}
+                            rel={isExternal ? "noopener noreferrer" : undefined}
+                            onMouseDown={(e) => e.stopPropagation()} // Impede drag de roubar o clique
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (isExternal && href) {
+                                    window.open(href, '_blank', 'noopener,noreferrer');
+                                } else if (href) {
+                                    router.push(href);
+                                }
+                            }}
+                            {...props}
+                        >
+                            {children}
+                        </a>
                     );
                 }
             }}
