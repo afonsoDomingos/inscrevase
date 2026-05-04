@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Users, MessageSquare, TrendingUp, Clock, Bot, ChevronDown, ChevronUp, Target, Search, Volume2, Download } from 'lucide-react';
+import { Brain, Users, MessageSquare, TrendingUp, Clock, Bot, ChevronDown, ChevronUp, Target, Search, Volume2, Download, Play, Pause } from 'lucide-react';
 import { aiService } from '@/lib/aiService';
 import { toast } from 'sonner';
 
@@ -95,6 +95,35 @@ export default function BrainAudit() {
             toast.error("Falha ao atualizar personagem de voz");
         } finally {
             setIsUpdatingVoice(false);
+        }
+    };
+
+    const handleTestVoice = async () => {
+        const testText = "Olá Mestre. Eu sou o Cérbero, o seu guardião digital. Como posso ser útil hoje?";
+        
+        if (voiceMode === 'local') {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(testText);
+            utterance.lang = 'pt-PT';
+            
+            const voices = window.speechSynthesis.getVoices();
+            const voice = voices.find(v => v.name === selectedVoiceName) || 
+                          voices.find(v => v.lang.startsWith('pt')) || 
+                          voices[0];
+            
+            if (voice) utterance.voice = voice;
+            window.speechSynthesis.speak(utterance);
+        } else {
+            try {
+                toast.info("A gerar pré-visualização premium...");
+                const audioBlob = await aiService.generateSpeech(testText);
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+                audio.play();
+                audio.onended = () => URL.revokeObjectURL(audioUrl);
+            } catch {
+                toast.error("Erro ao testar voz premium. Verifique a sua chave API.");
+            }
         }
     };
 
@@ -212,6 +241,27 @@ export default function BrainAudit() {
                                 </select>
                             </div>
                         )}
+
+                        <button 
+                            onClick={handleTestVoice}
+                            style={{
+                                background: 'var(--gold-gradient)',
+                                border: 'none',
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#000',
+                                cursor: 'pointer',
+                                marginLeft: '10px',
+                                boxShadow: '0 4px 10px rgba(212, 175, 55, 0.2)'
+                            }}
+                            title="Testar Voz"
+                        >
+                            <Play size={14} fill="currentColor" />
+                        </button>
                     </div>
                     <button 
                         onClick={handleExport}
