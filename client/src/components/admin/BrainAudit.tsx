@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Users, MessageSquare, TrendingUp, Clock, Bot, ChevronDown, ChevronUp, Zap, Target, Search, Volume2, Download } from 'lucide-react';
+import { Brain, Users, MessageSquare, TrendingUp, Clock, Bot, ChevronDown, ChevronUp, Target, Search, Volume2, Download } from 'lucide-react';
 import { aiService } from '@/lib/aiService';
 import { toast } from 'sonner';
 
@@ -65,8 +65,7 @@ export default function BrainAudit() {
                 if (window.speechSynthesis.onvoiceschanged !== undefined) {
                     window.speechSynthesis.onvoiceschanged = loadBrowserVoices;
                 }
-            } catch (error) {
-                console.error("Audit Error:", error);
+            } catch {
                 toast.error("Erro ao carregar auditoria");
             } finally {
                 setLoading(false);
@@ -79,7 +78,7 @@ export default function BrainAudit() {
             await aiService.updateVoiceMode(mode);
             setVoiceMode(mode);
             toast.success(`Modo de voz alterado para ${mode}`);
-        } catch (error) {
+        } catch {
             toast.error("Falha ao atualizar modo de voz");
         } finally {
             setIsUpdatingVoice(false);
@@ -92,7 +91,7 @@ export default function BrainAudit() {
             await aiService.updateVoiceMode(undefined, name);
             setSelectedVoiceName(name);
             toast.success(`Personagem de voz alterada para: ${name}`);
-        } catch (error) {
+        } catch {
             toast.error("Falha ao atualizar personagem de voz");
         } finally {
             setIsUpdatingVoice(false);
@@ -103,19 +102,6 @@ export default function BrainAudit() {
         setIsExporting(true);
         // Add export logic
         setTimeout(() => setIsExporting(false), 2000);
-    };
-
-    const loadStats = async () => {
-        try {
-            setLoading(true);
-            const data = await aiService.getBrainStats();
-            setStats(data);
-        } catch (error) {
-            console.error(error);
-            toast.error("Erro ao carregar estatísticas do Brain");
-        } finally {
-            setLoading(false);
-        }
     };
 
     if (loading) {

@@ -78,7 +78,7 @@ export default function Brain() {
                 const data = await aiService.getVoiceMode();
                 setVoiceMode(data.mode);
                 setPreferredVoiceName(data.voiceName || "");
-            } catch (err) {
+            } catch {
                 console.warn("Brain: Usando modo local por padrão.");
             }
         };
@@ -191,13 +191,13 @@ export default function Brain() {
             };
 
             await audio.play();
-        } catch (error) {
+        } catch {
             console.warn("⚠️ Falha no áudio premium, recorrendo ao browser...");
             fallbackToBrowserTTS(cleanText, onEndCallback);
         }
-    }, [voices, voiceMode]);
+    }, [voices, voiceMode, fallbackToBrowserTTS]);
 
-    const fallbackToBrowserTTS = (text: string, onEndCallback?: () => void) => {
+    const fallbackToBrowserTTS = useCallback((text: string, onEndCallback?: () => void) => {
         if (!window.speechSynthesis) {
             if (onEndCallback) onEndCallback();
             return;
@@ -229,7 +229,7 @@ export default function Brain() {
         
         if (preferredVoice) utterance.voice = preferredVoice;
         window.speechSynthesis.speak(utterance);
-    };
+    }, [voices, preferredVoiceName]);
 
     const handleCommand = useCallback(async (transcript: string) => {
         setLastCommand(transcript);
