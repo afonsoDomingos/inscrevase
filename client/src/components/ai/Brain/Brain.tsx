@@ -306,16 +306,34 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
             return;
         }
 
+        // Helpers para Scroll Universal
+        const performSuperScroll = (amount: number) => {
+            // Tenta o scroll tradicional primeiro
+            window.scrollBy({ top: amount, behavior: 'smooth' });
+            
+            // O Dashboard e outras páginas podem ter scroll preso num contentor main ou flex
+            const mainEl = document.querySelector('main');
+            if (mainEl) mainEl.scrollBy({ top: amount, behavior: 'smooth' });
+            
+            // Varre o DOM para encontrar todos os contentores que são nativamente "scrolláveis"
+            document.querySelectorAll('*').forEach(el => {
+                const style = window.getComputedStyle(el);
+                if ((style.overflowY === 'auto' || style.overflowY === 'scroll' || style.overflow === 'auto') && el.scrollHeight > el.clientHeight) {
+                    el.scrollBy({ top: amount, behavior: 'smooth' });
+                }
+            });
+        };
+
         // Comando Especial: Controle Físico da Tela (Scroll)
         if (lowerTranscript.includes('descer a página') || lowerTranscript.includes('vai para baixo') || lowerTranscript.includes('lá para baixo') || lowerTranscript.includes('faz scroll para baixo') || lowerTranscript.includes('rola para baixo') || lowerTranscript.includes('desce um pouco')) {
-            window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' });
+            performSuperScroll(window.innerHeight * 0.8);
             speak("A descer a página, Mestre.");
             setIsThinking(false);
             return;
         }
 
         if (lowerTranscript.includes('subir a página') || lowerTranscript.includes('vai para cima') || lowerTranscript.includes('lá para cima') || lowerTranscript.includes('faz scroll para cima') || lowerTranscript.includes('rola para cima') || lowerTranscript.includes('sobe um pouco')) {
-            window.scrollBy({ top: -window.innerHeight * 0.8, behavior: 'smooth' });
+            performSuperScroll(-window.innerHeight * 0.8);
             speak("Subindo a página, Mestre.");
             setIsThinking(false);
             return;
