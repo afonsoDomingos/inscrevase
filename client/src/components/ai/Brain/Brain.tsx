@@ -470,6 +470,10 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 window.dispatchEvent(new CustomEvent('brain-select-template', { detail: { type: templateType } }));
                             }, 500); // Give modal time to open
                             triggerAlert(`A iniciar modo de criação para: ${templateType}`, 'success');
+                        } else if (actionName.startsWith('set_event_step:')) {
+                            const stepStr = actionName.split(':')[1];
+                            window.dispatchEvent(new CustomEvent('brain-change-step', { detail: { step: stepStr } }));
+                            triggerAlert(`A navegar para a etapa: ${stepStr}`, 'success');
                         } else {
                             window.dispatchEvent(new Event(`brain-action-${actionName}`));
                             triggerAlert(`A executar ação: ${actionName}`, 'success');

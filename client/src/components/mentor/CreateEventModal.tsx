@@ -636,8 +636,22 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
             }
         };
 
+        const handleBrainChangeStep = (e: Event) => {
+            const customEvent = e as CustomEvent;
+            if (customEvent.detail && customEvent.detail.step !== undefined) {
+                const stepNum = parseInt(customEvent.detail.step);
+                if (!isNaN(stepNum) && stepNum >= 0 && stepNum <= 10) {
+                    setStep(stepNum);
+                }
+            }
+        };
+
         window.addEventListener('brain-select-template', handleBrainSelectTemplate);
-        return () => window.removeEventListener('brain-select-template', handleBrainSelectTemplate);
+        window.addEventListener('brain-change-step', handleBrainChangeStep);
+        return () => {
+            window.removeEventListener('brain-select-template', handleBrainSelectTemplate);
+            window.removeEventListener('brain-change-step', handleBrainChangeStep);
+        };
     }, [theme, certificateConfig]);
 
     const clearForm = () => {
