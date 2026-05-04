@@ -1017,13 +1017,22 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                         
                                         {hasSupport && (
                                             <motion.button 
-                                                whileHover={{ scale: 1.02, boxShadow: isListening ? '0 8px 25px rgba(239, 68, 68, 0.4)' : '0 8px 25px rgba(234, 179, 8, 0.4)' }} 
+                                                whileHover={{ scale: 1.02, boxShadow: isSpeaking ? '0 8px 25px rgba(249, 115, 22, 0.4)' : isListening ? '0 8px 25px rgba(239, 68, 68, 0.4)' : '0 8px 25px rgba(234, 179, 8, 0.4)' }} 
                                                 whileTap={{ scale: 0.98 }} 
                                                 onClick={() => {
-                                                    speak("Comando de voz ativo.");
-                                                    startListening();
+                                                    if (isSpeaking) {
+                                                        if (currentAudioRef.current) {
+                                                            currentAudioRef.current.pause();
+                                                            currentAudioRef.current = null;
+                                                        }
+                                                        if (window.speechSynthesis) window.speechSynthesis.cancel();
+                                                        setIsSpeaking(false);
+                                                    } else {
+                                                        speak("Comando de voz ativo.");
+                                                        startListening();
+                                                    }
                                                 }} 
-                                                disabled={isListening} 
+                                                disabled={isListening && !isSpeaking} 
                                                 style={{ 
                                                     width: '100%', 
                                                     padding: '8px', 
@@ -1033,18 +1042,20 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                     justifyContent: 'center', 
                                                     gap: '10px', 
                                                     border: 'none', 
-                                                    background: isListening ? 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' : 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', 
-                                                    color: isListening ? '#fff' : '#000', 
+                                                    background: isSpeaking ? 'linear-gradient(135deg, #f97316 0%, #c2410c 100%)' : isListening ? 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' : 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', 
+                                                    color: (isListening || isSpeaking) ? '#fff' : '#000', 
                                                     fontWeight: '900', 
                                                     fontSize: '0.8rem', 
                                                     letterSpacing: '1px', 
-                                                    cursor: isListening ? 'default' : 'pointer', 
+                                                    cursor: (isListening && !isSpeaking) ? 'default' : 'pointer', 
                                                     outline: 'none', 
                                                     transition: 'all 0.3s cubic-bezier(0.23, 1, 0.32, 1)', 
-                                                    boxShadow: isListening ? '0 0 20px rgba(239, 68, 68, 0.4)' : '0 6px 20px rgba(234, 179, 8, 0.25)' 
+                                                    boxShadow: isSpeaking ? '0 6px 20px rgba(249, 115, 22, 0.3)' : isListening ? '0 0 20px rgba(239, 68, 68, 0.4)' : '0 6px 20px rgba(234, 179, 8, 0.25)' 
                                                 }}
                                             >
-                                                {isListening ? (
+                                                {isSpeaking ? (
+                                                    <><Square size={20} fill="#fff" /><span>PARAR FALA</span></>
+                                                ) : isListening ? (
                                                     <>
                                                         <div style={{ display: 'flex', gap: '4px' }}>
                                                             {[1,2,3,4,5].map(i => <motion.div key={i} animate={{ height: [4, 18, 4] }} transition={{ repeat: Infinity, duration: 0.4, delay: i * 0.1 }} style={{ width: '3px', background: '#fff', borderRadius: '9999px' }} />)}
