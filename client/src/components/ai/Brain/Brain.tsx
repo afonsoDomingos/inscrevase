@@ -306,6 +306,21 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
             return;
         }
 
+        // Comando Especial: Controle Físico da Tela (Scroll)
+        if (lowerTranscript.includes('descer a página') || lowerTranscript.includes('vai para baixo') || lowerTranscript.includes('lá para baixo') || lowerTranscript.includes('faz scroll para baixo') || lowerTranscript.includes('rola para baixo') || lowerTranscript.includes('desce um pouco')) {
+            window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' });
+            speak("A descer a página, Mestre.");
+            setIsThinking(false);
+            return;
+        }
+
+        if (lowerTranscript.includes('subir a página') || lowerTranscript.includes('vai para cima') || lowerTranscript.includes('lá para cima') || lowerTranscript.includes('faz scroll para cima') || lowerTranscript.includes('rola para cima') || lowerTranscript.includes('sobe um pouco')) {
+            window.scrollBy({ top: -window.innerHeight * 0.8, behavior: 'smooth' });
+            speak("Subindo a página, Mestre.");
+            setIsThinking(false);
+            return;
+        }
+
         // Mapeamento Abrangente de Rotas (Atalhos Rápidos)
         const routes: Record<string, { path: string, response: string, keywords: string[] }> = {
             '/dashboard/mentor?tab=overview': { path: '/dashboard/mentor?tab=overview', response: 'Entendido, Mestre. A carregar a sua visão geral.', keywords: ['visão geral', 'resumo', 'dashboard mentor', 'painel mentor'] },
