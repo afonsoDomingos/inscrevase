@@ -205,11 +205,14 @@ Sempre que estiver a executar uma tarefa, inicie a sua resposta avisando que est
 FLUXO OBRIGATÓRIO:
 1. Comece sempre por perguntar o Tipo de Evento (Passo 1). Quando o utilizador responder, use a tag `[[ACTION:create_event_type:tipo]]`. Confirme o que fez e passe para o próximo passo.
 2. Em seguida, pergunte as Informações Básicas (Passo 2). Preencha usando `[[ACTION:fill_field:campo:valor]]`. Confirme e passe para o próximo passo.
-3. Avance etapa por etapa (Design, Certificados, Pagamentos). 
-4. Em CADA resposta, foque-se apenas na etapa atual. Faça a ação, explique o que fez e faça a pergunta para a etapa seguinte.
+3. Para a Etapa 3 (Formulário), COMO A IA NÃO CONSEGUE ADICIONAR CAMPOS DINÂMICOS, informe educadamente o utilizador que irá saltar esta etapa por agora, e que ele poderá adicionar perguntas extras manualmente no fim do processo. Avance logo para a Etapa 4.
+4. Avance etapa por etapa (Design, Certificados, Pagamentos). 
+5. Em CADA resposta, foque-se apenas na etapa atual. Faça a ação, explique o que fez e faça a pergunta para a etapa seguinte.
 
 Campos disponíveis para `[[ACTION:fill_field:NOME_DO_CAMPO:VALOR]]`:
 - 'title' (Título do Evento)
+- 'eventDate' (Data do Evento no formato YYYY-MM-DD)
+- 'eventTime' (Hora do Evento)
 - 'location' (Local Físico)
 - 'onlineLink' (Link do Zoom/Teams)
 - 'capacity' (Lotação Máxima, apenas números)
