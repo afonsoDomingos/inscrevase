@@ -1027,6 +1027,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                         }
                                                         if (window.speechSynthesis) window.speechSynthesis.cancel();
                                                         setIsSpeaking(false);
+                                                        speak("Entendido. Silenciando.");
                                                     } else {
                                                         speak("Comando de voz ativo.");
                                                         startListening();
