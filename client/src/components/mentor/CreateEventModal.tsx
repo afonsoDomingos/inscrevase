@@ -646,13 +646,53 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
             }
         };
 
+        const handleGenerateDesc = () => {
+            setStep(1); // Mudar para o separador de Informações
+            handleAiGenerate();
+        };
+
+        const handleEnablePayments = () => {
+            setStep(5); // Mudar para o separador de Pagamentos
+            setPaymentConfig(prev => ({ ...prev, enabled: true }));
+            toast.success("Módulo de Pagamentos ativado pelo Cérbero!");
+        };
+
+        const handleEnableCertificates = () => {
+            setStep(4); // Mudar para o separador de Certificados
+            setCertificateConfig(prev => ({ ...prev, enabled: true }));
+            toast.success("Módulo de Certificados ativado pelo Cérbero!");
+        };
+
+        const handleSetOnline = () => {
+            setStep(1);
+            setEventType('modeOnline');
+            toast.success("Evento configurado como Online.");
+        };
+
+        const handleSetPresencial = () => {
+            setStep(1);
+            setEventType('modePresencial');
+            toast.success("Evento configurado como Presencial.");
+        };
+
         window.addEventListener('brain-select-template', handleBrainSelectTemplate);
         window.addEventListener('brain-change-step', handleBrainChangeStep);
+        window.addEventListener('brain-action-generate-description', handleGenerateDesc);
+        window.addEventListener('brain-action-enable-payments', handleEnablePayments);
+        window.addEventListener('brain-action-enable-certificates', handleEnableCertificates);
+        window.addEventListener('brain-action-set-online', handleSetOnline);
+        window.addEventListener('brain-action-set-presencial', handleSetPresencial);
+
         return () => {
             window.removeEventListener('brain-select-template', handleBrainSelectTemplate);
             window.removeEventListener('brain-change-step', handleBrainChangeStep);
+            window.removeEventListener('brain-action-generate-description', handleGenerateDesc);
+            window.removeEventListener('brain-action-enable-payments', handleEnablePayments);
+            window.removeEventListener('brain-action-enable-certificates', handleEnableCertificates);
+            window.removeEventListener('brain-action-set-online', handleSetOnline);
+            window.removeEventListener('brain-action-set-presencial', handleSetPresencial);
         };
-    }, [theme, certificateConfig]);
+    }, [theme, certificateConfig, title]);
 
     const clearForm = () => {
         setStep(0);
