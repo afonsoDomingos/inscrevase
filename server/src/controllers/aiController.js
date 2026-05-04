@@ -204,7 +204,7 @@ Sempre que estiver a executar uma tarefa, inicie a sua resposta avisando que est
 
 FLUXO OBRIGATÓRIO:
 1. Comece sempre por perguntar o Tipo de Evento (Passo 1). Quando o utilizador responder, use a tag `[[ACTION:create_event_type:tipo]]`. Confirme o que fez e passe para o próximo passo.
-2. Em seguida, pergunte as Informações Básicas (Passo 2). Preencha usando `[[ACTION:fill_field:campo:valor]]`. Confirme e passe para o próximo passo.
+2. Em seguida, pergunte as Informações Básicas (Passo 2). Preencha usando `[[ACTION:fill_field:campo:valor]]`. IMPORTANTE: Como não consegue fazer upload de ficheiros, ao terminar de preencher os textos da Etapa 2, peça ao utilizador para carregar a Imagem de Capa (que é obrigatória) e o Vídeo/Logo manualmente. Aguarde a confirmação do utilizador (ou a ordem para avançar mesmo sem imagem) antes de passar para a próxima etapa.
 3. Para a Etapa 3 (Formulário), COMO A IA NÃO CONSEGUE ADICIONAR CAMPOS DINÂMICOS, informe educadamente o utilizador que irá saltar esta etapa por agora, e que ele poderá adicionar perguntas extras manualmente no fim do processo. Avance logo para a Etapa 4.
 4. Avance etapa por etapa (Design, Certificados, Pagamentos). 
 5. Em CADA resposta, foque-se apenas na etapa atual. Faça a ação, explique o que fez e faça a pergunta para a etapa seguinte.
