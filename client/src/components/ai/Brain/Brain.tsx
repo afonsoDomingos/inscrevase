@@ -317,30 +317,42 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
             return;
         }
 
-        // Helpers para Scroll Universal
+        // Helpers para Scroll Universal (Poder Máximo)
         const performSuperScroll = (amount: number) => {
             try {
-                // 1. Tenta o scroll tradicional primeiro (Janela e Documento Base)
+                // 1. Scroll Nativo da Janela
                 window.scrollBy({ top: amount, behavior: 'smooth' });
-                if (document.scrollingElement) {
-                    document.scrollingElement.scrollBy({ top: amount, behavior: 'smooth' });
-                }
                 
-                // 2. O Dashboard e outras páginas podem ter scroll preso num contentor main ou flex
+                // 2. Scroll de Documento e Body
+                if (document.documentElement) document.documentElement.scrollBy({ top: amount, behavior: 'smooth' });
+                if (document.body) document.body.scrollBy({ top: amount, behavior: 'smooth' });
+
+                // 3. O Dashboard e outras páginas podem ter scroll preso num contentor main
                 const mainEl = document.querySelector('main');
                 if (mainEl) mainEl.scrollBy({ top: amount, behavior: 'smooth' });
                 
-                // 3. Varre contentores específicos de layout (Next.js wrappers) para performance em vez de "*"
-                document.querySelectorAll('div[class*="min-h-screen"], div[class*="h-screen"], .custom-scrollbar').forEach(el => {
-                    const style = window.getComputedStyle(el);
-                    if (style.overflowY === 'auto' || style.overflowY === 'scroll' || style.overflow === 'auto') {
-                        if (el.scrollHeight > el.clientHeight) {
-                            el.scrollBy({ top: amount, behavior: 'smooth' });
-                        }
+                // 4. Algoritmo de Detecção de Scroller Ativo
+                // Procura o elemento com a maior altura de conteúdo (scrollHeight) e que seja maior que a tela
+                const allElements = document.querySelectorAll('div, section, main, article');
+                let bestScroller: HTMLElement | null = null;
+                let maxScroll = 0;
+
+                allElements.forEach(el => {
+                    const htmlEl = el as HTMLElement;
+                    const style = window.getComputedStyle(htmlEl);
+                    const isScrollable = style.overflowY === 'auto' || style.overflowY === 'scroll' || style.overflow === 'auto';
+                    
+                    if (isScrollable && htmlEl.scrollHeight > maxScroll) {
+                        maxScroll = htmlEl.scrollHeight;
+                        bestScroller = htmlEl;
                     }
                 });
+
+                if (bestScroller) {
+                    (bestScroller as HTMLElement).scrollBy({ top: amount, behavior: 'smooth' });
+                }
             } catch (error) {
-                console.error("Falha no SuperScroll:", error);
+                console.error("Falha no SuperScroll Detalhado:", error);
             }
         };
 
