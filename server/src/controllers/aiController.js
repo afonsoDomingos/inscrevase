@@ -443,28 +443,37 @@ exports.getBrainStats = async (req, res) => {
 
 exports.getVoiceSetting = async (req, res) => {
     try {
-        let setting = await GlobalSettings.findOne({ key: 'brain_voice_mode' });
-        if (!setting) {
-            setting = await GlobalSettings.create({ key: 'brain_voice_mode', value: 'local' });
-        }
-        res.json({ mode: setting.value });
+        let modeSetting = await GlobalSettings.findOne({ key: 'brain_voice_mode' });
+        if (!modeSetting) modeSetting = await GlobalSettings.create({ key: 'brain_voice_mode', value: 'local' });
+
+        let nameSetting = await GlobalSettings.findOne({ key: 'brain_voice_name' });
+        if (!nameSetting) nameSetting = await GlobalSettings.create({ key: 'brain_voice_name', value: '' });
+
+        res.json({ mode: modeSetting.value, voiceName: nameSetting.value });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
 exports.updateVoiceSetting = async (req, res) => {
-    const { mode } = req.body;
-    if (!['local', 'premium'].includes(mode)) {
-        return res.status(400).json({ error: "Modo inválido" });
-    }
+    const { mode, voiceName } = req.body;
     try {
-        const setting = await GlobalSettings.findOneAndUpdate(
-            { key: 'brain_voice_mode' },
-            { value: mode, lastUpdated: new Date() },
-            { upsert: true, new: true }
-        );
-        res.json({ mode: setting.value });
+        if (mode) {
+            if (!['local', 'premium'].includes(mode)) return res.status(400).json({ error: "Modo inválido" });
+            await GlobalSettings.findOneAndUpdate(
+                { key: 'brain_voice_mode' },
+                { value: mode, lastUpdated: new Date() },
+                { upsert: true }
+            );
+        }
+        if (voiceName !== undefined) {
+            await GlobalSettings.findOneAndUpdate(
+                { key: 'brain_voice_name' },
+                { value: voiceName, lastUpdated: new Date() },
+                { upsert: true }
+            );
+        }
+        res.json({ success: true });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

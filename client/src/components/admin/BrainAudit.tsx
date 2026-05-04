@@ -32,6 +32,8 @@ export default function BrainAudit() {
     const [loading, setLoading] = useState(true);
     const [isExporting, setIsExporting] = useState(false);
     const [voiceMode, setVoiceMode] = useState<'local' | 'premium'>('local');
+    const [selectedVoiceName, setSelectedVoiceName] = useState("");
+    const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
     const [isUpdatingVoice, setIsUpdatingVoice] = useState(false);
     const [expandedLog, setExpandedLog] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
@@ -41,23 +43,35 @@ export default function BrainAudit() {
         fetchStatsAndLogs();
     }, []);
 
-    const fetchStatsAndLogs = async () => {
-        try {
-            setLoading(true);
-            const [statsData, voiceData] = await Promise.all([
-                aiService.getBrainStats(),
-                aiService.getVoiceMode()
-            ]);
-            setStats(statsData);
-            setLogs(statsData.recentLogs);
-            setVoiceMode(voiceData.mode);
-        } catch (error) {
-            console.error("Audit Error:", error);
-            toast.error("Erro ao carregar auditoria");
-        } finally {
-            setLoading(false);
-        }
-    };
+        const fetchStatsAndLogs = async () => {
+            try {
+                setLoading(true);
+                const [statsData, voiceData] = await Promise.all([
+                    aiService.getBrainStats(),
+                    aiService.getVoiceMode()
+                ]);
+                setStats(statsData);
+                setLogs(statsData.recentLogs);
+                setVoiceMode(voiceData.mode);
+                setSelectedVoiceName(voiceData.voiceName || "");
+
+                // Carregar vozes locais do browser
+                const loadBrowserVoices = () => {
+                    const voices = window.speechSynthesis.getVoices();
+                    const filtered = voices.filter(v => v.lang.startsWith('pt'));
+                    setAvailableVoices(filtered);
+                };
+                loadBrowserVoices();
+                if (window.speechSynthesis.onvoiceschanged !== undefined) {
+                    window.speechSynthesis.onvoiceschanged = loadBrowserVoices;
+                }
+            } catch (error) {
+                console.error("Audit Error:", error);
+                toast.error("Erro ao carregar auditoria");
+            } finally {
+                setLoading(false);
+            }
+        };
 
     const handleVoiceModeChange = async (mode: 'local' | 'premium') => {
         setIsUpdatingVoice(true);
@@ -67,6 +81,19 @@ export default function BrainAudit() {
             toast.success(`Modo de voz alterado para ${mode}`);
         } catch (error) {
             toast.error("Falha ao atualizar modo de voz");
+        } finally {
+            setIsUpdatingVoice(false);
+        }
+    };
+
+    const handleVoiceNameChange = async (name: string) => {
+        setIsUpdatingVoice(true);
+        try {
+            await aiService.updateVoiceMode(undefined, name);
+            setSelectedVoiceName(name);
+            toast.success(`Personagem de voz alterada para: ${name}`);
+        } catch (error) {
+            toast.error("Falha ao atualizar personagem de voz");
         } finally {
             setIsUpdatingVoice(false);
         }
@@ -136,6 +163,7 @@ export default function BrainAudit() {
                     }}>
                         <Volume2 size={18} color="#64748b" />
                         <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569' }}>Voz do Brain:</span>
+                        
                         <div style={{ display: 'flex', gap: '5px', background: '#f1f5f9', padding: '4px', borderRadius: '8px' }}>
                             <button 
                                 onClick={() => handleVoiceModeChange('local')}
@@ -174,6 +202,30 @@ export default function BrainAudit() {
                                 Premium
                             </button>
                         </div>
+
+                        {voiceMode === 'local' && availableVoices.length > 0 && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '10px', borderLeft: '1px solid #e2e8f0', paddingLeft: '15px' }}>
+                                <select 
+                                    value={selectedVoiceName}
+                                    onChange={(e) => handleVoiceNameChange(e.target.value)}
+                                    disabled={isUpdatingVoice}
+                                    style={{
+                                        background: 'transparent',
+                                        border: 'none',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 700,
+                                        color: '#334155',
+                                        outline: 'none',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    <option value="">Auto-Seleção (Melhor disponível)</option>
+                                    {availableVoices.map((voice, i) => (
+                                        <option key={i} value={voice.name}>{voice.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
                     </div>
                     <button 
                         onClick={handleExport}

@@ -64,6 +64,7 @@ export default function Brain() {
     const [isVisible, setIsVisible] = useState(false);
     const [isHibernated, setIsHibernated] = useState(false);
     const [voiceMode, setVoiceMode] = useState<'local' | 'premium'>('local');
+    const [preferredVoiceName, setPreferredVoiceName] = useState("");
     const currentAudioRef = useRef<HTMLAudioElement | null>(null);
     const [lastCommand, setLastCommand] = useState("");
     const [isThinking, setIsThinking] = useState(false);
@@ -76,6 +77,7 @@ export default function Brain() {
             try {
                 const data = await aiService.getVoiceMode();
                 setVoiceMode(data.mode);
+                setPreferredVoiceName(data.voiceName || "");
             } catch (err) {
                 console.warn("Brain: Usando modo local por padrão.");
             }
@@ -217,7 +219,10 @@ export default function Brain() {
 
         const availableVoices = voices.length > 0 ? voices : window.speechSynthesis.getVoices();
         const ptPTVoices = availableVoices.filter(v => v.lang === 'pt-PT' || v.lang === 'pt_PT');
-        const preferredVoice = ptPTVoices.find(v => v.name.toLowerCase().includes('natural')) ||
+        
+        // Tentar a voz preferida salva no dashboard, senão usar lógica de melhor disponível
+        const preferredVoice = (preferredVoiceName && availableVoices.find(v => v.name === preferredVoiceName)) ||
+                               ptPTVoices.find(v => v.name.toLowerCase().includes('natural')) ||
                                ptPTVoices.find(v => v.name.toLowerCase().includes('online')) ||
                                ptPTVoices.find(v => v.name.includes('Google') || v.name.includes('Premium')) || 
                                ptPTVoices[0] || availableVoices[0];

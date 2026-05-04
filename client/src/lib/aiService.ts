@@ -105,12 +105,12 @@ export const aiService = {
             throw error;
         }
     },
-    updateVoiceMode: async (mode: 'local' | 'premium') => {
+    updateVoiceMode: async (mode?: 'local' | 'premium', voiceName?: string) => {
         try {
             const response = await fetch(`${API_URL}/ai/brain/settings/voice`, {
                 method: 'POST',
                 headers: getHeaders(),
-                body: JSON.stringify({ mode })
+                body: JSON.stringify({ mode, voiceName })
             });
             if (!response.ok) throw new Error('Falha ao atualizar modo de voz');
             return await response.json();
