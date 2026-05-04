@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Users, MessageSquare, TrendingUp, Clock, Bot, ChevronDown, ChevronUp, Target, Search, Volume2, Download, Play, Pause } from 'lucide-react';
+import { Brain, Users, MessageSquare, TrendingUp, Clock, Bot, ChevronDown, ChevronUp, Target, Search, Volume2, Download, Play } from 'lucide-react';
 import { aiService } from '@/lib/aiService';
 import { toast } from 'sonner';
 
