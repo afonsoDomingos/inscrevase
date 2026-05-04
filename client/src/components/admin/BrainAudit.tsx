@@ -98,21 +98,35 @@ export default function BrainAudit() {
         }
     };
 
-    const handleTestVoice = async () => {
+    const handleTestVoice = async (e: React.MouseEvent) => {
+        e.preventDefault();
         const testText = "Olá Mestre. Eu sou o Cérbero, o seu guardião digital. Como posso ser útil hoje?";
         
         if (voiceMode === 'local') {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(testText);
-            utterance.lang = 'pt-PT';
-            
-            const voices = window.speechSynthesis.getVoices();
-            const voice = voices.find(v => v.name === selectedVoiceName) || 
-                          voices.find(v => v.lang.startsWith('pt')) || 
-                          voices[0];
-            
-            if (voice) utterance.voice = voice;
-            window.speechSynthesis.speak(utterance);
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(testText);
+                utterance.lang = 'pt-PT';
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                
+                const voices = window.speechSynthesis.getVoices();
+                const voice = voices.find(v => v.name === selectedVoiceName) || 
+                              voices.find(v => v.lang.startsWith('pt')) || 
+                              voices[0];
+                
+                if (voice) {
+                    utterance.voice = voice;
+                }
+                
+                // Chrome workaround: slight delay after cancel
+                setTimeout(() => {
+                    window.speechSynthesis.speak(utterance);
+                }, 100);
+            } catch (err) {
+                console.error("Local TTS Error:", err);
+                toast.error("O seu browser bloqueou o teste de voz local.");
+            }
         } else {
             try {
                 toast.info("A gerar pré-visualização premium...");
@@ -122,7 +136,7 @@ export default function BrainAudit() {
                 audio.play();
                 audio.onended = () => URL.revokeObjectURL(audioUrl);
             } catch {
-                toast.error("Erro ao testar voz premium. Verifique a sua chave API.");
+                toast.error("Erro na voz Premium. Se adicionou a chave no Render, lembre-se de reiniciar o servidor lá.");
             }
         }
     };
