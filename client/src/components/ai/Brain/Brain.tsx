@@ -474,6 +474,13 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                             const stepStr = actionName.split(':')[1];
                             window.dispatchEvent(new CustomEvent('brain-change-step', { detail: { step: stepStr } }));
                             triggerAlert(`A navegar para a etapa: ${stepStr}`, 'success');
+                        } else if (actionName.startsWith('fill_field:')) {
+                            // Extract field and value (value might contain colons, so we slice)
+                            const parts = actionName.split(':');
+                            const field = parts[1];
+                            const value = parts.slice(2).join(':');
+                            window.dispatchEvent(new CustomEvent('brain-fill-field', { detail: { field, value } }));
+                            triggerAlert(`A preencher o campo: ${field}`, 'success');
                         } else {
                             window.dispatchEvent(new Event(`brain-action-${actionName}`));
                             triggerAlert(`A executar ação: ${actionName}`, 'success');

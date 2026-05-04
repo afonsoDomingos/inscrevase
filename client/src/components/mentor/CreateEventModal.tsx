@@ -646,6 +646,30 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
             }
         };
 
+        const handleBrainFillField = (e: Event) => {
+            const customEvent = e as CustomEvent;
+            if (customEvent.detail && customEvent.detail.field) {
+                const { field, value } = customEvent.detail;
+                switch(field) {
+                    case 'title': setTitle(value); break;
+                    case 'description': setDescription(value); break;
+                    case 'eventDate': setEventDate(value); break;
+                    case 'eventTime': setEventTime(value); break;
+                    case 'location': setLocation(value); break;
+                    case 'onlineLink': setOnlineLink(value); break;
+                    case 'capacity': setCapacity(value); break;
+                    case 'extraCapacity': setExtraCapacity(value); break;
+                    case 'category': setCategory(value); break;
+                    case 'welcomeMessage': setWelcomeMessage(value); break;
+                    case 'whatsappPhone': setWhatsappConfig(prev => ({ ...prev, phoneNumber: value })); break;
+                    case 'whatsappCommunity': setWhatsappConfig(prev => ({ ...prev, communityUrl: value })); break;
+                    case 'price': setPaymentConfig(prev => ({ ...prev, price: parseFloat(value) || 0 })); break;
+                    case 'currency': setPaymentConfig(prev => ({ ...prev, currency: value })); break;
+                }
+                toast.success(`Campo "${field}" preenchido pelo Cérbero!`);
+            }
+        };
+
         const handleGenerateDesc = () => {
             setStep(1); // Mudar para o separador de Informações
             handleAiGenerate();
@@ -677,6 +701,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
 
         window.addEventListener('brain-select-template', handleBrainSelectTemplate);
         window.addEventListener('brain-change-step', handleBrainChangeStep);
+        window.addEventListener('brain-fill-field', handleBrainFillField);
         window.addEventListener('brain-action-generate-description', handleGenerateDesc);
         window.addEventListener('brain-action-enable-payments', handleEnablePayments);
         window.addEventListener('brain-action-enable-certificates', handleEnableCertificates);
@@ -686,6 +711,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
         return () => {
             window.removeEventListener('brain-select-template', handleBrainSelectTemplate);
             window.removeEventListener('brain-change-step', handleBrainChangeStep);
+            window.removeEventListener('brain-fill-field', handleBrainFillField);
             window.removeEventListener('brain-action-generate-description', handleGenerateDesc);
             window.removeEventListener('brain-action-enable-payments', handleEnablePayments);
             window.removeEventListener('brain-action-enable-certificates', handleEnableCertificates);
