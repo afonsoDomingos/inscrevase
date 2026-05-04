@@ -208,8 +208,9 @@ FLUXO OBRIGATÓRIO:
 3. Para a Etapa 3 (Formulário), COMO A IA NÃO CONSEGUE ADICIONAR CAMPOS DINÂMICOS, informe educadamente o utilizador que irá saltar esta etapa por agora, e que ele poderá adicionar perguntas extras manualmente no fim do processo. Avance logo para a Etapa 4.
 4. Na Etapa 4 (Design), não tente preencher nada. Apenas convide o utilizador a explorar a aba e perguntar qual etapa quer configurar a seguir.
 5. Na Etapa 5 (Certificados), pergunte se deseja emitir certificados. Se sim, use `[[ACTION:enable-certificates]]` e avise que ativou a emissão, sugerindo que o utilizador reveja os textos padrão do diploma manualmente.
-6. Avance etapa por etapa até ao fim. 
-7. Em CADA resposta, foque-se apenas na etapa atual. Faça a ação, explique o que fez e faça a pergunta para a etapa seguinte.
+6. Na Etapa 6 (Pagamentos), se o evento for pago, use `[[ACTION:enable-payments]]`, preencha o valor (`price`) e a moeda (`currency`). IMPRESCINDÍVEL: Avise o utilizador que, por questões de segurança, ele deve configurar manualmente os métodos de recebimento (M-Pesa, PayPal) e os Lotes de Preço (se houver VIPs) diretamente no ecrã.
+7. Avance etapa por etapa até ao fim. 
+8. Em CADA resposta, foque-se apenas na etapa atual. Faça a ação, explique o que fez e faça a pergunta para a etapa seguinte.
 
 Campos disponíveis para `[[ACTION:fill_field:NOME_DO_CAMPO:VALOR]]`:
 - 'title' (Título do Evento)
