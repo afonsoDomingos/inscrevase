@@ -404,19 +404,23 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
         const routes: Record<string, { path: string, response: string, keywords: string[] }> = {
             '/dashboard/mentor?tab=overview': { path: '/dashboard/mentor?tab=overview', response: 'Entendido, Mestre. A carregar a sua visão geral.', keywords: ['visão geral', 'resumo', 'dashboard mentor', 'painel mentor'] },
             '/dashboard/mentor?tab=forms': { path: '/dashboard/mentor?tab=forms', response: 'A abrir os seus eventos e formulários.', keywords: ['meus eventos', 'meus formulários', 'gerir eventos'] },
-            '/dashboard/mentor?tab=submissions': { path: '/dashboard/mentor?tab=submissions', response: 'A consultar a lista de participantes.', keywords: ['ver inscrições', 'participantes', 'lista de inscritos'] },
+            '/dashboard/mentor?tab=submissions': { path: '/dashboard/mentor?tab=submissions', response: 'A consultar a lista de participantes.', keywords: ['ver inscrições', 'ver participantes', 'lista de participantes', 'lista de inscritos'] },
             '/dashboard/admin?tab=overview': { path: '/dashboard/admin?tab=overview', response: 'A aceder ao centro de comando administrativo.', keywords: ['painel admin', 'dashboard admin', 'estatísticas globais'] },
-            '/dashboard/admin?tab=users': { path: '/dashboard/admin?tab=users', response: 'A carregar a base de utilizadores da plataforma.', keywords: ['gestão de utilizadores', 'ver utilizadores', 'lista de pessoas'] },
+            '/dashboard/admin?tab=users': { path: '/dashboard/admin?tab=users', response: 'A carregar a base de utilizadores da plataforma.', keywords: ['gestão de utilizadores', 'ver utilizadores', 'lista de utilizadores', 'lista de pessoas'] },
             '/dashboard/perfil': { path: '/dashboard/perfil', response: 'A abrir o seu perfil profissional.', keywords: ['meu perfil', 'perfil profissional'] },
-            '/explorar': { path: '/explorar', response: 'A carregar a página de exploração de eventos.', keywords: ['explorar', 'ver eventos', 'eventos públicos', 'todos os eventos'] },
-            '/': { path: '/', response: 'A retornar à página inicial. Até breve, Mestre.', keywords: ['ir para home', 'sair da dashboard', 'página inicial', 'site'] }
+            '/explorar': { path: '/explorar', response: 'A carregar a página de exploração de eventos.', keywords: ['explorar eventos', 'ver eventos públicos', 'página de eventos'] },
+            '/': { path: '/', response: 'A retornar à página inicial. Até breve, Mestre.', keywords: ['ir para home', 'sair da dashboard', 'página inicial', 'abrir site principal'] }
         };
 
         let foundEntry = null;
-        for (const entry of Object.values(routes)) {
-            if (entry.keywords.some(keyword => lowerTranscript.includes(keyword))) {
-                foundEntry = entry;
-                break;
+        // Só tenta os atalhos diretos se a frase for curta (comando direto) ou se for muito explícita.
+        // Se o utilizador ditar um testamento (> 60 caracteres), passamos logo para a IA Neural.
+        if (lowerTranscript.length < 60) {
+            for (const entry of Object.values(routes)) {
+                if (entry.keywords.some(keyword => lowerTranscript.includes(keyword))) {
+                    foundEntry = entry;
+                    break;
+                }
             }
         }
 
