@@ -132,6 +132,10 @@ export default function BrainAudit() {
             try {
                 toast.info("A gerar pré-visualização premium...");
                 const audioBlob = await aiService.generateSpeech(testText, 'openai', selectedVoiceName || 'onyx');
+                if (!audioBlob) {
+                    toast.warning("Voz Premium não configurada. Adicione OPENAI_API_KEY no servidor e reinicie.");
+                    return;
+                }
                 const audioUrl = URL.createObjectURL(audioBlob);
                 const audio = new Audio(audioUrl);
                 audio.play();
