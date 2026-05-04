@@ -283,11 +283,12 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
 
 
         // Comando Especial: Reconhecimento do Criador
-        if (lowerTranscript.includes('quem te criou') || lowerTranscript.includes('quem é o teu criador') || lowerTranscript.includes('afonso domingos')) {
-            const creatorInfo = "Fui orquestrado e concebido por **Afonso Domingos**, o Fundador da Inscreva-se e da RPA Moçambique. Ele é o Mestre Supremo e o visionário por trás da minha existência e de todo este ecossistema de gestão de eventos.";
-            setChatHistory(prev => [...prev, { role: 'ai', text: creatorInfo + "\n\n[Ver Perfil do Criador](https://inscreva-se.com/equipe/afonso-domingos)" }]);
+        if (lowerTranscript.includes('quem te criou') || lowerTranscript.includes('quem é o teu criador') || lowerTranscript.includes('quem te fez') || lowerTranscript.includes('afonso domingos')) {
+            const creatorInfo = "Fui concebido e orquestrado por Afonso Domingos, o Fundador da Inscreva-se. A redirecioná-lo agora mesmo para o perfil do meu Mestre Supremo.";
+            setChatHistory(prev => [...prev, { role: 'ai', text: creatorInfo + "\n\nA abrir: [Perfil do Criador](/equipe/afonso-domingos)" }]);
             speak(creatorInfo);
             setIsThinking(false);
+            setTimeout(() => { window.location.href = '/equipe/afonso-domingos'; }, 2000);
             return;
         }
 
