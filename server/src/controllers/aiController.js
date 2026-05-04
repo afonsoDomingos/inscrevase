@@ -400,7 +400,9 @@ exports.getBrainStats = async (req, res) => {
         console.error("Stats Error:", error);
         res.status(500).json({ error: error.message });
     }
-};exports.textToSpeech = async (req, res) => {
+};
+
+exports.textToSpeech = async (req, res) => {
     const { text, provider = 'openai', voiceId = 'onyx' } = req.body;
 
     if (!text) return res.status(400).json({ error: "Texto é obrigatório" });
@@ -424,8 +426,8 @@ exports.getBrainStats = async (req, res) => {
 
         // 2. Tentar ElevenLabs (A melhor qualidade do mundo, mas tem plano grátis limitado)
         if (provider === 'elevenlabs' && process.env.ELEVENLABS_API_KEY) {
-            const voiceId = "pNInz6obpgH9PeW4693K"; // Voz "Adam" ou similar
-            const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+            const elevenVoiceId = "pNInz6obpgH9PeW4693K"; // Voz "Adam" ou similar
+            const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${elevenVoiceId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -443,15 +445,28 @@ exports.getBrainStats = async (req, res) => {
                 const buffer = Buffer.from(arrayBuffer);
                 res.set('Content-Type', 'audio/mpeg');
                 return res.send(buffer);
+            } else {
+                const errBody = await response.text();
+                console.error("[TTS] ElevenLabs rejeitou a solicitação:", response.status, errBody);
             }
         }
 
-        // Se nenhum provider premium estiver disponível, avisar o front-end para usar o TTS local (Browser)
-        return res.status(404).json({ error: "Nenhum provider de voz premium configurado ou disponível." });
+        // Diagnóstico: logar quais chaves estão ausentes
+        console.warn("[TTS] Nenhum provider premium configurado. OPENAI_API_KEY:", !!process.env.OPENAI_API_KEY, "| ELEVENLABS_API_KEY:", !!process.env.ELEVENLABS_API_KEY, "| Provider:", provider);
+
+        // Retorna 503 para que o frontend faça fallback silencioso para o browser TTS
+        return res.status(503).json({ 
+            error: "TTS_UNAVAILABLE",
+            message: "Nenhum provider de voz premium configurado. O sistema irá usar a síntese local do browser."
+        });
 
     } catch (error) {
-        console.error("Erro no TTS Premium:", error);
-        res.status(500).json({ error: "Falha na geração de voz premium." });
+        console.error("[TTS] Erro crítico:", error.message);
+        res.status(500).json({ 
+            error: "TTS_ERROR",
+            message: "Falha na geração de voz premium.",
+            details: error.message
+        });
     }
 };
 

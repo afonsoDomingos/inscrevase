@@ -3,6 +3,8 @@ const router = express.Router();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const Groq = require("groq-sdk");
 const { authMiddleware, adminMiddleware, optionalAuthMiddleware } = require('../middleware/authMiddleware');
+const rateLimit = require('express-rate-limit');
+const aiController = require('../controllers/aiController');
 
 // Aura's Identity and Rules
 const AURA_SYSTEM_PROMPT = `
@@ -122,9 +124,6 @@ router.post('/chat', authMiddleware, async (req, res) => {
     }
 });
 
-const { authMiddleware, adminMiddleware, optionalAuthMiddleware } = require('../middleware/authMiddleware');
-const rateLimit = require('express-rate-limit');
-
 // Bloqueio contra Botnets e DDoS focado em custos de Inteligência Artificial
 const aiLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // Janela de 1 minuto
@@ -149,8 +148,6 @@ const payloadSanitizer = (req, res, next) => {
     }
     next();
 };
-
-const aiController = require('../controllers/aiController');
 
 // Protegidas com Rate Limiting e Sanitização
 router.post('/brain/command', aiLimiter, optionalAuthMiddleware, payloadSanitizer, aiController.handleBrainCommand);

@@ -75,7 +75,7 @@ export const aiService = {
             throw error;
         }
     },
-    generateSpeech: async (text: string, provider: 'openai' | 'elevenlabs' = 'openai', voiceId: string = 'onyx') => {
+    generateSpeech: async (text: string, provider: 'openai' | 'elevenlabs' = 'openai', voiceId: string = 'onyx'): Promise<Blob | null> => {
         try {
             const response = await fetch(`${API_URL}/ai/brain/tts`, {
                 method: 'POST',
@@ -83,13 +83,23 @@ export const aiService = {
                 body: JSON.stringify({ text, provider, voiceId })
             });
 
+            // 503 = TTS não configurado no servidor — fallback silencioso para browser TTS
+            if (response.status === 503) {
+                console.info("[TTS] Provider premium não disponível. Usando síntese local do browser.");
+                return null;
+            }
+
             if (!response.ok) {
-                throw new Error('Falha ao gerar voz premium.');
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.message || `Erro TTS: ${response.status}`);
             }
 
             return await response.blob();
         } catch (error) {
-            console.error("Speech Generation Error:", error);
+            // Só loga erros reais (não o fallback esperado)
+            if (error instanceof Error && !error.message.includes('503')) {
+                console.error("[TTS] Erro na geração de voz premium:", error.message);
+            }
             throw error;
         }
     },

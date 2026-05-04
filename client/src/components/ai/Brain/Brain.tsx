@@ -209,6 +209,13 @@ export default function Brain() {
         try {
             console.log("%c💎 [VOICE] Solicitando Matriz Neural Premium...", "color: #facc15;");
             const audioBlob = await aiService.generateSpeech(cleanText, 'openai', preferredVoiceName || 'onyx');
+
+            // null = provider premium não configurado → fallback silencioso
+            if (!audioBlob) {
+                fallbackToBrowserTTS(cleanText, onEndCallback);
+                return;
+            }
+
             const audioUrl = URL.createObjectURL(audioBlob);
             const audio = new Audio(audioUrl);
             currentAudioRef.current = audio;
