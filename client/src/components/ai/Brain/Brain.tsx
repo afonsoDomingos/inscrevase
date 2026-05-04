@@ -309,11 +309,12 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
         // Mapeamento Abrangente de Rotas (Atalhos Rápidos)
         const routes: Record<string, { path: string, response: string, keywords: string[] }> = {
             '/dashboard/mentor?tab=overview': { path: '/dashboard/mentor?tab=overview', response: 'Entendido, Mestre. A carregar a sua visão geral.', keywords: ['visão geral', 'resumo', 'dashboard mentor', 'painel mentor'] },
-            '/dashboard/mentor?tab=forms': { path: '/dashboard/mentor?tab=forms', response: 'A abrir os seus eventos e formulários.', keywords: ['meus eventos', 'meus formulários', 'ver eventos'] },
+            '/dashboard/mentor?tab=forms': { path: '/dashboard/mentor?tab=forms', response: 'A abrir os seus eventos e formulários.', keywords: ['meus eventos', 'meus formulários', 'gerir eventos'] },
             '/dashboard/mentor?tab=submissions': { path: '/dashboard/mentor?tab=submissions', response: 'A consultar a lista de participantes.', keywords: ['ver inscrições', 'participantes', 'lista de inscritos'] },
             '/dashboard/admin?tab=overview': { path: '/dashboard/admin?tab=overview', response: 'A aceder ao centro de comando administrativo.', keywords: ['painel admin', 'dashboard admin', 'estatísticas globais'] },
             '/dashboard/admin?tab=users': { path: '/dashboard/admin?tab=users', response: 'A carregar a base de utilizadores da plataforma.', keywords: ['gestão de utilizadores', 'ver utilizadores', 'lista de pessoas'] },
             '/dashboard/perfil': { path: '/dashboard/perfil', response: 'A abrir o seu perfil profissional.', keywords: ['meu perfil', 'perfil profissional'] },
+            '/explorar': { path: '/explorar', response: 'A carregar a página de exploração de eventos.', keywords: ['explorar', 'ver eventos', 'eventos públicos', 'todos os eventos'] },
             '/': { path: '/', response: 'A retornar à página inicial. Até breve, Mestre.', keywords: ['ir para home', 'sair da dashboard', 'página inicial', 'site'] }
         };
 
@@ -330,7 +331,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                 speak(foundEntry.response);
                 router.push(foundEntry.path);
                 triggerAlert(foundEntry.response, 'success');
-            } else if (lowerTranscript.includes('evento') || lowerTranscript.includes('criar')) {
+            } else if (lowerTranscript.includes('criar evento') || lowerTranscript.includes('novo evento')) {
                 speak("Iniciando interface de criação de evento. O que deseja criar?");
                 triggerAlert("Abrindo interface de criação...");
                 window.dispatchEvent(new Event('open-create-event-modal'));

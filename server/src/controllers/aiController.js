@@ -78,7 +78,7 @@ COMANDOS DE NAVEGAÇÃO E ATALHOS (Sempre forneça o link quando solicitado):
 1. Criar Conta / Registo: https://inscreva-se.com/cadastro
 2. Criar Evento / Novo Formulário: https://inscreva-se.com/dashboard/mentor?tab=forms
 3. Lançar Livro / Gestão de Livros: https://inscreva-se.com/dashboard/mentor?tab=books
-4. Ver Eventos Disponíveis: https://inscreva-se.com/eventos
+4. Ver Eventos Disponíveis: https://inscreva-se.com/explorar
 5. Ver Mentores: https://inscreva-se.com/experts?tab=mentor
 6. Ver Especialistas: https://inscreva-se.com/experts?tab=specialist
 7. Ver Empresas: https://inscreva-se.com/experts?tab=company
