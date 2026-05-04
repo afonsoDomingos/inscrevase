@@ -247,6 +247,16 @@ export default function Brain() {
             return;
         }
 
+        // Comando Especial: Câmbio do Dia (Painel Automático)
+        if (/(cambio|câmbio|mercado global|taxas de cambio|conversor|taxas de câmbio|cambio do dia)/.test(lowerTranscript)) {
+            window.dispatchEvent(new Event('brain-action-cambio'));
+            const msg = "A abrir o Mercado Global de Câmbios em tempo real para si.";
+            setChatHistory(prev => [...prev, { role: 'ai', text: msg }]);
+            speak(msg);
+            setIsThinking(false);
+            return;
+        }
+
         // Comando Especial: Ler resposta anterior na íntegra
         if (lowerTranscript.includes('lê para mim') || lowerTranscript.includes('le para mim') || lowerTranscript.includes('lê tudo') || lowerTranscript.includes('leia tudo')) {
             const lastAiMessage = [...chatHistory].reverse().find(m => m.role === 'ai');

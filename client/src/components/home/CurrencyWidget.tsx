@@ -43,7 +43,15 @@ export default function CurrencyWidget() {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
+        
+        // Listener para abrir o painel via Inteligência Artificial
+        const openFromBrain = () => setIsOpen(true);
+        window.addEventListener('brain-action-cambio', openFromBrain);
+        
+        return () => {
+            window.removeEventListener('resize', checkMobile);
+            window.removeEventListener('brain-action-cambio', openFromBrain);
+        };
     }, []);
 
     const relevantCurrencies: { code: Currency, name: string, flag: string }[] = [
