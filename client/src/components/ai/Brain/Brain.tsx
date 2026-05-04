@@ -455,36 +455,38 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                     }, 1500);
                 }
 
-                // Action Trigger Logic
-                const actionMatch = reply.match(/\[\[ACTION:(.*?)\]\]/);
-                if (actionMatch) {
-                    const actionName = actionMatch[1].trim();
+                // Action Trigger Logic (Multiple Actions Support)
+                const actionMatches = [...reply.matchAll(/\[\[ACTION:(.*?)\]\]/g)];
+                if (actionMatches.length > 0) {
                     reply = reply.replace(/\[\[ACTION:.*?\]\]/g, '').trim();
                     
-                    // Dispatch the specific action event
+                    // Dispatch the specific action events
                     setTimeout(() => {
-                        if (actionName.startsWith('create_event_type:')) {
-                            const templateType = actionName.split(':')[1];
-                            window.dispatchEvent(new Event('open-create-event-modal'));
-                            setTimeout(() => {
-                                window.dispatchEvent(new CustomEvent('brain-select-template', { detail: { type: templateType } }));
-                            }, 500); // Give modal time to open
-                            triggerAlert(`A iniciar modo de criação para: ${templateType}`, 'success');
-                        } else if (actionName.startsWith('set_event_step:')) {
-                            const stepStr = actionName.split(':')[1];
-                            window.dispatchEvent(new CustomEvent('brain-change-step', { detail: { step: stepStr } }));
-                            triggerAlert(`A navegar para a etapa: ${stepStr}`, 'success');
-                        } else if (actionName.startsWith('fill_field:')) {
-                            // Extract field and value (value might contain colons, so we slice)
-                            const parts = actionName.split(':');
-                            const field = parts[1];
-                            const value = parts.slice(2).join(':');
-                            window.dispatchEvent(new CustomEvent('brain-fill-field', { detail: { field, value } }));
-                            triggerAlert(`A preencher o campo: ${field}`, 'success');
-                        } else {
-                            window.dispatchEvent(new Event(`brain-action-${actionName}`));
-                            triggerAlert(`A executar ação: ${actionName}`, 'success');
-                        }
+                        actionMatches.forEach(match => {
+                            const actionName = match[1].trim();
+                            if (actionName.startsWith('create_event_type:')) {
+                                const templateType = actionName.split(':')[1];
+                                window.dispatchEvent(new Event('open-create-event-modal'));
+                                setTimeout(() => {
+                                    window.dispatchEvent(new CustomEvent('brain-select-template', { detail: { type: templateType } }));
+                                }, 500); // Give modal time to open
+                                triggerAlert(`A iniciar modo de criação para: ${templateType}`, 'success');
+                            } else if (actionName.startsWith('set_event_step:')) {
+                                const stepStr = actionName.split(':')[1];
+                                window.dispatchEvent(new CustomEvent('brain-change-step', { detail: { step: stepStr } }));
+                                triggerAlert(`A navegar para a etapa: ${stepStr}`, 'success');
+                            } else if (actionName.startsWith('fill_field:')) {
+                                // Extract field and value (value might contain colons, so we slice)
+                                const parts = actionName.split(':');
+                                const field = parts[1];
+                                const value = parts.slice(2).join(':');
+                                window.dispatchEvent(new CustomEvent('brain-fill-field', { detail: { field, value } }));
+                                triggerAlert(`A preencher o campo: ${field}`, 'success');
+                            } else {
+                                window.dispatchEvent(new Event(`brain-action-${actionName}`));
+                                triggerAlert(`A executar ação: ${actionName}`, 'success');
+                            }
+                        });
                     }, 1000);
                 }
 
