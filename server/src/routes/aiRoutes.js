@@ -126,5 +126,6 @@ const aiController = require('../controllers/aiController');
 
 router.post('/brain/command', optionalAuthMiddleware, aiController.handleBrainCommand);
 router.get('/brain/stats', authMiddleware, adminMiddleware, aiController.getBrainStats);
+router.post('/brain/tts', aiController.textToSpeech);
 
 module.exports = router;

@@ -74,5 +74,23 @@ export const aiService = {
             console.error("Brain Stats Error:", error);
             throw error;
         }
+    },
+    generateSpeech: async (text: string, provider: 'openai' | 'elevenlabs' = 'openai') => {
+        try {
+            const response = await fetch(`${API_URL}/ai/brain/tts`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({ text, provider })
+            });
+
+            if (!response.ok) {
+                throw new Error('Falha ao gerar voz premium.');
+            }
+
+            return await response.blob();
+        } catch (error) {
+            console.error("Speech Generation Error:", error);
+            throw error;
+        }
     }
 };

@@ -1,5 +1,8 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const Groq = require("groq-sdk");
+const OpenAI = require("openai");
+const fs = require('fs');
+const path = require('path');
 const User = require('../models/User');
 const Form = require('../models/Form');
 const Submission = require('../models/Submission');
@@ -384,5 +387,55 @@ exports.getBrainStats = async (req, res) => {
     } catch (error) {
         console.error("Stats Error:", error);
         res.status(500).json({ error: error.message });
+    }
+};exports.textToSpeech = async (req, res) => {
+    const { text, provider = 'openai' } = req.body;
+
+    if (!text) return res.status(400).json({ error: "Texto é obrigatório" });
+
+    try {
+        // 1. Tentar OpenAI TTS (Excelente custo-benefício)
+        if (provider === 'openai' && process.env.OPENAI_API_KEY) {
+            const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+            const mp3 = await openai.audio.speech.create({
+                model: "tts-1",
+                voice: "alloy", // alloy, echo, fable, onyx, nova, shimmer
+                input: text,
+            });
+            const buffer = Buffer.from(await mp3.arrayBuffer());
+            res.set('Content-Type', 'audio/mpeg');
+            return res.send(buffer);
+        }
+
+        // 2. Tentar ElevenLabs (A melhor qualidade do mundo, mas tem plano grátis limitado)
+        if (provider === 'elevenlabs' && process.env.ELEVENLABS_API_KEY) {
+            const voiceId = "pNInz6obpgH9PeW4693K"; // Voz "Adam" ou similar
+            const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'xi-api-key': process.env.ELEVENLABS_API_KEY
+                },
+                body: JSON.stringify({
+                    text: text,
+                    model_id: "eleven_multilingual_v2",
+                    voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+                })
+            });
+
+            if (response.ok) {
+                const arrayBuffer = await response.arrayBuffer();
+                const buffer = Buffer.from(arrayBuffer);
+                res.set('Content-Type', 'audio/mpeg');
+                return res.send(buffer);
+            }
+        }
+
+        // Se nenhum provider premium estiver disponível, avisar o front-end para usar o TTS local (Browser)
+        return res.status(404).json({ error: "Nenhum provider de voz premium configurado ou disponível." });
+
+    } catch (error) {
+        console.error("Erro no TTS Premium:", error);
+        res.status(500).json({ error: "Falha na geração de voz premium." });
     }
 };
