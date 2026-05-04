@@ -624,6 +624,22 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess, userPlan 
         toast.success(`Estrutura de "${eventTemplates[key].label}" configurada!`);
     };
 
+    // Escutar eventos do Brain (Copiloto de Criação Automática)
+    useEffect(() => {
+        const handleBrainSelectTemplate = (e: Event) => {
+            const customEvent = e as CustomEvent;
+            if (customEvent.detail && customEvent.detail.type) {
+                const type = customEvent.detail.type;
+                if (eventTemplates[type as keyof typeof eventTemplates]) {
+                    applyTemplate(type as keyof typeof eventTemplates);
+                }
+            }
+        };
+
+        window.addEventListener('brain-select-template', handleBrainSelectTemplate);
+        return () => window.removeEventListener('brain-select-template', handleBrainSelectTemplate);
+    }, [theme, certificateConfig]);
+
     const clearForm = () => {
         setStep(0);
         setSelectedType(null);

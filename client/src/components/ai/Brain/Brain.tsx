@@ -463,8 +463,17 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                     
                     // Dispatch the specific action event
                     setTimeout(() => {
-                        window.dispatchEvent(new Event(`brain-action-${actionName}`));
-                        triggerAlert(`A executar ação: ${actionName}`, 'success');
+                        if (actionName.startsWith('create_event_type:')) {
+                            const templateType = actionName.split(':')[1];
+                            window.dispatchEvent(new Event('open-create-event-modal'));
+                            setTimeout(() => {
+                                window.dispatchEvent(new CustomEvent('brain-select-template', { detail: { type: templateType } }));
+                            }, 500); // Give modal time to open
+                            triggerAlert(`A iniciar modo de criação para: ${templateType}`, 'success');
+                        } else {
+                            window.dispatchEvent(new Event(`brain-action-${actionName}`));
+                            triggerAlert(`A executar ação: ${actionName}`, 'success');
+                        }
                     }, 1000);
                 }
 
