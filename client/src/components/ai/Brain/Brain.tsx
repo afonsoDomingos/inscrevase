@@ -179,7 +179,11 @@ export default function Brain() {
                                ptPTVoices[0] || availableVoices[0];
         
         if (preferredVoice) utterance.voice = preferredVoice;
-        window.speechSynthesis.speak(utterance);
+        
+        // Timeout para evitar o bug do Chrome onde o cancel() imediato bloqueia o speak()
+        setTimeout(() => {
+            window.speechSynthesis.speak(utterance);
+        }, 100);
     }, [voices, preferredVoiceName]);
 
     const speak = useCallback(async (text: string, onEndCallback?: () => void) => {
