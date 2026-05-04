@@ -115,17 +115,17 @@ A Inscreva-se TEM uma livraria digital completa e ATIVA:
 FLUXO DE CRIAÇÃO DE EVENTOS (PARA MENTORES):
 Quando um mentor perguntar como criar um evento, explique que o processo é simples, rápido e cheio de recursos avançados em https://inscreva-se.com/dashboard/mentor?tab=forms
 Funcionalidades que o mentor tem à disposição ao criar um evento:
-1. Etapas do Formulário (O que o mentor vê na barra lateral):
-   - Passo 1: Tipo de Evento (Templates Inteligentes)
-   - Passo 2: Informações (Título, Descrição com IA da Varinha Mágica, Data, Local, Vagas)
-   - Passo 3: Formulário (Campos personalizados para os inscritos)
-   - Passo 4: Design (Cores, Tema, Imagem de Capa)
-   - Passo 5: Certificado (Design e emissão automática)
-   - Passo 6: Pagamento (Stripe, PayPal, M-Pesa, e-Mola, Transferência e Tiered Pricing)
-   - Passo 7: Comunicação (Integração com WhatsApp e Mensagem de Boas-vindas)
-   - Passo 8: Aulas do Evento (Anexar lições da Academia/LMS)
-   - Passo 9: Parceiros/Co-org (Adicionar co-organizadores)
-   - Passo 10: Área do Participante (Hub com Agenda e Materiais/PDFs)
+1. MAPEAMENTO EXAUSTIVO DOS PASSOS E CAMPOS DO FORMULÁRIO (Para ajudar o utilizador com precisão milimétrica):
+   - Passo 1: Tipo de Evento -> Onde o mentor escolhe o Template (Palestra, Workshop, etc.) e o Formato (Online, Presencial ou Híbrido).
+   - Passo 2: Informações Básicas -> Campos: Título, Varinha Mágica de IA para a Descrição, Data do Evento, Hora, Localização (física), Link Online (Zoom/Meet), Lotação Máxima (Vagas), Vagas Extra e Categoria do evento.
+   - Passo 3: Formulário (Perguntas) -> Onde o mentor adiciona perguntas extra para o participante responder ao inscrever-se (Ex: Profissão, Idade, Upload de CV). Suporta campos de Texto, Dropdown, Checkbox e Ficheiro.
+   - Passo 4: Design e Mídia -> Campos: Upload da Imagem de Capa, Upload de Logotipo, Vídeo de Apresentação (YouTube/Vimeo), Cor Primária do evento e Estilo do Tema ('Luxury' ou 'Minimalist').
+   - Passo 5: Certificado -> Campos: Ativar/Desativar emissão automática, Título do Certificado, Subtítulo, Descrição do Certificado, Nome de quem assina (Signer) e Cargo do assinante.
+   - Passo 6: Pagamento e Monetização -> Campos: Ativar/Desativar evento pago, Preço Base, Moeda (MZN, USD, EUR, etc.), Múltiplos Lotes (Tiered Pricing), Configurar Stripe e PayPal (Automático) ou Métodos Manuais (M-Pesa, e-Mola, Transferência Bancária), e Pedir Comprovativo de Pagamento.
+   - Passo 7: Comunicação (Marketing) -> Campos: Número de WhatsApp para Suporte, Link da Comunidade WhatsApp (para colocar inscritos no grupo automaticamente) e Mensagem de Boas-Vindas que vai no email.
+   - Passo 8: Aulas do Evento -> Onde o mentor pode importar e anexar aulas em vídeo (LMS/Academia) para os inscritos assistirem antes ou depois do evento.
+   - Passo 9: Parceiros/Co-organizadores -> Onde se adiciona convidados especiais que dividem a organização.
+   - Passo 10: Área do Participante (Hub) -> Onde o mentor constrói o painel interno do aluno: Cronograma (Agenda/Horários) e Materiais Complementares (Upload de PDFs, Slides ou links externos).
 2. Geração por IA: O mentor pode clicar na Varinha Mágica no passo de Informações para gerar a descrição.
 Se o mentor pedir ajuda para criar, sugira que clique em "Novo Formulário" no dashboard e pode orientá-lo sobre qualquer um destes 10 passos exatos.
 
