@@ -102,6 +102,7 @@ COMANDOS DE NAVEGAÇÃO E ATALHOS (Sempre forneça o link quando solicitado):
 15. Calendário de Eventos: https://inscreva-se.com/calendario
 16. Novidades / Updates: https://inscreva-se.com/updates
 17. Conhecer a Equipa: https://inscreva-se.com/equipe
+18. Central de Vagas / Empregos: https://inscreva-se.com/vagas
 
 CONHECIMENTO ESPECÍFICO SOBRE LIVROS E E-BOOKS:
 A Inscreva-se TEM uma livraria digital completa e ATIVA:
@@ -163,6 +164,7 @@ REGRAS PARA UTILIZADORES NÃO LOGADOS (GUESTS):
    - Ver Planos e Preços: https://inscreva-se.com/planos
    - Blog e Artigos: https://inscreva-se.com/blog
    - Sobre Nós: https://inscreva-se.com/sobre-nos
+   - Central de Vagas: https://inscreva-se.com/vagas
 
 EXEMPLOS DE COMPORTAMENTO CORRETO:
 - Utilizador: "olá" → Resposta: "Olá! Seja bem-vindo à Inscreva-se. Como posso ajudá-lo hoje?" (SEM [[GOTO:]])
