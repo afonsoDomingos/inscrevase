@@ -149,54 +149,6 @@ export default function Brain() {
         return "Boa noite";
     };
 
-    const speak = useCallback(async (text: string, onEndCallback?: () => void) => {
-        // Limpeza de Markdown
-        const cleanText = text
-            .replace(/\*\*/g, '')
-            .replace(/\*/g, '')
-            .replace(/\[\[GOTO:.*?\]\]/g, '')
-            .replace(/\[\[ACTION:.*?\]\]/g, '')
-            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-            .replace(/#/g, '');
-
-        // Parar áudios anteriores
-        if (currentAudioRef.current) {
-            currentAudioRef.current.pause();
-            currentAudioRef.current = null;
-        }
-        if (window.speechSynthesis) window.speechSynthesis.cancel();
-
-        // Se o modo for local, usar browser diretamente
-        if (voiceMode === 'local') {
-            fallbackToBrowserTTS(cleanText, onEndCallback);
-            return;
-        }
-
-        // Se for premium, tentar backend
-        try {
-            console.log("%c💎 [VOICE] Solicitando Matriz Neural Premium...", "color: #facc15;");
-            const audioBlob = await aiService.generateSpeech(cleanText);
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const audio = new Audio(audioUrl);
-            currentAudioRef.current = audio;
-
-            audio.onplay = () => setIsSpeaking(true);
-            audio.onended = () => {
-                setIsSpeaking(false);
-                URL.revokeObjectURL(audioUrl);
-                if (onEndCallback) onEndCallback();
-            };
-            audio.onerror = () => {
-                fallbackToBrowserTTS(cleanText, onEndCallback);
-            };
-
-            await audio.play();
-        } catch {
-            console.warn("⚠️ Falha no áudio premium, recorrendo ao browser...");
-            fallbackToBrowserTTS(cleanText, onEndCallback);
-        }
-    }, [voices, voiceMode, fallbackToBrowserTTS]);
-
     const fallbackToBrowserTTS = useCallback((text: string, onEndCallback?: () => void) => {
         if (!window.speechSynthesis) {
             if (onEndCallback) onEndCallback();
@@ -220,7 +172,6 @@ export default function Brain() {
         const availableVoices = voices.length > 0 ? voices : window.speechSynthesis.getVoices();
         const ptPTVoices = availableVoices.filter(v => v.lang === 'pt-PT' || v.lang === 'pt_PT');
         
-        // Tentar a voz preferida salva no dashboard, senão usar lógica de melhor disponível
         const preferredVoice = (preferredVoiceName && availableVoices.find(v => v.name === preferredVoiceName)) ||
                                ptPTVoices.find(v => v.name.toLowerCase().includes('natural')) ||
                                ptPTVoices.find(v => v.name.toLowerCase().includes('online')) ||
@@ -230,6 +181,50 @@ export default function Brain() {
         if (preferredVoice) utterance.voice = preferredVoice;
         window.speechSynthesis.speak(utterance);
     }, [voices, preferredVoiceName]);
+
+    const speak = useCallback(async (text: string, onEndCallback?: () => void) => {
+        const cleanText = text
+            .replace(/\*\*/g, '')
+            .replace(/\*/g, '')
+            .replace(/\[\[GOTO:.*?\]\]/g, '')
+            .replace(/\[\[ACTION:.*?\]\]/g, '')
+            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+            .replace(/#/g, '');
+
+        if (currentAudioRef.current) {
+            currentAudioRef.current.pause();
+            currentAudioRef.current = null;
+        }
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+
+        if (voiceMode === 'local') {
+            fallbackToBrowserTTS(cleanText, onEndCallback);
+            return;
+        }
+
+        try {
+            console.log("%c💎 [VOICE] Solicitando Matriz Neural Premium...", "color: #facc15;");
+            const audioBlob = await aiService.generateSpeech(cleanText);
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audio = new Audio(audioUrl);
+            currentAudioRef.current = audio;
+
+            audio.onplay = () => setIsSpeaking(true);
+            audio.onended = () => {
+                setIsSpeaking(false);
+                URL.revokeObjectURL(audioUrl);
+                if (onEndCallback) onEndCallback();
+            };
+            audio.onerror = () => {
+                fallbackToBrowserTTS(cleanText, onEndCallback);
+            };
+
+            await audio.play();
+        } catch {
+            console.warn("⚠️ Falha no áudio premium, recorrendo ao browser...");
+            fallbackToBrowserTTS(cleanText, onEndCallback);
+        }
+    }, [voiceMode, fallbackToBrowserTTS]);
 
     const handleCommand = useCallback(async (transcript: string) => {
         setLastCommand(transcript);
