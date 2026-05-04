@@ -63,7 +63,6 @@ export default function Brain() {
     
     const [isVisible, setIsVisible] = useState(false);
     const [isHibernated, setIsHibernated] = useState(false);
-    const currentAudioRef = useRef<HTMLAudioElement | null>(null);
     const [lastCommand, setLastCommand] = useState("");
     const [isThinking, setIsThinking] = useState(false);
     const [isAlert, setIsAlert] = useState(false);
