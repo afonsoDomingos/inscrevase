@@ -464,9 +464,9 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                 if (actionMatches.length > 0) {
                     reply = reply.replace(/\[\[ACTION:.*?\]\]/g, '').trim();
                     
-                    // Dispatch the specific action events
-                    setTimeout(() => {
-                        actionMatches.forEach(match => {
+                    // Dispatch the specific action events sequentially
+                    setTimeout(async () => {
+                        for (const match of actionMatches) {
                             const actionName = match[1].trim();
                             if (actionName.startsWith('create_event_type:')) {
                                 const templateType = actionName.split(':')[1];
@@ -490,7 +490,10 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 window.dispatchEvent(new Event(`brain-action-${actionName}`));
                                 triggerAlert(`A executar ação: ${actionName}`, 'success');
                             }
-                        });
+                            
+                            // Pausa dramática/UX de 3.5 segundos entre cada ação para o utilizador ver o que foi feito
+                            await new Promise(resolve => setTimeout(resolve, 3500));
+                        }
                     }, 1000);
                 }
 
