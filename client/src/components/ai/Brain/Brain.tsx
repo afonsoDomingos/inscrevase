@@ -63,11 +63,25 @@ export default function Brain() {
     
     const [isVisible, setIsVisible] = useState(false);
     const [isHibernated, setIsHibernated] = useState(false);
+    const [voiceMode, setVoiceMode] = useState<'local' | 'premium'>('local');
+    const currentAudioRef = useRef<HTMLAudioElement | null>(null);
     const [lastCommand, setLastCommand] = useState("");
     const [isThinking, setIsThinking] = useState(false);
     const [isAlert, setIsAlert] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [chatHistory, setChatHistory] = useState<{role: 'user' | 'ai', text: string}[]>([]);
+
+    useEffect(() => {
+        const fetchVoiceMode = async () => {
+            try {
+                const data = await aiService.getVoiceMode();
+                setVoiceMode(data.mode);
+            } catch (err) {
+                console.warn("Brain: Usando modo local por padrão.");
+            }
+        };
+        fetchVoiceMode();
+    }, [isVisible]);
 
     // Persistência de Estado (Contexto e Visibilidade)
     useEffect(() => {
@@ -133,65 +147,84 @@ export default function Brain() {
         return "Boa noite";
     };
 
-    const speak = useCallback((text: string, onEndCallback?: () => void) => {
+    const speak = useCallback(async (text: string, onEndCallback?: () => void) => {
+        // Limpeza de Markdown
+        const cleanText = text
+            .replace(/\*\*/g, '')
+            .replace(/\*/g, '')
+            .replace(/\[\[GOTO:.*?\]\]/g, '')
+            .replace(/\[\[ACTION:.*?\]\]/g, '')
+            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+            .replace(/#/g, '');
+
+        // Parar áudios anteriores
+        if (currentAudioRef.current) {
+            currentAudioRef.current.pause();
+            currentAudioRef.current = null;
+        }
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+
+        // Se o modo for local, usar browser diretamente
+        if (voiceMode === 'local') {
+            fallbackToBrowserTTS(cleanText, onEndCallback);
+            return;
+        }
+
+        // Se for premium, tentar backend
+        try {
+            console.log("%c💎 [VOICE] Solicitando Matriz Neural Premium...", "color: #facc15;");
+            const audioBlob = await aiService.generateSpeech(cleanText);
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audio = new Audio(audioUrl);
+            currentAudioRef.current = audio;
+
+            audio.onplay = () => setIsSpeaking(true);
+            audio.onended = () => {
+                setIsSpeaking(false);
+                URL.revokeObjectURL(audioUrl);
+                if (onEndCallback) onEndCallback();
+            };
+            audio.onerror = () => {
+                fallbackToBrowserTTS(cleanText, onEndCallback);
+            };
+
+            await audio.play();
+        } catch (error) {
+            console.warn("⚠️ Falha no áudio premium, recorrendo ao browser...");
+            fallbackToBrowserTTS(cleanText, onEndCallback);
+        }
+    }, [voices, voiceMode]);
+
+    const fallbackToBrowserTTS = (text: string, onEndCallback?: () => void) => {
         if (!window.speechSynthesis) {
             if (onEndCallback) onEndCallback();
             return;
         }
-        
-        window.speechSynthesis.cancel();
-        
-        // Limpeza de Markdown para a fala (evita que a IA leia "**" ou "[ ]")
-        const cleanText = text
-            .replace(/\*\*/g, '')      // Remove negritos
-            .replace(/\*/g, '')       // Remove itálicos
-            .replace(/\[\[GOTO:.*?\]\]/g, '') // Remove tags de navegação
-            .replace(/\[\[ACTION:.*?\]\]/g, '') // Remove tags de ação
-            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Mantém apenas o texto do link, remove URL
-            .replace(/#/g, '');       // Remove hashtags de títulos
 
-        const utterance = new SpeechSynthesisUtterance(cleanText);
+        const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'pt-PT';
         utterance.rate = 1.0;
-        utterance.pitch = 1.0; // Pitch 1.0 é mais natural e humano
+        utterance.pitch = 1.0;
 
         utterance.onstart = () => {
-            console.log("%c🔊 [VOICE] Iniciando fala (Browser)...", "color: #38bdf8; font-weight: bold;");
+            console.log("%c🔊 [VOICE] Usando síntese local (Browser)...", "color: #38bdf8;");
             setIsSpeaking(true);
         };
         utterance.onend = () => {
-            console.log("%c🔇 [VOICE] Fala concluída.", "color: #94a3b8;");
-            setIsSpeaking(false);
-            if (onEndCallback) onEndCallback();
-        };
-        utterance.onerror = (e) => {
-            console.error("%c❌ [VOICE] Erro na síntese de voz:", "color: #ef4444;", e);
             setIsSpeaking(false);
             if (onEndCallback) onEndCallback();
         };
 
-        // Algoritmo de voz aprimorado para focar em vozes Neurais / Online
         const availableVoices = voices.length > 0 ? voices : window.speechSynthesis.getVoices();
         const ptPTVoices = availableVoices.filter(v => v.lang === 'pt-PT' || v.lang === 'pt_PT');
-        const ptVoices = availableVoices.filter(v => v.lang.startsWith('pt'));
-        
         const preferredVoice = ptPTVoices.find(v => v.name.toLowerCase().includes('natural')) ||
                                ptPTVoices.find(v => v.name.toLowerCase().includes('online')) ||
                                ptPTVoices.find(v => v.name.includes('Google') || v.name.includes('Premium')) || 
-                               ptPTVoices[0] || 
-                               ptVoices.find(v => v.name.toLowerCase().includes('natural')) ||
-                               ptVoices.find(v => v.name.includes('Google')) ||
-                               ptVoices[0] || 
-                               availableVoices[0];
+                               ptPTVoices[0] || availableVoices[0];
         
-        if (preferredVoice) {
-            utterance.voice = preferredVoice;
-            utterance.lang = 'pt-PT';
-            console.log(`%c🗣️ [VOICE] Matriz Neural configurada para: ${preferredVoice.name} (${preferredVoice.lang})`, "color: #10b981; font-weight: bold;");
-        }
-
+        if (preferredVoice) utterance.voice = preferredVoice;
         window.speechSynthesis.speak(utterance);
-    }, [voices]);
+    };
 
     const handleCommand = useCallback(async (transcript: string) => {
         setLastCommand(transcript);

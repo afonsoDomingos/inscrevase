@@ -92,5 +92,31 @@ export const aiService = {
             console.error("Speech Generation Error:", error);
             throw error;
         }
+    },
+    getVoiceMode: async () => {
+        try {
+            const response = await fetch(`${API_URL}/ai/brain/settings/voice`, {
+                headers: getHeaders()
+            });
+            if (!response.ok) throw new Error('Falha ao buscar modo de voz');
+            return await response.json();
+        } catch (error) {
+            console.error("Get Voice Mode Error:", error);
+            throw error;
+        }
+    },
+    updateVoiceMode: async (mode: 'local' | 'premium') => {
+        try {
+            const response = await fetch(`${API_URL}/ai/brain/settings/voice`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({ mode })
+            });
+            if (!response.ok) throw new Error('Falha ao atualizar modo de voz');
+            return await response.json();
+        } catch (error) {
+            console.error("Update Voice Mode Error:", error);
+            throw error;
+        }
     }
 };

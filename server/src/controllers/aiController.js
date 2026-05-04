@@ -4,6 +4,7 @@ const OpenAI = require("openai");
 const fs = require('fs');
 const path = require('path');
 const User = require('../models/User');
+const GlobalSettings = require('../models/GlobalSettings');
 const Form = require('../models/Form');
 const Submission = require('../models/Submission');
 const Transaction = require('../models/Transaction');
@@ -437,5 +438,34 @@ exports.getBrainStats = async (req, res) => {
     } catch (error) {
         console.error("Erro no TTS Premium:", error);
         res.status(500).json({ error: "Falha na geração de voz premium." });
+    }
+};
+
+exports.getVoiceSetting = async (req, res) => {
+    try {
+        let setting = await GlobalSettings.findOne({ key: 'brain_voice_mode' });
+        if (!setting) {
+            setting = await GlobalSettings.create({ key: 'brain_voice_mode', value: 'local' });
+        }
+        res.json({ mode: setting.value });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.updateVoiceSetting = async (req, res) => {
+    const { mode } = req.body;
+    if (!['local', 'premium'].includes(mode)) {
+        return res.status(400).json({ error: "Modo inválido" });
+    }
+    try {
+        const setting = await GlobalSettings.findOneAndUpdate(
+            { key: 'brain_voice_mode' },
+            { value: mode, lastUpdated: new Date() },
+            { upsert: true, new: true }
+        );
+        res.json({ mode: setting.value });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 };

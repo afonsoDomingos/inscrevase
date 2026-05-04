@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Users, MessageSquare, TrendingUp, Clock, Bot, ChevronDown, ChevronUp, Zap, Target, Search } from 'lucide-react';
+import { Brain, Users, MessageSquare, TrendingUp, Clock, Bot, ChevronDown, ChevronUp, Zap, Target, Search, Volume2, Download } from 'lucide-react';
 import { aiService } from '@/lib/aiService';
 import { toast } from 'sonner';
 
@@ -30,12 +30,53 @@ interface BrainStats {
 export default function BrainAudit() {
     const [stats, setStats] = useState<BrainStats | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isExporting, setIsExporting] = useState(false);
+    const [voiceMode, setVoiceMode] = useState<'local' | 'premium'>('local');
+    const [isUpdatingVoice, setIsUpdatingVoice] = useState(false);
     const [expandedLog, setExpandedLog] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [logs, setLogs] = useState<BrainLog[]>([]);
 
     useEffect(() => {
-        loadStats();
+        fetchStatsAndLogs();
     }, []);
+
+    const fetchStatsAndLogs = async () => {
+        try {
+            setLoading(true);
+            const [statsData, voiceData] = await Promise.all([
+                aiService.getBrainStats(),
+                aiService.getVoiceMode()
+            ]);
+            setStats(statsData);
+            setLogs(statsData.recentLogs);
+            setVoiceMode(voiceData.mode);
+        } catch (error) {
+            console.error("Audit Error:", error);
+            toast.error("Erro ao carregar auditoria");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVoiceModeChange = async (mode: 'local' | 'premium') => {
+        setIsUpdatingVoice(true);
+        try {
+            await aiService.updateVoiceMode(mode);
+            setVoiceMode(mode);
+            toast.success(`Modo de voz alterado para ${mode}`);
+        } catch (error) {
+            toast.error("Falha ao atualizar modo de voz");
+        } finally {
+            setIsUpdatingVoice(false);
+        }
+    };
+
+    const handleExport = async () => {
+        setIsExporting(true);
+        // Add export logic
+        setTimeout(() => setIsExporting(false), 2000);
+    };
 
     const loadStats = async () => {
         try {
@@ -62,11 +103,11 @@ export default function BrainAudit() {
         );
     }
 
-    const filteredLogs = stats?.recentLogs.filter(log => 
+    const filteredLogs = (stats?.recentLogs || logs).filter(log => 
         log.transcript.toLowerCase().includes(searchTerm.toLowerCase()) || 
         log.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         log.userRole.toLowerCase().includes(searchTerm.toLowerCase())
-    ) || [];
+    );
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
@@ -83,13 +124,67 @@ export default function BrainAudit() {
                         Monitorização de inteligência neural e padrões de interação.
                     </p>
                 </div>
-                <button 
-                    onClick={loadStats}
-                    className="btn-primary"
-                    style={{ padding: '12px 25px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}
-                >
-                    <Zap size={18} fill="#000" /> Atualizar Matriz
-                </button>
+                <div style={{ display: 'flex', gap: '15px' }}>
+                    <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '10px', 
+                        background: '#fff', 
+                        padding: '5px 15px', 
+                        borderRadius: '12px',
+                        border: '1px solid #e2e8f0'
+                    }}>
+                        <Volume2 size={18} color="#64748b" />
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569' }}>Voz do Brain:</span>
+                        <div style={{ display: 'flex', gap: '5px', background: '#f1f5f9', padding: '4px', borderRadius: '8px' }}>
+                            <button 
+                                onClick={() => handleVoiceModeChange('local')}
+                                disabled={isUpdatingVoice}
+                                style={{
+                                    padding: '5px 12px',
+                                    borderRadius: '6px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 800,
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    background: voiceMode === 'local' ? '#fff' : 'transparent',
+                                    color: voiceMode === 'local' ? '#000' : '#64748b',
+                                    boxShadow: voiceMode === 'local' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                Local
+                            </button>
+                            <button 
+                                onClick={() => handleVoiceModeChange('premium')}
+                                disabled={isUpdatingVoice}
+                                style={{
+                                    padding: '5px 12px',
+                                    borderRadius: '6px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 800,
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    background: voiceMode === 'premium' ? '#000' : 'transparent',
+                                    color: voiceMode === 'premium' ? '#fff' : '#64748b',
+                                    boxShadow: voiceMode === 'premium' ? '0 2px 4px rgba(0,0,0,0.2)' : 'none',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                Premium
+                            </button>
+                        </div>
+                    </div>
+                    <button 
+                        onClick={handleExport}
+                        disabled={isExporting}
+                        className="luxury-button" 
+                        style={{ padding: '0.8rem 1.5rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
+                        <Download size={18} />
+                        {isExporting ? 'Exportando...' : 'Exportar Auditoria'}
+                    </button>
+                </div>
             </div>
 
             {/* Stats Grid */}
