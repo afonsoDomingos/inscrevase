@@ -60,8 +60,7 @@ export default function BrainAudit() {
                 // Carregar vozes locais do browser
                 const loadBrowserVoices = () => {
                     const voices = window.speechSynthesis.getVoices();
-                    const filtered = voices.filter(v => v.lang.startsWith('pt'));
-                    setAvailableVoices(filtered);
+                    setAvailableVoices(voices); // Mostra TODAS as vozes do sistema
                 };
                 loadBrowserVoices();
                 if (window.speechSynthesis.onvoiceschanged !== undefined) {
@@ -253,7 +252,7 @@ export default function BrainAudit() {
                                 >
                                     <option value="">Auto-Seleção (Melhor disponível)</option>
                                     {availableVoices.map((voice, i) => (
-                                        <option key={i} value={voice.name}>{voice.name}</option>
+                                        <option key={i} value={voice.name}>{voice.name} ({voice.lang})</option>
                                     ))}
                                 </select>
                             </div>
