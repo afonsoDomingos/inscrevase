@@ -326,12 +326,12 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
         };
 
         // Comando Especial: Controle Físico da Tela (Scroll)
-        const wantsToScrollUp = /(subir|cima|sobe|scroll.*cima|scrool.*cima|srool.*cima)/.test(lowerTranscript);
-        const wantsToScrollDown = /(descer|baixo|desce|scroll|scrool|srool|scrol|escrool|rolar|rola)/.test(lowerTranscript);
+        const wantsToScrollUp = /(subir|cima|sobe|topo|scroll.*cima|scrool.*cima|srool.*cima|rola.*cima|rol.*cima)/.test(lowerTranscript);
+        const wantsToScrollDown = /(descer|baixo|desce|fundo|scroll|scrool|srool|scrol|escrool|rolar|rola\b|rol\b)/.test(lowerTranscript);
 
         if (wantsToScrollUp || wantsToScrollDown) {
-            // Se tiver ambas as palavras, assume a que está explícita. O padrão é descer se ele disser só "faz um scrool".
-            const isUp = wantsToScrollUp && !/(descer|baixo)/.test(lowerTranscript);
+            // Privilegia o subir se a palavra cima estiver presente explícitamente e a direção descer não estiver.
+            const isUp = wantsToScrollUp && !/(descer|baixo|fundo)/.test(lowerTranscript);
             performSuperScroll(isUp ? -window.innerHeight * 0.8 : window.innerHeight * 0.8);
             
             const msg = isUp ? "A subir a página." : "A descer a página, Mestre.";
