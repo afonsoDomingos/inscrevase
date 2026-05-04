@@ -122,11 +122,42 @@ router.post('/chat', authMiddleware, async (req, res) => {
     }
 });
 
+const { authMiddleware, adminMiddleware, optionalAuthMiddleware } = require('../middleware/authMiddleware');
+const rateLimit = require('express-rate-limit');
+
+// Bloqueio contra Botnets e DDoS focado em custos de Inteligência Artificial
+const aiLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // Janela de 1 minuto
+    max: 15, // Máximo de 15 pedidos por IP
+    message: { error: "Sistemas em sobrecarga. Aguarde 60 segundos por favor." }
+});
+
+const ttsLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000,
+    max: 5, // Apenas 5 gerações de áudio por minuto/IP
+    message: { error: "Cota de processamento vocal superada. Aguarde um minuto." }
+});
+
+// Middleware de saneamento e proteção contra Payload Excessivo (Crash de RAM)
+const payloadSanitizer = (req, res, next) => {
+    if (req.body.transcript) {
+        if (req.body.transcript.length > 2000) {
+            return res.status(400).json({ error: "Payload suspeito. O limite máximo é de 2000 caracteres." });
+        }
+        // Sanitiza cortando espaços absurdos
+        req.body.transcript = req.body.transcript.trim();
+    }
+    next();
+};
+
 const aiController = require('../controllers/aiController');
 
-router.post('/brain/command', optionalAuthMiddleware, aiController.handleBrainCommand);
+// Protegidas com Rate Limiting e Sanitização
+router.post('/brain/command', aiLimiter, optionalAuthMiddleware, payloadSanitizer, aiController.handleBrainCommand);
+router.post('/brain/tts', ttsLimiter, optionalAuthMiddleware, payloadSanitizer, aiController.textToSpeech);
+
+// Rotas de Admin
 router.get('/brain/stats', authMiddleware, adminMiddleware, aiController.getBrainStats);
-router.post('/brain/tts', aiController.textToSpeech);
 router.get('/brain/settings/voice', aiController.getVoiceSetting);
 router.post('/brain/settings/voice', authMiddleware, adminMiddleware, aiController.updateVoiceSetting);
 
