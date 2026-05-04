@@ -399,7 +399,7 @@ exports.getBrainStats = async (req, res) => {
             const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
             const mp3 = await openai.audio.speech.create({
                 model: "tts-1",
-                voice: "alloy", // alloy, echo, fable, onyx, nova, shimmer
+                voice: "onyx", // alloy, echo, fable, onyx, nova, shimmer
                 input: text,
             });
             const buffer = Buffer.from(await mp3.arrayBuffer());
