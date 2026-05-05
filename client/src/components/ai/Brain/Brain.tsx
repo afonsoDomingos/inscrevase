@@ -771,9 +771,38 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                     animation: listening-border-pulse 1.5s infinite;
                 }
                 @keyframes listening-border-pulse {
-                    0% { border-color: rgba(239, 68, 68, 0.2); box-shadow: 0 0 0px rgba(239, 68, 68, 0); }
-                    50% { border-color: rgba(239, 68, 68, 1); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
-                    100% { border-color: rgba(239, 68, 68, 0.2); box-shadow: 0 0 0px rgba(239, 68, 68, 0); }
+                    0% { border-color: rgba(239,68,68,0.2); box-shadow: 0 0 0px rgba(239,68,68,0); }
+                    50% { border-color: rgba(239,68,68,1); box-shadow: 0 0 15px rgba(239,68,68,0.4); }
+                    100% { border-color: rgba(239,68,68,0.2); box-shadow: 0 0 0px rgba(239,68,68,0); }
+                }
+                
+                /* Custom Tooltips */
+                [data-tooltip] {
+                    position: relative;
+                }
+                [data-tooltip]::after {
+                    content: attr(data-tooltip);
+                    position: absolute;
+                    bottom: 125%;
+                    left: 50%;
+                    transform: translateX(-50%) scale(0.8);
+                    padding: 5px 10px;
+                    background: rgba(0, 0, 0, 0.9);
+                    color: #fff;
+                    font-size: 10px;
+                    white-space: nowrap;
+                    border-radius: 4px;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    pointer-events: none;
+                    opacity: 0;
+                    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    z-index: 1000;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+                }
+                [data-tooltip]:hover::after {
+                    opacity: 1;
+                    transform: translateX(-50%) scale(1);
+                    bottom: 140%;
                 }
             `}</style>
             {/* Monitor HUD — Centered */}
@@ -989,14 +1018,14 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                 setTimeout(() => setIsResetting(false), 1500);
                                             }} 
                                             style={{ color: '#10b981', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
-                                            title="Reiniciar Monitor"
+                                            data-tooltip="Reiniciar Sistemas"
                                         >
                                             <RotateCw size={18} className={isResetting ? 'animate-spin' : ''} />
                                         </button>
                                         <button 
                                             onClick={() => setIsMaximized(!isMaximized)} 
                                             style={{ color: '#38bdf8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
-                                            title={isMaximized ? "Minimizar" : "Maximizar"}
+                                            data-tooltip={isMaximized ? "Minimizar Ecrã" : "Modo Cinema"}
                                         >
                                             {isMaximized ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
                                         </button>
@@ -1011,11 +1040,19 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                 }, 2000); 
                                             }} 
                                             style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
-                                            title="Hibernate"
+                                            data-tooltip="Hibernar Sistema"
                                         >
                                             <Power size={18} />
                                         </button>
-                                        <button onClick={() => { setChatHistory([]); speak("Memória de chat limpa. Estou pronto para uma nova orquestração, Mestre."); triggerAlert("Histórico de chat reiniciado.", "success"); }} style={{ color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Limpar Chat">
+                                        <button 
+                                            onClick={() => { 
+                                                setChatHistory([]); 
+                                                speak("Memória de chat limpa. Estou pronto para uma nova orquestração, Mestre."); 
+                                                triggerAlert("Histórico de chat reiniciado.", "success"); 
+                                            }} 
+                                            style={{ color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
+                                            data-tooltip="Limpar Histórico"
+                                        >
                                             <Square size={16} />
                                         </button>
                                         <button 
@@ -1029,6 +1066,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                 }, 1500);
                                             }} 
                                             style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
+                                            data-tooltip="Encerrar Sessão"
                                         >
                                             <X size={20} />
                                         </button>
@@ -1221,6 +1259,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                             justifyContent: 'center',
                                                             transition: 'all 0.3s'
                                                         }}
+                                                        data-tooltip={isListening ? "Parar Escuta" : "Clica para Iniciar"}
                                                     >
                                                         {isListening ? (
                                                             <div style={{ display: 'flex', gap: '2px' }}>
@@ -1256,6 +1295,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                     boxShadow: '0 4px 10px rgba(234, 179, 8, 0.3)',
                                                     zIndex: 10
                                                 }}
+                                                data-tooltip="Enviar Comando"
                                             >
                                                 <Terminal size={18} />
                                             </button>
