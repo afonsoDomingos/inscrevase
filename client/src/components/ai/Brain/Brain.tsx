@@ -102,7 +102,7 @@ export default function Brain() {
                     const user = JSON.parse(storedUser);
                     // Só permite se for admin ou mentor
                     const role = (user.role || "").toLowerCase();
-                    if (role === 'admin' || role === 'mentor') {
+                    if (role === 'admin' || role === 'mentor' || role === 'superadmin') {
                         setIsAuthorized(true);
                     } else {
                         setIsAuthorized(false);
