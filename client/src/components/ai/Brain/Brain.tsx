@@ -132,6 +132,7 @@ export default function Brain() {
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
     const [textInput, setTextInput] = useState("");
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+    const [isResetting, setIsResetting] = useState(false);
 
     const triggerAlert = useCallback((message: string, type: 'info' | 'error' | 'success' = 'info') => {
         if (type === 'error') setIsAlert(true);
@@ -948,17 +949,19 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                         )}
                                         <button 
                                             onClick={() => { 
+                                                setIsResetting(true);
                                                 setChatHistory([]); 
                                                 setLastCommand("");
                                                 setTextInput("");
                                                 if (window.speechSynthesis) window.speechSynthesis.cancel();
                                                 speak("Sistemas reiniciados. Memória limpa, Mestre."); 
                                                 triggerAlert("Monitor Reiniciado", "success"); 
+                                                setTimeout(() => setIsResetting(false), 400);
                                             }} 
                                             style={{ color: '#10b981', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
                                             title="Reiniciar Monitor"
                                         >
-                                            <RotateCw size={18} />
+                                            <RotateCw size={18} className={isResetting ? 'animate-spin' : ''} />
                                         </button>
                                         <button 
                                             onClick={() => setIsMaximized(!isMaximized)} 
@@ -999,7 +1002,25 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1, borderColor: isThinking ? ['rgba(56,189,248,0.2)','rgba(56,189,248,0.8)','rgba(56,189,248,0.2)'] : 'rgba(234,179,8,0.2)', boxShadow: isThinking ? ['0 0 0px rgba(56,189,248,0)','0 0 15px rgba(56,189,248,0.3)','0 0 0px rgba(56,189,248,0)'] : 'none' }} transition={isThinking ? { duration: 1.5, repeat: Infinity } : {}} style={{ background: isThinking ? 'rgba(56, 189, 248, 0.15)' : 'rgba(234, 179, 8, 0.1)', border: '1px solid', padding: '6px 15px', borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', flexShrink: 0 }}><Terminal size={12} style={{ color: isThinking ? '#38bdf8' : '#eab308', minWidth: '12px' }} /><span style={{ color: isThinking ? '#38bdf8' : '#eab308', fontSize: '0.8rem', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lastCommand}</span></motion.div>
                                     )}
 
-                                    <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.95rem', color: '#d1d5db', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent', paddingRight: '10px', minHeight: '0' }}>
+                                    <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.95rem', color: '#d1d5db', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent', paddingRight: '10px', minHeight: '0', position: 'relative' }}>
+                                        {/* Monitor Screen Overlay for effects */}
+                                        <AnimatePresence>
+                                            {isResetting && (
+                                                <motion.div 
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: [0, 0.8, 0] }}
+                                                    exit={{ opacity: 0 }}
+                                                    transition={{ duration: 0.4 }}
+                                                    style={{ 
+                                                        position: 'absolute', 
+                                                        inset: 0, 
+                                                        background: 'white', 
+                                                        zIndex: 100, 
+                                                        pointerEvents: 'none' 
+                                                    }} 
+                                                />
+                                            )}
+                                        </AnimatePresence>
                                         {chatHistory.length > 0 ? chatHistory.map((msg, idx) => {
                                             // System inline message
                                             if (msg.text.startsWith('__SYSTEM__')) {
