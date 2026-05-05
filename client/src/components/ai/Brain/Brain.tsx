@@ -771,10 +771,28 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                     right: -150%; 
                     bottom: -150%; 
                     left: -150%;
-                    background: conic-gradient(from 0deg, transparent 0%, transparent 40%, #eab308 60%, #fff 75%, #eab308 90%, transparent 100%);
+                    background: conic-gradient(from 0deg, transparent 0%, transparent 40%, #4285f4 60%, #ea4335 70%, #fbbc05 80%, #34a853 90%, transparent 100%);
                     animation: spin-gemini-border 3s linear infinite;
                     z-index: 0;
                     border-radius: 50%;
+                }
+                .gemini-ai-wrapper {
+                    position: relative;
+                    flex: 1;
+                    border-radius: 50px;
+                    padding: 2px;
+                    display: flex;
+                    overflow: hidden;
+                    background: #111;
+                    width: 100%;
+                }
+                .gemini-ai-wrapper::before {
+                    content: "";
+                    position: absolute;
+                    top: -150%; right: -50%; bottom: -150%; left: -50%;
+                    background: conic-gradient(from 0deg, transparent 0%, transparent 40%, #4285f4 60%, #ea4335 70%, #fbbc05 80%, #34a853 90%, transparent 100%);
+                    animation: spin-gemini-border 3s linear infinite;
+                    z-index: 0;
                 }
                 .gemini-ai-input {
                     position: relative;
@@ -1414,7 +1432,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 alignItems: 'center', 
                                 justifyContent: 'center' 
                             }}>
-                                <Command size={24} color="#eab308" />
+                                <Command size={24} color="#fff" />
                             </div>
                         </motion.button>
                     </motion.div>
