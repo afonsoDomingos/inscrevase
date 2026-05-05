@@ -1037,7 +1037,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                             onClick={() => { 
                                                 setIsShuttingDown(true);
                                                 playSystemSound('close'); 
-                                                speak("Desativando sistemas neurais. Até logo, Mestre."); 
+                                                speak("Desativando sistemas neurais. Para me reativar, será necessário recarregar a plataforma. Até logo, Mestre."); 
                                                 setTimeout(() => {
                                                     setIsHibernated(true);
                                                     setIsShuttingDown(false);
