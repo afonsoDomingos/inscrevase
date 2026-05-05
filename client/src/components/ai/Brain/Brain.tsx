@@ -945,8 +945,33 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                         {!isMobile && <div style={{ marginTop: '15px', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', width: '100%', border: '1px solid rgba(255,255,255,0.03)' }}><VoiceVisualizer /></div>}
                                     </div>
                                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                        {isThinking && (
+                                            <button 
+                                                onClick={() => { 
+                                                    setIsThinking(false); 
+                                                    speak("Processamento interrompido pelo utilizador."); 
+                                                    triggerAlert("Interrupção manual detectada.", "info");
+                                                }} 
+                                                style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
+                                                title="Parar Processamento"
+                                            >
+                                                <Square size={18} fill="#ef4444" />
+                                            </button>
+                                        )}
                                         {isSpeaking && (
-                                            <button onClick={() => { window.speechSynthesis?.cancel(); setIsSpeaking(false); speak("Entendido. Silenciando."); }} style={{ color: '#eab308', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}>
+                                            <button 
+                                                onClick={() => { 
+                                                    window.speechSynthesis?.cancel(); 
+                                                    if (currentAudioRef.current) {
+                                                        currentAudioRef.current.pause();
+                                                        currentAudioRef.current = null;
+                                                    }
+                                                    setIsSpeaking(false); 
+                                                    speak("Entendido. Silenciando."); 
+                                                }} 
+                                                style={{ color: '#eab308', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
+                                                title="Parar Fala"
+                                            >
                                                 <Square size={14} fill="currentColor" />
                                             </button>
                                         )}
