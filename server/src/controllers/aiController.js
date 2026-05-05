@@ -445,7 +445,7 @@ exports.handleBrainCommand = async (req, res) => {
                 }
             } catch (e) {
                 console.error(`[BRAIN] Falha no modelo ${modelCfg.name}:`, e.message);
-                lastError = e.message;
+                lastError += `| ${modelCfg.name}: ${e.message} `;
             }
         }
 
