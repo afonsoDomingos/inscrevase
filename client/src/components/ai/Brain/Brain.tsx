@@ -191,13 +191,17 @@ export default function Brain() {
         };
 
         const availableVoices = voices.length > 0 ? voices : window.speechSynthesis.getVoices();
+        const ptBRVoices = availableVoices.filter(v => v.lang === 'pt-BR' || v.lang === 'pt_BR');
         const ptPTVoices = availableVoices.filter(v => v.lang === 'pt-PT' || v.lang === 'pt_PT');
+        const allPtVoices = [...ptBRVoices, ...ptPTVoices];
         
         const preferredVoice = (preferredVoiceName && availableVoices.find(v => v.name === preferredVoiceName)) ||
+                               ptBRVoices.find(v => v.name.toLowerCase().includes('google')) ||
+                               ptBRVoices.find(v => v.name.toLowerCase().includes('natural')) ||
+                               ptBRVoices[0] ||
                                ptPTVoices.find(v => v.name.toLowerCase().includes('natural')) ||
-                               ptPTVoices.find(v => v.name.toLowerCase().includes('online')) ||
-                               ptPTVoices.find(v => v.name.includes('Google') || v.name.includes('Premium')) || 
-                               ptPTVoices[0] || availableVoices[0];
+                               allPtVoices[0] || 
+                               availableVoices[0];
         
         if (preferredVoice) utterance.voice = preferredVoice;
         
