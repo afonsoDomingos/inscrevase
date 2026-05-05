@@ -96,28 +96,24 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
             };
 
             rec.onresult = (event: SpeechRecognitionEvent) => {
-                console.log("%c📝 [MIC] Capturando resultado...", "color: #38bdf8;");
                 let interim = '';
                 let finalStr = '';
                 
-                const startIndex = event.resultIndex;
-                
-                for (let i = startIndex; i < event.results.length; i++) {
+                for (let i = event.resultIndex; i < event.results.length; i++) {
                     const result = event.results[i];
                     if (result.isFinal) {
-                        finalStr = result[0].transcript;
-                        // No modo contínuo, paramos após o primeiro comando finalizado para processar
-                        rec.stop();
+                        finalStr += result[0].transcript;
                     } else {
                         interim += result[0].transcript;
                     }
                 }
                 
+                // Se tivermos texto final, enviamos para o callback. 
+                // Mas também atualizamos o estado intermédio para o input.
                 if (finalStr) {
                     setCurrentTranscript(finalStr);
-                    if (onCommandRef.current) {
-                        onCommandRef.current(finalStr.toLowerCase());
-                    }
+                    // Não chamamos onCommand aqui para permitir que o utilizador veja o texto no input primeiro
+                    // A menos que queiramos envio automático.
                 } else {
                     setCurrentTranscript(interim);
                 }

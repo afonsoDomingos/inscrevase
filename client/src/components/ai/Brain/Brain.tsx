@@ -529,7 +529,14 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
         }
     }, [router, speak, pathname, chatHistory, triggerAlert]);
 
-    const { isListening, currentTranscript, startListening, hasSupport } = useSpeechRecognition(handleCommand);
+    const { isListening, currentTranscript, startListening, stopListening, hasSupport } = useSpeechRecognition(() => {});
+
+    // Sincronizar Transcrição com Input em Tempo Real
+    useEffect(() => {
+        if (isListening && currentTranscript) {
+            setTextInput(currentTranscript);
+        }
+    }, [currentTranscript, isListening]);
 
     const introSound = useRef<HTMLAudioElement | null>(null);
     const closeSound = useRef<HTMLAudioElement | null>(null);
@@ -1122,9 +1129,9 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
 
                                     </div>
 
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '95%', margin: '0 auto', flexShrink: 0 }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', flexShrink: 0 }}>
                                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '100%' }}>
-                                            <div className="gemini-ai-wrapper">
+                                            <div className="gemini-ai-wrapper" style={{ display: 'flex', alignItems: 'center', paddingRight: '8px' }}>
                                                 <input 
                                                     type="text" 
                                                     className="gemini-ai-input"
@@ -1136,8 +1143,43 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                             setTextInput("");
                                                         }
                                                     }}
-                                                    placeholder="Para começar a orquestrar, digite..."
+                                                    placeholder="Diga ou digite o seu comando..."
+                                                    style={{ flex: 1 }}
                                                 />
+                                                {hasSupport && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (isListening) {
+                                                                stopListening();
+                                                                if (textInput.trim()) {
+                                                                    handleCommand(textInput.trim());
+                                                                    setTextInput("");
+                                                                }
+                                                            } else {
+                                                                speak("Sistema de escuta ativo.");
+                                                                startListening();
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            background: 'none',
+                                                            border: 'none',
+                                                            cursor: 'pointer',
+                                                            color: isListening ? '#ef4444' : '#94a3b8',
+                                                            padding: '8px',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            transition: 'all 0.3s'
+                                                        }}
+                                                    >
+                                                        {isListening ? (
+                                                            <div style={{ display: 'flex', gap: '2px' }}>
+                                                                {[1,2,3].map(i => <motion.div key={i} animate={{ height: [4, 12, 4] }} transition={{ repeat: Infinity, duration: 0.4, delay: i * 0.1 }} style={{ width: '2px', background: '#ef4444', borderRadius: '9999px' }} />)}
+                                                            </div>
+                                                        ) : <Mic size={18} />}
+                                                    </button>
+                                                )}
                                             </div>
                                             <button 
                                                 type="button" 
@@ -1152,9 +1194,9 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                     background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)',
                                                     color: '#000',
                                                     border: 'none',
-                                                    width: '44px',
-                                                    height: '44px',
-                                                    minWidth: '44px',
+                                                    width: '40px',
+                                                    height: '40px',
+                                                    minWidth: '40px',
                                                     borderRadius: '50%',
                                                     display: 'flex',
                                                     alignItems: 'center',
@@ -1162,67 +1204,13 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                     cursor: (!textInput.trim() || isThinking) ? 'not-allowed' : 'pointer',
                                                     opacity: (!textInput.trim() || isThinking) ? 0.3 : 1,
                                                     transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                                                    boxShadow: '0 4px 10px rgba(234, 179, 8, 0.4), inset 0 2px 4px rgba(255,255,255,0.4)',
+                                                    boxShadow: '0 4px 10px rgba(234, 179, 8, 0.3)',
                                                     zIndex: 10
                                                 }}
                                             >
                                                 <Terminal size={18} />
                                             </button>
                                         </div>
-                                        
-                                        {hasSupport && (
-                                            <motion.button 
-                                                whileHover={{ scale: 1.02, boxShadow: isSpeaking ? '0 8px 25px rgba(249, 115, 22, 0.4)' : isListening ? '0 8px 25px rgba(239, 68, 68, 0.4)' : '0 8px 25px rgba(234, 179, 8, 0.4)' }} 
-                                                whileTap={{ scale: 0.98 }} 
-                                                onClick={() => {
-                                                    if (isSpeaking) {
-                                                        if (currentAudioRef.current) {
-                                                            currentAudioRef.current.pause();
-                                                            currentAudioRef.current = null;
-                                                        }
-                                                        if (window.speechSynthesis) window.speechSynthesis.cancel();
-                                                        setIsSpeaking(false);
-                                                        speak("Entendido. Silenciando.");
-                                                    } else {
-                                                        speak("Comando de voz ativo.");
-                                                        startListening();
-                                                    }
-                                                }} 
-                                                disabled={isListening && !isSpeaking} 
-                                                style={{ 
-                                                    width: '100%', 
-                                                    padding: '8px', 
-                                                    borderRadius: '12px', 
-                                                    display: 'flex', 
-                                                    alignItems: 'center', 
-                                                    justifyContent: 'center', 
-                                                    gap: '10px', 
-                                                    border: 'none', 
-                                                    background: isSpeaking ? 'linear-gradient(135deg, #f97316 0%, #c2410c 100%)' : isListening ? 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' : 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', 
-                                                    color: (isListening || isSpeaking) ? '#fff' : '#000', 
-                                                    fontWeight: '900', 
-                                                    fontSize: '0.8rem', 
-                                                    letterSpacing: '1px', 
-                                                    cursor: (isListening && !isSpeaking) ? 'default' : 'pointer', 
-                                                    outline: 'none', 
-                                                    transition: 'all 0.3s cubic-bezier(0.23, 1, 0.32, 1)', 
-                                                    boxShadow: isSpeaking ? '0 6px 20px rgba(249, 115, 22, 0.3)' : isListening ? '0 0 20px rgba(239, 68, 68, 0.4)' : '0 6px 20px rgba(234, 179, 8, 0.25)' 
-                                                }}
-                                            >
-                                                {isSpeaking ? (
-                                                    <><Square size={20} fill="#fff" /><span>PARAR FALA</span></>
-                                                ) : isListening ? (
-                                                    <>
-                                                        <div style={{ display: 'flex', gap: '4px' }}>
-                                                            {[1,2,3,4,5].map(i => <motion.div key={i} animate={{ height: [4, 18, 4] }} transition={{ repeat: Infinity, duration: 0.4, delay: i * 0.1 }} style={{ width: '3px', background: '#fff', borderRadius: '9999px' }} />)}
-                                                        </div>
-                                                        <span>GRAVANDO...</span>
-                                                    </>
-                                                ) : (
-                                                    <><Mic size={20} /><span>FALAR COMANDO</span></>
-                                                )}
-                                            </motion.button>
-                                        )}
                                     </div>
                                 </div>
                             </motion.div>
