@@ -798,7 +798,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                     pointer-events: none;
                     opacity: 0;
                     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                    z-index: 999999;
+                    z-index: 10000000;
                     box-shadow: 0 4px 15px rgba(234, 179, 8, 0.4);
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
@@ -807,6 +807,11 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                     opacity: 1;
                     transform: translateX(-50%) scale(1);
                     bottom: 125%;
+                }
+                
+                /* Ensure tooltips are not clipped */
+                .gemini-ai-input-container {
+                    overflow: visible !important;
                 }
             `}</style>
             {/* Monitor HUD — Centered */}
@@ -950,9 +955,8 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                     zIndex: 5, 
                                     display: 'flex', 
                                     flexDirection: isMobile ? 'column' : 'row',
-                                    gap: isMobile ? '5px' : '25px', 
                                     padding: isMobile ? '10px' : '15px 20px', 
-                                    overflow: 'hidden'
+                                    overflow: 'visible'
                                 }}
                             >
                                 {/* Left Column: Brain + Status */}
@@ -1080,7 +1084,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 {!isMobile && <div style={{ width: '1px', background: 'rgba(255,255,255,0.06)', flexShrink: 0 }} />}
 
                                 {/* Right Column: Chat/Interaction */}
-                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: isMobile ? '8px' : '12px', overflow: 'hidden' }}>
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: isMobile ? '8px' : '12px', overflow: 'visible' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(234, 179, 8, 0.05)', padding: '4px 10px', borderRadius: '6px', border: '1px solid rgba(234, 179, 8, 0.15)', marginBottom: '2px', flexShrink: 0 }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                             <div style={{ width: '6px', height: '6px', background: '#eab308', borderRadius: '50%', boxShadow: '0 0 8px #eab308' }} />
