@@ -765,13 +765,16 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                     background: #111;
                     width: 100%;
                 }
-                .gemini-ai-wrapper::before {
-                    content: "";
+                .gemini-ai-button-glow {
                     position: absolute;
-                    top: -150%; right: -50%; bottom: -150%; left: -50%;
-                    background: conic-gradient(from 0deg, transparent 0%, transparent 40%, #4285f4 60%, #ea4335 70%, #fbbc05 80%, #34a853 90%, transparent 100%);
+                    top: -150%; 
+                    right: -150%; 
+                    bottom: -150%; 
+                    left: -150%;
+                    background: conic-gradient(from 0deg, transparent 0%, transparent 40%, #eab308 60%, #fff 75%, #eab308 90%, transparent 100%);
                     animation: spin-gemini-border 3s linear infinite;
                     z-index: 0;
+                    border-radius: 50%;
                 }
                 .gemini-ai-input {
                     position: relative;
@@ -1355,7 +1358,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                         }}
                     >
                         <motion.button
-                            whileHover={{ scale: 1.1, boxShadow: '0 0 40px rgba(66, 133, 244, 0.4)' }}
+                            whileHover={{ scale: 1.1, boxShadow: '0 0 40px rgba(234, 179, 8, 0.4)' }}
                             whileTap={{ scale: 0.9 }}
                             onClick={() => { 
                                 setIsVisible(true); 
@@ -1378,8 +1381,6 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 speak(greeting);
                                 setChatHistory([{ role: 'ai', text: greeting }]);
                             }}
-                            className="gemini-ai-wrapper"
-                            data-tooltip="Ativar Cérbero AI"
                             style={{
                                 position: 'relative',
                                 width: '56px',
@@ -1391,12 +1392,17 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                background: '#111',
+                                background: 'transparent',
                                 border: 'none',
                                 overflow: 'visible',
                                 boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)'
                             }}
                         >
+                            {/* Glow Clip Container */}
+                            <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', overflow: 'hidden', zIndex: 0 }}>
+                                <div className="gemini-ai-button-glow" />
+                            </div>
+
                             <div style={{ 
                                 position: 'relative', 
                                 zIndex: 2, 
@@ -1408,7 +1414,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 alignItems: 'center', 
                                 justifyContent: 'center' 
                             }}>
-                                <Command size={24} color="#fff" />
+                                <Command size={24} color="#eab308" />
                             </div>
                         </motion.button>
                     </motion.div>
