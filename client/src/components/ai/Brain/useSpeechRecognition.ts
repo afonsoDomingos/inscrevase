@@ -108,12 +108,13 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
                     }
                 }
                 
-                // Se tivermos texto final, enviamos para o callback. 
-                // Mas também atualizamos o estado intermédio para o input.
                 if (finalStr) {
                     setCurrentTranscript(finalStr);
-                    // Não chamamos onCommand aqui para permitir que o utilizador veja o texto no input primeiro
-                    // A menos que queiramos envio automático.
+                    // Disparar o comando automaticamente quando terminar de falar
+                    if (onCommandRef.current) {
+                        onCommandRef.current(finalStr);
+                    }
+                    rec.stop();
                 } else {
                     setCurrentTranscript(interim);
                 }

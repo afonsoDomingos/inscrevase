@@ -523,7 +523,10 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
         }
     }, [router, speak, pathname, chatHistory, triggerAlert]);
 
-    const { isListening, currentTranscript, startListening, stopListening, hasSupport } = useSpeechRecognition(() => {});
+    const { isListening, currentTranscript, startListening, stopListening, hasSupport } = useSpeechRecognition((cmd) => {
+        handleCommand(cmd);
+        setTextInput("");
+    });
 
     // Sincronizar Transcrição com Input em Tempo Real
     useEffect(() => {
