@@ -9,7 +9,6 @@ import CerberusVisual from './CerberusVisual';
 import { useSpeechRecognition } from './useSpeechRecognition';
 import { aiService } from '@/lib/aiService';
 import { useSocket } from '@/context/SocketContext';
-import { authService, type UserData } from '@/lib/authService';
 
 // Componente para Efeito de Digitação
 const TypewriterText = ({ text, speed = 8 }: { text: string, speed?: number }) => {
