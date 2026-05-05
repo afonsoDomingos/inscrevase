@@ -133,6 +133,7 @@ export default function Brain() {
     const [textInput, setTextInput] = useState("");
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
     const [isResetting, setIsResetting] = useState(false);
+    const [isShuttingDown, setIsShuttingDown] = useState(false);
 
     const triggerAlert = useCallback((message: string, type: 'info' | 'error' | 'success' = 'info') => {
         if (type === 'error') setIsAlert(true);
@@ -998,7 +999,19 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                         >
                                             {isMaximized ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
                                         </button>
-                                        <button onClick={() => { playSystemSound('close'); speak("Desativando sistemas neurais."); setTimeout(() => setIsHibernated(true), 1500); }} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Hibernate">
+                                        <button 
+                                            onClick={() => { 
+                                                setIsShuttingDown(true);
+                                                playSystemSound('close'); 
+                                                speak("Desativando sistemas neurais. Até logo, Mestre."); 
+                                                setTimeout(() => {
+                                                    setIsHibernated(true);
+                                                    setIsShuttingDown(false);
+                                                }, 2000); 
+                                            }} 
+                                            style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
+                                            title="Hibernate"
+                                        >
                                             <Power size={18} />
                                         </button>
                                         <button onClick={() => { setChatHistory([]); speak("Memória de chat limpa. Estou pronto para uma nova orquestração, Mestre."); triggerAlert("Histórico de chat reiniciado.", "success"); }} style={{ color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Limpar Chat">
@@ -1033,7 +1046,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                     <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.95rem', color: '#d1d5db', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent', paddingRight: '10px', minHeight: '0', position: 'relative' }}>
                                         {/* Monitor Screen Overlay for effects */}
                                         <AnimatePresence>
-                                            {isResetting && (
+                                            {(isResetting || isShuttingDown) && (
                                                 <motion.div 
                                                     initial={{ opacity: 0 }}
                                                     animate={{ opacity: 1 }}
@@ -1050,7 +1063,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                         padding: '10px',
                                                         fontFamily: 'monospace',
                                                         fontSize: '10px',
-                                                        color: '#eab308',
+                                                        color: isShuttingDown ? '#ef4444' : '#eab308',
                                                         lineHeight: '1',
                                                         justifyContent: 'center'
                                                     }} 
@@ -1060,7 +1073,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                             key={i}
                                                             animate={{ 
                                                                 opacity: [0, 1, 0],
-                                                                color: ['#eab308', '#fff', '#ca8a04']
+                                                                color: isShuttingDown ? ['#ef4444', '#fff', '#7f1d1d'] : ['#eab308', '#fff', '#ca8a04']
                                                             }}
                                                             transition={{ 
                                                                 duration: 0.2, 
@@ -1071,8 +1084,8 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                             {Math.round(Math.random())}
                                                         </motion.span>
                                                     ))}
-                                                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: '#000', padding: '10px 20px', border: '1px solid #eab308', color: '#eab308', fontWeight: 'bold', letterSpacing: '2px', boxShadow: '0 0 20px rgba(234, 179, 8, 0.4)' }}>
-                                                        REBOOTING SYSTEM...
+                                                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: '#000', padding: '10px 20px', border: `1px solid ${isShuttingDown ? '#ef4444' : '#eab308'}`, color: isShuttingDown ? '#ef4444' : '#eab308', fontWeight: 'bold', letterSpacing: '2px', boxShadow: `0 0 20px ${isShuttingDown ? 'rgba(239, 68, 68, 0.4)' : 'rgba(234, 179, 8, 0.4)'}` }}>
+                                                        {isShuttingDown ? 'SHUTTING DOWN...' : 'REBOOTING SYSTEM...'}
                                                     </div>
                                                 </motion.div>
                                             )}
