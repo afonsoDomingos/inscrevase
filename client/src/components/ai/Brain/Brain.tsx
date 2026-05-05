@@ -783,26 +783,30 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                 [data-tooltip]::after {
                     content: attr(data-tooltip);
                     position: absolute;
-                    bottom: 125%;
+                    bottom: 110%;
                     left: 50%;
                     transform: translateX(-50%) scale(0.8);
-                    padding: 5px 10px;
-                    background: rgba(0, 0, 0, 0.9);
-                    color: #fff;
+                    padding: 4px 10px;
+                    background: #eab308;
+                    color: #000;
                     font-size: 10px;
+                    font-weight: bold;
+                    font-family: monospace;
                     white-space: nowrap;
                     border-radius: 4px;
-                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border: 1px solid #000;
                     pointer-events: none;
                     opacity: 0;
                     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                    z-index: 1000;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+                    z-index: 999999;
+                    box-shadow: 0 4px 15px rgba(234, 179, 8, 0.4);
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
                 }
                 [data-tooltip]:hover::after {
                     opacity: 1;
                     transform: translateX(-50%) scale(1);
-                    bottom: 140%;
+                    bottom: 125%;
                 }
             `}</style>
             {/* Monitor HUD — Centered */}
@@ -1348,6 +1352,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 setChatHistory([{ role: 'ai', text: greeting }]);
                             }}
                             className="gemini-ai-wrapper"
+                            data-tooltip="Ativar Cérbero AI"
                             style={{
                                 position: 'relative',
                                 width: '56px',
@@ -1361,7 +1366,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 justifyContent: 'center',
                                 background: '#111',
                                 border: 'none',
-                                overflow: 'hidden',
+                                overflow: 'visible',
                                 boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)'
                             }}
                         >
