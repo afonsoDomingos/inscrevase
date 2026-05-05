@@ -55,6 +55,8 @@ const UserSchema = new mongoose.Schema({
     receivedFirstSubmissionNudge: { type: Boolean, default: false },
     lastReactivationNudgeAt: { type: Date },
     lastLoginAt: { type: Date, default: Date.now },
+    lastLoginDevice: { type: String }, // PC, Mobile, Tablet
+    lastLoginOS: { type: String }, // Windows, iOS, Android, etc
     loginCount: { type: Number, default: 0 },
     completedMissions: [{ type: String }], // Track social follows, etc.
     planExpiresAt: { type: Date }, // When the current paid/trial period ends

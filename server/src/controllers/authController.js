@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const UAParser = require('ua-parser-js');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
 const Submission = require('../models/Submission');
@@ -32,6 +33,8 @@ const register = async (req, res) => {
             isEmailVerified: false,
             referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
             lastLoginAt: new Date(),
+            lastLoginDevice: new UAParser(req.headers['user-agent']).getDevice().type || 'Desktop',
+            lastLoginOS: new UAParser(req.headers['user-agent']).getOS().name || 'Unknown',
             loginCount: 1
         });
 
@@ -178,7 +181,13 @@ const login = async (req, res) => {
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
         // Update last login
+        const parser = new UAParser(req.headers['user-agent']);
+        const deviceType = parser.getDevice().type || 'Desktop';
+        const osName = parser.getOS().name || 'Unknown';
+
         user.lastLoginAt = new Date();
+        user.lastLoginDevice = deviceType.charAt(0).toUpperCase() + deviceType.slice(1);
+        user.lastLoginOS = osName;
         user.loginCount = (user.loginCount || 0) + 1;
         await user.save();
 
@@ -578,7 +587,7 @@ const getSuperAdminAnalytics = async (req, res) => {
     try {
         // Last 10 logins
         const recentLogins = await User.find()
-            .select('name email lastLoginAt loginCount profilePhoto role')
+            .select('name email lastLoginAt loginCount profilePhoto role lastLoginDevice lastLoginOS')
             .sort({ lastLoginAt: -1 })
             .limit(10);
 
