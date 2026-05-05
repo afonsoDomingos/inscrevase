@@ -140,8 +140,8 @@ const ttsLimiter = rateLimit({
 // Middleware de saneamento e proteção contra Payload Excessivo (Crash de RAM)
 const payloadSanitizer = (req, res, next) => {
     if (req.body.transcript) {
-        if (req.body.transcript.length > 2000) {
-            return res.status(400).json({ error: "Payload suspeito. O limite máximo é de 2000 caracteres." });
+        if (req.body.transcript.length > 10000) {
+            return res.status(400).json({ error: "Payload suspeito. O limite máximo é de 10000 caracteres." });
         }
         // Sanitiza cortando espaços absurdos
         req.body.transcript = req.body.transcript.trim();
