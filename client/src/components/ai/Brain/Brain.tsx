@@ -959,7 +959,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                 if (window.speechSynthesis) window.speechSynthesis.cancel();
                                                 speak("Sistemas reiniciados. Memória limpa, Mestre."); 
                                                 triggerAlert("Monitor Reiniciado", "success"); 
-                                                setTimeout(() => setIsResetting(false), 400);
+                                                setTimeout(() => setIsResetting(false), 1500);
                                             }} 
                                             style={{ color: '#10b981', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
                                             title="Reiniciar Monitor"
@@ -1011,17 +1011,45 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                             {isResetting && (
                                                 <motion.div 
                                                     initial={{ opacity: 0 }}
-                                                    animate={{ opacity: [0, 0.8, 0] }}
+                                                    animate={{ opacity: 1 }}
                                                     exit={{ opacity: 0 }}
-                                                    transition={{ duration: 0.4 }}
                                                     style={{ 
                                                         position: 'absolute', 
                                                         inset: 0, 
-                                                        background: 'white', 
+                                                        background: '#000', 
                                                         zIndex: 100, 
-                                                        pointerEvents: 'none' 
+                                                        pointerEvents: 'none',
+                                                        display: 'flex',
+                                                        flexWrap: 'wrap',
+                                                        overflow: 'hidden',
+                                                        padding: '10px',
+                                                        fontFamily: 'monospace',
+                                                        fontSize: '10px',
+                                                        color: '#eab308',
+                                                        lineHeight: '1',
+                                                        justifyContent: 'center'
                                                     }} 
-                                                />
+                                                >
+                                                    {[...Array(500)].map((_, i) => (
+                                                        <motion.span 
+                                                            key={i}
+                                                            animate={{ 
+                                                                opacity: [0, 1, 0],
+                                                                color: ['#eab308', '#fff', '#ca8a04']
+                                                            }}
+                                                            transition={{ 
+                                                                duration: 0.2, 
+                                                                repeat: Infinity, 
+                                                                delay: Math.random() * 0.4 
+                                                            }}
+                                                        >
+                                                            {Math.round(Math.random())}
+                                                        </motion.span>
+                                                    ))}
+                                                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: '#000', padding: '10px 20px', border: '1px solid #eab308', color: '#eab308', fontWeight: 'bold', letterSpacing: '2px', boxShadow: '0 0 20px rgba(234, 179, 8, 0.4)' }}>
+                                                        REBOOTING SYSTEM...
+                                                    </div>
+                                                </motion.div>
                                             )}
                                         </AnimatePresence>
                                         {chatHistory.length > 0 ? chatHistory.map((msg, idx) => {
