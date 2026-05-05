@@ -132,6 +132,8 @@ export const dashboardService = {
             loginCount: number;
             profilePhoto?: string;
             role: string;
+            lastLoginDevice?: string;
+            lastLoginOS?: string;
         }[],
         activeUsers: {
             _id: string;

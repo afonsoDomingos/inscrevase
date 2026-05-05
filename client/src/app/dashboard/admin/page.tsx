@@ -228,6 +228,8 @@ function AdminDashboardContent() {
             lastLoginAt: string;
             loginCount: number;
             role: string;
+            lastLoginDevice?: string;
+            lastLoginOS?: string;
         }[];
         activeUsers: {
             _id: string;
@@ -1068,11 +1070,27 @@ function AdminDashboardContent() {
                                                                     </div>
                                                                     <div style={{ flex: 1 }}>
                                                                         <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1a1a1a' }}>{login.name}</div>
-                                                                        <div style={{ fontSize: '0.75rem', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                        <div style={{ fontSize: '0.75rem', color: '#666', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                                             {login.email}
                                                                             <span style={{ fontSize: '0.65rem', padding: '2px 6px', background: 'rgba(212, 175, 55, 0.1)', color: '#B8860B', borderRadius: '4px', fontWeight: 800 }}>
                                                                                 {login.loginCount || 0} acessos
                                                                             </span>
+                                                                            {(login.lastLoginDevice || login.lastLoginOS) && (
+                                                                                <span style={{ 
+                                                                                    fontSize: '0.65rem', 
+                                                                                    display: 'flex', 
+                                                                                    alignItems: 'center', 
+                                                                                    gap: '4px', 
+                                                                                    color: '#888', 
+                                                                                    background: '#f0f0f0', 
+                                                                                    padding: '2px 8px', 
+                                                                                    borderRadius: '4px',
+                                                                                    fontWeight: 600
+                                                                                }}>
+                                                                                    {login.lastLoginDevice?.toLowerCase() === 'mobile' ? <Smartphone size={10} /> : <LayoutDashboard size={10} />}
+                                                                                    {login.lastLoginOS || 'N/A'}
+                                                                                </span>
+                                                                            )}
                                                                         </div>
                                                                     </div>
                                                                     <div style={{ textAlign: 'right' }}>
