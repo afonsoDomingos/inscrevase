@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, Terminal, X, Command, Power, Square, Copy, Check, Maximize2, Minimize2 } from 'lucide-react';
+import { Mic, Terminal, X, Command, Power, Square, Copy, Check, Maximize2, Minimize2, RotateCw } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import CerberusVisual from './CerberusVisual';
@@ -945,6 +945,20 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                 <Square size={14} fill="currentColor" />
                                             </button>
                                         )}
+                                        <button 
+                                            onClick={() => { 
+                                                setChatHistory([]); 
+                                                setLastCommand("");
+                                                setTextInput("");
+                                                if (window.speechSynthesis) window.speechSynthesis.cancel();
+                                                speak("Sistemas reiniciados. Memória limpa, Mestre."); 
+                                                triggerAlert("Monitor Reiniciado", "success"); 
+                                            }} 
+                                            style={{ color: '#10b981', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
+                                            title="Reiniciar Monitor"
+                                        >
+                                            <RotateCw size={18} />
+                                        </button>
                                         <button 
                                             onClick={() => setIsMaximized(!isMaximized)} 
                                             style={{ color: '#38bdf8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
