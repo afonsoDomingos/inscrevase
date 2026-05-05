@@ -867,8 +867,12 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                             }}
                             style={{ 
                                 position: 'relative', 
-                                width: isMaximized ? (isMobile ? '100vw' : '95vw') : (isMobile ? '98vw' : '820px'), 
-                                height: isMaximized ? (isMobile ? '65vw' : '52vw') : (isMobile ? '53vw' : '440px'), 
+                                width: isMaximized 
+                                    ? 'min(95vw, calc(90vh * 1.86))' 
+                                    : (isMobile ? '98vw' : '820px'), 
+                                height: isMaximized 
+                                    ? 'min(90vh, calc(95vw / 1.86))' 
+                                    : (isMobile ? '53vw' : '440px'), 
                                 cursor: isMobile || isMaximized ? 'default' : 'grab', 
                                 filter: isAlert ? 'drop-shadow(0 0 40px rgba(239,68,68,0.4))' : 'drop-shadow(0 0 30px rgba(234,179,8,0.2))', 
                                 pointerEvents: 'auto',
