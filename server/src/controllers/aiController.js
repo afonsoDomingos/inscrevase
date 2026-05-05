@@ -369,11 +369,14 @@ exports.handleBrainCommand = async (req, res) => {
         // AI Providers Initialization
         const genAI = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
         const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
+        const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
 
         const modelsToTry = [
             { name: "gemini-2.0-flash", provider: "google" },
+            { name: "gpt-4o-mini", provider: "openai" },
             { name: "llama-3.3-70b-versatile", provider: "groq" },
             { name: "gemini-1.5-flash", provider: "google" },
+            { name: "gpt-4o", provider: "openai" },
             { name: "llama-3.1-8b-instant", provider: "groq" },
             { name: "gemini-2.5-flash", provider: "google" }
         ];
@@ -401,6 +404,17 @@ exports.handleBrainCommand = async (req, res) => {
                     if (!groq) continue;
                     console.log(`[BRAIN] Tentando Groq: ${modelCfg.name}`);
                     const chatCompletion = await groq.chat.completions.create({
+                        messages: [
+                            { role: "system", content: BRAIN_SYSTEM_PROMPT.replace('{CONTEXT_DATA}', statsContext) },
+                            { role: "user", content: `HISTÓRICO:\n${formattedHistory}\n\nComando: ${transcript}` }
+                        ],
+                        model: modelCfg.name,
+                    });
+                    text = chatCompletion.choices[0]?.message?.content || "";
+                } else if (modelCfg.provider === 'openai') {
+                    if (!openaiClient) continue;
+                    console.log(`[BRAIN] Tentando OpenAI: ${modelCfg.name}`);
+                    const chatCompletion = await openaiClient.chat.completions.create({
                         messages: [
                             { role: "system", content: BRAIN_SYSTEM_PROMPT.replace('{CONTEXT_DATA}', statsContext) },
                             { role: "user", content: `HISTÓRICO:\n${formattedHistory}\n\nComando: ${transcript}` }
