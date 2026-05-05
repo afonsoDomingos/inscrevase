@@ -1006,14 +1006,15 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 {/* Left Column: Brain + Status */}
                                 <div style={{ 
                                     display: 'flex', 
-                                    flexDirection: isMobile ? 'row' : 'column', 
+                                    flexDirection: 'column', 
                                     alignItems: 'center', 
-                                    justifyContent: isMobile ? 'space-between' : 'center', 
+                                    justifyContent: 'center', 
                                     gap: '10px', 
                                     minWidth: isMobile ? '0' : '180px',
-                                    padding: isMobile ? '5px 10px' : '0',
+                                    padding: isMobile ? '8px' : '0',
                                     background: isMobile ? 'rgba(255,255,255,0.03)' : 'none',
-                                    borderRadius: '12px'
+                                    borderRadius: '12px',
+                                    width: isMobile ? '35%' : 'auto'
                                 }}>
                                     <div style={{ transform: isMobile ? 'scale(0.5)' : 'scale(0.75)', transformOrigin: 'center center' }}>
                                         <CerberusVisual isListening={isListening} isThinking={isThinking} isAlert={isAlert} isSpeaking={isSpeaking} />
@@ -1025,9 +1026,24 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                         <p style={{ color: '#9ca3af', fontSize: '9px', margin: '4px 0 0', lineHeight: '1.4' }}>
                                             {isAlert ? 'Alerta!' : isThinking ? 'Analisando...' : 'Inscreva-se'}
                                         </p>
-                                        {!isMobile && <div style={{ marginTop: '15px', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', width: '100%', border: '1px solid rgba(255,255,255,0.03)' }}><VoiceVisualizer /></div>}
+                                        <div style={{ 
+                                            marginTop: isMobile ? '8px' : '15px', 
+                                            background: 'rgba(0,0,0,0.3)', 
+                                            padding: isMobile ? '4px' : '10px', 
+                                            borderRadius: '12px', 
+                                            width: '100%', 
+                                            border: '1px solid rgba(255,255,255,0.03)' 
+                                        }}>
+                                            <VoiceVisualizer />
+                                        </div>
                                     </div>
-                                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                    <div style={{ 
+                                        display: 'flex', 
+                                        gap: isMobile ? '5px' : '10px', 
+                                        alignItems: 'center',
+                                        flexWrap: isMobile ? 'wrap' : 'nowrap',
+                                        justifyContent: isMobile ? 'center' : 'flex-start'
+                                    }}>
                                         {isThinking && (
                                             <button 
                                                 onClick={() => { 
