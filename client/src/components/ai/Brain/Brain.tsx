@@ -1180,8 +1180,9 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                                     setTextInput("");
                                                                 }
                                                             } else {
-                                                                speak("Sistema de escuta ativo.");
-                                                                startListening();
+                                                                playSystemSound('intro');
+                                                                // Pequeno atraso para o som do sistema não ser capturado pelo microfone
+                                                                setTimeout(() => startListening(), 300);
                                                             }
                                                         }}
                                                         style={{
