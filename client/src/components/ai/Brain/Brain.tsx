@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, Terminal, X, Command, Power, Square, Copy, Check } from 'lucide-react';
+import { Mic, Terminal, X, Command, Power, Square, Copy, Check, Maximize2, Minimize2 } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import CerberusVisual from './CerberusVisual';
@@ -84,6 +84,7 @@ export default function Brain() {
     
     const [isVisible, setIsVisible] = useState(false);
     const [isHibernated, setIsHibernated] = useState(false);
+    const [isMaximized, setIsMaximized] = useState(false);
     const [voiceMode, setVoiceMode] = useState<'local' | 'premium'>('local');
     const [preferredVoiceName, setPreferredVoiceName] = useState("");
     const currentAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -866,16 +867,17 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                             }}
                             style={{ 
                                 position: 'relative', 
-                                width: isMobile ? '98vw' : '820px', 
-                                height: isMobile ? '53vw' : '440px', 
-                                cursor: isMobile ? 'default' : 'grab', 
+                                width: isMaximized ? (isMobile ? '100vw' : '95vw') : (isMobile ? '98vw' : '820px'), 
+                                height: isMaximized ? (isMobile ? '65vw' : '52vw') : (isMobile ? '53vw' : '440px'), 
+                                cursor: isMobile || isMaximized ? 'default' : 'grab', 
                                 filter: isAlert ? 'drop-shadow(0 0 40px rgba(239,68,68,0.4))' : 'drop-shadow(0 0 30px rgba(234,179,8,0.2))', 
                                 pointerEvents: 'auto',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center'
+                                justifyContent: 'center',
+                                transition: 'width 0.4s ease, height 0.4s ease'
                             }}
-                            whileDrag={isMobile ? {} : { cursor: 'grabbing', scale: 1.01 }}
+                            whileDrag={isMobile || isMaximized ? {} : { cursor: 'grabbing', scale: 1.01 }}
                         >
                             {/* SVG Monitor Frame - Same for both desktop & mobile */}
                             <svg width="100%" height="100%" viewBox="0 0 820 440" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', zIndex: 1 }}>
@@ -1002,12 +1004,19 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                         </p>
                                         {!isMobile && <div style={{ marginTop: '15px', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', width: '100%', border: '1px solid rgba(255,255,255,0.03)' }}><VoiceVisualizer /></div>}
                                     </div>
-                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                         {isSpeaking && (
                                             <button onClick={() => { window.speechSynthesis?.cancel(); setIsSpeaking(false); speak("Entendido. Silenciando."); }} style={{ color: '#eab308', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}>
                                                 <Square size={14} fill="currentColor" />
                                             </button>
                                         )}
+                                        <button 
+                                            onClick={() => setIsMaximized(!isMaximized)} 
+                                            style={{ color: '#38bdf8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
+                                            title={isMaximized ? "Minimizar" : "Maximizar"}
+                                        >
+                                            {isMaximized ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+                                        </button>
                                         <button onClick={() => { playSystemSound('close'); speak("Desativando sistemas neurais."); setTimeout(() => setIsHibernated(true), 1500); }} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} title="Hibernate">
                                             <Power size={18} />
                                         </button>
