@@ -281,10 +281,10 @@ exports.handleBrainCommand = async (req, res) => {
         const dateString = now.toLocaleDateString('pt-PT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         const timeString = now.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
 
-        // Fetch Recent Events (Active events)
+        // Fetch Recent Events (Reduzido para economizar tokens)
         const recentEvents = await Form.find({ active: true })
             .sort({ createdAt: -1 })
-            .limit(10)
+            .limit(3)
             .select('title creatorName createdAt isPublic');
 
         const eventsText = recentEvents.map(e => `- ${e.title} (Criado por ${e.creatorName || 'Expert'})`).join('\n');
@@ -375,19 +375,21 @@ exports.handleBrainCommand = async (req, res) => {
             { name: "gemini-2.0-flash", provider: "google" },
             { name: "gpt-4o-mini", provider: "openai" },
             { name: "llama-3.3-70b-versatile", provider: "groq" },
-            { name: "mixtral-8x7b-32768", provider: "groq" },
+            { name: "llama-3.1-70b-versatile", provider: "groq" },
             { name: "gemini-1.5-flash", provider: "google" },
             { name: "gpt-4o", provider: "openai" },
             { name: "llama-3.1-8b-instant", provider: "groq" },
-            { name: "gemma2-9b-it", provider: "groq" },
-            { name: "gemini-2.5-flash", provider: "google" }
+            { name: "llama-3.2-11b-vision-preview", provider: "groq" },
+            { name: "gemini-1.5-pro", provider: "google" }
         ];
 
         let text = "";
         let attemptSuccess = false;
         let lastError = "";
 
-        const formattedHistory = history.map(msg => `${msg.role === 'user' ? 'Usuário' : 'BRAIN'}: ${msg.text}`).join('\n');
+        // Limitar histórico para os últimos 5 itens para poupar tokens
+        const limitedHistory = history.slice(-5);
+        const formattedHistory = limitedHistory.map(msg => `${msg.role === 'user' ? 'Usuário' : 'BRAIN'}: ${msg.text}`).join('\n');
 
         const prompt = BRAIN_SYSTEM_PROMPT.replace('{CONTEXT_DATA}', statsContext) + 
                        `\n\nHISTÓRICO DA CONVERSA ATUAL:\n${formattedHistory}\n\n` +
