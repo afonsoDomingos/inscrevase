@@ -992,10 +992,10 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 transition={{ delay: 0.5, duration: 0.5 }}
                                 style={{ 
                                     position: 'absolute', 
-                                    top: isMobile ? '5.5%' : '48px', 
-                                    left: isMobile ? '6.5%' : '55px', 
-                                    right: isMobile ? '6.5%' : '55px', 
-                                    bottom: isMobile ? '23%' : '110px', 
+                                    top: isMobile ? '5.5%' : '11%', 
+                                    left: isMobile ? '6.5%' : '6.7%', 
+                                    right: isMobile ? '6.5%' : '6.7%', 
+                                    bottom: isMobile ? '23%' : '26%', 
                                     zIndex: 5, 
                                     display: 'flex', 
                                     flexDirection: isMobile ? 'column' : 'row',
