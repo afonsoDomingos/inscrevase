@@ -761,6 +761,14 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                 .gemini-ai-input::placeholder {
                     color: #9aa0a6;
                 }
+                .listening-pulse {
+                    animation: listening-border-pulse 1.5s infinite;
+                }
+                @keyframes listening-border-pulse {
+                    0% { border-color: rgba(239, 68, 68, 0.2); box-shadow: 0 0 0px rgba(239, 68, 68, 0); }
+                    50% { border-color: rgba(239, 68, 68, 1); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+                    100% { border-color: rgba(239, 68, 68, 0.2); box-shadow: 0 0 0px rgba(239, 68, 68, 0); }
+                }
             `}</style>
             {/* Monitor HUD — Centered */}
             <div style={{ 
@@ -1062,7 +1070,14 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
 
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', flexShrink: 0 }}>
                                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '100%' }}>
-                                            <div className="gemini-ai-wrapper" style={{ display: 'flex', alignItems: 'center', paddingRight: '8px' }}>
+                                            <div className={`gemini-ai-wrapper ${isListening ? 'listening-pulse' : ''}`} style={{ 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                paddingRight: '8px',
+                                                border: isListening ? '1px solid #ef4444' : '1px solid transparent',
+                                                boxShadow: isListening ? '0 0 15px rgba(239, 68, 68, 0.3)' : 'none',
+                                                transition: 'all 0.3s ease'
+                                            }}>
                                                 <input 
                                                     type="text" 
                                                     className="gemini-ai-input"
@@ -1074,8 +1089,8 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                             setTextInput("");
                                                         }
                                                     }}
-                                                    placeholder="Diga ou digite o seu comando..."
-                                                    style={{ flex: 1 }}
+                                                    placeholder={isListening ? "Cérbero está a ouvir... fale agora" : "Diga ou digite o seu comando..."}
+                                                    style={{ flex: 1, color: isListening ? '#ef4444' : '#fff' }}
                                                 />
                                                 {hasSupport && (
                                                     <button
@@ -1106,7 +1121,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                     >
                                                         {isListening ? (
                                                             <div style={{ display: 'flex', gap: '2px' }}>
-                                                                {[1,2,3].map(i => <motion.div key={i} animate={{ height: [4, 12, 4] }} transition={{ repeat: Infinity, duration: 0.4, delay: i * 0.1 }} style={{ width: '2px', background: '#ef4444', borderRadius: '9999px' }} />)}
+                                                                {[1,2,3].map(i => <motion.div key={i} animate={{ height: [4, 12, 4], opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1 }} style={{ width: '2px', background: '#ef4444', borderRadius: '9999px' }} />)}
                                                             </div>
                                                         ) : <Mic size={18} />}
                                                     </button>
