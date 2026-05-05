@@ -132,7 +132,6 @@ export default function Brain() {
     const [isMobile, setIsMobile] = useState(false);
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
     const [textInput, setTextInput] = useState("");
-    const [user, setUser] = useState<UserData | null>(null);
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
     const triggerAlert = useCallback((message: string, type: 'info' | 'error' | 'success' = 'info') => {
@@ -147,11 +146,6 @@ export default function Brain() {
     }, []);
 
     useEffect(() => {
-        const currentUser = authService.getCurrentUser();
-        setUser(currentUser);
-    }, [pathname, isVisible]);
-
-    useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
@@ -163,13 +157,6 @@ export default function Brain() {
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
-
-    const getTimeGreeting = () => {
-        const hour = new Date().getHours();
-        if (hour >= 5 && hour < 12) return "Bom dia";
-        if (hour >= 12 && hour < 18) return "Boa tarde";
-        return "Boa noite";
-    };
 
     const fallbackToBrowserTTS = useCallback((text: string, onEndCallback?: () => void) => {
         if (!window.speechSynthesis) {
@@ -266,7 +253,7 @@ export default function Brain() {
             console.warn("⚠️ Falha no áudio premium, recorrendo ao browser...");
             fallbackToBrowserTTS(cleanText, onEndCallback);
         }
-    }, [voiceMode, fallbackToBrowserTTS]);
+    }, [voiceMode, fallbackToBrowserTTS, preferredVoiceName]);
 
     const handleCommand = useCallback(async (transcript: string) => {
         setLastCommand(transcript);
