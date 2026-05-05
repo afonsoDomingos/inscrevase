@@ -176,9 +176,12 @@ export default function Brain() {
             return;
         }
 
+        // Cancelar qualquer fala pendente IMEDIATAMENTE
+        window.speechSynthesis.cancel();
+
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'pt-PT';
-        utterance.rate = 1.0;
+        utterance.rate = 1.05; // Ligeiramente mais rápido para parecer mais "vivo"
         utterance.pitch = 1.0;
 
         utterance.onstart = () => {
@@ -189,26 +192,28 @@ export default function Brain() {
             setIsSpeaking(false);
             if (onEndCallback) onEndCallback();
         };
+        utterance.onerror = (e) => {
+            console.error("Erro na síntese de voz:", e);
+            setIsSpeaking(false);
+            if (onEndCallback) onEndCallback();
+        };
 
         const availableVoices = voices.length > 0 ? voices : window.speechSynthesis.getVoices();
-        const ptBRVoices = availableVoices.filter(v => v.lang === 'pt-BR' || v.lang === 'pt_BR');
-        const ptPTVoices = availableVoices.filter(v => v.lang === 'pt-PT' || v.lang === 'pt_PT');
-        const allPtVoices = [...ptBRVoices, ...ptPTVoices];
+        const ptBRVoices = availableVoices.filter(v => v.lang.startsWith('pt-BR'));
+        const ptPTVoices = availableVoices.filter(v => v.lang.startsWith('pt-PT'));
         
         const preferredVoice = (preferredVoiceName && availableVoices.find(v => v.name === preferredVoiceName)) ||
                                ptBRVoices.find(v => v.name.toLowerCase().includes('google')) ||
                                ptBRVoices.find(v => v.name.toLowerCase().includes('natural')) ||
-                               ptBRVoices[0] ||
                                ptPTVoices.find(v => v.name.toLowerCase().includes('natural')) ||
-                               allPtVoices[0] || 
+                               ptBRVoices[0] ||
+                               ptPTVoices[0] || 
                                availableVoices[0];
         
         if (preferredVoice) utterance.voice = preferredVoice;
         
-        // Timeout para evitar o bug do Chrome onde o cancel() imediato bloqueia o speak()
-        setTimeout(() => {
-            window.speechSynthesis.speak(utterance);
-        }, 100);
+        // Falar imediatamente sem delay artificial
+        window.speechSynthesis.speak(utterance);
     }, [voices, preferredVoiceName]);
 
     const speak = useCallback(async (text: string, onEndCallback?: () => void) => {
@@ -547,6 +552,16 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
         if (window.speechSynthesis.onvoiceschanged !== undefined) {
             window.speechSynthesis.onvoiceschanged = loadVoices;
         }
+
+        // Truque de Mestre: "Acordar" o motor de áudio com uma fala vazia
+        // Isso resolve o lag que acontece no primeiro uso em muitos computadores.
+        setTimeout(() => {
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+                const wakeUp = new SpeechSynthesisUtterance("");
+                window.speechSynthesis.speak(wakeUp);
+            }
+        }, 2000);
     }, []);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
