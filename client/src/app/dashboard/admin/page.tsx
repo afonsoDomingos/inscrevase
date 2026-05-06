@@ -1050,58 +1050,124 @@ function AdminDashboardContent() {
                                             >
                                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
                                                     {/* Device Distribution Chart */}
-                                                    <motion.div variants={itemVariants} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e0e0e0', minHeight: '300px' }}>
-                                                        <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                            <Smartphone size={20} className="gold-text" /> Dispositivos Mais Usados
+                                                    <motion.div 
+                                                        variants={itemVariants} 
+                                                        whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(212, 175, 55, 0.1)' }}
+                                                        className="luxury-card" 
+                                                        style={{ 
+                                                            background: 'linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%)', 
+                                                            padding: '1.8rem', 
+                                                            borderRadius: '30px', 
+                                                            border: '1px solid rgba(212, 175, 55, 0.2)', 
+                                                            minHeight: '320px',
+                                                            position: 'relative',
+                                                            overflow: 'hidden'
+                                                        }}
+                                                    >
+                                                        <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '50%', filter: 'blur(30px)' }}></div>
+                                                        
+                                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '12px', color: '#1a1a1a' }}>
+                                                            <div style={{ background: 'rgba(212, 175, 55, 0.15)', padding: '8px', borderRadius: '12px' }}>
+                                                                <Smartphone size={22} className="gold-text" />
+                                                            </div>
+                                                            Dispositivos
                                                         </h3>
-                                                        <div style={{ height: '200px', width: '100%' }}>
+                                                        
+                                                        <div style={{ height: '220px', width: '100%' }}>
                                                             <ResponsiveContainer width="100%" height="100%">
                                                                 <PieChart>
                                                                     <Pie
                                                                         data={superAdminAnalytics.deviceStats}
                                                                         cx="50%" cy="50%"
-                                                                        innerRadius={60}
-                                                                        outerRadius={80}
-                                                                        paddingAngle={5}
+                                                                        innerRadius={70}
+                                                                        outerRadius={90}
+                                                                        paddingAngle={8}
                                                                         dataKey="count"
+                                                                        animationBegin={0}
+                                                                        animationDuration={1500}
                                                                     >
-                                                                        {superAdminAnalytics.deviceStats.map((entry, index) => (
-                                                                            <Cell key={`cell-${index}`} fill={['#D4AF37', '#1a1a1a', '#B8860B', '#444'][index % 4]} />
-                                                                        ))}
+                                                                        {superAdminAnalytics.deviceStats.map((entry, index) => ( entry.name === 'Desktop' ? <Cell key={`cell-${index}`} fill="#D4AF37" stroke="none" /> : <Cell key={`cell-${index}`} fill={['#1a1a1a', '#B8860B', '#444'][index % 3]} stroke="none" /> ))}
                                                                     </Pie>
                                                                     <RechartsTooltip 
-                                                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}
+                                                                        contentStyle={{ 
+                                                                            borderRadius: '16px', 
+                                                                            border: 'none', 
+                                                                            boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+                                                                            background: 'rgba(255,255,255,0.95)',
+                                                                            backdropFilter: 'blur(10px)',
+                                                                            padding: '12px'
+                                                                        }}
+                                                                        itemStyle={{ fontWeight: 700, color: '#111' }}
                                                                     />
-                                                                    <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: 600 }} />
+                                                                    <Legend 
+                                                                        verticalAlign="bottom" 
+                                                                        height={36} 
+                                                                        iconType="diamond"
+                                                                        wrapperStyle={{ paddingTop: '20px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }} 
+                                                                    />
                                                                 </PieChart>
                                                             </ResponsiveContainer>
                                                         </div>
                                                     </motion.div>
 
                                                     {/* OS Distribution Chart */}
-                                                    <motion.div variants={itemVariants} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e0e0e0', minHeight: '300px' }}>
-                                                        <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                            <LayoutDashboard size={20} className="gold-text" /> Sistemas Operativos
+                                                    <motion.div 
+                                                        variants={itemVariants} 
+                                                        whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(0, 0, 0, 0.05)' }}
+                                                        className="luxury-card" 
+                                                        style={{ 
+                                                            background: 'linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%)', 
+                                                            padding: '1.8rem', 
+                                                            borderRadius: '30px', 
+                                                            border: '1px solid rgba(0, 0, 0, 0.05)', 
+                                                            minHeight: '320px',
+                                                            position: 'relative',
+                                                            overflow: 'hidden'
+                                                        }}
+                                                    >
+                                                        <div style={{ position: 'absolute', bottom: '-20px', left: '-20px', width: '100px', height: '100px', background: 'rgba(0, 0, 0, 0.03)', borderRadius: '50%', filter: 'blur(30px)' }}></div>
+                                                        
+                                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '12px', color: '#1a1a1a' }}>
+                                                            <div style={{ background: 'rgba(0, 0, 0, 0.05)', padding: '8px', borderRadius: '12px' }}>
+                                                                <LayoutDashboard size={22} style={{ color: '#1a1a1a' }} />
+                                                            </div>
+                                                            Sistemas
                                                         </h3>
-                                                        <div style={{ height: '200px', width: '100%' }}>
+                                                        
+                                                        <div style={{ height: '220px', width: '100%' }}>
                                                             <ResponsiveContainer width="100%" height="100%">
                                                                 <PieChart>
                                                                     <Pie
                                                                         data={superAdminAnalytics.osStats}
                                                                         cx="50%" cy="50%"
-                                                                        innerRadius={60}
-                                                                        outerRadius={80}
-                                                                        paddingAngle={5}
+                                                                        innerRadius={70}
+                                                                        outerRadius={90}
+                                                                        paddingAngle={8}
                                                                         dataKey="count"
+                                                                        animationBegin={200}
+                                                                        animationDuration={1500}
                                                                     >
                                                                         {superAdminAnalytics.osStats.map((entry, index) => (
-                                                                            <Cell key={`cell-${index}`} fill={['#1a1a1a', '#D4AF37', '#38a169', '#3182ce', '#e53e3e'][index % 5]} />
+                                                                            <Cell key={`cell-${index}`} fill={['#1a1a1a', '#D4AF37', '#38a169', '#3182ce', '#e53e3e'][index % 5]} stroke="none" />
                                                                         ))}
                                                                     </Pie>
                                                                     <RechartsTooltip 
-                                                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}
+                                                                        contentStyle={{ 
+                                                                            borderRadius: '16px', 
+                                                                            border: 'none', 
+                                                                            boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+                                                                            background: 'rgba(255,255,255,0.95)',
+                                                                            backdropFilter: 'blur(10px)',
+                                                                            padding: '12px'
+                                                                        }}
+                                                                        itemStyle={{ fontWeight: 700, color: '#111' }}
                                                                     />
-                                                                    <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: 600 }} />
+                                                                    <Legend 
+                                                                        verticalAlign="bottom" 
+                                                                        height={36} 
+                                                                        iconType="diamond"
+                                                                        wrapperStyle={{ paddingTop: '20px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }} 
+                                                                    />
                                                                 </PieChart>
                                                             </ResponsiveContainer>
                                                         </div>
