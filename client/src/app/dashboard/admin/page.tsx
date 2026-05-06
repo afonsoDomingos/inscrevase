@@ -1070,7 +1070,7 @@ function AdminDashboardContent() {
                                                                     </div>
                                                                     <div style={{ flex: 1 }}>
                                                                         <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1a1a1a' }}>{login.name}</div>
-                                                                        <div style={{ fontSize: '0.75rem', color: '#666', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                                        <div style={{ fontSize: '0.75rem', color: '#666', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                                                                             {login.email}
                                                                             <span style={{ fontSize: '0.65rem', padding: '2px 6px', background: 'rgba(212, 175, 55, 0.1)', color: '#B8860B', borderRadius: '4px', fontWeight: 800 }}>
                                                                                 {login.loginCount || 0} acessos
