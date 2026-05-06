@@ -597,6 +597,8 @@ const getSuperAdminAnalytics = async (req, res) => {
             .sort({ loginCount: -1 })
             .limit(10);
 
+        console.log('[Analytics] Recent Logins Sample:', recentLogins[0]?.name, { device: recentLogins[0]?.lastLoginDevice, os: recentLogins[0]?.lastLoginOS });
+
         res.json({
             recentLogins,
             activeUsers

@@ -1077,18 +1077,20 @@ function AdminDashboardContent() {
                                                                             </span>
                                                                             {(login.lastLoginDevice || login.lastLoginOS) && (
                                                                                 <span style={{ 
-                                                                                    fontSize: '0.65rem', 
+                                                                                    fontSize: '0.6rem', 
                                                                                     display: 'flex', 
                                                                                     alignItems: 'center', 
-                                                                                    gap: '4px', 
-                                                                                    color: '#888', 
-                                                                                    background: '#f0f0f0', 
-                                                                                    padding: '2px 8px', 
-                                                                                    borderRadius: '4px',
-                                                                                    fontWeight: 600
+                                                                                    gap: '5px', 
+                                                                                    color: '#666', 
+                                                                                    background: '#fff', 
+                                                                                    padding: '3px 8px', 
+                                                                                    borderRadius: '50px',
+                                                                                    fontWeight: 700,
+                                                                                    border: '1px solid #e0e0e0',
+                                                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
                                                                                 }}>
-                                                                                    {login.lastLoginDevice?.toLowerCase() === 'mobile' ? <Smartphone size={10} /> : <LayoutDashboard size={10} />}
-                                                                                    {login.lastLoginOS || 'N/A'}
+                                                                                    {login.lastLoginDevice?.toLowerCase() === 'mobile' ? <Smartphone size={12} className="gold-text" /> : <LayoutDashboard size={12} className="gold-text" />}
+                                                                                    <span style={{ color: '#111' }}>{login.lastLoginOS || 'Sistema'}</span>
                                                                                 </span>
                                                                             )}
                                                                         </div>
