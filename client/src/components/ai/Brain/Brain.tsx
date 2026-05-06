@@ -92,7 +92,8 @@ export default function Brain() {
     const [isAlert, setIsAlert] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [chatHistory, setChatHistory] = useState<{role: 'user' | 'ai', text: string}[]>([]);
-    const [isAuthorized, setIsAuthorized] = useState(false);
+    const [isAuthorized, setIsAuthorized] = useState(true); // Aberto a todos por padrão
+    const [userRole, setUserRole] = useState<string>('visitor');
 
     useEffect(() => {
         const checkAuth = () => {
@@ -100,24 +101,20 @@ export default function Brain() {
                 const storedUser = localStorage.getItem('user');
                 if (storedUser) {
                     const user = JSON.parse(storedUser);
-                    // Só permite se for admin ou mentor
                     const role = (user.role || "").toLowerCase();
-                    if (role === 'admin' || role === 'mentor' || role === 'superadmin') {
-                        setIsAuthorized(true);
-                    } else {
-                        setIsAuthorized(false);
-                    }
+                    setUserRole(role);
                 } else {
-                    setIsAuthorized(false);
+                    setUserRole('visitor');
                 }
+                // Brain está sempre autorizado para todos
+                setIsAuthorized(true);
             } catch (e) {
-                console.error("Erro ao verificar autorização do Brain:", e);
-                setIsAuthorized(false);
+                console.error("Erro ao verificar papel do utilizador no Brain:", e);
+                setIsAuthorized(true); // Em caso de erro, ainda mostra o Brain
             }
         };
 
         checkAuth();
-        // Verificar periodicamente caso o utilizador faça login/logout sem refresh
         const interval = setInterval(checkAuth, 5000);
         return () => clearInterval(interval);
     }, []);
@@ -750,7 +747,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
         console.log("-> Posicionamento: Top-Left (Floating)");
     }, [hasSupport]);
 
-    if (isHibernated || !isAuthorized) return null;
+    if (isHibernated) return null;
     
     // Ocultar em páginas de autenticação para não poluir a UI de entrada
     const authPages = ['/entrar', '/cadastro', '/forgot-password', '/reset-password'];
