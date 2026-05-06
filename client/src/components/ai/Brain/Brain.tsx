@@ -92,7 +92,9 @@ export default function Brain() {
     const [isAlert, setIsAlert] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [chatHistory, setChatHistory] = useState<{role: 'user' | 'ai', text: string}[]>([]);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isAuthorized, setIsAuthorized] = useState(true); // Aberto a todos por padrão
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [userRole, setUserRole] = useState<string>('visitor');
 
     useEffect(() => {
@@ -1319,8 +1321,8 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                                 }
                                                             } else {
                                                                 playSystemSound('intro');
-                                                                // Pequeno atraso para o som do sistema não ser capturado pelo microfone
-                                                                setTimeout(() => startListening(), 300);
+                                                                // Chamada direta para o browser não bloquear o start() da Web Speech API por falta de user gesture
+                                                                startListening();
                                                             }
                                                         }}
                                                         style={{
