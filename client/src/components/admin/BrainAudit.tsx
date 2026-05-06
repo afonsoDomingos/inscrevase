@@ -173,30 +173,34 @@ export default function BrainAudit() {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
             {/* Header Section */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
-                <div>
-                    <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '15px', margin: 0, fontFamily: 'var(--font-playfair)' }}>
-                        <div style={{ background: 'var(--gold-gradient)', padding: '12px', borderRadius: '15px', color: '#000', boxShadow: '0 10px 20px rgba(212, 175, 55, 0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
+                <div style={{ flex: '1 1 300px' }}>
+                    <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.2rem)', fontWeight: 900, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '15px', margin: 0, fontFamily: 'var(--font-playfair)' }}>
+                        <div style={{ background: 'var(--gold-gradient)', padding: '12px', borderRadius: '15px', color: '#000', boxShadow: '0 10px 20px rgba(212, 175, 55, 0.2)', flexShrink: 0 }}>
                             <Brain size={28} />
                         </div>
-                        Auditoria do Brain AI
+                        <span style={{ wordBreak: 'break-word' }}>Auditoria do Brain AI</span>
                     </h2>
-                    <p style={{ color: '#666', marginTop: '8px', fontSize: '1.1rem', fontWeight: 500 }}>
+                    <p style={{ color: '#666', marginTop: '8px', fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', fontWeight: 500 }}>
                         Monitorização de inteligência neural e padrões de interação.
                     </p>
                 </div>
-                <div style={{ display: 'flex', gap: '15px' }}>
+                <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center', width: '100%', maxWidth: '1000px', justifyContent: 'flex-start' }}>
                     <div style={{ 
                         display: 'flex', 
                         alignItems: 'center', 
                         gap: '10px', 
                         background: '#fff', 
-                        padding: '5px 15px', 
+                        padding: '10px 15px', 
                         borderRadius: '12px',
-                        border: '1px solid #e2e8f0'
+                        border: '1px solid #e2e8f0',
+                        flexWrap: 'wrap',
+                        flex: '1 1 auto'
                     }}>
-                        <Volume2 size={18} color="#64748b" />
-                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569' }}>Voz do Brain:</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <Volume2 size={18} color="#64748b" />
+                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569', whiteSpace: 'nowrap' }}>Voz do Brain:</span>
+                        </div>
                         
                         <div style={{ display: 'flex', gap: '5px', background: '#f1f5f9', padding: '4px', borderRadius: '8px' }}>
                             <button 
@@ -237,20 +241,23 @@ export default function BrainAudit() {
                             </button>
                         </div>
 
-                        {voiceMode === 'local' && availableVoices.length > 0 && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '10px', borderLeft: '1px solid #e2e8f0', paddingLeft: '15px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 200px', minWidth: '150px' }}>
+                            {voiceMode === 'local' && availableVoices.length > 0 && (
                                 <select 
                                     value={selectedVoiceName}
                                     onChange={(e) => handleVoiceNameChange(e.target.value)}
                                     disabled={isUpdatingVoice}
                                     style={{
-                                        background: 'transparent',
-                                        border: 'none',
+                                        background: '#f8fafc',
+                                        border: '1px solid #e2e8f0',
+                                        borderRadius: '8px',
+                                        padding: '5px 10px',
                                         fontSize: '0.75rem',
                                         fontWeight: 700,
                                         color: '#334155',
                                         outline: 'none',
                                         cursor: 'pointer',
+                                        width: '100%',
                                         textTransform: 'capitalize'
                                     }}
                                 >
@@ -259,23 +266,24 @@ export default function BrainAudit() {
                                         <option key={i} value={voice.name}>{voice.name} ({voice.lang})</option>
                                     ))}
                                 </select>
-                            </div>
-                        )}
+                            )}
 
-                        {voiceMode === 'premium' && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '10px', borderLeft: '1px solid #e2e8f0', paddingLeft: '15px' }}>
+                            {voiceMode === 'premium' && (
                                 <select 
                                     value={openAIVoices.includes(selectedVoiceName) ? selectedVoiceName : 'onyx'}
                                     onChange={(e) => handleVoiceNameChange(e.target.value)}
                                     disabled={isUpdatingVoice}
                                     style={{
-                                        background: 'transparent',
-                                        border: 'none',
+                                        background: '#f8fafc',
+                                        border: '1px solid #e2e8f0',
+                                        borderRadius: '8px',
+                                        padding: '5px 10px',
                                         fontSize: '0.75rem',
                                         fontWeight: 700,
                                         color: '#334155',
                                         outline: 'none',
                                         cursor: 'pointer',
+                                        width: '100%',
                                         textTransform: 'capitalize'
                                     }}
                                 >
@@ -283,35 +291,35 @@ export default function BrainAudit() {
                                         <option key={i} value={voice}>{voice}</option>
                                     ))}
                                 </select>
-                            </div>
-                        )}
+                            )}
+                        </div>
 
                         <button 
                             onClick={handleTestVoice}
                             style={{
                                 background: 'var(--gold-gradient)',
                                 border: 'none',
-                                width: '32px',
-                                height: '32px',
+                                width: '36px',
+                                height: '36px',
                                 borderRadius: '8px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 color: '#000',
                                 cursor: 'pointer',
-                                marginLeft: '10px',
+                                flexShrink: 0,
                                 boxShadow: '0 4px 10px rgba(212, 175, 55, 0.2)'
                             }}
                             title="Testar Voz"
                         >
-                            <Play size={14} fill="currentColor" />
+                            <Play size={16} fill="currentColor" />
                         </button>
                     </div>
                     <button 
                         onClick={handleExport}
                         disabled={isExporting}
                         className="luxury-button" 
-                        style={{ padding: '0.8rem 1.5rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}
+                        style={{ padding: '0.8rem 1.5rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}
                     >
                         <Download size={18} />
                         {isExporting ? 'Exportando...' : 'Exportar Auditoria'}
