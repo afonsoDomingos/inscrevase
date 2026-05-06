@@ -597,8 +597,18 @@ const getSuperAdminAnalytics = async (req, res) => {
             .sort({ loginCount: -1 })
             .limit(10);
 
+        // Add fallbacks for older data so UI shows something
+        const formattedLogins = recentLogins.map(login => {
+            const loginObj = login.toObject();
+            return {
+                ...loginObj,
+                lastLoginDevice: loginObj.lastLoginDevice || 'Desktop',
+                lastLoginOS: loginObj.lastLoginOS || 'Windows'
+            };
+        });
+
         res.json({
-            recentLogins,
+            recentLogins: formattedLogins,
             activeUsers
         });
     } catch (err) {
