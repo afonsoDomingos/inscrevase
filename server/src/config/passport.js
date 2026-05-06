@@ -8,6 +8,7 @@ const Notification = require('../models/Notification');
 const Referral = require('../models/Referral');
 const sendEmail = require('../utils/emailService');
 const { generateWelcomeEmail, generateReferralBonusEmail } = require('../utils/emailTemplates');
+const UAParser = require('ua-parser-js');
 
 // Helper to handle referrals for social login
 const handleReferral = async (user, referralCode) => {
@@ -114,6 +115,12 @@ if (googleClientId && googleClientSecret) {
                 let user = await User.findOne({ googleId: profile.id });
                 if (user) {
                     if (!user.profilePhoto) user.profilePhoto = profile.photos[0].value;
+                    
+                    const parser = new UAParser(req.headers['user-agent']);
+                    const deviceType = parser.getDevice().type || 'Desktop';
+                    user.lastLoginDevice = deviceType.charAt(0).toUpperCase() + deviceType.slice(1);
+                    user.lastLoginOS = parser.getOS().name || 'Unknown';
+                    
                     user.lastLoginAt = new Date();
                     user.loginCount = (user.loginCount || 0) + 1;
                     await user.save();
@@ -140,11 +147,20 @@ if (googleClientId && googleClientSecret) {
                     user.googleId = profile.id;
                     user.isEmailVerified = true;
                     if (!user.profilePhoto) user.profilePhoto = profile.photos[0].value;
+
+                    const parser = new UAParser(req.headers['user-agent']);
+                    const deviceType = parser.getDevice().type || 'Desktop';
+                    user.lastLoginDevice = deviceType.charAt(0).toUpperCase() + deviceType.slice(1);
+                    user.lastLoginOS = parser.getOS().name || 'Unknown';
+
                     user.lastLoginAt = new Date();
                     user.loginCount = (user.loginCount || 0) + 1;
                     await user.save();
                     return done(null, user);
                 }
+
+                const parser = new UAParser(req.headers['user-agent']);
+                const deviceType = parser.getDevice().type || 'Desktop';
 
                 user = new User({
                     name: profile.displayName,
@@ -157,6 +173,8 @@ if (googleClientId && googleClientSecret) {
                     country: await detectCountry(req, profile),
                     referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
                     lastLoginAt: new Date(),
+                    lastLoginDevice: deviceType.charAt(0).toUpperCase() + deviceType.slice(1),
+                    lastLoginOS: parser.getOS().name || 'Unknown',
                     loginCount: 1
                 });
 
@@ -252,6 +270,11 @@ if (linkedinClientId && linkedinClientSecret) {
 
                 let user = await User.findOne({ linkedinId: linkedinId });
                 if (user) {
+                    const parser = new UAParser(req.headers['user-agent']);
+                    const deviceType = parser.getDevice().type || 'Desktop';
+                    user.lastLoginDevice = deviceType.charAt(0).toUpperCase() + deviceType.slice(1);
+                    user.lastLoginOS = parser.getOS().name || 'Unknown';
+
                     // Update last login
                     user.lastLoginAt = new Date();
                     user.loginCount = (user.loginCount || 0) + 1;
@@ -278,12 +301,21 @@ if (linkedinClientId && linkedinClientSecret) {
                     user.linkedinId = linkedinId;
                     user.isEmailVerified = true;
                     if (!user.profilePhoto) user.profilePhoto = photo;
+
+                    const parser = new UAParser(req.headers['user-agent']);
+                    const deviceType = parser.getDevice().type || 'Desktop';
+                    user.lastLoginDevice = deviceType.charAt(0).toUpperCase() + deviceType.slice(1);
+                    user.lastLoginOS = parser.getOS().name || 'Unknown';
+
                     // Update last login
                     user.lastLoginAt = new Date();
                     user.loginCount = (user.loginCount || 0) + 1;
                     await user.save();
                     return done(null, user);
                 }
+
+                const parser = new UAParser(req.headers['user-agent']);
+                const deviceType = parser.getDevice().type || 'Desktop';
 
                 user = new User({
                     name: name,
@@ -296,6 +328,8 @@ if (linkedinClientId && linkedinClientSecret) {
                     country: await detectCountry(req, data),
                     referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
                     lastLoginAt: new Date(),
+                    lastLoginDevice: deviceType.charAt(0).toUpperCase() + deviceType.slice(1),
+                    lastLoginOS: parser.getOS().name || 'Unknown',
                     loginCount: 1
                 });
 
