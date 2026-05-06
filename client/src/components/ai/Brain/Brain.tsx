@@ -177,11 +177,21 @@ export default function Brain() {
     }, [chatHistory, isThinking]);
 
     useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        const checkMobile = () => setIsMobile(window.innerWidth < 1024);
         checkMobile();
         window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
+
+        const handleExternalOpen = () => {
+            setIsVisible(true);
+            if (isHibernated) setIsHibernated(false);
+        };
+        window.addEventListener('open-brain', handleExternalOpen);
+
+        return () => {
+            window.removeEventListener('resize', checkMobile);
+            window.removeEventListener('open-brain', handleExternalOpen);
+        };
+    }, [isHibernated]);
 
     const getTimeGreeting = () => {
         const hour = new Date().getHours();
@@ -1385,8 +1395,9 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                         exit={{ opacity: 0, y: -20, scale: 0.8 }}
                         style={{ 
                             position: 'fixed', 
-                            top: '100px', 
-                            right: '25px', 
+                            top: isMobile ? 'auto' : '100px', 
+                            bottom: isMobile ? '85px' : 'auto',
+                            right: isMobile ? '20px' : '25px', 
                             zIndex: 100000,
                             pointerEvents: 'auto'
                         }}

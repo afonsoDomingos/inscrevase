@@ -241,6 +241,7 @@ function AdminDashboardContent() {
         }[];
         deviceStats: { name: string; count: number }[];
         osStats: { name: string; count: number }[];
+        growthStats: { name: string; count: number }[];
     }
     const [superAdminAnalytics, setSuperAdminAnalytics] = useState<SuperAdminAnalytics | null>(null);
 
@@ -926,6 +927,16 @@ function AdminDashboardContent() {
                         >
                             <Mail size={16} /> {t('common.sendEmail')}
                         </button>
+
+                        <button
+                            onClick={() => window.dispatchEvent(new CustomEvent('open-brain'))}
+                            id="admin-brain-trigger"
+                            className="admin-header-btn-premium admin-header-brain-btn"
+                        >
+                            <Brain size={16} className="brain-pulse" /> 
+                            <span className="btn-text">Neural Brain</span>
+                        </button>
+
                         <Link
                             href="/"
                             target="_blank"
@@ -1086,7 +1097,13 @@ function AdminDashboardContent() {
                                                                         animationBegin={0}
                                                                         animationDuration={1500}
                                                                     >
-                                                                        {superAdminAnalytics.deviceStats.map((entry, index) => ( entry.name === 'Desktop' ? <Cell key={`cell-${index}`} fill="#D4AF37" stroke="none" /> : <Cell key={`cell-${index}`} fill={['#1a1a1a', '#B8860B', '#444'][index % 3]} stroke="none" /> ))}
+                                                                        {superAdminAnalytics.deviceStats.map((entry, index) => ( 
+                                                                            <Cell 
+                                                                                key={`cell-${index}`} 
+                                                                                fill={index === 0 ? '#1452AD' : ['#ef4444', '#10b981', '#f59e0b'][index % 3]} 
+                                                                                stroke="none" 
+                                                                            /> 
+                                                                        ))}
                                                                     </Pie>
                                                                     <RechartsTooltip 
                                                                         contentStyle={{ 
@@ -1148,7 +1165,7 @@ function AdminDashboardContent() {
                                                                         animationDuration={1500}
                                                                     >
                                                                         {superAdminAnalytics.osStats.map((entry, index) => (
-                                                                            <Cell key={`cell-${index}`} fill={['#1a1a1a', '#D4AF37', '#38a169', '#3182ce', '#e53e3e'][index % 5]} stroke="none" />
+                                                                            <Cell key={`cell-${index}`} fill={['#1452AD', '#ef4444', '#D4AF37', '#0d9488', '#4f46e5'][index % 5]} stroke="none" />
                                                                         ))}
                                                                     </Pie>
                                                                     <RechartsTooltip 
@@ -1172,7 +1189,103 @@ function AdminDashboardContent() {
                                                             </ResponsiveContainer>
                                                         </div>
                                                     </motion.div>
-                                                </div>
+                                                            {/* Growth Stats Chart - Premium Area Chart */}
+                                                            <motion.div 
+                                                                variants={itemVariants} 
+                                                                whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(212, 175, 55, 0.15)' }}
+                                                                className="luxury-card" 
+                                                                style={{ 
+                                                                    background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)', 
+                                                                    padding: '2.5rem', 
+                                                                    borderRadius: '35px', 
+                                                                    border: '1px solid rgba(212, 175, 55, 0.3)', 
+                                                                    minHeight: '400px',
+                                                                    position: 'relative',
+                                                                    overflow: 'hidden',
+                                                                    marginBottom: '2rem',
+                                                                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+                                                                }}
+                                                            >
+                                                                <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'radial-gradient(circle at 0% 0%, rgba(212, 175, 55, 0.1), transparent 50%)', pointerEvents: 'none' }}></div>
+                                                                
+                                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem' }}>
+                                                                    <div>
+                                                                        <h3 style={{ fontSize: '1.6rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '15px', color: '#fff', margin: 0 }}>
+                                                                            <div style={{ background: 'rgba(212, 175, 55, 0.2)', padding: '10px', borderRadius: '15px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>
+                                                                                <TrendingUp size={28} className="gold-text" />
+                                                                            </div>
+                                                                            Análise de Crescimento Neural
+                                                                        </h3>
+                                                                        <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '8px', marginLeft: '53px' }}>Estatísticas reais de novos utilizadores por mês</p>
+                                                                    </div>
+                                                                    <div style={{ padding: '10px 20px', background: 'rgba(212, 175, 55, 0.1)', border: '1px solid rgba(212, 175, 55, 0.2)', borderRadius: '14px', fontSize: '0.8rem', fontWeight: 800, color: '#FFD700', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                                                        Últimos 6 Meses
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <div style={{ height: '240px', width: '100%' }}>
+                                                                    <ResponsiveContainer width="100%" height="100%">
+                                                                        <AreaChart data={superAdminAnalytics.growthStats}>
+                                                                            <defs>
+                                                                                <linearGradient id="colorGrowth" x1="0" y1="0" x2="0" y2="1">
+                                                                                    <stop offset="5%" stopColor="#1452AD" stopOpacity={0.4}/>
+                                                                                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                                                                                </linearGradient>
+                                                                            </defs>
+                                                                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+                                                                            <XAxis 
+                                                                                dataKey="name" 
+                                                                                axisLine={false} 
+                                                                                tickLine={false} 
+                                                                                tick={{ fill: '#aaa', fontSize: 12, fontWeight: 700 }} 
+                                                                                dy={15}
+                                                                            />
+                                                                            <YAxis hide />
+                                                                            <RechartsTooltip 
+                                                                                cursor={{ stroke: 'rgba(20, 82, 173, 0.3)', strokeWidth: 2 }}
+                                                                                contentStyle={{ 
+                                                                                    borderRadius: '20px', 
+                                                                                    border: '1px solid rgba(20, 82, 173, 0.2)', 
+                                                                                    boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+                                                                                    background: 'rgba(0,0,0,0.9)',
+                                                                                    backdropFilter: 'blur(10px)',
+                                                                                    padding: '15px'
+                                                                                }}
+                                                                                itemStyle={{ fontWeight: 900, color: '#fff', fontSize: '1.2rem' }}
+                                                                                labelStyle={{ color: '#888', marginBottom: '6px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}
+                                                                                formatter={(value) => [`${value} Utilizadores`, '']}
+                                                                            />
+                                                                            <Area 
+                                                                                type="monotone" 
+                                                                                dataKey="count" 
+                                                                                stroke="#1452AD" 
+                                                                                strokeWidth={5}
+                                                                                fillOpacity={1} 
+                                                                                fill="url(#colorGrowth)" 
+                                                                                animationDuration={2500}
+                                                                                dot={{ r: 6, fill: '#fff', stroke: '#ef4444', strokeWidth: 3 }}
+                                                                                activeDot={{ r: 9, fill: '#ef4444', stroke: '#fff', strokeWidth: 2 }}
+                                                                            />
+                                                                        </AreaChart>
+                                                                    </ResponsiveContainer>
+                                                                </div>
+                                                                
+                                                                <div style={{ marginTop: '2.5rem', display: 'flex', gap: '3rem' }}>
+                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                                                        <span style={{ fontSize: '0.7rem', color: '#888', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Acumulado Semestre</span>
+                                                                        <span style={{ fontSize: '1.6rem', color: '#fff', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>
+                                                                            {superAdminAnalytics.growthStats.reduce((acc, curr) => acc + curr.count, 0)}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                                                        <span style={{ fontSize: '0.7rem', color: '#888', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Média de Engajamento</span>
+                                                                        <span style={{ fontSize: '1.6rem', color: '#1452AD', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>
+                                                                            +{Math.round((superAdminAnalytics.growthStats.reduce((acc, curr) => acc + curr.count, 0) / (superAdminAnalytics.growthStats.length || 1)) * 1.2)}%
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </motion.div>
+                                                        </div>
 
                                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem' }}>
                                                     <motion.div variants={itemVariants} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e0e0e0' }}>

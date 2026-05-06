@@ -619,11 +619,39 @@ const getSuperAdminAnalytics = async (req, res) => {
             { $project: { name: "$_id", count: 1, _id: 0 } }
         ]);
 
+        // Growth stats (users per month)
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+        sixMonthsAgo.setDate(1);
+        sixMonthsAgo.setHours(0,0,0,0);
+
+        const growthStatsRaw = await User.aggregate([
+            { $match: { createdAt: { $gte: sixMonthsAgo } } },
+            {
+                $group: {
+                    _id: { 
+                        month: { $month: "$createdAt" }, 
+                        year: { $year: "$createdAt" } 
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { "_id.year": 1, "_id.month": 1 } }
+        ]);
+
+        // Map months to names for easier frontend consumption
+        const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+        const growthStats = growthStatsRaw.map(stat => ({
+            name: `${monthNames[stat._id.month - 1]}`,
+            count: stat.count
+        }));
+
         res.json({
             recentLogins: formattedLogins,
             activeUsers,
             deviceStats,
-            osStats
+            osStats,
+            growthStats
         });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
