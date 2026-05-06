@@ -607,9 +607,23 @@ const getSuperAdminAnalytics = async (req, res) => {
             };
         });
 
+        // Device distribution aggregation
+        const deviceStats = await User.aggregate([
+            { $group: { _id: { $ifNull: ["$lastLoginDevice", "Desktop"] }, count: { $sum: 1 } } },
+            { $project: { name: "$_id", count: 1, _id: 0 } }
+        ]);
+
+        // OS distribution aggregation
+        const osStats = await User.aggregate([
+            { $group: { _id: { $ifNull: ["$lastLoginOS", "Windows"] }, count: { $sum: 1 } } },
+            { $project: { name: "$_id", count: 1, _id: 0 } }
+        ]);
+
         res.json({
             recentLogins: formattedLogins,
-            activeUsers
+            activeUsers,
+            deviceStats,
+            osStats
         });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });

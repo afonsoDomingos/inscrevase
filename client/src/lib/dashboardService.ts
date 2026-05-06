@@ -142,7 +142,9 @@ export const dashboardService = {
             loginCount: number;
             profilePhoto?: string;
             role: string;
-        }[]
+        }[],
+        deviceStats: { name: string; count: number }[],
+        osStats: { name: string; count: number }[]
     }> {
         const token = Cookies.get('token');
         const response = await fetch(`${API_URL}/auth/super-admin/analytics`, {

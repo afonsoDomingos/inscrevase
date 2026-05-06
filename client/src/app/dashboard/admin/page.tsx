@@ -239,6 +239,8 @@ function AdminDashboardContent() {
             loginCount: number;
             role: string;
         }[];
+        deviceStats: { name: string; count: number }[];
+        osStats: { name: string; count: number }[];
     }
     const [superAdminAnalytics, setSuperAdminAnalytics] = useState<SuperAdminAnalytics | null>(null);
 
@@ -1046,6 +1048,66 @@ function AdminDashboardContent() {
                                                 exit={{ height: 0, opacity: 0 }}
                                                 style={{ overflow: 'hidden' }}
                                             >
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+                                                    {/* Device Distribution Chart */}
+                                                    <motion.div variants={itemVariants} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e0e0e0', minHeight: '300px' }}>
+                                                        <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                            <Smartphone size={20} className="gold-text" /> Dispositivos Mais Usados
+                                                        </h3>
+                                                        <div style={{ height: '200px', width: '100%' }}>
+                                                            <ResponsiveContainer width="100%" height="100%">
+                                                                <PieChart>
+                                                                    <Pie
+                                                                        data={superAdminAnalytics.deviceStats}
+                                                                        cx="50%" cy="50%"
+                                                                        innerRadius={60}
+                                                                        outerRadius={80}
+                                                                        paddingAngle={5}
+                                                                        dataKey="count"
+                                                                    >
+                                                                        {superAdminAnalytics.deviceStats.map((entry, index) => (
+                                                                            <Cell key={`cell-${index}`} fill={['#D4AF37', '#1a1a1a', '#B8860B', '#444'][index % 4]} />
+                                                                        ))}
+                                                                    </Pie>
+                                                                    <RechartsTooltip 
+                                                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}
+                                                                    />
+                                                                    <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: 600 }} />
+                                                                </PieChart>
+                                                            </ResponsiveContainer>
+                                                        </div>
+                                                    </motion.div>
+
+                                                    {/* OS Distribution Chart */}
+                                                    <motion.div variants={itemVariants} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e0e0e0', minHeight: '300px' }}>
+                                                        <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                            <LayoutDashboard size={20} className="gold-text" /> Sistemas Operativos
+                                                        </h3>
+                                                        <div style={{ height: '200px', width: '100%' }}>
+                                                            <ResponsiveContainer width="100%" height="100%">
+                                                                <PieChart>
+                                                                    <Pie
+                                                                        data={superAdminAnalytics.osStats}
+                                                                        cx="50%" cy="50%"
+                                                                        innerRadius={60}
+                                                                        outerRadius={80}
+                                                                        paddingAngle={5}
+                                                                        dataKey="count"
+                                                                    >
+                                                                        {superAdminAnalytics.osStats.map((entry, index) => (
+                                                                            <Cell key={`cell-${index}`} fill={['#1a1a1a', '#D4AF37', '#38a169', '#3182ce', '#e53e3e'][index % 5]} />
+                                                                        ))}
+                                                                    </Pie>
+                                                                    <RechartsTooltip 
+                                                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}
+                                                                    />
+                                                                    <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: 600 }} />
+                                                                </PieChart>
+                                                            </ResponsiveContainer>
+                                                        </div>
+                                                    </motion.div>
+                                                </div>
+
                                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem' }}>
                                                     <motion.div variants={itemVariants} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e0e0e0' }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
