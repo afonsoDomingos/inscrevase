@@ -1059,7 +1059,7 @@ function AdminDashboardContent() {
                                                 exit={{ height: 0, opacity: 0 }}
                                                 style={{ overflow: 'hidden' }}
                                             >
-                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
                                                     {/* Device Distribution Chart */}
                                                     <motion.div 
                                                         variants={itemVariants} 
@@ -1189,6 +1189,8 @@ function AdminDashboardContent() {
                                                             </ResponsiveContainer>
                                                         </div>
                                                     </motion.div>
+                                                </div>
+                                                <div style={{ width: '100%', marginBottom: '2rem' }}>
                                                             {/* Growth Stats Chart - Premium Area Chart */}
                                                             <motion.div 
                                                                 variants={itemVariants} 
