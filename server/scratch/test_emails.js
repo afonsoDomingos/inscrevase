@@ -6,7 +6,7 @@ const {
     generateUpgradeSuggestionEmail 
 } = require('../src/utils/emailTemplates');
 
-const ADMIN_EMAIL = process.env.EMAIL_USER; // karinganastudio23@gmail.com
+const ADMIN_EMAIL = process.env.EMAIL_USER; // inscrevase.events@gmail.com
 const DASHBOARD_URL = "https://inscreva-se.com/dashboard/plans";
 
 async function runTests() {

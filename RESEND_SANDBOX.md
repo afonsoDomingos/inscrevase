@@ -3,7 +3,7 @@
 ## ⚠️ **Situação Atual:**
 
 O Resend está em **modo sandbox** (teste). Você só pode enviar emails para:
-- ✅ `karinganastudio23@gmail.com`
+- ✅ `inscrevase.events@gmail.com`
 - ❌ Qualquer outro email
 
 ### **Solução Temporária Aplicada:**
@@ -45,12 +45,12 @@ Se não tem domínio, pode verificar apenas um email:
 
 1. **Acesse:** https://resend.com/settings
 2. **Vá em:** "Verified Emails"
-3. **Adicione:** `karinganastudio23@gmail.com`
+3. **Adicione:** `inscrevase.events@gmail.com`
 4. **Verifique** o email que receber
-5. **Pronto!** Pode enviar de `karinganastudio23@gmail.com`
+5. **Pronto!** Pode enviar de `inscrevase.events@gmail.com`
 
 #### **Limitação:**
-- ⚠️ Só pode enviar DE `karinganastudio23@gmail.com`
+- ⚠️ Só pode enviar DE `inscrevase.events@gmail.com`
 - ⚠️ Ainda pode enviar PARA qualquer email
 - ⚠️ Menos profissional
 
@@ -83,7 +83,7 @@ Por enquanto funciona assim:
 **Email 1 (para você):**
 ```
 De: Inscreva-se <onboarding@resend.dev>
-Para: karinganastudio23@gmail.com
+Para: inscrevase.events@gmail.com
 Assunto: Nova Mensagem de Suporte: [assunto]
 
 Conteúdo: Dados do usuário + mensagem
@@ -92,7 +92,7 @@ Conteúdo: Dados do usuário + mensagem
 **Email 2 (também para você):**
 ```
 De: Inscreva-se <onboarding@resend.dev>
-Para: karinganastudio23@gmail.com
+Para: inscrevase.events@gmail.com
 Assunto: [CONFIRMAÇÃO PARA Nome do Usuário] Recebemos sua mensagem
 
 ⚠️ MODO SANDBOX: Este email deveria ir para usuario@email.com

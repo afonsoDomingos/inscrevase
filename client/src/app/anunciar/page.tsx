@@ -584,8 +584,8 @@ export default function AnunciarPage() {
                                                             <button onClick={() => { navigator.clipboard.writeText('000100000074301049557'); toast.success('NIB copiado!'); }} style={{ padding: '4px', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
                                                         </li>
                                                         <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                            <span><b>PayPal:</b> karinganastudio23@gmail.com</span>
-                                                            <button onClick={() => { navigator.clipboard.writeText('karinganastudio23@gmail.com'); toast.success('PayPal copiado!'); }} style={{ padding: '4px', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                            <span><b>PayPal:</b> inscrevase.events@gmail.com</span>
+                                                            <button onClick={() => { navigator.clipboard.writeText('inscrevase.events@gmail.com'); toast.success('PayPal copiado!'); }} style={{ padding: '4px', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
                                                         </li>
                                                     </ul>
 

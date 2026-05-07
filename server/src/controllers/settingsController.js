@@ -43,7 +43,7 @@ exports.getManualPaymentMethods = async (req, res) => {
                 countryLabel: 'Internacional',
                 label: 'PayPal (Manual)',
                 icon: '🌎',
-                details: 'karinganastudio23@gmail.com',
+                details: 'inscrevase.events@gmail.com',
                 active: true
             }
         ];

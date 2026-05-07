@@ -904,8 +904,8 @@ export default function AdManagement() {
                                                         <button onClick={() => { navigator.clipboard.writeText('000100000074301049557'); toast.success('NIB copiado!'); }} style={{ padding: '4px', background: '#fff', border: '1px solid #eee', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
                                                     </div>
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                        <span>PayPal: karinganastudio23@gmail.com</span>
-                                                        <button onClick={() => { navigator.clipboard.writeText('karinganastudio23@gmail.com'); toast.success('PayPal copiado!'); }} style={{ padding: '4px', background: '#fff', border: '1px solid #eee', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
+                                                        <span>PayPal: inscrevase.events@gmail.com</span>
+                                                        <button onClick={() => { navigator.clipboard.writeText('inscrevase.events@gmail.com'); toast.success('PayPal copiado!'); }} style={{ padding: '4px', background: '#fff', border: '1px solid #eee', borderRadius: '4px', cursor: 'pointer' }}><Copy size={12} /></button>
                                                     </div>
                                                 </div>
                                                 <div style={{

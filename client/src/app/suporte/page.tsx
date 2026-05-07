@@ -93,8 +93,8 @@ export default function SuportePage() {
         {
             icon: <Mail size={24} />,
             title: t('supportPage.email'),
-            value: 'karinganastudio23@gmail.com',
-            link: 'mailto:karinganastudio23@gmail.com',
+            value: 'inscrevase.events@gmail.com',
+            link: 'mailto:inscrevase.events@gmail.com',
             description: t('supportPage.emailDesc')
         },
         {
