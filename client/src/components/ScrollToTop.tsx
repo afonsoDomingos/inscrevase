@@ -47,7 +47,7 @@ export default function ScrollToTop() {
                     style={{
                         position: 'fixed',
                         bottom: '20px',
-                        right: '20px',
+                        right: '25px',
                         zIndex: 1000,
                         width: isMobile ? '38px' : '45px',
                         height: isMobile ? '38px' : '45px',

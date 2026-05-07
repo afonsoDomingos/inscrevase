@@ -852,7 +852,7 @@ h6 {
     margin-left: 0;
     width: 100%;
     padding: 1rem;
-    padding-top: 5.5rem;
+    padding-top: 4.8rem;
     overflow-x: hidden;
   }
 
@@ -901,7 +901,7 @@ h6 {
     flex-direction: column;
     align-items: flex-start;
     gap: 1.25rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
   }
 
   /* Botões em largura total no mobile para facilitar o toque */
@@ -1441,27 +1441,7 @@ h6 {
     font-weight: 700 !important;
   }
 }
-@keyframes brain-pulse {
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1px solid #222;
-  background: #000;
-  color: #fff;
-  outline: none;
-  transition: all 0.2s;
-  font-size: 0.95rem;
-}
 
-.motiva-input::placeholder {
-  color: #444;
-}
-
-.motiva-input:focus {
-  border-color: #FFD700;
-  box-shadow: 0 0 0 1px #FFD700;
-  background: #050505;
-}
 
 @media (max-width: 850px) {
   .motiva-upload-modal {
@@ -1651,17 +1631,17 @@ h6 {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  borderRadius: 50px;
+  border-radius: 50px;
   background: #000;
   color: #FFD700;
   border: 1px solid #FFD700;
-  whiteSpace: nowrap;
-  fontWeight: 800;
+  white-space: nowrap;
+  font-weight: 800;
   cursor: pointer;
   transition: all 0.3s;
-  fontSize: 0.75rem;
-  letterSpacing: 0.5px;
-  boxShadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
 }
 
 .admin-header-btn-premium:hover {
