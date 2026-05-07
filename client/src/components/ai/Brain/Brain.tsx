@@ -1394,7 +1394,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                         exit={{ opacity: 0, y: -20, scale: 0.8 }}
                         style={{ 
                             position: 'fixed', 
-                            top: isMobile ? '20px' : '100px', 
+                            top: isMobile ? '85px' : '100px', 
                             right: '25px', 
                             zIndex: 100000,
                             pointerEvents: 'auto'
