@@ -741,7 +741,7 @@ function AdminDashboardContent() {
                     justifyContent: 'space-between',
                     alignItems: 'flex-start',
                     gap: isMobile ? '1rem' : '1.5rem',
-                    marginBottom: isMobile ? '1.5rem' : '3rem',
+                    marginBottom: isMobile ? '0.5rem' : '3rem',
                     flexWrap: 'wrap'
                 }}>
                     <div style={{ flex: '1 1 300px', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
