@@ -33,7 +33,7 @@ const TypewriterText = ({ text, speed = 8 }: { text: string, speed?: number }) =
         <ReactMarkdown 
             components={{ 
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                p: ({node, ...props}) => <p style={{ margin: 0, paddingBottom: '6px', color: '#e2e8f0' }} {...props} />, 
+                p: ({node, ...props}) => <p style={{ margin: 0, paddingBottom: '2px', color: '#e2e8f0' }} {...props} />, 
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 strong: ({node, ...props}) => <strong style={{ color: '#fff', fontWeight: 800 }} {...props} />, 
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1153,7 +1153,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 {!isMobile && <div style={{ width: '1px', background: 'rgba(255,255,255,0.06)', flexShrink: 0 }} />}
 
                                 {/* Right Column: Chat/Interaction */}
-                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: isMobile ? '8px' : '12px', overflow: 'visible' }}>
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: isMobile ? '6px' : '12px', overflow: 'visible' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(234, 179, 8, 0.05)', padding: '4px 10px', borderRadius: '6px', border: '1px solid rgba(234, 179, 8, 0.15)', marginBottom: '2px', flexShrink: 0 }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                             <div style={{ width: '6px', height: '6px', background: '#eab308', borderRadius: '50%', boxShadow: '0 0 8px #eab308' }} />
@@ -1170,7 +1170,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1, borderColor: isThinking ? ['rgba(56,189,248,0.2)','rgba(56,189,248,0.8)','rgba(56,189,248,0.2)'] : 'rgba(234,179,8,0.2)', boxShadow: isThinking ? ['0 0 0px rgba(56,189,248,0)','0 0 15px rgba(56,189,248,0.3)','0 0 0px rgba(56,189,248,0)'] : 'none' }} transition={isThinking ? { duration: 1.5, repeat: Infinity } : {}} style={{ background: isThinking ? 'rgba(56, 189, 248, 0.15)' : 'rgba(234, 179, 8, 0.1)', border: '1px solid', padding: '10px 15px', borderRadius: '15px', display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', flexShrink: 0 }}><Terminal size={12} style={{ color: isThinking ? '#38bdf8' : '#eab308', minWidth: '12px' }} /><span style={{ color: isThinking ? '#38bdf8' : '#eab308', fontSize: '0.8rem', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'normal', wordBreak: 'break-word' }}>{lastCommand}</span></motion.div>
                                     )}
 
-                                    <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.95rem', color: '#d1d5db', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent', paddingRight: '10px', minHeight: '0', position: 'relative' }}>
+                                    <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: isMobile ? '8px' : '12px', fontSize: '0.95rem', color: '#d1d5db', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent', paddingRight: '10px', minHeight: '0', position: 'relative' }}>
                                         {/* Monitor Screen Overlay for effects */}
                                         <AnimatePresence>
                                             {(isResetting || isShuttingDown || isDisconnecting) && (
@@ -1262,7 +1262,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                 );
                                             }
                                             return (
-                                            <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(12px)', border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`, padding: '12px 18px', borderRadius: '12px', maxWidth: '95%', wordBreak: 'break-word', boxShadow: '0 4px 15px rgba(0,0,0,0.15)' }}>
+                                            <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(12px)', border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`, padding: isMobile ? '8px 12px' : '12px 18px', borderRadius: '12px', maxWidth: '95%', wordBreak: 'break-word', boxShadow: '0 4px 15px rgba(0,0,0,0.15)' }}>
                                                 {msg.role === 'ai' ? (
                                                     <div style={{ fontSize: '0.95rem', color: '#f8fafc', lineHeight: '1.6' }}>
                                                         <TypewriterText text={msg.text} />

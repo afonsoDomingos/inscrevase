@@ -233,7 +233,7 @@ export default function AuraConcierge() {
                         </div>
 
                         {/* Messages */}
-                        <div style={{ flex: 1, padding: isMobile ? '1rem' : '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div style={{ flex: 1, padding: isMobile ? '0.75rem' : '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                             {messages.map((msg) => (
                                 <div key={msg.id} style={{
                                     alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
@@ -253,7 +253,7 @@ export default function AuraConcierge() {
                                             <div className="aura-markdown">
                                                 <ReactMarkdown
                                                     components={{
-                                                        p: ({ children }) => <p style={{ marginBottom: '0.8rem' }}>{children}</p>,
+                                                        p: ({ children }) => <p style={{ marginBottom: '0.4rem' }}>{children}</p>,
                                                         h1: ({ children }) => <h1 style={{ fontSize: '1.2rem', fontWeight: 800, margin: '1rem 0 0.5rem', color: '#D4AF37' }}>{children}</h1>,
                                                         h2: ({ children }) => <h2 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '1rem 0 0.5rem', color: '#D4AF37' }}>{children}</h2>,
                                                         h3: ({ children }) => <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: '1rem 0 0.5rem', color: '#D4AF37' }}>{children}</h3>,
