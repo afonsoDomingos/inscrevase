@@ -146,7 +146,7 @@ export default function WeatherWidget() {
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <span style={{ fontWeight: 800, fontSize: '0.7rem', letterSpacing: '0.5px', textTransform: 'uppercase', color: '#FFD700' }}>{data.city}</span>
-                        <span style={{ fontSize: '0.55rem', opacity: 0.6 }}>{data.timezone.split('/')[0]}</span>
+                        <span style={{ fontSize: '0.55rem', opacity: 0.6 }}>{(data.timezone || 'UTC').split('/')[0]}</span>
                     </div>
                 </div>
 
@@ -172,12 +172,22 @@ export default function WeatherWidget() {
                     <Clock size={12} className="text-yellow-500" />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <span style={{ fontWeight: 800, fontSize: '0.85rem', letterSpacing: '0.5px' }}>
-                            {currentTime.toLocaleTimeString('pt-BR', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: false,
-                                timeZone: data.timezone
-                            })}
+                            {(() => {
+                                try {
+                                    return currentTime.toLocaleTimeString('pt-BR', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: false,
+                                        timeZone: data.timezone
+                                    });
+                                } catch (e) {
+                                    return currentTime.toLocaleTimeString('pt-BR', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: false
+                                    });
+                                }
+                            })()}
                         </span>
                     </div>
 
@@ -288,7 +298,13 @@ export default function WeatherWidget() {
                                         <div style={{ fontWeight: 800, fontSize: '1rem' }}>{data.precipitation} mm ({data.precipitationProbability}%)</div>
                                     </div>
                                     <div style={{ fontSize: '0.85rem', fontWeight: 700, background: 'rgba(212,175,55,0.1)', color: '#FFD700', padding: '4px 12px', borderRadius: '50px' }}>
-                                        {currentTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: data.timezone })}
+                                        {(() => {
+                                            try {
+                                                return currentTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: data.timezone });
+                                            } catch (e) {
+                                                return currentTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
+                                            }
+                                        })()}
                                     </div>
                                 </div>
                             </div>

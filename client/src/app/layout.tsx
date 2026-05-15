@@ -17,6 +17,7 @@ import PWAInstallPrompt from '@/components/common/PWAInstallPrompt';
 import PayPalProviderWrapper from '@/components/common/PayPalProviderWrapper';
 import OfflineDetector from '@/components/common/OfflineDetector';
 import GoogleAdsense from '@/components/common/GoogleAdsense';
+import ErrorBoundary from '@/components/common/ErrorBoundary';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -192,7 +193,6 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="192x192" href="/icon-192x192.png" />
         <link rel="apple-touch-icon-precomposed" href="/logo.png" />
 
-        <GoogleAdsense />
 
         {/* Script para prevenir o Flash (piscar) de tema branco ao carregar */}
         <script
@@ -424,11 +424,24 @@ export default function RootLayout({
                   <HealthCheck />
                   <OfflineDetector />
                   <ClientLayoutWrapper>
-                    <Suspense fallback={null}>
-                      <AnalyticsTracker />
-                      <GlobalMetaPixel />
-                    </Suspense>
-                    {children}
+                    <ErrorBoundary fallback={<div className="min-h-screen flex items-center justify-center bg-white p-4 text-center">
+                      <div className="max-w-md">
+                        <h1 className="text-2xl font-bold mb-4">Oops! Ocorreu um erro</h1>
+                        <p className="text-gray-600 mb-6">Pedimos desculpa pelo inconveniente. Estamos a trabalhar para resolver o problema.</p>
+                        <button onClick={() => window.location.reload()} className="bg-black text-white px-6 py-2 rounded-full font-bold">Recarregar Página</button>
+                      </div>
+                    </div>}>
+                      <Suspense fallback={null}>
+                        <AnalyticsTracker />
+                        <GlobalMetaPixel />
+                        <GoogleAdsense />
+                      </Suspense>
+                      <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-white">
+                        <div className="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+                      </div>}>
+                        {children}
+                      </Suspense>
+                    </ErrorBoundary>
                     <PWAInstallPrompt />
                   </ClientLayoutWrapper>
                 </PayPalProviderWrapper>

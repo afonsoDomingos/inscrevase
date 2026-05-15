@@ -40,17 +40,88 @@ export interface JobApplication {
     createdAt: string;
 }
 
+const defaultFallbackVacancies: Vacancy[] = [
+    {
+        _id: 'v-fallback-1',
+        title: "Especialista em Marketing Digital",
+        slug: "especialista-marketing-digital-remoto",
+        description: "Estamos à procura de um Especialista em Marketing Digital para ajudar a escalar o ecossistema Inscreva-se. Irá trabalhar na criação de campanhas de performance, gestão de redes sociais e funis de vendas para mentores.",
+        requirements: [
+            "Mínimo 2 anos de experiência em tráfego pago (Meta Ads, Google Ads)",
+            "Conhecimento profundo de Copywriting",
+            "Capacidade analítica e foco em resultados",
+            "Fluência em Português"
+        ],
+        location: "Remoto / Luanda",
+        type: "Full-time",
+        category: "Marketing",
+        active: true,
+        createdAt: new Date().toISOString()
+    },
+    {
+        _id: 'v-fallback-2',
+        title: "Desenvolvedor Full Stack (Next.js/Node.js)",
+        slug: "desenvolvedor-fullstack-junior",
+        description: "Junte-se à equipa técnica da Inscreva-se. Irá participar no desenvolvimento de novas funcionalidades, optimização de performance e integração de APIs de pagamento locais.",
+        requirements: [
+            "Conhecimento sólido em React, Next.js e TypeScript",
+            "Experiência com Node.js e MongoDB",
+            "Interesse em Fintech e sistemas de eventos",
+            "Proactividade e vontade de aprender"
+        ],
+        location: "Remoto / Maputo",
+        type: "Full-time",
+        category: "Tecnologia",
+        active: true,
+        createdAt: new Date().toISOString()
+    },
+    {
+        _id: 'v-fallback-3',
+        title: "Gestor de Comunidade e Suporte",
+        slug: "gestor-comunidade-suporte-ao-cliente",
+        description: "Buscamos alguém apaixonado por pessoas para gerir a nossa comunidade de mentores e organizadores. Irá prestar suporte técnico e garantir que todos tenham uma experiência incrível na plataforma.",
+        requirements: [
+            "Excelente comunicação escrita e verbal",
+            "Paciência e empatia no atendimento",
+            "Conhecimento básico da plataforma Inscreva-se",
+            "Disponibilidade para turnos rotativos"
+        ],
+        location: "Luanda, Angola",
+        type: "Part-time",
+        category: "Suporte",
+        active: true,
+        createdAt: new Date().toISOString()
+    }
+];
+
 export const vacancyService = {
     // Public
     getPublicVacancies: async (): Promise<Vacancy[]> => {
-        const res = await fetch(`${API_URL}/vacancies`);
-        return res.json();
+        try {
+            const res = await fetch(`${API_URL}/vacancies`);
+            const data = await res.json();
+            if (Array.isArray(data) && data.length > 0) {
+                return data;
+            }
+        } catch (error) {
+            console.error('API Error fetching vacancies, using fallbacks', error);
+        }
+        return defaultFallbackVacancies;
     },
 
     getVacancyBySlug: async (slug: string): Promise<Vacancy> => {
-        const res = await fetch(`${API_URL}/vacancies/${slug}`);
-        if (!res.ok) throw new Error('Vaga não encontrada');
-        return res.json();
+        try {
+            const res = await fetch(`${API_URL}/vacancies/${slug}`);
+            if (res.ok) {
+                return res.json();
+            }
+        } catch (error) {
+            console.error('Error fetching vacancy by slug', error);
+        }
+        
+        const fallback = defaultFallbackVacancies.find(v => v.slug === slug);
+        if (fallback) return fallback;
+        throw new Error('Vaga não encontrada');
     },
 
     submitApplication: async (data: Partial<JobApplication> & { answers: { question: string, answer: string }[] }): Promise<{ success: boolean, message?: string }> => {

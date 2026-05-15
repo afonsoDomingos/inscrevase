@@ -82,7 +82,7 @@ const defaultFallbackPosts: BlogPost[] = [
         _id: 'fallback-2',
         title: "5 Estratégias Imbatíveis para Aumentar a Venda dos Seus Cursos",
         slug: "5-estrategias-imbativeis-para-aumentar-a-venda-de-cursos",
-        excerpt: "Se tem dificuldades em encher a sala das suas formções, estas 5 táticas validadas vão triplicar a conversão das suas páginas de captura.",
+        excerpt: "Se tem dificuldades em encher a sala das suas formações, estas 5 táticas validadas vão triplicar a conversão das suas páginas de captura.",
         content: `
 <h2>A Nova Concorrência na Formação</h2>
 <p>Hoje em dia, criar um bom curso não é suficiente. A barreira de entrada diminuiu, e os seus potenciais alunos estão a ser bombardeados com dezenas de ofertas similares todos os dias. O que separa um mentoria vazia de uma sala cheia (presencial ou virtual)? Estratégia de marketing agressiva e bem fundamentada.</p>
@@ -169,7 +169,7 @@ const defaultFallbackPosts: BlogPost[] = [
 
 <h2>Implementação no Botão "Submeter"</h2>
 <p>O Design UI dita a obrigatoriedade de ter botões altamente contrastantes. Se a sua página tem predominância escura, um botão Amarelo incitará um instinto mecânico para avançar para a próxima etapa.</p>
-<p>A Personalização Dinâmica das Cores nos formulários da plataforma permite adequar todas as semanas o design, consoante a urgência das campanhas ou datas de encerramento da bilheteira.</p>
+<p>A Personalização Dinâmica das Cores nos formulários da plataforma permite adequar todas as semanas o design, consoante a urgência das campanhas ou das datas de encerramento da bilheteira.</p>
         `,
         category: "engagement",
         coverImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1200",
@@ -215,6 +215,105 @@ const defaultFallbackPosts: BlogPost[] = [
         published: true,
         publishedAt: new Date(Date.now() - 86400000 * 15).toISOString(),
         views: 2200,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    },
+    {
+        _id: 'fallback-6',
+        title: "Como Criar um Curso Online do Zero: Da Ideia ao Primeiro Aluno",
+        slug: "como-criar-um-curso-online-do-zero",
+        excerpt: "Transforme o seu conhecimento em um produto digital lucrativo. Siga o nosso roteiro passo a passo para lançar a sua primeira formação online.",
+        content: `
+<h2>O Boom do Ensino Digital</h2>
+<p>Nunca houve um momento melhor para partilhar o que sabe. O mercado de e-learning está a explodir em Angola e Moçambique. Mas por onde começar? Muitos ficam presos na parte técnica, quando o segredo está na metodologia e na audiência.</p>
+
+<h2>1. Definição do Tópico e Validação</h2>
+<p>Não crie o curso inteiro antes de saber se alguém o quer comprar. Faça uma enquete no seu Instagram ou LinkedIn. Ofereça uma aula gratuita (Webinar) e veja a adesão. Se 20 pessoas se inscreverem para a aula grátis, tem um produto em mãos.</p>
+
+<h2>2. Estruturação do Conteúdo (Ementa)</h2>
+<p>Divida o seu conhecimento em módulos lógicos. Comece pelo "Porquê", passe para o "Como" e termine com "Estudos de Caso". Use ferramentas de mapas mentais para visualizar a jornada do aluno.</p>
+
+<h2>3. Gravação e Equipamento</h2>
+<p>Não precisa de um estúdio de TV. Um smartphone moderno e um microfone de lapela barato são suficientes para começar. O mais importante é a iluminação e a clareza do áudio. Se o áudio for ruim, o aluno abandona o curso.</p>
+
+<h2>4. Escolha da Plataforma</h2>
+<p>Utilize plataformas que facilitem a gestão de inscrições e o acesso dos alunos. Ter um ambiente profissional aumenta a percepção de valor e permite cobrar preços mais altos (High Ticket).</p>
+        `,
+        category: "mentoring",
+        coverImage: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200",
+        author: {
+            name: "Afonso Domingos",
+            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200"
+        },
+        readTime: 8,
+        tags: ["Cursos", "E-learning", "Mentoria"],
+        published: true,
+        publishedAt: new Date(Date.now() - 86400000 * 20).toISOString(),
+        views: 3100,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    },
+    {
+        _id: 'fallback-7',
+        title: "A Importância do Networking em Eventos Presenciais para a sua Carreira",
+        slug: "importancia-networking-eventos-presenciais",
+        excerpt: "Em um mundo digital, o contacto físico continua a ser a ferramenta mais poderosa de vendas e parcerias. Descubra como aproveitar cada evento.",
+        content: `
+<h2>O Poder do Aperto de Mão</h2>
+<p>Podemos fazer reuniões por Zoom, mas a confiança profunda é construída pessoalmente. Eventos presenciais são o terreno fértil para parcerias estratégicas que podem mudar o rumo do seu negócio em uma tarde.</p>
+
+<h2>1. Prepare o seu 'Elevator Pitch'</h2>
+<p>Saiba explicar o que faz em 30 segundos. Não foque no seu cargo, mas no problema que resolve. "Eu ajudo empresas a reduzirem custos logísticos" é melhor que "Sou consultor de logística".</p>
+
+<h2>2. Escute Mais do que Fala</h2>
+<p>O melhor networker é aquele que se interessa genuinamente pelas dificuldades dos outros. Faça perguntas abertas. As pessoas adoram falar sobre os seus desafios, e é aí que você identifica oportunidades de ajudar.</p>
+
+<h2>3. O Acompanhamento (Follow-up) é Tudo</h2>
+<p>De nada serve coleccionar cartões ou contactos de WhatsApp se não enviar uma mensagem no dia seguinte. "Gostei muito de conversar sobre o tema X, vamos marcar um café?" é a frase que fecha negócios.</p>
+        `,
+        category: "event",
+        coverImage: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&q=80&w=1200",
+        author: {
+            name: "Equipe Inscreva-se",
+            avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200"
+        },
+        readTime: 6,
+        tags: ["Networking", "Carreira", "Eventos"],
+        published: true,
+        publishedAt: new Date(Date.now() - 86400000 * 25).toISOString(),
+        views: 1800,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    },
+    {
+        _id: 'fallback-8',
+        title: "Como Usar o M-Pesa e Multicaixa para Vender Bilhetes Online",
+        slug: "como-usar-mpesa-multicaixa-vender-bilhetes",
+        excerpt: "Facilite o pagamento para os seus clientes. Aprenda como integrar os métodos mais usados em Angola e Moçambique no seu processo de vendas.",
+        content: `
+<h2>A Barreira do Pagamento</h2>
+<p>Muitos organizadores perdem vendas porque o processo de pagamento é complicado. Em África, o dinheiro móvel e os sistemas locais são reis. Se não oferece M-Pesa ou Multicaixa, está a ignorar 80% do seu mercado.</p>
+
+<h2>1. A Conveniência do M-Pesa</h2>
+<p>Em Moçambique, o M-Pesa é a ferramenta de inclusão financeira por excelência. Ter um sistema que permite ao cliente pagar instantaneamente pelo telemóvel e receber o bilhete por SMS ou Email é um diferencial competitivo enorme.</p>
+
+<h2>2. O Sistema Multicaixa em Angola</h2>
+<p>Para o mercado angolano, o Multicaixa Express e as referências de pagamento são vitais. Automatizar a verificação desses pagamentos poupa horas de conferência manual de extractos bancários.</p>
+
+<h2>3. Segurança e Confiança</h2>
+<p>Ao usar uma plataforma intermediária, você passa segurança para o comprador. Ele sabe que se o evento for cancelado, existe um suporte. E você, organizador, tem a certeza de que o valor caiu na conta antes de emitir o bilhete.</p>
+        `,
+        category: "marketing",
+        coverImage: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&q=80&w=1200",
+        author: {
+            name: "Afonso Domingos",
+            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200"
+        },
+        readTime: 5,
+        tags: ["Pagamentos", "Finanças", "Angola", "Moçambique"],
+        published: true,
+        publishedAt: new Date(Date.now() - 86400000 * 30).toISOString(),
+        views: 4500,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
     }
