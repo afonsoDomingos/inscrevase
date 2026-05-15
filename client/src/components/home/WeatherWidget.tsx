@@ -180,7 +180,7 @@ export default function WeatherWidget() {
                                         hour12: false,
                                         timeZone: data.timezone
                                     });
-                                } catch (e) {
+                                } catch (_e) {
                                     return currentTime.toLocaleTimeString('pt-BR', {
                                         hour: '2-digit',
                                         minute: '2-digit',
@@ -301,7 +301,7 @@ export default function WeatherWidget() {
                                         {(() => {
                                             try {
                                                 return currentTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: data.timezone });
-                                            } catch (e) {
+                                            } catch (_e) {
                                                 return currentTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
                                             }
                                         })()}

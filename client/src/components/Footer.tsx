@@ -2,13 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { Linkedin, Youtube, Facebook, MessageCircle, Instagram } from 'lucide-react';
-import { useTranslate } from '@/context/LanguageContext';
-import { SUPPORT_WHATSAPP } from '@/lib/constants';
 
 export default function Footer() {
-    const { t } = useTranslate();
 
     return (
         <footer style={{ padding: '80px 0 40px', background: '#fff', borderTop: '1px solid #f0f0f0' }}>
