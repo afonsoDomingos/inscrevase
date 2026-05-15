@@ -1,4 +1,5 @@
 "use client";
+// Force rebuild - 2026-05-15-22-53
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -180,7 +181,7 @@ export default function WeatherWidget() {
                                         hour12: false,
                                         timeZone: data.timezone
                                     });
-                                } catch (_e) {
+                                } catch {
                                     return currentTime.toLocaleTimeString('pt-BR', {
                                         hour: '2-digit',
                                         minute: '2-digit',
@@ -301,7 +302,7 @@ export default function WeatherWidget() {
                                         {(() => {
                                             try {
                                                 return currentTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: data.timezone });
-                                            } catch (_e) {
+                                            } catch {
                                                 return currentTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
                                             }
                                         })()}
