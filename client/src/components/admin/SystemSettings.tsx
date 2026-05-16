@@ -22,6 +22,7 @@ interface SystemSettingsData {
         free: PlanConfig;
         pro: PlanConfig;
         enterprise: PlanConfig;
+        premium: PlanConfig;
     };
     exchangeRate: number;
 }
