@@ -1039,7 +1039,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                         <CerberusVisual isListening={isListening} isThinking={isThinking} isAlert={isAlert} isSpeaking={isSpeaking} />
                                     </div>
                                     <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-                                        <h3 style={{ fontWeight: 'bold', color: isAlert ? '#ef4444' : isThinking ? '#38bdf8' : '#fff', fontSize: isMobile ? '0.65rem' : '0.9rem', textTransform: isThinking ? 'uppercase' : 'none', letterSpacing: '1px', margin: 0 }}>
+                                        <h3 style={{ fontWeight: 'bold', color: isAlert ? '#ef4444' : isThinking ? '#38bdf8' : '#fff', fontSize: isMobile ? '0.55rem' : '0.9rem', textTransform: isThinking ? 'uppercase' : 'none', letterSpacing: '1px', margin: 0 }}>
                                             {isThinking ? 'Process...' : isListening ? 'Ouvir...' : 'Brain'}
                                         </h3>
                                         <p style={{ color: '#9ca3af', fontSize: '9px', margin: '4px 0 0', lineHeight: '1.4', display: isMobile ? 'none' : 'block' }}>
@@ -1113,14 +1113,14 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                             style={{ color: '#10b981', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
                                             data-tooltip="Reiniciar Sistemas"
                                         >
-                                            <RotateCw size={18} className={isResetting ? 'animate-spin' : ''} />
+                                            <RotateCw size={isMobile ? 14 : 18} className={isResetting ? 'animate-spin' : ''} />
                                         </button>
                                         <button 
                                             onClick={() => setIsMaximized(!isMaximized)} 
                                             style={{ color: '#38bdf8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
                                             data-tooltip={isMaximized ? "Minimizar Ecrã" : "Modo Cinema"}
                                         >
-                                            {isMaximized ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+                                            {isMaximized ? <Minimize2 size={isMobile ? 14 : 18} /> : <Maximize2 size={isMobile ? 14 : 18} />}
                                         </button>
                                         <button 
                                             onClick={() => { 
@@ -1135,7 +1135,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                             style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
                                             data-tooltip="Hibernar Sistema"
                                         >
-                                            <Power size={18} />
+                                            <Power size={isMobile ? 14 : 18} />
                                         </button>
                                         <button 
                                             onClick={() => { 
@@ -1146,7 +1146,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                             style={{ color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
                                             data-tooltip="Limpar Histórico"
                                         >
-                                            <Square size={16} />
+                                            <Square size={isMobile ? 12 : 16} />
                                         </button>
                                         <button 
                                             onClick={() => { 
@@ -1161,7 +1161,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                             style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
                                             data-tooltip="Encerrar Sessão"
                                         >
-                                            <X size={20} />
+                                            <X size={isMobile ? 16 : 20} />
                                         </button>
                                     </div>
                                 </div>
@@ -1277,19 +1277,14 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                     </div>
                                                 );
                                             }
+                                            if (isMobile && msg.role === 'ai') return null;
+
                                             return (
                                             <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(12px)', border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`, padding: isMobile ? '8px 12px' : '12px 18px', borderRadius: '12px', maxWidth: '95%', wordBreak: 'break-word', boxShadow: '0 4px 15px rgba(0,0,0,0.15)' }}>
                                                 {msg.role === 'ai' ? (
-                                                    isMobile ? (
-                                                        <div style={{ fontSize: '0.75rem', color: '#38bdf8', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '6px', opacity: 0.8 }}>
-                                                            <div style={{ width: '8px', height: '8px', background: '#38bdf8', borderRadius: '50%', animation: 'pulse 1.5s infinite' }} />
-                                                            Cérbero a falar...
-                                                        </div>
-                                                    ) : (
-                                                        <div style={{ fontSize: '0.95rem', color: '#f8fafc', lineHeight: '1.6' }}>
-                                                            <TypewriterText text={msg.text} />
-                                                        </div>
-                                                    )
+                                                    <div style={{ fontSize: '0.95rem', color: '#f8fafc', lineHeight: '1.6' }}>
+                                                        <TypewriterText text={msg.text} />
+                                                    </div>
                                                 ) : <span style={{ color: '#fef08a' }}>{msg.text}</span>}
                                             </div>
                                             );
