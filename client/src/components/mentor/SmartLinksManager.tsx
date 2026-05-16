@@ -37,7 +37,8 @@ export const SmartLinksManager = () => {
     const PLAN_LIMITS = {
         free: 1,
         pro: 10,
-        enterprise: Infinity
+        enterprise: Infinity,
+        premium: Infinity
     };
 
     // Form State
