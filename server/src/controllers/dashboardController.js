@@ -3,6 +3,9 @@ const User = require('../models/User');
 const Form = require('../models/Form');
 const Submission = require('../models/Submission');
 const Transaction = require('../models/Transaction');
+const Book = require('../models/Book');
+const SmartLink = require('../models/SmartLink');
+const Referral = require('../models/Referral');
 const exchangeRateService = require('../services/exchangeRateService');
 
 exports.getAdminStats = async (req, res) => {
@@ -38,12 +41,20 @@ exports.getAdminStats = async (req, res) => {
             submissionsToday,
             submissionsThisWeek,
             submissionsThisMonth,
-            usersToday
+            usersToday,
+            formsToday,
+            booksToday,
+            referralsToday,
+            smartLinksToday
         ] = await Promise.all([
             Submission.countDocuments({ submittedAt: { $gte: startOfToday } }),
             Submission.countDocuments({ submittedAt: { $gte: startOfWeek } }),
             Submission.countDocuments({ submittedAt: { $gte: startOfMonth } }),
-            User.countDocuments({ createdAt: { $gte: startOfToday } })
+            User.countDocuments({ createdAt: { $gte: startOfToday } }),
+            Form.countDocuments({ createdAt: { $gte: startOfToday } }),
+            Book.countDocuments({ createdAt: { $gte: startOfToday } }),
+            Referral.countDocuments({ createdAt: { $gte: startOfToday } }),
+            SmartLink.countDocuments({ createdAt: { $gte: startOfToday } })
         ]);
 
         // Financial Stats - Using Aggregation for better performance and consistency
@@ -118,6 +129,10 @@ exports.getAdminStats = async (req, res) => {
             submissionsThisWeek,
             submissionsThisMonth,
             usersToday,
+            formsToday,
+            booksToday,
+            referralsToday,
+            smartLinksToday,
             revenue: summary.totalRevenue,
             subscriptionRevenue: summary.subscriptionRevenue,
             eventFeeRevenue: summary.eventFeeRevenue,

@@ -12,6 +12,10 @@ export interface AdminStats {
     submissionsThisWeek?: number;
     submissionsThisMonth?: number;
     usersToday?: number;
+    formsToday?: number;
+    booksToday?: number;
+    referralsToday?: number;
+    smartLinksToday?: number;
     approved: number;
     pendingCertificates?: number;
     revenue?: number;

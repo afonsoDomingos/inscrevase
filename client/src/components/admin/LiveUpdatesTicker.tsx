@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, TrendingUp, Users, AlertCircle, Info, Calendar, Globe, Target } from 'lucide-react';
+import { Bell, TrendingUp, Users, AlertCircle, Info, Calendar, Globe, Target, FileText, Book, Link as LinkIcon, Share2 } from 'lucide-react';
 import { AdminStats, TrafficStats } from '@/lib/dashboardService';
 
 interface LiveUpdatesTickerProps {
@@ -77,6 +77,45 @@ export default function LiveUpdatesTicker({ stats, trafficStats }: LiveUpdatesTi
                     text: `${stats.usersToday} novos utilizadores registaram-se hoje.`,
                     icon: <Users size={18} />,
                     type: 'success'
+                });
+            }
+            
+            // 4. Forms / Events
+            if (stats.formsToday && stats.formsToday > 0) {
+                newMessages.push({
+                    id: 'forms-today',
+                    text: `Temos atividade! ${stats.formsToday} novos formulários/eventos criados hoje.`,
+                    icon: <FileText size={18} />,
+                    type: 'success'
+                });
+            }
+
+            // 5. Books
+            if (stats.booksToday && stats.booksToday > 0) {
+                newMessages.push({
+                    id: 'books-today',
+                    text: `Excelente! ${stats.booksToday} novos livros foram publicados hoje.`,
+                    icon: <Book size={18} />,
+                    type: 'success'
+                });
+            }
+
+            // 6. Referrals & SmartLinks
+            if (stats.referralsToday && stats.referralsToday > 0) {
+                newMessages.push({
+                    id: 'referrals-today',
+                    text: `${stats.referralsToday} novas indicações da plataforma feitas hoje! A comunidade cresce.`,
+                    icon: <Share2 size={18} />,
+                    type: 'success'
+                });
+            }
+
+            if (stats.smartLinksToday && stats.smartLinksToday > 0) {
+                newMessages.push({
+                    id: 'smartlinks-today',
+                    text: `Os mentores estão a divulgar! ${stats.smartLinksToday} novos SmartLinks gerados hoje.`,
+                    icon: <LinkIcon size={18} />,
+                    type: 'info'
                 });
             }
 
