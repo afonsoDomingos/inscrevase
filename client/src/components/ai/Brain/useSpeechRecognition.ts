@@ -71,7 +71,12 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
 
         if (SpeechRecognition) {
             const rec = new SpeechRecognition();
-            rec.continuous = true; // Mantém a escuta ativa mesmo com pausas
+            
+            // Detectar mobile para configurações específicas
+            const isMobileBrowser = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            
+            // No mobile (especialmente iOS), 'continuous = true' causa falhas silenciosas onde não capta áudio.
+            rec.continuous = !isMobileBrowser; 
             rec.interimResults = true;
             rec.lang = 'pt-PT'; 
 
@@ -127,9 +132,13 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
     const startListening = useCallback(() => {
         if (recognition) {
             try {
-                recognition.start();
+                // Parar antes de iniciar para evitar erros de "already started"
+                recognition.stop();
+                setTimeout(() => {
+                    recognition.start();
+                }, 50);
             } catch (e) {
-                console.error("Speech recognition already started", e);
+                console.error("Speech recognition start error", e);
             }
         }
     }, [recognition]);

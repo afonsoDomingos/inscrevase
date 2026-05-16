@@ -1342,7 +1342,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                                     setTextInput("");
                                                                 }
                                                             } else {
-                                                                playSystemSound('intro');
+                                                                if (!isMobile) playSystemSound('intro');
                                                                 // Chamada direta para o browser não bloquear o start() da Web Speech API por falta de user gesture
                                                                 startListening();
                                                             }
