@@ -8,7 +8,10 @@ import { AdminStats, TrafficStats } from '@/lib/dashboardService';
 interface LiveUpdatesTickerProps {
     stats: AdminStats | null;
     trafficStats: TrafficStats | null;
-    superAdminAnalytics?: any | null;
+    superAdminAnalytics?: {
+        deviceStats?: { name: string; count: number }[];
+        osStats?: { name: string; count: number }[];
+    } | null;
 }
 
 export default function LiveUpdatesTicker({ stats, trafficStats, superAdminAnalytics }: LiveUpdatesTickerProps) {
@@ -133,7 +136,7 @@ export default function LiveUpdatesTicker({ stats, trafficStats, superAdminAnaly
         // 7. Devices & OS
         if (superAdminAnalytics) {
             if (superAdminAnalytics.deviceStats && superAdminAnalytics.deviceStats.length > 0) {
-                const topDevice = superAdminAnalytics.deviceStats.reduce((prev: any, current: any) => (prev.count > current.count) ? prev : current);
+                const topDevice = superAdminAnalytics.deviceStats.reduce((prev: { name: string; count: number }, current: { name: string; count: number }) => (prev.count > current.count) ? prev : current);
                 if (topDevice && topDevice.count > 0) {
                     newMessages.push({
                         id: 'top-device',
@@ -145,7 +148,7 @@ export default function LiveUpdatesTicker({ stats, trafficStats, superAdminAnaly
             }
 
             if (superAdminAnalytics.osStats && superAdminAnalytics.osStats.length > 0) {
-                const topOS = superAdminAnalytics.osStats.reduce((prev: any, current: any) => (prev.count > current.count) ? prev : current);
+                const topOS = superAdminAnalytics.osStats.reduce((prev: { name: string; count: number }, current: { name: string; count: number }) => (prev.count > current.count) ? prev : current);
                 if (topOS && topOS.count > 0) {
                     newMessages.push({
                         id: 'top-os',
@@ -168,7 +171,7 @@ export default function LiveUpdatesTicker({ stats, trafficStats, superAdminAnaly
 
         setMessages(newMessages);
         setCurrentIndex(0);
-    }, [stats, trafficStats]);
+    }, [stats, trafficStats, superAdminAnalytics]);
 
     useEffect(() => {
         if (messages.length <= 1) return;
