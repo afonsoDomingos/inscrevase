@@ -1280,9 +1280,16 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                             return (
                                             <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(12px)', border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`, padding: isMobile ? '8px 12px' : '12px 18px', borderRadius: '12px', maxWidth: '95%', wordBreak: 'break-word', boxShadow: '0 4px 15px rgba(0,0,0,0.15)' }}>
                                                 {msg.role === 'ai' ? (
-                                                    <div style={{ fontSize: '0.95rem', color: '#f8fafc', lineHeight: '1.6' }}>
-                                                        <TypewriterText text={msg.text} />
-                                                    </div>
+                                                    isMobile ? (
+                                                        <div style={{ fontSize: '0.75rem', color: '#38bdf8', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '6px', opacity: 0.8 }}>
+                                                            <div style={{ width: '8px', height: '8px', background: '#38bdf8', borderRadius: '50%', animation: 'pulse 1.5s infinite' }} />
+                                                            Cérbero a falar...
+                                                        </div>
+                                                    ) : (
+                                                        <div style={{ fontSize: '0.95rem', color: '#f8fafc', lineHeight: '1.6' }}>
+                                                            <TypewriterText text={msg.text} />
+                                                        </div>
+                                                    )
                                                 ) : <span style={{ color: '#fef08a' }}>{msg.text}</span>}
                                             </div>
                                             );
@@ -1324,13 +1331,16 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                         }
                                                     }}
                                                     placeholder={isListening ? "A ouvir..." : "Digite o seu comando..."}
-                                                    style={{ flex: 1, color: isListening ? '#ef4444' : '#fff', padding: isMobile ? '2px 10px' : '10px 15px', fontSize: isMobile ? '0.7rem' : '0.8rem' }}
+                                                    style={{ flex: 1, color: isListening ? '#ef4444' : '#fff', padding: isMobile ? '2px 10px' : '10px 15px', fontSize: isMobile ? '0.7rem' : '0.8rem', background: 'transparent', border: 'none', outline: 'none' }}
                                                 />
-                                                {hasSupport && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                            if (isListening) {
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        if (!hasSupport) {
+                                                            alert("A gravação de voz não é suportada por este navegador. Por favor, escreva o seu texto ou abra no Google Chrome / Safari nativo.");
+                                                            return;
+                                                        }
+                                                        if (isListening) {
                                                                 stopListening();
                                                                 if (textInput.trim()) {
                                                                     handleCommand(textInput.trim());
@@ -1361,7 +1371,6 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                             </div>
                                                         ) : <Mic size={18} />}
                                                     </button>
-                                                )}
                                             </div>
                                             <button 
                                                 type="button" 
