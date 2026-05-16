@@ -27,7 +27,12 @@ export default function PWAInstallPrompt() {
             setInstallPrompt(promptEvent);
             
             // Wait a few seconds before showing our custom UI
-            const hasDismissed = localStorage.getItem('pwa_prompt_dismissed');
+            let hasDismissed = false;
+            try {
+                hasDismissed = !!localStorage.getItem('pwa_prompt_dismissed');
+            } catch (err) {
+                console.warn('localStorage not accessible for PWA prompt');
+            }
             if (!hasDismissed) {
                 setTimeout(() => setIsVisible(true), 3000);
             }
@@ -65,7 +70,11 @@ export default function PWAInstallPrompt() {
     const handleDismiss = () => {
         setIsVisible(false);
         // Remember dismissal for 7 days
-        localStorage.setItem('pwa_prompt_dismissed', 'true');
+        try {
+            localStorage.setItem('pwa_prompt_dismissed', 'true');
+        } catch (e) {
+            console.warn('Failed to save PWA prompt dismissal to localStorage');
+        }
     };
 
     if (!isVisible) return null;

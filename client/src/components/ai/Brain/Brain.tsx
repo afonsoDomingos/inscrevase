@@ -136,19 +136,27 @@ export default function Brain() {
 
     // Persistência de Estado (Contexto e Visibilidade)
     useEffect(() => {
-        const savedHistory = localStorage.getItem('brain_chat_history');
-        
-        if (savedHistory) {
-            try {
-                setChatHistory(JSON.parse(savedHistory));
-            } catch (e) {
-                console.error("Erro ao carregar histórico do Brain:", e);
+        try {
+            const savedHistory = localStorage.getItem('brain_chat_history');
+            
+            if (savedHistory) {
+                try {
+                    setChatHistory(JSON.parse(savedHistory));
+                } catch (e) {
+                    console.error("Erro ao carregar histórico do Brain:", e);
+                }
             }
+        } catch (e) {
+            console.warn("localStorage is not available for brain_chat_history");
         }
     }, []);
 
     useEffect(() => {
-        localStorage.setItem('brain_chat_history', JSON.stringify(chatHistory));
+        try {
+            localStorage.setItem('brain_chat_history', JSON.stringify(chatHistory));
+        } catch (e) {
+            console.warn("Failed to save brain_chat_history to localStorage");
+        }
     }, [chatHistory]);
     const [isMobile, setIsMobile] = useState(false);
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);

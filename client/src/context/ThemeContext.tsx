@@ -18,18 +18,26 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         setMounted(true);
         // Check local storage or system preference
-        const savedTheme = localStorage.getItem("theme") as Theme;
-        if (savedTheme) {
-            setTheme(savedTheme);
-        } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-            setTheme("dark");
+        try {
+            const savedTheme = localStorage.getItem("theme") as Theme;
+            if (savedTheme) {
+                setTheme(savedTheme);
+            } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                setTheme("dark");
+            }
+        } catch (e) {
+            console.warn("localStorage is not available for theme preferences", e);
         }
     }, []);
 
     useEffect(() => {
         if (mounted) {
             document.documentElement.setAttribute("data-theme", theme);
-            localStorage.setItem("theme", theme);
+            try {
+                localStorage.setItem("theme", theme);
+            } catch (e) {
+                console.warn("Failed to save theme preference", e);
+            }
 
             // Update body class for specific tailwind or global styles if needed
             if (theme === 'dark') {

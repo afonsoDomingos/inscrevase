@@ -10,7 +10,12 @@ export default function LoadingScreen() {
 
     useEffect(() => {
         // Prevent showing loading screen every time they return to the app or switch pages
-        const hasSeenLoading = sessionStorage.getItem('hasSeenLoading');
+        let hasSeenLoading = false;
+        try {
+            hasSeenLoading = !!sessionStorage.getItem('hasSeenLoading');
+        } catch (err) {
+            console.warn('sessionStorage not accessible');
+        }
         if (hasSeenLoading) {
             setIsLoading(false);
             return;
@@ -21,7 +26,9 @@ export default function LoadingScreen() {
             // Small delay for smooth transition even if load is instant
             setTimeout(() => {
                 setIsLoading(false);
-                sessionStorage.setItem('hasSeenLoading', 'true');
+                try {
+                    sessionStorage.setItem('hasSeenLoading', 'true');
+                } catch (err) {}
             }, 800);
         };
 
