@@ -1022,23 +1022,23 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 }}
                             >
                                 {/* Left Column: Brain + Status */}
-                                <div style={{ 
-                                    display: 'flex', 
-                                    flexDirection: 'column', 
-                                    alignItems: 'center', 
-                                    justifyContent: 'center', 
-                                    gap: isMobile ? '4px' : '10px', 
-                                    minWidth: isMobile ? '100px' : '180px',
-                                    padding: isMobile ? '2px' : '0',
-                                    background: isMobile ? 'rgba(255,255,255,0.03)' : 'none',
-                                    borderRadius: '12px',
-                                    width: isMobile ? '100px' : 'auto',
-                                    flexShrink: 0
-                                }}>
+                                    <div style={{ 
+                                        display: 'flex', 
+                                        flexDirection: 'column', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center', 
+                                        gap: isMobile ? '4px' : '10px', 
+                                        minWidth: isMobile ? '60px' : '180px',
+                                        padding: isMobile ? '2px' : '0',
+                                        background: isMobile ? 'rgba(255,255,255,0.03)' : 'none',
+                                        borderRadius: '12px',
+                                        width: isMobile ? '60px' : 'auto',
+                                        flexShrink: 0
+                                    }}>
                                     <div style={{ transform: isMobile ? 'scale(0.4)' : 'scale(0.75)', transformOrigin: 'center center', margin: isMobile ? '-10px 0 -15px 0' : '0' }}>
                                         <CerberusVisual isListening={isListening} isThinking={isThinking} isAlert={isAlert} isSpeaking={isSpeaking} />
                                     </div>
-                                    <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                                    <div style={{ textAlign: 'center', display: isMobile ? 'none' : 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                                         <h3 style={{ fontWeight: 'bold', color: isAlert ? '#ef4444' : isThinking ? '#38bdf8' : '#fff', fontSize: isMobile ? '0.55rem' : '0.9rem', textTransform: isThinking ? 'uppercase' : 'none', letterSpacing: '1px', margin: 0 }}>
                                             {isThinking ? 'Process...' : isListening ? 'Ouvir...' : 'Brain'}
                                         </h3>
@@ -1304,6 +1304,13 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                     </div>
 
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', flexShrink: 0 }}>
+                                        {isMobile && isListening && (
+                                            <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: '-8px' }}>
+                                                <div style={{ transform: 'scale(0.4)', transformOrigin: 'center' }}>
+                                                    <VoiceVisualizer />
+                                                </div>
+                                            </div>
+                                        )}
                                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '100%' }}>
                                             <div className={`gemini-ai-wrapper ${isListening ? 'listening-pulse' : ''}`} style={{ 
                                                 display: 'flex', 

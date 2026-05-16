@@ -132,11 +132,7 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
     const startListening = useCallback(() => {
         if (recognition) {
             try {
-                // Parar antes de iniciar para evitar erros de "already started"
-                recognition.stop();
-                setTimeout(() => {
-                    recognition.start();
-                }, 50);
+                recognition.start();
             } catch (e) {
                 console.error("Speech recognition start error", e);
             }
