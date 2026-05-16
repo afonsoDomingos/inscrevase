@@ -364,7 +364,7 @@ function HubContent() {
             setIsBoardStarting(false);
             // If mentor, trigger the actual start after countdown
             const currentUserId = currentUser?._id || currentUser?.id;
-            const creatorId = submission?.form?.creator?._id || submission?.form?.creator?.id;
+            const creatorId = submission?.form?.creator?._id;
             const isCreatorOrAdmin = currentUserId === creatorId || currentUser?.role === 'admin';
             if (isCreatorOrAdmin && statusSocketRef.current && submission) {
                 statusSocketRef.current.emit('live_board:start', {
