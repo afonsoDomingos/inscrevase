@@ -1004,7 +1004,7 @@ function AdminDashboardContent() {
                             animate="visible"
                             exit={{ opacity: 0, y: -20 }}
                         >
-                            <LiveUpdatesTicker stats={stats} trafficStats={trafficStats} />
+                            <LiveUpdatesTicker stats={stats} trafficStats={trafficStats} superAdminAnalytics={superAdminAnalytics} />
 
                             {/* Vital Stats Grid */}
                             <div id="admin-stats-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" style={{ marginBottom: '2.5rem' }}>

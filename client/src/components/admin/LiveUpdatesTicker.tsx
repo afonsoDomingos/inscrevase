@@ -2,15 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, TrendingUp, Users, AlertCircle, Info, Calendar, Globe, Target, FileText, Book, Link as LinkIcon, Share2 } from 'lucide-react';
+import { Bell, TrendingUp, Users, AlertCircle, Info, Calendar, Globe, Target, FileText, Book, Link as LinkIcon, Share2, Smartphone, Monitor } from 'lucide-react';
 import { AdminStats, TrafficStats } from '@/lib/dashboardService';
 
 interface LiveUpdatesTickerProps {
     stats: AdminStats | null;
     trafficStats: TrafficStats | null;
+    superAdminAnalytics?: any | null;
 }
 
-export default function LiveUpdatesTicker({ stats, trafficStats }: LiveUpdatesTickerProps) {
+export default function LiveUpdatesTicker({ stats, trafficStats, superAdminAnalytics }: LiveUpdatesTickerProps) {
     const [messages, setMessages] = useState<{ id: string, text: string, icon: React.ReactNode, type: 'success'|'info'|'warning' }[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -126,6 +127,33 @@ export default function LiveUpdatesTicker({ stats, trafficStats }: LiveUpdatesTi
                     icon: <Info size={18} />,
                     type: 'info'
                 });
+            }
+        }
+
+        // 7. Devices & OS
+        if (superAdminAnalytics) {
+            if (superAdminAnalytics.deviceStats && superAdminAnalytics.deviceStats.length > 0) {
+                const topDevice = superAdminAnalytics.deviceStats.reduce((prev: any, current: any) => (prev.count > current.count) ? prev : current);
+                if (topDevice && topDevice.count > 0) {
+                    newMessages.push({
+                        id: 'top-device',
+                        text: `Dispositivo mais usado: ${topDevice.name} com ${topDevice.count} acessos recentes.`,
+                        icon: <Smartphone size={18} />,
+                        type: 'info'
+                    });
+                }
+            }
+
+            if (superAdminAnalytics.osStats && superAdminAnalytics.osStats.length > 0) {
+                const topOS = superAdminAnalytics.osStats.reduce((prev: any, current: any) => (prev.count > current.count) ? prev : current);
+                if (topOS && topOS.count > 0) {
+                    newMessages.push({
+                        id: 'top-os',
+                        text: `A maioria dos nossos utilizadores prefere: ${topOS.name} (${topOS.count} sessões ativas).`,
+                        icon: <Monitor size={18} />,
+                        type: 'info'
+                    });
+                }
             }
         }
 
