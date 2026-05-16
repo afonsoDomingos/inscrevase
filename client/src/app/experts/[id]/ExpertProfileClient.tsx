@@ -32,17 +32,19 @@ export function ExpertProfileClient() {
     const [mentorEvents, setMentorEvents] = useState<FormModel[]>([]);
     const [eventsLoading, setEventsLoading] = useState(true);
     const [mentorServices, setMentorServices] = useState<ServiceModel[]>([]);
-    const currentUser = useMemo(() => authService.getCurrentUser(), []);
+    const [currentUser, setCurrentUser] = useState<UserData | null>(null);
     const visitRecorded = useRef(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+    const [windowWidth, setWindowWidth] = useState(1200);
     const isMobile = windowWidth < 992;
     const isSmallMobile = windowWidth < 480;
     const [selectedService, setSelectedService] = useState<ServiceModel | null>(null);
 
     useEffect(() => {
+        setWindowWidth(window.innerWidth);
         const handleResize = () => setWindowWidth(window.innerWidth);
         window.addEventListener('resize', handleResize);
+        setCurrentUser(authService.getCurrentUser());
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 

@@ -84,14 +84,14 @@ export default function SystemSettings() {
         }
     };
 
-    const handlePriceChange = (plan: 'free' | 'pro' | 'enterprise', currency: 'MZN' | 'USD', value: string) => {
+    const handlePriceChange = (plan: 'free' | 'pro' | 'enterprise' | 'premium', currency: 'MZN' | 'USD', value: string) => {
         if (!settings) return;
         const newSettings = { ...settings };
         newSettings.plans[plan].prices[currency] = Number(value) * 100; // Convert to cents
         setSettings(newSettings);
     };
 
-    const handleCommissionChange = (plan: 'free' | 'pro' | 'enterprise', value: string) => {
+    const handleCommissionChange = (plan: 'free' | 'pro' | 'enterprise' | 'premium', value: string) => {
         if (!settings) return;
         const newSettings = { ...settings };
         newSettings.plans[plan].commissionRate = Number(value) / 100; // Convert percentage to decimal
@@ -179,7 +179,7 @@ export default function SystemSettings() {
         }
     };
 
-    const planKeys: ('free' | 'pro' | 'enterprise')[] = ['free', 'pro', 'enterprise'];
+    const planKeys: ('free' | 'pro' | 'enterprise' | 'premium')[] = ['free', 'pro', 'enterprise', 'premium'];
 
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>

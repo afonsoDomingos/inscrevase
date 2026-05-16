@@ -246,6 +246,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
                                             <option value="free">Grátis</option>
                                             <option value="pro">Pro</option>
                                             <option value="enterprise">Enterprise</option>
+                                            <option value="premium">Premium</option>
                                         </select>
                                     </div>
                                     <div className="input-group">

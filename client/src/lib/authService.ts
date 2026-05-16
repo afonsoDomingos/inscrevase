@@ -21,7 +21,7 @@ export interface UserData {
         website?: string;
     };
     status?: 'active' | 'blocked';
-    plan?: 'free' | 'pro' | 'enterprise';
+    plan?: 'free' | 'pro' | 'enterprise' | 'premium';
     isPublic?: boolean;
     followers?: string[];
     following?: string[];
@@ -72,7 +72,11 @@ export const authService = {
 
         // Store token in cookie (expires in 1 day)
         Cookies.set('token', data.token, { expires: 1 });
-        localStorage.setItem('user', JSON.stringify(data.user));
+        try {
+            localStorage.setItem('user', JSON.stringify(data.user));
+        } catch (e) {
+            console.warn("Failed to store user in localStorage:", e);
+        }
 
         return data as AuthResponse;
     },
@@ -88,22 +92,32 @@ export const authService = {
         if (!response.ok) throw new Error(data.message || 'Erro ao registrar');
 
         Cookies.set('token', data.token, { expires: 1 });
-        localStorage.setItem('user', JSON.stringify(data.user));
+        try {
+            localStorage.setItem('user', JSON.stringify(data.user));
+        } catch (e) {
+            console.warn("Failed to store user in localStorage:", e);
+        }
 
         return data as AuthResponse;
     },
 
     logout() {
         Cookies.remove('token');
-        localStorage.removeItem('user');
+        try {
+            localStorage.removeItem('user');
+        } catch (e) {
+            console.warn("Failed to remove user from localStorage:", e);
+        }
         window.location.href = '/entrar';
     },
 
     getCurrentUser(): UserData | null {
+        if (typeof window === 'undefined') return null;
         try {
-            const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+            const user = localStorage.getItem('user');
             return user ? JSON.parse(user) : null;
-        } catch {
+        } catch (error) {
+            console.warn("localStorage 'user' not accessible:", error);
             return null;
         }
     },
@@ -129,7 +143,11 @@ export const authService = {
         const currentUser = this.getCurrentUser();
         if (currentUser) {
             const updatedUser = { ...currentUser, ...result.user };
-            localStorage.setItem('user', JSON.stringify(updatedUser));
+            try {
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+            } catch (e) {
+                console.warn("Failed to update user in localStorage:", e);
+            }
         }
 
         return result.user;
@@ -144,7 +162,11 @@ export const authService = {
         if (!response.ok) throw new Error('Falha ao buscar perfil');
 
         // Update local storage to keep it fresh
-        localStorage.setItem('user', JSON.stringify(user));
+        try {
+            localStorage.setItem('user', JSON.stringify(user));
+        } catch (e) {
+            console.warn("Failed to sync user to localStorage:", e);
+        }
 
         return user;
     },

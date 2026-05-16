@@ -363,7 +363,9 @@ function HubContent() {
         } else if (isBoardStarting && boardStartCountdown === 0) {
             setIsBoardStarting(false);
             // If mentor, trigger the actual start after countdown
-            const isCreatorOrAdmin = currentUser?._id === submission?.form?.creator?._id || currentUser?.role === 'admin';
+            const currentUserId = currentUser?._id || currentUser?.id;
+            const creatorId = submission?.form?.creator?._id || submission?.form?.creator?.id;
+            const isCreatorOrAdmin = currentUserId === creatorId || currentUser?.role === 'admin';
             if (isCreatorOrAdmin && statusSocketRef.current && submission) {
                 statusSocketRef.current.emit('live_board:start', {
                     formId: submission.form._id,
@@ -1431,13 +1433,13 @@ function HubContent() {
                                                     <div style={{ fontSize: '0.85rem', color: '#888', fontWeight: 500 }}>{material.type.toUpperCase()} • {material.size || 'Download'}</div>
                                                 </div>
                                             </div>
-                                            {!material.availableAfterEvent || new Date() > new Date(form.eventDate!) ? (
+                                            {(!material.availableAfterEvent || new Date() >= new Date(form.eventDate!)) ? (
                                                 <a href={material.url} target="_blank" style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#111', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }}>
                                                     <Download size={20} />
                                                 </a>
                                             ) : (
                                                 <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#f0f0f0', color: '#aaa', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={t('hub.availableAfterEvent')}>
-                                                    <div style={{ fontSize: '1.2rem' }}>{currentUser?.role === 'admin' || currentUser?.role === 'SuperAdmin' ? '🛡️' : '🔒'}</div>
+                                                    <div style={{ fontSize: '1.2rem' }}>{ (currentUser?.role === 'admin' || currentUser?.role === 'SuperAdmin') ? '🛡️' : '🔒'}</div>
                                                 </div>
                                             )}
                                         </div>

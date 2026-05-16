@@ -10,12 +10,18 @@ export default function AnalyticsTracker() {
 
   // 1. Inicializar ou recuperar VisitorID
   useEffect(() => {
-    let storedId = localStorage.getItem("inscrevase_visitor_id");
-    if (!storedId) {
-      storedId = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
-      localStorage.setItem("inscrevase_visitor_id", storedId);
+    try {
+      let storedId = localStorage.getItem("inscrevase_visitor_id");
+      if (!storedId) {
+        storedId = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+        localStorage.setItem("inscrevase_visitor_id", storedId);
+      }
+      setVisitorId(storedId);
+    } catch (e) {
+      console.warn("Analytics: localStorage not available", e);
+      // Fallback to session-based ID if localStorage fails
+      setVisitorId(`session-${Date.now()}`);
     }
-    setVisitorId(storedId);
   }, []);
 
   // 2. Monitorar navegação e enviar dados
