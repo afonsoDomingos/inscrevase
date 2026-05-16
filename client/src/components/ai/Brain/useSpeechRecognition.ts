@@ -77,7 +77,8 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
             
             // No mobile (especialmente iOS), 'continuous = true' causa falhas silenciosas onde não capta áudio.
             rec.continuous = !isMobileBrowser; 
-            rec.interimResults = true;
+            // 'interimResults = true' também causa falhas no retorno de resultados em iOS. Apenas devolvemos o final no mobile.
+            rec.interimResults = !isMobileBrowser;
             rec.lang = 'pt-PT'; 
 
             rec.onstart = () => {
@@ -88,6 +89,9 @@ export const useSpeechRecognition = (onCommand: (command: string) => void) => {
 
             rec.onerror = (event: { error: string }) => {
                 console.error("%c❌ [MIC] Erro no reconhecimento:", "color: #ef4444;", event.error);
+                if (isMobileBrowser && event.error !== 'no-speech') {
+                    alert("Aviso do Sistema (Microfone): " + event.error + ". Verifique as permissões de som do telemóvel.");
+                }
                 if (event.error === 'no-speech') {
                     // Ignora silêncio momentâneo se contínuo for true
                 } else {
