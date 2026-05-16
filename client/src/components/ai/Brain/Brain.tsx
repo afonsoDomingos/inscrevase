@@ -1015,9 +1015,10 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                     bottom: isMobile ? '23%' : '26%', 
                                     zIndex: 5, 
                                     display: 'flex', 
-                                    flexDirection: isMobile ? 'column' : 'row',
-                                    padding: isMobile ? '10px' : '15px 20px', 
-                                    overflow: 'visible'
+                                    flexDirection: 'row',
+                                    padding: isMobile ? '6px 8px' : '15px 20px', 
+                                    overflow: 'hidden',
+                                    gap: isMobile ? '6px' : '0'
                                 }}
                             >
                                 {/* Left Column: Brain + Status */}
@@ -1026,40 +1027,47 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                     flexDirection: 'column', 
                                     alignItems: 'center', 
                                     justifyContent: 'center', 
-                                    gap: '10px', 
-                                    minWidth: isMobile ? '0' : '180px',
-                                    padding: isMobile ? '8px' : '0',
+                                    gap: isMobile ? '4px' : '10px', 
+                                    minWidth: isMobile ? '100px' : '180px',
+                                    padding: isMobile ? '2px' : '0',
                                     background: isMobile ? 'rgba(255,255,255,0.03)' : 'none',
                                     borderRadius: '12px',
-                                    width: isMobile ? '35%' : 'auto'
+                                    width: isMobile ? '100px' : 'auto',
+                                    flexShrink: 0
                                 }}>
-                                    <div style={{ transform: isMobile ? 'scale(0.5)' : 'scale(0.75)', transformOrigin: 'center center' }}>
+                                    <div style={{ transform: isMobile ? 'scale(0.4)' : 'scale(0.75)', transformOrigin: 'center center', margin: isMobile ? '-10px 0 -15px 0' : '0' }}>
                                         <CerberusVisual isListening={isListening} isThinking={isThinking} isAlert={isAlert} isSpeaking={isSpeaking} />
                                     </div>
-                                    <div style={{ textAlign: isMobile ? 'left' : 'center', flex: isMobile ? 1 : 'none', marginLeft: isMobile ? '10px' : '0', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-                                        <h3 style={{ fontWeight: 'bold', color: isAlert ? '#ef4444' : isThinking ? '#38bdf8' : '#fff', fontSize: isMobile ? '0.8rem' : '0.9rem', textTransform: isThinking ? 'uppercase' : 'none', letterSpacing: '1px', margin: 0 }}>
-                                            {isThinking ? 'Processando...' : isListening ? 'Escutando...' : 'Brain'}
+                                    <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                                        <h3 style={{ fontWeight: 'bold', color: isAlert ? '#ef4444' : isThinking ? '#38bdf8' : '#fff', fontSize: isMobile ? '0.65rem' : '0.9rem', textTransform: isThinking ? 'uppercase' : 'none', letterSpacing: '1px', margin: 0 }}>
+                                            {isThinking ? 'Process...' : isListening ? 'Ouvir...' : 'Brain'}
                                         </h3>
-                                        <p style={{ color: '#9ca3af', fontSize: '9px', margin: '4px 0 0', lineHeight: '1.4' }}>
+                                        <p style={{ color: '#9ca3af', fontSize: '9px', margin: '4px 0 0', lineHeight: '1.4', display: isMobile ? 'none' : 'block' }}>
                                             {isAlert ? 'Alerta!' : isThinking ? 'Analisando...' : 'Inscreva-se'}
                                         </p>
                                         <div style={{ 
-                                            marginTop: isMobile ? '8px' : '15px', 
+                                            marginTop: isMobile ? '4px' : '15px', 
                                             background: 'rgba(0,0,0,0.3)', 
-                                            padding: isMobile ? '4px' : '10px', 
+                                            padding: isMobile ? '2px' : '10px', 
                                             borderRadius: '12px', 
                                             width: '100%', 
-                                            border: '1px solid rgba(255,255,255,0.03)' 
+                                            border: '1px solid rgba(255,255,255,0.03)',
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center'
                                         }}>
-                                            <VoiceVisualizer />
+                                            <div style={{ transform: isMobile ? 'scale(0.6)' : 'none', transformOrigin: 'center' }}>
+                                                <VoiceVisualizer />
+                                            </div>
                                         </div>
                                     </div>
                                     <div style={{ 
                                         display: 'flex', 
-                                        gap: isMobile ? '5px' : '10px', 
+                                        gap: isMobile ? '0px' : '10px', 
                                         alignItems: 'center',
-                                        flexWrap: isMobile ? 'wrap' : 'nowrap',
-                                        justifyContent: isMobile ? 'center' : 'flex-start'
+                                        flexWrap: 'wrap',
+                                        justifyContent: 'center',
+                                        marginTop: isMobile ? '4px' : '0'
                                     }}>
                                         {isThinking && (
                                             <button 
@@ -1161,7 +1169,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 {!isMobile && <div style={{ width: '1px', background: 'rgba(255,255,255,0.06)', flexShrink: 0 }} />}
 
                                 {/* Right Column: Chat/Interaction */}
-                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: isMobile ? '6px' : '12px', overflow: 'visible' }}>
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: isMobile ? '4px' : '12px', overflow: 'hidden' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(234, 179, 8, 0.05)', padding: '4px 10px', borderRadius: '6px', border: '1px solid rgba(234, 179, 8, 0.15)', marginBottom: '2px', flexShrink: 0 }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                             <div style={{ width: '6px', height: '6px', background: '#eab308', borderRadius: '50%', boxShadow: '0 0 8px #eab308' }} />
@@ -1298,10 +1306,11 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                             <div className={`gemini-ai-wrapper ${isListening ? 'listening-pulse' : ''}`} style={{ 
                                                 display: 'flex', 
                                                 alignItems: 'center', 
-                                                paddingRight: '8px',
+                                                paddingRight: '4px',
                                                 border: isListening ? '1px solid #ef4444' : '1px solid transparent',
                                                 boxShadow: isListening ? '0 0 15px rgba(239, 68, 68, 0.3)' : 'none',
-                                                transition: 'all 0.3s ease'
+                                                transition: 'all 0.3s ease',
+                                                height: isMobile ? '32px' : 'auto'
                                             }}>
                                                 <input 
                                                     type="text" 
@@ -1314,8 +1323,8 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                             setTextInput("");
                                                         }
                                                     }}
-                                                    placeholder={isListening ? "Cérbero está a ouvir... fale agora" : "Diga ou digite o seu comando..."}
-                                                    style={{ flex: 1, color: isListening ? '#ef4444' : '#fff' }}
+                                                    placeholder={isListening ? "A ouvir..." : "Digite o seu comando..."}
+                                                    style={{ flex: 1, color: isListening ? '#ef4444' : '#fff', padding: isMobile ? '2px 10px' : '10px 15px', fontSize: isMobile ? '0.7rem' : '0.8rem' }}
                                                 />
                                                 {hasSupport && (
                                                     <button
@@ -1367,9 +1376,9 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                     background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)',
                                                     color: '#000',
                                                     border: 'none',
-                                                    width: '40px',
-                                                    height: '40px',
-                                                    minWidth: '40px',
+                                                    width: isMobile ? '32px' : '40px',
+                                                    height: isMobile ? '32px' : '40px',
+                                                    minWidth: isMobile ? '32px' : '40px',
                                                     borderRadius: '50%',
                                                     display: 'flex',
                                                     alignItems: 'center',
@@ -1378,7 +1387,8 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                     opacity: (!textInput.trim() || isThinking) ? 0.3 : 1,
                                                     transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                                                     boxShadow: '0 4px 10px rgba(234, 179, 8, 0.3)',
-                                                    zIndex: 10
+                                                    zIndex: 10,
+                                                    flexShrink: 0
                                                 }}
                                                 data-tooltip="Enviar Comando"
                                             >
