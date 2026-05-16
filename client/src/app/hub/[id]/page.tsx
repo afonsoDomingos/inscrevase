@@ -380,7 +380,7 @@ function HubContent() {
             }
         }
         return () => clearInterval(timer);
-    }, [isBoardStarting, boardStartCountdown, currentUser?._id, submission, currentUser?.role]);
+    }, [isBoardStarting, boardStartCountdown, currentUser?._id, currentUser?.id, submission, currentUser?.role]);
 
     // Guest Banner Logic
     useEffect(() => {
