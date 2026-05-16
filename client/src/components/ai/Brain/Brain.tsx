@@ -1035,7 +1035,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                         width: isMobile ? '60px' : 'auto',
                                         flexShrink: 0
                                     }}>
-                                    <div style={{ transform: isMobile ? 'scale(0.4)' : 'scale(0.75)', transformOrigin: 'center center', margin: isMobile ? '-10px 0 -15px 0' : '0' }}>
+                                    <div style={{ transform: isMobile ? 'scale(0.4)' : 'scale(0.75)', transformOrigin: 'center center', margin: isMobile ? '5px 0 -10px 0' : '0' }}>
                                         <CerberusVisual isListening={isListening} isThinking={isThinking} isAlert={isAlert} isSpeaking={isSpeaking} />
                                     </div>
                                     <div style={{ textAlign: 'center', display: isMobile ? 'none' : 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
@@ -1077,7 +1077,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                     triggerAlert("Interrupção manual detectada.", "info");
                                                 }} 
                                                 style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
-                                                title="Parar Processamento"
+                                                title={isMobile ? undefined : "Parar Processamento"}
                                             >
                                                 <Square size={18} fill="#ef4444" />
                                             </button>
@@ -1094,7 +1094,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                     speak("Entendido. Silenciando."); 
                                                 }} 
                                                 style={{ color: '#eab308', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
-                                                title="Parar Fala"
+                                                title={isMobile ? undefined : "Parar Fala"}
                                             >
                                                 <Square size={14} fill="currentColor" />
                                             </button>
@@ -1111,14 +1111,14 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                 setTimeout(() => setIsResetting(false), 1500);
                                             }} 
                                             style={{ color: '#10b981', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
-                                            data-tooltip="Reiniciar Sistemas"
+                                            data-tooltip={isMobile ? undefined : "Reiniciar Sistemas"}
                                         >
                                             <RotateCw size={isMobile ? 14 : 18} className={isResetting ? 'animate-spin' : ''} />
                                         </button>
                                         <button 
                                             onClick={() => setIsMaximized(!isMaximized)} 
                                             style={{ color: '#38bdf8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
-                                            data-tooltip={isMaximized ? "Minimizar Ecrã" : "Modo Cinema"}
+                                            data-tooltip={isMobile ? undefined : (isMaximized ? "Minimizar Ecrã" : "Modo Cinema")}
                                         >
                                             {isMaximized ? <Minimize2 size={isMobile ? 14 : 18} /> : <Maximize2 size={isMobile ? 14 : 18} />}
                                         </button>
@@ -1133,7 +1133,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                 }, 2000); 
                                             }} 
                                             style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
-                                            data-tooltip="Hibernar Sistema"
+                                            data-tooltip={isMobile ? undefined : "Hibernar Sistema"}
                                         >
                                             <Power size={isMobile ? 14 : 18} />
                                         </button>
@@ -1144,7 +1144,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                 triggerAlert("Histórico de chat reiniciado.", "success"); 
                                             }} 
                                             style={{ color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
-                                            data-tooltip="Limpar Histórico"
+                                            data-tooltip={isMobile ? undefined : "Limpar Histórico"}
                                         >
                                             <Square size={isMobile ? 12 : 16} />
                                         </button>
@@ -1159,7 +1159,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                 }, 1500);
                                             }} 
                                             style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
-                                            data-tooltip="Encerrar Sessão"
+                                            data-tooltip={isMobile ? undefined : "Encerrar Sessão"}
                                         >
                                             <X size={isMobile ? 16 : 20} />
                                         </button>
@@ -1365,7 +1365,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                             justifyContent: 'center',
                                                             transition: 'all 0.3s'
                                                         }}
-                                                        data-tooltip={isListening ? "Parar Escuta" : "Clica para Iniciar"}
+                                                        data-tooltip={isMobile ? undefined : (isListening ? "Parar Escuta" : "Clica para Iniciar")}
                                                     >
                                                         {isListening ? (
                                                             <div style={{ display: 'flex', gap: '2px' }}>
