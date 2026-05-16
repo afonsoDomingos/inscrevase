@@ -30,7 +30,7 @@ export default function PWAInstallPrompt() {
             let hasDismissed = false;
             try {
                 hasDismissed = !!localStorage.getItem('pwa_prompt_dismissed');
-            } catch (err) {
+            } catch {
                 console.warn('localStorage not accessible for PWA prompt');
             }
             if (!hasDismissed) {
@@ -72,7 +72,7 @@ export default function PWAInstallPrompt() {
         // Remember dismissal for 7 days
         try {
             localStorage.setItem('pwa_prompt_dismissed', 'true');
-        } catch (e) {
+        } catch {
             console.warn('Failed to save PWA prompt dismissal to localStorage');
         }
     };

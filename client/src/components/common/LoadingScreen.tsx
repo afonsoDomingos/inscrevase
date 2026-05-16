@@ -13,7 +13,7 @@ export default function LoadingScreen() {
         let hasSeenLoading = false;
         try {
             hasSeenLoading = !!sessionStorage.getItem('hasSeenLoading');
-        } catch (err) {
+        } catch {
             console.warn('sessionStorage not accessible');
         }
         if (hasSeenLoading) {
@@ -28,7 +28,7 @@ export default function LoadingScreen() {
                 setIsLoading(false);
                 try {
                     sessionStorage.setItem('hasSeenLoading', 'true');
-                } catch (err) {}
+                } catch {}
             }, 800);
         };
 

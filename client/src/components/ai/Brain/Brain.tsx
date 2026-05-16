@@ -146,7 +146,7 @@ export default function Brain() {
                     console.error("Erro ao carregar histórico do Brain:", e);
                 }
             }
-        } catch (e) {
+        } catch {
             console.warn("localStorage is not available for brain_chat_history");
         }
     }, []);
@@ -154,7 +154,7 @@ export default function Brain() {
     useEffect(() => {
         try {
             localStorage.setItem('brain_chat_history', JSON.stringify(chatHistory));
-        } catch (e) {
+        } catch {
             console.warn("Failed to save brain_chat_history to localStorage");
         }
     }, [chatHistory]);
