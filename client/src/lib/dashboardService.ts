@@ -8,6 +8,10 @@ export interface AdminStats {
     totalUsers?: number;
     forms: number;
     submissions: number;
+    submissionsToday?: number;
+    submissionsThisWeek?: number;
+    submissionsThisMonth?: number;
+    usersToday?: number;
     approved: number;
     pendingCertificates?: number;
     revenue?: number;

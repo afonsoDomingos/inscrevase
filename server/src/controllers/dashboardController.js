@@ -27,6 +27,25 @@ exports.getAdminStats = async (req, res) => {
             User.countDocuments()
         ]);
 
+        // Time-based metrics
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay());
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+        const [
+            submissionsToday,
+            submissionsThisWeek,
+            submissionsThisMonth,
+            usersToday
+        ] = await Promise.all([
+            Submission.countDocuments({ submittedAt: { $gte: startOfToday } }),
+            Submission.countDocuments({ submittedAt: { $gte: startOfWeek } }),
+            Submission.countDocuments({ submittedAt: { $gte: startOfMonth } }),
+            User.countDocuments({ createdAt: { $gte: startOfToday } })
+        ]);
+
         // Financial Stats - Using Aggregation for better performance and consistency
         // Note: For 'manual' payments, we count 'pending' as approved by mentor but pending platform settlement
         const financeSummary = await Transaction.aggregate([
@@ -95,6 +114,10 @@ exports.getAdminStats = async (req, res) => {
             forms: totalForms,
             submissions: totalSubmissions,
             approved: approvedSubmissions,
+            submissionsToday,
+            submissionsThisWeek,
+            submissionsThisMonth,
+            usersToday,
             revenue: summary.totalRevenue,
             subscriptionRevenue: summary.subscriptionRevenue,
             eventFeeRevenue: summary.eventFeeRevenue,

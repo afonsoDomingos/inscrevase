@@ -22,6 +22,7 @@ import WhatsAppLogs from '@/components/dashboard/WhatsAppLogs';
 import VacanciesAdmin from '@/components/admin/VacanciesAdmin';
 import MotivaManager from '@/components/admin/MotivaManager';
 import BrainAudit from '@/components/admin/BrainAudit';
+import LiveUpdatesTicker from '@/components/admin/LiveUpdatesTicker';
 import SupportModal from '@/components/mentor/SupportModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, FileText, CheckCircle, TrendingUp, LogOut, Loader2, LayoutDashboard, Database, ShieldAlert, HelpCircle, LifeBuoy, Wallet, Settings, Eye, EyeOff, Wifi, Globe, Menu, X, ChevronDown, BarChart3, Newspaper, Mail, Send, Video, Megaphone, Trophy, Bell, Link as LinkIcon, Zap, Clock, DollarSign, Book, MessageCircle, Smartphone, Briefcase, Brain } from 'lucide-react';
@@ -1003,6 +1004,8 @@ function AdminDashboardContent() {
                             animate="visible"
                             exit={{ opacity: 0, y: -20 }}
                         >
+                            <LiveUpdatesTicker stats={stats} trafficStats={trafficStats} />
+
                             {/* Vital Stats Grid */}
                             <div id="admin-stats-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" style={{ marginBottom: '2.5rem' }}>
                                 {vitalCards.map((card, index) => (
