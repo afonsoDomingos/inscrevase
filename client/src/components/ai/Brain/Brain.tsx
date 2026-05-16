@@ -1035,7 +1035,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                         width: isMobile ? '60px' : 'auto',
                                         flexShrink: 0
                                     }}>
-                                    <div style={{ transform: isMobile ? 'scale(0.4)' : 'scale(0.75)', transformOrigin: 'center center', margin: isMobile ? '5px 0 -10px 0' : '0' }}>
+                                    <div style={{ transform: isMobile ? 'scale(0.4)' : 'scale(0.75)', transformOrigin: 'center center', margin: isMobile ? '35px 0 -45px 0' : '0' }}>
                                         <CerberusVisual isListening={isListening} isThinking={isThinking} isAlert={isAlert} isSpeaking={isSpeaking} />
                                     </div>
                                     <div style={{ textAlign: 'center', display: isMobile ? 'none' : 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
@@ -1315,64 +1315,65 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                             <div className={`gemini-ai-wrapper ${isListening ? 'listening-pulse' : ''}`} style={{ 
                                                 display: 'flex', 
                                                 alignItems: 'center', 
-                                                paddingRight: '4px',
                                                 border: isListening ? '1px solid #ef4444' : '1px solid transparent',
                                                 boxShadow: isListening ? '0 0 15px rgba(239, 68, 68, 0.3)' : 'none',
                                                 transition: 'all 0.3s ease',
                                                 height: isMobile ? '32px' : 'auto'
                                             }}>
-                                                <input 
-                                                    type="text" 
-                                                    className="gemini-ai-input"
-                                                    value={textInput} 
-                                                    onChange={(e) => setTextInput(e.target.value)}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' && textInput.trim()) {
-                                                            handleCommand(textInput.trim());
-                                                            setTextInput("");
-                                                        }
-                                                    }}
-                                                    placeholder={isListening ? "A ouvir..." : "Digite o seu comando..."}
-                                                    style={{ flex: 1, color: isListening ? '#ef4444' : '#fff', padding: isMobile ? '2px 10px' : '10px 15px', fontSize: isMobile ? '0.7rem' : '0.8rem', background: 'transparent', border: 'none', outline: 'none' }}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        if (!hasSupport) {
-                                                            alert("A gravação de voz não é suportada por este navegador. Por favor, escreva o seu texto ou abra no Google Chrome / Safari nativo.");
-                                                            return;
-                                                        }
-                                                        if (isListening) {
-                                                                stopListening();
-                                                                if (textInput.trim()) {
-                                                                    handleCommand(textInput.trim());
-                                                                    setTextInput("");
-                                                                }
-                                                            } else {
-                                                                if (!isMobile) playSystemSound('intro');
-                                                                // Chamada direta para o browser não bloquear o start() da Web Speech API por falta de user gesture
-                                                                startListening();
+                                                <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', background: '#111', borderRadius: '48px', zIndex: 1, paddingRight: '4px' }}>
+                                                    <input 
+                                                        type="text" 
+                                                        className="gemini-ai-input"
+                                                        value={textInput} 
+                                                        onChange={(e) => setTextInput(e.target.value)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' && textInput.trim()) {
+                                                                handleCommand(textInput.trim());
+                                                                setTextInput("");
                                                             }
                                                         }}
-                                                        style={{
-                                                            background: 'none',
-                                                            border: 'none',
-                                                            cursor: 'pointer',
-                                                            color: isListening ? '#ef4444' : '#94a3b8',
-                                                            padding: '8px',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            transition: 'all 0.3s'
-                                                        }}
-                                                        data-tooltip={isMobile ? undefined : (isListening ? "Parar Escuta" : "Clica para Iniciar")}
-                                                    >
-                                                        {isListening ? (
-                                                            <div style={{ display: 'flex', gap: '2px' }}>
-                                                                {[1,2,3].map(i => <motion.div key={i} animate={{ height: [4, 12, 4], opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1 }} style={{ width: '2px', background: '#ef4444', borderRadius: '9999px' }} />)}
-                                                            </div>
-                                                        ) : <Mic size={18} />}
-                                                    </button>
+                                                        placeholder={isListening ? "A ouvir..." : "Digite o seu comando..."}
+                                                        style={{ flex: 1, color: isListening ? '#ef4444' : '#fff', padding: isMobile ? '2px 10px' : '10px 15px', fontSize: isMobile ? '0.7rem' : '0.8rem', background: 'transparent', border: 'none', outline: 'none' }}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (!hasSupport) {
+                                                                alert("A gravação de voz não é suportada por este navegador. Por favor, escreva o seu texto ou abra no Google Chrome / Safari nativo.");
+                                                                return;
+                                                            }
+                                                            if (isListening) {
+                                                                    stopListening();
+                                                                    if (textInput.trim()) {
+                                                                        handleCommand(textInput.trim());
+                                                                        setTextInput("");
+                                                                    }
+                                                                } else {
+                                                                    if (!isMobile) playSystemSound('intro');
+                                                                    // Chamada direta para o browser não bloquear o start() da Web Speech API por falta de user gesture
+                                                                    startListening();
+                                                                }
+                                                            }}
+                                                            style={{
+                                                                background: 'none',
+                                                                border: 'none',
+                                                                cursor: 'pointer',
+                                                                color: isListening ? '#ef4444' : '#94a3b8',
+                                                                padding: '8px',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                transition: 'all 0.3s'
+                                                            }}
+                                                            data-tooltip={isMobile ? undefined : (isListening ? "Parar Escuta" : "Clica para Iniciar")}
+                                                        >
+                                                            {isListening ? (
+                                                                <div style={{ display: 'flex', gap: '2px' }}>
+                                                                    {[1,2,3].map(i => <motion.div key={i} animate={{ height: [4, 12, 4], opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1 }} style={{ width: '2px', background: '#ef4444', borderRadius: '9999px' }} />)}
+                                                                </div>
+                                                            ) : <Mic size={18} />}
+                                                        </button>
+                                                </div>
                                             </div>
                                             <button 
                                                 type="button" 
