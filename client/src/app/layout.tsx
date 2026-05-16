@@ -18,6 +18,7 @@ import PayPalProviderWrapper from '@/components/common/PayPalProviderWrapper';
 import OfflineDetector from '@/components/common/OfflineDetector';
 import GoogleAdsense from '@/components/common/GoogleAdsense';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
+import Script from 'next/script';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -178,6 +179,21 @@ export default function RootLayout({
   return (
     <html lang="pt">
       <head>
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-XBQDGVH1L8"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-XBQDGVH1L8');
+          `}
+        </Script>
+
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#1452AD" />
