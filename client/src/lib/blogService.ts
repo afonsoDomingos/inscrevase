@@ -33,7 +33,7 @@ export interface BlogPost {
     updatedAt: string;
 }
 
-const defaultFallbackPosts: BlogPost[] = [
+export const defaultFallbackPosts: BlogPost[] = [
     {
         _id: 'fallback-1',
         title: "O Guia Completo para Organizar Eventos Presenciais e Híbridos Inesquecíveis",

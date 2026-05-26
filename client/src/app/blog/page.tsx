@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Calendar, TrendingUp, Users, Lightbulb, Eye, ArrowRight, Megaphone, FileText, LucideIcon } from 'lucide-react';
 import Image from 'next/image';
-import { blogService, BlogPost } from '@/lib/blogService';
+import { blogService, BlogPost, defaultFallbackPosts } from '@/lib/blogService';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -20,8 +20,8 @@ const categoryIcons: Record<string, LucideIcon> = {
 };
 
 export default function BlogPage() {
-    const [posts, setPosts] = useState<BlogPost[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [posts, setPosts] = useState<BlogPost[]>(defaultFallbackPosts);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchPosts = async () => {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { userService } from '@/lib/userService';
+import { userService, defaultFallbackMentors } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronRight, Loader2, Star, Users, Award, Eye, Briefcase, User, Filter } from 'lucide-react';
@@ -17,8 +17,8 @@ function ExpertsContent() {
     const searchParams = useSearchParams();
     const initialTab = searchParams.get('tab') as 'mentor' | 'specialist' | 'company' | null;
     
-    const [mentors, setMentors] = useState<UserData[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [mentors, setMentors] = useState<UserData[]>(defaultFallbackMentors);
+    const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState<'mentor' | 'specialist' | 'company'>(initialTab || 'company');
     const [services, setServices] = useState<ServiceModel[]>([]);

@@ -3,7 +3,7 @@ import { UserData } from './authService';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-const defaultFallbackMentors: UserData[] = [
+export const defaultFallbackMentors: UserData[] = [
     {
         id: 'm-fallback-1',
         _id: 'm-fallback-1',
