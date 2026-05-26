@@ -367,11 +367,12 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
 
 
         // Comando Especial: Reconhecimento do Criador
-        if (lowerTranscript.includes('quem te criou') || lowerTranscript.includes('quem é o teu criador') || lowerTranscript.includes('quem te fez') || lowerTranscript.includes('afonso domingos')) {
-            const creatorInfo = "Fui concebido e orquestrado por **Afonso Domingos**, Fundador da Inscreva-se e da RPA Moçambique. Pode ver o perfil completo do Mestre Supremo em [/equipe/afonso-domingos](/equipe/afonso-domingos). Em que mais posso ajudá-lo?";
+        if (lowerTranscript.includes('quem te criou') || lowerTranscript.includes('quem é o teu criador') || lowerTranscript.includes('quem te fez') || lowerTranscript.includes('afonso domingos') || lowerTranscript.includes('quem é o afonso') || lowerTranscript.includes('quem e o afonso')) {
+            const creatorInfo = "Fui concebido e orquestrado por **Afonso Domingos**, Fundador da Inscreva-se e da RPA Moçambique. A redirecioná-lo para o perfil do Mestre Supremo.";
             setChatHistory(prev => [...prev, { role: 'ai', text: creatorInfo }]);
-            speak("Fui concebido e orquestrado por Afonso Domingos, Fundador da Inscreva-se. Em que mais posso ajudá-lo?");
+            speak("Fui concebido e orquestrado por Afonso Domingos, Fundador da Inscreva-se. A abrir o perfil do Mestre Supremo.");
             setIsThinking(false);
+            setTimeout(() => { router.push('/equipe/afonso-domingos'); }, 2000);
             return;
         }
 
