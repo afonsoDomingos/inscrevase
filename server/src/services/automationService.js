@@ -3,6 +3,9 @@ const Submission = require('../models/Submission');
 const User = require('../models/User');
 const Form = require('../models/Form');
 const SupportTicket = require('../models/SupportTicket');
+const GlobalSettings = require('../models/GlobalSettings');
+const NewsletterSubscriber = require('../models/NewsletterSubscriber');
+const BlogPost = require('../models/BlogPost');
 const Lesson = require('../models/Lesson');
 const LessonProgress = require('../models/LessonProgress');
 const PersonalFinance = require('../models/PersonalFinance');
@@ -779,6 +782,181 @@ const initAutomations = () => {
             await whatsappService.sendMessage(ownerWhatsapp, msg).catch(() => null);
         } catch (err) {
             console.error('❌ [Automation] Daily owner summary error:', err);
+        }
+    });
+
+    // 15. Every hour: Email subscribers + participants about new events
+    cron.schedule('10 * * * *', async () => {
+        console.log('📬 [Automation] Checking for new events to email subscribers/participants...');
+        try {
+            const lastSentSetting = await GlobalSettings.findOne({ key: 'last_event_newsletter_sent_at' });
+            const lastSentAt = lastSentSetting?.value ? new Date(lastSentSetting.value) : new Date(Date.now() - 60 * 60 * 1000);
+            const now = new Date();
+
+            const newEvents = await Form.find({
+                createdAt: { $gt: lastSentAt, $lte: now },
+                active: true
+            })
+                .select('title slug eventDate eventTime category coverImage createdAt')
+                .sort({ createdAt: -1 })
+                .limit(12)
+                .lean();
+
+            if (!newEvents.length) {
+                return;
+            }
+
+            const [subscribers, participants] = await Promise.all([
+                NewsletterSubscriber.find({ status: 'active' }).select('email').lean(),
+                User.find({ role: 'participant', status: 'active', isEmailVerified: true }).select('email').lean()
+            ]);
+
+            const recipients = new Set();
+            for (const s of subscribers) {
+                if (s?.email) recipients.add(String(s.email).trim().toLowerCase());
+            }
+            for (const p of participants) {
+                if (p?.email) recipients.add(String(p.email).trim().toLowerCase());
+            }
+
+            if (!recipients.size) {
+                // Still advance watermark to avoid reprocessing endlessly
+                await GlobalSettings.findOneAndUpdate(
+                    { key: 'last_event_newsletter_sent_at' },
+                    { key: 'last_event_newsletter_sent_at', value: now.toISOString(), lastUpdated: Date.now() },
+                    { upsert: true, new: true }
+                );
+                return;
+            }
+
+            const baseUrl = process.env.CLIENT_URL || 'https://inscreva-se.com';
+            const listHtml = newEvents.map(e => {
+                const dateLabel = e.eventDate ? new Date(e.eventDate).toLocaleDateString('pt-PT') : 'Data a definir';
+                const timeLabel = e.eventTime || 'Horário a definir';
+                const cat = e.category || 'Outros';
+                const url = `${baseUrl.replace(/\\/$/, '')}/f/${e.slug}`;
+                return `
+                    <div style="padding:14px 16px; border:1px solid #eee; border-radius:14px; margin-bottom:10px; background:#fff;">
+                        <div style="font-weight:900; font-size:15px; color:#111; margin-bottom:6px;">${e.title}</div>
+                        <div style="font-size:12px; color:#666; margin-bottom:10px;">📅 ${dateLabel} • ⏰ ${timeLabel} • 🏷️ ${cat}</div>
+                        <a href="${url}" style="display:inline-block; padding:10px 16px; border-radius:999px; background:#111; color:#fff; text-decoration:none; font-weight:800; font-size:12px;">Ver evento</a>
+                    </div>
+                `;
+            }).join('');
+
+            const subject = `🆕 Novos eventos na Inscreva-se (${newEvents.length})`;
+            const emailHtml = generateBasicEmail(
+                'Novos eventos disponíveis',
+                'Participante',
+                `Acabaram de ser publicados novos eventos na plataforma. Clique para ver detalhes e garantir a sua vaga.<br><br>${listHtml}`,
+                'Explorar Eventos',
+                `${baseUrl.replace(/\\/$/, '')}/explorar`,
+                '#D4AF37'
+            );
+
+            // Send in batches to reduce provider throttling
+            const batchSize = 50;
+            const recipientList = Array.from(recipients);
+            for (let i = 0; i < recipientList.length; i += batchSize) {
+                const batch = recipientList.slice(i, i + batchSize);
+                await Promise.all(batch.map(email => sendEmail(email, subject, emailHtml).catch(() => null)));
+            }
+
+            await GlobalSettings.findOneAndUpdate(
+                { key: 'last_event_newsletter_sent_at' },
+                { key: 'last_event_newsletter_sent_at', value: now.toISOString(), lastUpdated: Date.now() },
+                { upsert: true, new: true }
+            );
+
+            console.log(`✅ [Automation] Event email sent to ${recipientList.length} recipient(s) for ${newEvents.length} new event(s).`);
+        } catch (err) {
+            console.error('❌ [Automation] Event newsletter email error:', err);
+        }
+    });
+
+    // 16. Every hour: Email subscribers + participants about published news/blog posts
+    cron.schedule('25 * * * *', async () => {
+        console.log('📰 [Automation] Checking for published news to email subscribers/participants...');
+        try {
+            const lastSentSetting = await GlobalSettings.findOne({ key: 'last_blog_newsletter_sent_at' });
+            const lastSentAt = lastSentSetting?.value ? new Date(lastSentSetting.value) : new Date(Date.now() - 60 * 60 * 1000);
+            const now = new Date();
+
+            const newPosts = await BlogPost.find({
+                published: true,
+                publishedAt: { $gt: lastSentAt, $lte: now }
+            })
+                .select('title slug excerpt category coverImage publishedAt')
+                .sort({ publishedAt: -1 })
+                .limit(8)
+                .lean();
+
+            if (!newPosts.length) return;
+
+            const [subscribers, participants] = await Promise.all([
+                NewsletterSubscriber.find({ status: 'active' }).select('email').lean(),
+                User.find({ role: 'participant', status: 'active', isEmailVerified: true }).select('email').lean()
+            ]);
+
+            const recipients = new Set();
+            for (const s of subscribers) {
+                if (s?.email) recipients.add(String(s.email).trim().toLowerCase());
+            }
+            for (const p of participants) {
+                if (p?.email) recipients.add(String(p.email).trim().toLowerCase());
+            }
+
+            if (!recipients.size) {
+                await GlobalSettings.findOneAndUpdate(
+                    { key: 'last_blog_newsletter_sent_at' },
+                    { key: 'last_blog_newsletter_sent_at', value: now.toISOString(), lastUpdated: Date.now() },
+                    { upsert: true, new: true }
+                );
+                return;
+            }
+
+            const baseUrl = process.env.CLIENT_URL || 'https://inscreva-se.com';
+            const postListHtml = newPosts.map(p => {
+                const url = `${baseUrl.replace(/\\/$/, '')}/blog/${p.slug}`;
+                const cat = p.category || 'news';
+                const when = p.publishedAt ? new Date(p.publishedAt).toLocaleDateString('pt-PT') : '';
+                const excerpt = (p.excerpt || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return `
+                    <div style="padding:14px 16px; border:1px solid #eee; border-radius:14px; margin-bottom:10px; background:#fff;">
+                        <div style="font-weight:900; font-size:15px; color:#111; margin-bottom:6px;">${p.title}</div>
+                        <div style="font-size:12px; color:#666; margin-bottom:8px;">🗞️ ${cat} ${when ? `• ${when}` : ''}</div>
+                        <div style="font-size:13px; color:#444; margin-bottom:12px; line-height:1.5;">${excerpt}</div>
+                        <a href="${url}" style="display:inline-block; padding:10px 16px; border-radius:999px; background:#111; color:#fff; text-decoration:none; font-weight:800; font-size:12px;">Ler notícia</a>
+                    </div>
+                `;
+            }).join('');
+
+            const subject = `📰 Novidades da Inscreva-se (${newPosts.length})`;
+            const emailHtml = generateBasicEmail(
+                'Novidades & Notícias',
+                'Participante',
+                `Publicámos novas notícias na plataforma. Veja abaixo e acompanhe as atualizações.<br><br>${postListHtml}`,
+                'Abrir Blog',
+                `${baseUrl.replace(/\\/$/, '')}/blog`,
+                '#111827'
+            );
+
+            const recipientList = Array.from(recipients);
+            const batchSize = 50;
+            for (let i = 0; i < recipientList.length; i += batchSize) {
+                const batch = recipientList.slice(i, i + batchSize);
+                await Promise.all(batch.map(email => sendEmail(email, subject, emailHtml).catch(() => null)));
+            }
+
+            await GlobalSettings.findOneAndUpdate(
+                { key: 'last_blog_newsletter_sent_at' },
+                { key: 'last_blog_newsletter_sent_at', value: now.toISOString(), lastUpdated: Date.now() },
+                { upsert: true, new: true }
+            );
+
+            console.log(`✅ [Automation] News email sent to ${recipientList.length} recipient(s) for ${newPosts.length} new post(s).`);
+        } catch (err) {
+            console.error('❌ [Automation] News newsletter email error:', err);
         }
     });
 };

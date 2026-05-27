@@ -145,6 +145,7 @@ function AdminDashboardContent() {
 
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [trafficStats, setTrafficStats] = useState<TrafficStats | null>(null);
+    const [trafficFilterDays, setTrafficFilterDays] = useState<number>(0);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -305,7 +306,9 @@ function AdminDashboardContent() {
                 const statsData = await dashboardService.getAdminStats();
                 console.log('🔵 [Admin Dashboard] Stats received:', statsData);
                 setStats(statsData);
-                const trafficData = await dashboardService.getTrafficStats();
+                const trafficData = await dashboardService.getTrafficStats(
+                    trafficFilterDays > 0 ? { days: trafficFilterDays } : undefined
+                );
                 setTrafficStats(trafficData);
 
                 try {
@@ -388,7 +391,9 @@ function AdminDashboardContent() {
                     .then(setStats)
                     .catch(err => !handleUnauthorized(err) && console.error("Stats polling error", err));
                 
-                dashboardService.getTrafficStats()
+                dashboardService.getTrafficStats(
+                    trafficFilterDays > 0 ? { days: trafficFilterDays } : undefined
+                )
                     .then(setTrafficStats)
                     .catch(err => !handleUnauthorized(err) && console.error("Traffic polling error", err));
                 
@@ -401,7 +406,7 @@ function AdminDashboardContent() {
             }
         }, 15000);
         return () => clearInterval(interval);
-    }, [router, user?.role, pathname, searchParams]);
+    }, [router, user?.role, pathname, searchParams, trafficFilterDays]);
 
     const loadUnreadCount = async () => {
         try {
@@ -450,16 +455,62 @@ function AdminDashboardContent() {
     }
 
     const totalUsers = (stats?.mentors || 0) + (stats?.participants || 0);
+    const displayedTotalVisitors = trafficStats?.filtered?.totalVisits ?? trafficStats?.totalVisits ?? 0;
+
+    const visitorFilterOptions = [
+        { label: 'Total', days: 0 },
+        { label: '7 dias', days: 7 },
+        { label: '30 dias', days: 30 },
+        { label: '90 dias', days: 90 }
+    ];
 
     const vitalCards = [
-        { label: t('dashboard.totalUsers') || 'Total Utilizadores', value: showValues ? (stats?.totalUsers || totalUsers) : '••', icon: <Users size={24} />, color: '#6366f1', tab: 'users' },
-        { label: 'Experts / Mentors', value: showValues ? stats?.mentors || 0 : '••', icon: <Trophy size={24} />, color: '#D4AF37', tab: 'users' },
-        { label: t('dashboard.usersList.audience.participants') || 'Participantes', value: showValues ? stats?.participants || 0 : '••', icon: <Users size={24} />, color: '#10b981', tab: 'users' },
-        { label: t('dashboard.onlineNow'), value: onlineUsers.length, icon: <Wifi size={24} />, color: '#38a169', tab: 'users' },
-        { label: t('dashboard.visitsToday'), value: trafficStats?.visitsToday || 0, icon: <Eye size={24} />, color: '#ed8936', tab: 'overview' },
-        { label: t('dashboard.totalVisitors') || 'Total Visitantes', value: trafficStats?.totalVisits || 0, icon: <Globe size={24} />, color: '#3182ce', tab: 'overview' },
-        { label: t('dashboard.adminFinance.totalRevenue'), value: showValues ? formatPrice(stats?.revenue || 0, 'MZN', currency) : '••••', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
-        { label: t('dashboard.submissions'), value: showValues ? stats?.submissions || 0 : '••', icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
+        { id: 'totalUsers', label: t('dashboard.totalUsers') || 'Total Utilizadores', value: showValues ? (stats?.totalUsers || totalUsers) : '••', icon: <Users size={24} />, color: '#6366f1', tab: 'users' },
+        { id: 'mentors', label: 'Experts / Mentors', value: showValues ? stats?.mentors || 0 : '••', icon: <Trophy size={24} />, color: '#D4AF37', tab: 'users' },
+        { id: 'participants', label: t('dashboard.usersList.audience.participants') || 'Participantes', value: showValues ? stats?.participants || 0 : '••', icon: <Users size={24} />, color: '#10b981', tab: 'users' },
+        { id: 'onlineNow', label: t('dashboard.onlineNow'), value: onlineUsers.length, icon: <Wifi size={24} />, color: '#38a169', tab: 'users' },
+        { id: 'visitsToday', label: t('dashboard.visitsToday'), value: trafficStats?.visitsToday || 0, icon: <Eye size={24} />, color: '#ed8936', tab: 'overview' },
+        {
+            id: 'totalVisitors',
+            label: t('dashboard.totalVisitors') || 'Total Visitantes',
+            value: displayedTotalVisitors,
+            icon: <Globe size={24} />,
+            color: '#3182ce',
+            tab: 'overview',
+            footer: (
+                <div
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '6px' }}
+                >
+                    {visitorFilterOptions.map((item) => (
+                        <button
+                            key={item.label}
+                            onClick={() => setTrafficFilterDays(item.days)}
+                            style={{
+                                padding: '5px 10px',
+                                borderRadius: '999px',
+                                border: trafficFilterDays === item.days ? '1px solid #D4AF37' : '1px solid #e5e7eb',
+                                background: trafficFilterDays === item.days ? 'rgba(212,175,55,0.12)' : '#fff',
+                                color: '#1a1a1a',
+                                fontSize: '0.7rem',
+                                fontWeight: 800,
+                                cursor: 'pointer'
+                            }}
+                        >
+                            {item.label}
+                        </button>
+                    ))}
+                    {trafficStats?.filtered && (
+                        <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 800 }}>
+                            Filtrado
+                        </span>
+                    )}
+                </div>
+            )
+        },
+        { id: 'newsletter', label: 'Newsletter', value: showValues ? stats?.newsletterSubscribers || 0 : '••', icon: <Mail size={24} />, color: '#0ea5e9', tab: 'newsletter' },
+        { id: 'revenue', label: t('dashboard.adminFinance.totalRevenue'), value: showValues ? formatPrice(stats?.revenue || 0, 'MZN', currency) : '••••', icon: <TrendingUp size={24} />, color: '#B8860B', tab: 'finance' },
+        { id: 'submissions', label: t('dashboard.submissions'), value: showValues ? stats?.submissions || 0 : '••', icon: <TrendingUp size={24} />, color: '#805ad5', tab: 'submissions' },
     ];
 
     // Removed unused cards to fix lint errors
@@ -1005,16 +1056,18 @@ function AdminDashboardContent() {
                             exit={{ opacity: 0, y: -20 }}
                         >
                             <LiveUpdatesTicker stats={stats} trafficStats={trafficStats} superAdminAnalytics={superAdminAnalytics} />
+                            {/* Filtro agora fica também dentro do card de Total Visitantes */}
 
                             {/* Vital Stats Grid */}
                             <div id="admin-stats-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" style={{ marginBottom: '2.5rem' }}>
                                 {vitalCards.map((card, index) => (
                                     <StatCard
-                                        key={index}
+                                        key={card.id || index}
                                         icon={card.icon}
                                         label={card.label}
                                         value={card.value}
                                         color={card.color}
+                                        footer={(card as any).footer}
                                         onClick={() => setActiveTab(card.tab as Tab)}
                                     />
                                 ))}
@@ -2663,7 +2716,7 @@ function AdminDashboardContent() {
     );
 }
 
-function StatCard({ icon, label, value, color, onClick }: { icon: React.ReactNode, label: string, value: string | number, color: string, onClick?: () => void }) {
+function StatCard({ icon, label, value, color, onClick, footer }: { icon: React.ReactNode, label: string, value: string | number, color: string, onClick?: () => void, footer?: React.ReactNode }) {
     return (
         <motion.div
             whileHover={{ y: -4, scale: 1.01 }}
@@ -2703,6 +2756,8 @@ function StatCard({ icon, label, value, color, onClick }: { icon: React.ReactNod
                 <span style={{ color: '#64748b', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
                 <h2 style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-playfair)', color: '#1a1a1a', margin: 0, letterSpacing: '-0.5px' }}>{value}</h2>
             </div>
+
+            {footer}
 
             {/* Subtle background element */}
             <div style={{ position: 'absolute', bottom: '-15px', right: '-15px', width: '70px', height: '70px', background: `radial-gradient(circle, ${color}08 0%, transparent 70%)`, borderRadius: '50%' }} />

@@ -6,6 +6,7 @@ export interface AdminStats {
     mentors?: number;
     participants?: number;
     totalUsers?: number;
+    newsletterSubscribers?: number;
     forms: number;
     submissions: number;
     submissionsToday?: number;
@@ -62,6 +63,12 @@ export interface TrafficStats {
     visitsToday: number;
     uniqueVisitorsToday: number;
     totalVisits: number;
+    filtered?: {
+        from: string | null;
+        to: string | null;
+        totalVisits: number;
+        uniqueVisitors: number;
+    } | null;
     topPages: { page: string; count: number }[];
     topCountries: { country: string; count: number }[];
     trafficByHour: { hour: number; count: number }[];
@@ -115,9 +122,10 @@ export const dashboardService = {
         return handleResponse(response, 'Falha ao buscar dados analíticos');
     },
 
-    async getTrafficStats(): Promise<TrafficStats> {
+    async getTrafficStats(params?: { days?: number }): Promise<TrafficStats> {
         const token = Cookies.get('token');
-        const response = await fetch(`${API_URL}/analytics/stats`, {
+        const query = params?.days ? `?days=${params.days}` : '';
+        const response = await fetch(`${API_URL}/analytics/stats${query}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         return handleResponse(response, 'Falha ao buscar tráfego');

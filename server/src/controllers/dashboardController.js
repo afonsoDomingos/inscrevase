@@ -6,6 +6,7 @@ const Transaction = require('../models/Transaction');
 const Book = require('../models/Book');
 const SmartLink = require('../models/SmartLink');
 const Referral = require('../models/Referral');
+const NewsletterSubscriber = require('../models/NewsletterSubscriber');
 const exchangeRateService = require('../services/exchangeRateService');
 
 exports.getAdminStats = async (req, res) => {
@@ -18,7 +19,8 @@ exports.getAdminStats = async (req, res) => {
             approvedSubmissions,
             googleUsers,
             linkedinUsers,
-            totalUsers
+            totalUsers,
+            newsletterSubscribers
         ] = await Promise.all([
             User.countDocuments({ role: 'mentor' }),
             User.countDocuments({ role: 'participant' }),
@@ -27,7 +29,8 @@ exports.getAdminStats = async (req, res) => {
             Submission.countDocuments({ status: 'approved' }),
             User.countDocuments({ googleId: { $ne: null } }),
             User.countDocuments({ linkedinId: { $ne: null } }),
-            User.countDocuments()
+            User.countDocuments(),
+            NewsletterSubscriber.countDocuments({ status: 'active' })
         ]);
 
         // Time-based metrics
@@ -122,6 +125,7 @@ exports.getAdminStats = async (req, res) => {
             mentors: totalMentors,
             participants: totalParticipants,
             totalUsers: totalUsers,
+            newsletterSubscribers,
             forms: totalForms,
             submissions: totalSubmissions,
             approved: approvedSubmissions,
