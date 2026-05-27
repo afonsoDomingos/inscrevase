@@ -13,6 +13,8 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') });
 require('dotenv').config(); // Fallback to current dir
 
 const whatsappService = require('./services/whatsappService');
+const User = require('./models/User');
+const AdminAlertService = require('./services/adminAlertService');
 // Iniciar Motor do WhatsApp IMEDIATAMENTE (agora com envs carregados)
 whatsappService.init().catch(err => console.error('⚠️ WhatsApp Init Error:', err));
 
@@ -144,6 +146,26 @@ const LiveBoardService = require('./services/liveBoardService');
 NotificationService.init(io);
 LiveBoardService.init(io);
 
+async function notifyAdminsUserOnline(userId) {
+    try {
+        const onlineUser = await User.findById(userId).select('name email role');
+        if (!onlineUser) return;
+
+        const displayName = onlineUser.name || onlineUser.email || 'Utilizador';
+        await AdminAlertService.notifyAdmins({
+            senderId: onlineUser._id,
+            title: 'Utilizador online',
+            content: `${displayName} esta online agora.`,
+            actionUrl: '/dashboard/admin?tab=users',
+            type: 'system',
+            cooldownKey: `online:${onlineUser._id}`,
+            cooldownMs: 5 * 60 * 1000
+        });
+    } catch (error) {
+        console.error('[ONLINE ALERT] Failed to notify admins:', error.message);
+    }
+}
+
 io.on('connection', (socket) => {
     // UserId agora vem do middleware de autenticação (seguro)
     const userId = socket.userId;
@@ -161,6 +183,7 @@ io.on('connection', (socket) => {
         if (onlineUsers.get(userId).size === 1) {
             io.emit('user_status_change', { userId, status: 'online' });
             console.log(`User ${userId} is now ONLINE (${socket.id})`);
+            notifyAdminsUserOnline(userId);
         }
 
         // Send current list ONLY to the new client

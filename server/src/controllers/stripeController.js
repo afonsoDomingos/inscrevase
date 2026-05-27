@@ -9,6 +9,7 @@ const Form = require('../models/Form');
 const Transaction = require('../models/Transaction');
 const Submission = require('../models/Submission');
 const NotificationService = require('../services/notificationService');
+const AdminAlertService = require('../services/adminAlertService');
 const AdRequest = require('../models/AdRequest');
 const { PLANS } = require('../config/stripe');
 const { getDynamicPlanConfig } = require('../utils/planConfigs');
@@ -936,6 +937,15 @@ exports.handleWebhook = async (req, res) => {
                         status: 'sent'
                     });
                 }
+                await AdminAlertService.notifyAdmins({
+                    senderId: userId,
+                    title: 'Falha de pagamento na assinatura',
+                    content: `O pagamento de assinatura de ${user?.name || user?.email || 'um utilizador'} falhou.`,
+                    actionUrl: '/dashboard/admin?tab=finance',
+                    type: 'alert',
+                    cooldownKey: `payment-failed:${invoice.subscription || userId}`,
+                    cooldownMs: 30 * 60 * 1000
+                });
                 console.log(`❌ [Stripe Webhook] Payment failed for user ${userId}`);
             }
         }
@@ -964,6 +974,15 @@ exports.handleWebhook = async (req, res) => {
                     whatsappService.sendMessage(user.whatsapp, waMsg).catch(e => console.error('WA Error:', e.message));
                 }
             } catch (err) { console.error('Stripe webhook err:', err); }
+            await AdminAlertService.notifyAdmins({
+                senderId: user._id,
+                title: 'Assinatura cancelada (Stripe)',
+                content: `${user.name || user.email} teve assinatura cancelada e foi movido para FREE.`,
+                actionUrl: '/dashboard/admin?tab=finance',
+                type: 'system',
+                cooldownKey: `subscription-cancelled:${user._id}`,
+                cooldownMs: 60 * 60 * 1000
+            });
         }
     } else if (event.type === 'account.updated') {
         const account = event.data.object;
@@ -1075,6 +1094,16 @@ exports.refundPayment = async (req, res) => {
                 { stripePaymentIntentId: submission.stripePaymentIntentId },
                 { status: 'refunded' }
             );
+
+            await AdminAlertService.notifyAdmins({
+                senderId: req.user.id,
+                title: 'Reembolso processado',
+                content: `Reembolso executado para submissao ${submission._id}.`,
+                actionUrl: '/dashboard/admin?tab=finance',
+                type: 'alert',
+                cooldownKey: `refund:${submission._id}`,
+                cooldownMs: 10 * 60 * 1000
+            });
 
             return res.status(200).json({ success: true, message: 'Reembolso processado com sucesso.' });
         }

@@ -1,6 +1,7 @@
 const SupportTicket = require('../models/SupportTicket');
 const Notification = require('../models/Notification');
 const NotificationService = require('../services/notificationService');
+const AdminAlertService = require('../services/adminAlertService');
 
 exports.createTicket = async (req, res) => {
     try {
@@ -23,6 +24,16 @@ exports.createTicket = async (req, res) => {
                 title: 'Nova Mensagem de Suporte',
                 content: `Novo ticket de suporte: ${subject}`,
                 actionUrl: '/dashboard/mentor?tab=support'
+            });
+        } else {
+            await AdminAlertService.notifyAdmins({
+                senderId: req.user.id,
+                title: 'Novo ticket para Admin',
+                content: `Ticket "${subject}" criado e aguardando resposta.`,
+                actionUrl: '/dashboard/admin?tab=support',
+                type: 'alert',
+                cooldownKey: `support-ticket:${ticket._id}`,
+                cooldownMs: 2 * 60 * 1000
             });
         }
 
@@ -117,7 +128,15 @@ exports.addMessage = async (req, res) => {
                 await NotificationService.notify({ ...notificationBase, recipient: ticket.mentor, actionUrl: '/dashboard/mentor?tab=support' });
             } else {
                 ticket.unreadByAdmin = true;
-                // Notify Admin (optional, or just rely on unread flag)
+                await AdminAlertService.notifyAdmins({
+                    senderId: req.user.id,
+                    title: 'Resposta pendente no suporte',
+                    content: `Cliente respondeu ao ticket "${ticket.subject}".`,
+                    actionUrl: '/dashboard/admin?tab=support',
+                    type: 'alert',
+                    cooldownKey: `support-reply:${ticket._id}`,
+                    cooldownMs: 10 * 60 * 1000
+                });
             }
         }
 

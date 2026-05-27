@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const Submission = require('../models/Submission');
 const User = require('../models/User');
 const Form = require('../models/Form');
+const SupportTicket = require('../models/SupportTicket');
 const Lesson = require('../models/Lesson');
 const LessonProgress = require('../models/LessonProgress');
 const PersonalFinance = require('../models/PersonalFinance');
@@ -18,6 +19,7 @@ const {
     generateFinancialHealthIncentiveEmail
 } = require('../utils/emailTemplates');
 const { logCommunication } = require('../utils/communicationLogger');
+const AdminAlertService = require('./adminAlertService');
 
 /**
  * Automation Service
@@ -720,6 +722,31 @@ const initAutomations = () => {
             }
         } catch (err) {
             console.error('❌ [Automation] Financial nudge error:', err);
+        }
+    });
+
+    // 13. Every hour: Support SLA alert for admin queue
+    cron.schedule('0 * * * *', async () => {
+        console.log('🔍 [Automation] Checking support SLA for admin queue...');
+        try {
+            const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+            const pendingCount = await SupportTicket.countDocuments({
+                unreadByAdmin: true,
+                createdAt: { $lte: twoHoursAgo }
+            });
+
+            if (pendingCount > 0) {
+                await AdminAlertService.notifyAdmins({
+                    title: 'SLA suporte em risco',
+                    content: `${pendingCount} ticket(s) estao sem resposta admin ha mais de 2 horas.`,
+                    actionUrl: '/dashboard/admin?tab=support',
+                    type: 'alert',
+                    cooldownKey: 'sla-support-admin-queue',
+                    cooldownMs: 60 * 60 * 1000
+                });
+            }
+        } catch (err) {
+            console.error('❌ [Automation] Support SLA alert error:', err);
         }
     });
 };

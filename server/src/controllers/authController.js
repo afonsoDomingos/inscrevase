@@ -7,6 +7,7 @@ const Submission = require('../models/Submission');
 const Referral = require('../models/Referral');
 const sendEmail = require('../utils/emailService');
 const { generateWelcomeEmail, generateBasicEmail, generateReferralBonusEmail, generateReferralPointsEarnedEmail, generateAdminPointsNotificationEmail } = require('../utils/emailTemplates');
+const AdminAlertService = require('../services/adminAlertService');
 
 const register = async (req, res) => {
     try {
@@ -180,13 +181,32 @@ const login = async (req, res) => {
 
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-        // Update last login
+        // Security alert: suspicious login profile change
         const parser = new UAParser(req.headers['user-agent']);
         const deviceType = parser.getDevice().type || 'Desktop';
         const osName = parser.getOS().name || 'Unknown';
+        const normalizedDevice = deviceType.charAt(0).toUpperCase() + deviceType.slice(1);
+        const previousDevice = user.lastLoginDevice || 'Unknown';
+        const previousOS = user.lastLoginOS || 'Unknown';
+        const suspiciousLogin = user.loginCount > 0 && (
+            previousDevice !== normalizedDevice ||
+            previousOS !== osName
+        );
+
+        if (suspiciousLogin) {
+            await AdminAlertService.notifyAdmins({
+                senderId: user._id,
+                title: 'Login suspeito detectado',
+                content: `${user.name || user.email} entrou com novo perfil de acesso (${normalizedDevice} / ${osName}).`,
+                actionUrl: '/dashboard/admin?tab=users',
+                type: 'alert',
+                cooldownKey: `suspicious-login:${user._id}:${normalizedDevice}:${osName}`,
+                cooldownMs: 60 * 60 * 1000
+            });
+        }
 
         user.lastLoginAt = new Date();
-        user.lastLoginDevice = deviceType.charAt(0).toUpperCase() + deviceType.slice(1);
+        user.lastLoginDevice = normalizedDevice;
         user.lastLoginOS = osName;
         user.loginCount = (user.loginCount || 0) + 1;
         await user.save();

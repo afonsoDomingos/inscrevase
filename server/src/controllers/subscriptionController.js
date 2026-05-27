@@ -1,6 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const paypalService = require('../services/paypalService');
 const User = require('../models/User');
+const AdminAlertService = require('../services/adminAlertService');
 
 /**
  * STRIPE: Create Billing Portal Session
@@ -46,9 +47,28 @@ exports.cancelPaypalSubscription = async (req, res) => {
         user.subscriptionStatus = 'cancelled';
         await user.save();
 
+        await AdminAlertService.notifyAdmins({
+            senderId: user._id,
+            title: 'Subscricao PayPal cancelada',
+            content: `${user.name || user.email} cancelou a subscricao PayPal.`,
+            actionUrl: '/dashboard/admin?tab=finance',
+            type: 'system',
+            cooldownKey: `paypal-cancel:${user._id}`,
+            cooldownMs: 60 * 60 * 1000
+        });
+
         res.json({ success: true, message: "Subscrição cancelada com sucesso no PayPal." });
     } catch (error) {
         console.error('❌ PayPal Cancel Error:', error);
+
+        await AdminAlertService.notifyAdmins({
+            title: 'Falha ao cancelar subscricao PayPal',
+            content: `Erro ao cancelar subscricao: ${error.message}`,
+            actionUrl: '/dashboard/admin?tab=finance',
+            type: 'alert',
+            cooldownKey: 'paypal-cancel-error',
+            cooldownMs: 30 * 60 * 1000
+        });
         res.status(500).json({ message: "Erro ao cancelar subscrição no PayPal." });
     }
 };
