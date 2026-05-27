@@ -49,7 +49,7 @@ const getSocialFooter = () => {
 const generateWelcomeEmail = (name, verificationLink = null, role = 'mentor') => {
     const isSocial = !verificationLink;
     let dashboardUrl = 'https://inscreva-se.com/dashboard/participant';
-    if (role === 'admin' || role === 'superadmin') {
+    if (role === 'admin' || role === 'SuperAdmin') {
         dashboardUrl = 'https://inscreva-se.com/dashboard/admin';
     } else if (['mentor', 'specialist', 'company'].includes(role)) {
         dashboardUrl = 'https://inscreva-se.com/dashboard/mentor';

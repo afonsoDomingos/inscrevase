@@ -476,7 +476,7 @@ const verifyEmail = async (req, res) => {
 
         // Send confirmation email after success
         let rolePath = 'participant';
-        if (user.role === 'admin' || user.role === 'superadmin') rolePath = 'admin';
+        if (user.role === 'admin' || user.role === 'SuperAdmin') rolePath = 'admin';
         else if (['mentor', 'specialist', 'company'].includes(user.role)) rolePath = 'mentor';
         const dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/${rolePath}`;
         const content = `Sua conta foi verificada com sucesso. Agora você tem acesso total a todas as funcionalidades da nossa plataforma de elite.`;

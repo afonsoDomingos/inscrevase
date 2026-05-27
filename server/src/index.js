@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const http = require('http'); // Import http
 const { Server } = require('socket.io'); // Import Socket.IO
+const pino = require('pino');
 
 // --- CONFIGURAÇÕES DE AMBIENTE (TOP IMPORTANCE) ---
 const path = require('path');
@@ -22,9 +23,46 @@ const PORT = process.env.PORT || 5000;
 // Trust Proxy for Render/Proxy environments
 app.set('trust proxy', 1);
 
-// --- GLOBAL REQUEST LOGGER (DEBUG) ---
+// --- REQUEST LOGGER (SAFE FOR PRODUCTION) ---
+const logger = pino({
+    level: process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'info' : 'debug'),
+    redact: {
+        paths: [
+            'req.headers.authorization',
+            'req.headers.cookie',
+            'req.headers["set-cookie"]'
+        ],
+        remove: true
+    }
+});
+
 app.use((req, res, next) => {
-    console.log(`📡 [REQ] ${req.method} ${req.url} - ${new Date().toLocaleTimeString()}`);
+    const start = Date.now();
+
+    res.on('finish', () => {
+        // Avoid logging raw query strings (can include tokens/emails).
+        // Use `req.path` instead of `req.originalUrl`.
+        const payload = {
+            req: {
+                method: req.method,
+                path: req.path,
+                ip: req.ip,
+                userAgent: req.get('user-agent')
+            },
+            res: {
+                statusCode: res.statusCode
+            },
+            durationMs: Date.now() - start
+        };
+
+        // Keep dev output more visible; keep production lean.
+        if (process.env.NODE_ENV === 'production') {
+            logger.info(payload, 'http');
+        } else {
+            logger.debug(payload, 'http');
+        }
+    });
+
     next();
 });
 
