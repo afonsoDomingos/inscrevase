@@ -60,6 +60,40 @@ exports.getAnalyticsStats = async (req, res) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
+        // Optional filter for historical analytics (does NOT affect "today" counters)
+        // Usage:
+        // - /api/analytics/stats?days=30
+        // - /api/analytics/stats?from=2026-05-01&to=2026-05-27
+        const { days, from, to } = req.query || {};
+        let rangeStart = null;
+        let rangeEnd = null;
+
+        if (days) {
+            const n = Number(days);
+            if (Number.isFinite(n) && n > 0) {
+                rangeStart = new Date(Date.now() - n * 24 * 60 * 60 * 1000);
+                rangeEnd = new Date();
+            }
+        } else if (from || to) {
+            if (from) {
+                // YYYY-MM-DD (interpreted as local midnight)
+                rangeStart = new Date(`${from}T00:00:00`);
+            }
+            if (to) {
+                // include full day
+                rangeEnd = new Date(`${to}T23:59:59.999`);
+            }
+        }
+
+        const rangeMatch = (rangeStart || rangeEnd)
+            ? {
+                timestamp: {
+                    ...(rangeStart ? { $gte: rangeStart } : {}),
+                    ...(rangeEnd ? { $lte: rangeEnd } : {})
+                }
+            }
+            : null;
+
         // 1. Visitas Hoje
         const visitsToday = await Visit.countDocuments({
             timestamp: { $gte: today }
@@ -71,10 +105,17 @@ exports.getAnalyticsStats = async (req, res) => {
         })).length;
 
         // 3. Total Geral
-        const totalVisits = await Visit.estimatedDocumentCount();
+        const totalVisits = await Visit.countDocuments();
+
+        // Filtered totals (optional)
+        const filteredTotalVisits = rangeMatch ? await Visit.countDocuments(rangeMatch) : null;
+        const filteredUniqueVisitors = rangeMatch
+            ? (await Visit.distinct('visitorId', rangeMatch)).length
+            : null;
 
         // 4. Páginas mais acessadas
         const topPages = await Visit.aggregate([
+            ...(rangeMatch ? [{ $match: rangeMatch }] : []),
             { $group: { _id: "$page", count: { $sum: 1 } } },
             { $sort: { count: -1 } },
             { $limit: 5 }
@@ -82,6 +123,7 @@ exports.getAnalyticsStats = async (req, res) => {
 
         // 5. Países com mais acessos (Top 5)
         const topCountries = await Visit.aggregate([
+            ...(rangeMatch ? [{ $match: rangeMatch }] : []),
             { $match: { country: { $ne: null } } }, // Ignora nulos
             { $group: { _id: "$country", count: { $sum: 1 } } },
             { $sort: { count: -1 } },
@@ -129,7 +171,11 @@ exports.getAnalyticsStats = async (req, res) => {
         // 8. Visitas por Mês (Últimos 12 meses ou Ano Atual)
         const startOfYear = new Date(new Date().getFullYear(), 0, 1);
         const trafficByMonth = await Visit.aggregate([
-            { $match: { timestamp: { $gte: startOfYear } } },
+            {
+                $match: rangeMatch
+                    ? rangeMatch
+                    : { timestamp: { $gte: startOfYear } }
+            },
             {
                 $project: {
                     month: { $month: "$timestamp" } // Retorna 1 (Jan) a 12 (Dez)
@@ -142,6 +188,14 @@ exports.getAnalyticsStats = async (req, res) => {
             visitsToday,
             uniqueVisitorsToday,
             totalVisits,
+            filtered: rangeMatch
+                ? {
+                    from: rangeStart ? rangeStart.toISOString() : null,
+                    to: rangeEnd ? rangeEnd.toISOString() : null,
+                    totalVisits: filteredTotalVisits || 0,
+                    uniqueVisitors: filteredUniqueVisitors || 0
+                }
+                : null,
             topPages: topPages.map(p => ({ page: p._id, count: p.count })),
             topCountries: topCountries.map(c => ({ country: c._id, count: c.count })),
             trafficByHour: trafficByHour.map(t => ({ hour: t._id, count: t.count })),
@@ -228,7 +282,7 @@ exports.getPublicImpactStats = async (req, res) => {
         // 3. Totais Globais
         const [totalSubmissions, totalVisits, totalMentors, totalEvents, topCountriesList] = await Promise.all([
             require('../models/Submission').estimatedDocumentCount(),
-            Visit.estimatedDocumentCount(),
+            Visit.countDocuments(),
             User.countDocuments({ role: { $in: ['admin', 'SuperAdmin', 'mentor', 'specialist', 'company'] } }),
             require('../models/Form').countDocuments(),
             Visit.distinct('country', { country: { $ne: null } })

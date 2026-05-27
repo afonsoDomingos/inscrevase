@@ -24,8 +24,24 @@ export default function OnboardingTour({ steps, storageKey }: OnboardingTourProp
     const [isVisible, setIsVisible] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
     const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
+        const updateIsMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        updateIsMobile();
+        window.addEventListener('resize', updateIsMobile);
+        return () => window.removeEventListener('resize', updateIsMobile);
+    }, []);
+
+    useEffect(() => {
+        if (isMobile) {
+            setIsVisible(false);
+            return;
+        }
+
         const hasSeenTour = localStorage.getItem(storageKey);
         if (!hasSeenTour) {
             // Small delay to ensure UI renders
@@ -39,7 +55,7 @@ export default function OnboardingTour({ steps, storageKey }: OnboardingTourProp
 
         window.addEventListener('start-onboarding', handleStartTour);
         return () => window.removeEventListener('start-onboarding', handleStartTour);
-    }, [storageKey]);
+    }, [storageKey, isMobile]);
 
     useEffect(() => {
         if (!isVisible) return;

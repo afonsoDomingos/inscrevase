@@ -33,8 +33,7 @@ const visitSchema = new mongoose.Schema({
     city: String,    // Cidade do visitante
     timestamp: {
         type: Date,
-        default: Date.now,
-        expires: 60 * 60 * 24 * 90 // Opcional: Auto-delete após 90 dias para não lotar o banco? Deixar sem por enquanto.
+        default: Date.now
     }
 });
 
