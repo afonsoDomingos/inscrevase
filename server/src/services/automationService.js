@@ -749,6 +749,37 @@ const initAutomations = () => {
             console.error('❌ [Automation] Support SLA alert error:', err);
         }
     });
+
+    // 14. Daily summary to platform owner (WhatsApp)
+    cron.schedule('0 20 * * *', async () => {
+        if (!process.env.OWNER_WHATSAPP) return;
+
+        console.log('📊 [Automation] Sending daily growth summary to owner...');
+        try {
+            const startOfToday = new Date();
+            startOfToday.setHours(0, 0, 0, 0);
+
+            const [newUsers, newEvents] = await Promise.all([
+                User.countDocuments({ createdAt: { $gte: startOfToday } }),
+                Form.countDocuments({ createdAt: { $gte: startOfToday } })
+            ]);
+
+            const ownerBaseUrl = process.env.CLIENT_URL || 'https://inscreva-se.com';
+            const msg = [
+                `📊 *Resumo diário - Inscreva-se*`,
+                `Data: ${startOfToday.toLocaleDateString('pt-PT')}`,
+                ``,
+                `- Novos utilizadores: *${newUsers}*`,
+                `- Novos eventos criados: *${newEvents}*`,
+                ``,
+                `🔗 Painel: ${ownerBaseUrl}/dashboard/admin?tab=overview`
+            ].join('\n');
+
+            await whatsappService.sendMessage(process.env.OWNER_WHATSAPP, msg).catch(() => null);
+        } catch (err) {
+            console.error('❌ [Automation] Daily owner summary error:', err);
+        }
+    });
 };
 
 module.exports = { initAutomations };

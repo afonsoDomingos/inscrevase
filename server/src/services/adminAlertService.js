@@ -1,6 +1,16 @@
 const User = require('../models/User');
 const NotificationService = require('./notificationService');
 const pushController = require('../controllers/pushController');
+const whatsappService = require('./whatsappService');
+
+const OWNER_WHATSAPP = process.env.OWNER_WHATSAPP;
+
+function toAbsoluteUrl(url) {
+    if (!url) return null;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    const base = process.env.CLIENT_URL || 'https://inscreva-se.com';
+    return `${base.replace(/\/$/, '')}${url.startsWith('/') ? '' : '/'}${url}`;
+}
 
 // In-memory cooldown guard to reduce notification noise.
 // Key format recommendation: `${type}:${entityId}`
@@ -22,7 +32,8 @@ async function notifyAdmins({
     actionUrl = '/dashboard/admin',
     type = 'system',
     cooldownKey = null,
-    cooldownMs = 10 * 60 * 1000
+    cooldownMs = 10 * 60 * 1000,
+    notifyOwner = true
 }) {
     if (!title || !content) return;
     if (shouldSkipByCooldown(cooldownKey, cooldownMs)) return;
@@ -30,27 +41,39 @@ async function notifyAdmins({
     const admins = await User.find({ role: { $in: ['admin', 'SuperAdmin'] } }).select('_id');
     if (!admins.length) return;
 
-    await Promise.all(admins.map(async (admin) => {
-        // Avoid self-alerts when sender is also an admin
-        if (senderId && admin._id.toString() === senderId.toString()) return;
+    const ownerUrl = toAbsoluteUrl(actionUrl);
+    const ownerMessage = ownerUrl
+        ? `🚨 *${title}*\n${content}\n🔗 ${ownerUrl}`
+        : `🚨 *${title}*\n${content}`;
 
-        await NotificationService.notify({
-            recipient: admin._id,
-            sender: senderId || admin._id,
-            title,
-            content,
-            type,
-            actionUrl
-        });
+    const ownerPromise = (OWNER_WHATSAPP && notifyOwner)
+        ? whatsappService.sendMessage(OWNER_WHATSAPP, ownerMessage).catch(() => null)
+        : Promise.resolve(null);
 
-        await pushController.sendNotification(
-            admin._id,
-            title,
-            content,
-            '/logo.png',
-            actionUrl
-        );
-    }));
+    await Promise.all([
+        Promise.all(admins.map(async (admin) => {
+            // Avoid self-alerts when sender is also an admin
+            if (senderId && admin._id.toString() === senderId.toString()) return;
+
+            await NotificationService.notify({
+                recipient: admin._id,
+                sender: senderId || admin._id,
+                title,
+                content,
+                type,
+                actionUrl
+            });
+
+            await pushController.sendNotification(
+                admin._id,
+                title,
+                content,
+                '/logo.png',
+                actionUrl
+            );
+        })),
+        ownerPromise
+    ]);
 }
 
 module.exports = {
