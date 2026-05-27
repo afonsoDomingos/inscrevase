@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const Visit = require('../models/Visit');
 const geoip = require('geoip-lite');
 const whatsappService = require('../services/whatsappService');
+const AdminAlertService = require('../services/adminAlertService');
 
 
 exports.createForm = async (req, res) => {
@@ -99,7 +100,8 @@ exports.createForm = async (req, res) => {
 
         // Notify platform owner (WhatsApp) about newly created event
         // (WhatsApp works similar to payment alerts: even if admin app is closed)
-        if (process.env.OWNER_WHATSAPP) {
+        const ownerWhatsapp = await AdminAlertService.getOwnerWhatsapp();
+        if (ownerWhatsapp) {
             try {
                 const ownerBaseUrl = process.env.CLIENT_URL || 'https://inscreva-se.com';
                 const creator = await User.findById(req.user.id).select('name email');
@@ -113,7 +115,7 @@ exports.createForm = async (req, res) => {
                     `Painel admin: ${ownerBaseUrl}/dashboard/admin?tab=forms`
                 ].join('\n');
 
-                await whatsappService.sendMessage(process.env.OWNER_WHATSAPP, msg).catch(() => null);
+                await whatsappService.sendMessage(ownerWhatsapp, msg).catch(() => null);
             } catch (e) {
                 // Avoid blocking event creation if WhatsApp fails
                 console.error('[OWNER WA] Failed to notify about new form:', e.message);

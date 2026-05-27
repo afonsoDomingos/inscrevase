@@ -1,9 +1,15 @@
 const User = require('../models/User');
+const GlobalSettings = require('../models/GlobalSettings');
 const NotificationService = require('./notificationService');
 const pushController = require('../controllers/pushController');
 const whatsappService = require('./whatsappService');
 
 const OWNER_WHATSAPP = process.env.OWNER_WHATSAPP;
+
+async function getOwnerWhatsapp() {
+    const ownerSetting = await GlobalSettings.findOne({ key: 'owner_whatsapp' }).select('value');
+    return ownerSetting?.value || OWNER_WHATSAPP || null;
+}
 
 function toAbsoluteUrl(url) {
     if (!url) return null;
@@ -46,8 +52,9 @@ async function notifyAdmins({
         ? `🚨 *${title}*\n${content}\n🔗 ${ownerUrl}`
         : `🚨 *${title}*\n${content}`;
 
-    const ownerPromise = (OWNER_WHATSAPP && notifyOwner)
-        ? whatsappService.sendMessage(OWNER_WHATSAPP, ownerMessage).catch(() => null)
+    const ownerWhatsapp = await getOwnerWhatsapp();
+    const ownerPromise = (ownerWhatsapp && notifyOwner)
+        ? whatsappService.sendMessage(ownerWhatsapp, ownerMessage).catch(() => null)
         : Promise.resolve(null);
 
     await Promise.all([
@@ -77,5 +84,6 @@ async function notifyAdmins({
 }
 
 module.exports = {
-    notifyAdmins
+    notifyAdmins,
+    getOwnerWhatsapp
 };

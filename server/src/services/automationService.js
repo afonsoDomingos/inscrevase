@@ -752,7 +752,8 @@ const initAutomations = () => {
 
     // 14. Daily summary to platform owner (WhatsApp)
     cron.schedule('0 20 * * *', async () => {
-        if (!process.env.OWNER_WHATSAPP) return;
+        const ownerWhatsapp = await AdminAlertService.getOwnerWhatsapp();
+        if (!ownerWhatsapp) return;
 
         console.log('📊 [Automation] Sending daily growth summary to owner...');
         try {
@@ -775,7 +776,7 @@ const initAutomations = () => {
                 `🔗 Painel: ${ownerBaseUrl}/dashboard/admin?tab=overview`
             ].join('\n');
 
-            await whatsappService.sendMessage(process.env.OWNER_WHATSAPP, msg).catch(() => null);
+            await whatsappService.sendMessage(ownerWhatsapp, msg).catch(() => null);
         } catch (err) {
             console.error('❌ [Automation] Daily owner summary error:', err);
         }

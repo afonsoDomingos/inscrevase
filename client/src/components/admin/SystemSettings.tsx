@@ -36,11 +36,14 @@ export default function SystemSettings() {
     const [savingPixel, setSavingPixel] = useState(false);
     const [whatsappNumber, setWhatsappNumber] = useState('');
     const [savingWhatsapp, setSavingWhatsapp] = useState(false);
+    const [ownerWhatsappNumber, setOwnerWhatsappNumber] = useState('');
+    const [savingOwnerWhatsapp, setSavingOwnerWhatsapp] = useState(false);
 
     useEffect(() => {
         fetchSettings();
         fetchPixel();
         fetchWhatsapp();
+        fetchOwnerWhatsapp();
     }, []);
 
     const fetchWhatsapp = async () => {
@@ -50,6 +53,16 @@ export default function SystemSettings() {
             if (data.number) setWhatsappNumber(data.number);
         } catch (error) {
             console.error('Error fetching whatsapp:', error);
+        }
+    };
+
+    const fetchOwnerWhatsapp = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings/owner-whatsapp`);
+            const data = await response.json();
+            if (data.number) setOwnerWhatsappNumber(data.number);
+        } catch (error) {
+            console.error('Error fetching owner whatsapp:', error);
         }
     };
 
@@ -177,6 +190,33 @@ export default function SystemSettings() {
             toast.error('Erro ao salvar whatsapp');
         } finally {
             setSavingWhatsapp(false);
+        }
+    };
+
+    const handleSaveOwnerWhatsapp = async () => {
+        if (!ownerWhatsappNumber) return;
+        setSavingOwnerWhatsapp(true);
+        try {
+            const token = Cookies.get('token');
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings/owner-whatsapp`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ number: ownerWhatsappNumber })
+            });
+
+            if (response.ok) {
+                toast.success('WhatsApp do dono atualizado!');
+            } else {
+                throw new Error('Erro ao salvar whatsapp do dono');
+            }
+        } catch (error) {
+            console.error('Save owner whatsapp error:', error);
+            toast.error('Erro ao salvar whatsapp do dono');
+        } finally {
+            setSavingOwnerWhatsapp(false);
         }
     };
 
@@ -417,6 +457,27 @@ export default function SystemSettings() {
                             {savingWhatsapp ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
                             Atualizar Configurações Gerais
                         </button>
+
+                        <div style={{ borderTop: '1px solid #eee', marginTop: '1rem', paddingTop: '1.2rem' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, color: '#888', marginBottom: '8px', textTransform: 'uppercase' }}>
+                                <MessageCircle size={14} /> WhatsApp do Dono (Alertas Críticos)
+                            </label>
+                            <input
+                                type="text"
+                                value={ownerWhatsappNumber}
+                                onChange={(e) => setOwnerWhatsappNumber(e.target.value)}
+                                placeholder="Ex: 258847877405"
+                                style={{ width: '100%', padding: '15px 20px', borderRadius: '15px', border: '1px solid #eee', background: '#fcfcfc', fontWeight: 700, fontSize: '1.1rem', color: '#000' }}
+                            />
+                            <button
+                                onClick={handleSaveOwnerWhatsapp}
+                                disabled={savingOwnerWhatsapp}
+                                style={{ padding: '1rem', width: '100%', marginTop: '0.9rem', background: '#111', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                            >
+                                {savingOwnerWhatsapp ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+                                Atualizar WhatsApp do Dono
+                            </button>
+                        </div>
                     </div>
                 </motion.div>
             )}

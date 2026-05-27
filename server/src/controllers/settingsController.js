@@ -228,3 +228,46 @@ exports.updateSupportWhatsapp = async (req, res) => {
         res.status(500).json({ message: 'Error updating support whatsapp' });
     }
 };
+
+/**
+ * Get owner WhatsApp number for critical platform alerts
+ */
+exports.getOwnerWhatsapp = async (req, res) => {
+    try {
+        const settings = await GlobalSettings.findOne({ key: 'owner_whatsapp' });
+        res.status(200).json({ number: settings ? settings.value : (process.env.OWNER_WHATSAPP || '258847877405') });
+    } catch (error) {
+        console.error('[SETTINGS] Error fetching owner whatsapp:', error.message);
+        res.status(500).json({ message: 'Error fetching owner whatsapp' });
+    }
+};
+
+/**
+ * Update owner WhatsApp number for critical platform alerts (Admin only)
+ */
+exports.updateOwnerWhatsapp = async (req, res) => {
+    try {
+        const { number } = req.body;
+
+        if (!number) {
+            return res.status(400).json({ message: 'Owner WhatsApp number is required' });
+        }
+
+        const cleanNumber = String(number).replace(/\D/g, '');
+
+        const settings = await GlobalSettings.findOneAndUpdate(
+            { key: 'owner_whatsapp' },
+            {
+                key: 'owner_whatsapp',
+                value: cleanNumber,
+                lastUpdated: Date.now()
+            },
+            { upsert: true, new: true }
+        );
+
+        res.status(200).json({ message: 'Owner WhatsApp updated successfully', settings });
+    } catch (error) {
+        console.error('[SETTINGS] Error updating owner whatsapp:', error.message);
+        res.status(500).json({ message: 'Error updating owner whatsapp' });
+    }
+};

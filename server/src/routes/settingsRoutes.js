@@ -32,4 +32,10 @@ router.put('/meta-pixel', authMiddleware, adminMiddleware, settingsController.up
 router.get('/support-whatsapp', settingsController.getSupportWhatsapp);
 router.put('/support-whatsapp', authMiddleware, adminMiddleware, settingsController.updateSupportWhatsapp);
 
+/**
+ * OWNER WHATSAPP (critical platform alerts)
+ */
+router.get('/owner-whatsapp', settingsController.getOwnerWhatsapp);
+router.put('/owner-whatsapp', authMiddleware, adminMiddleware, settingsController.updateOwnerWhatsapp);
+
 module.exports = router;
