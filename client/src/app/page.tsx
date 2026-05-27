@@ -67,6 +67,18 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('motiva-visibility-change', {
+      detail: { visible: isMotivaVisible }
+    }));
+
+    return () => {
+      window.dispatchEvent(new CustomEvent('motiva-visibility-change', {
+        detail: { visible: false }
+      }));
+    };
+  }, [isMotivaVisible]);
+
   const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
   const [impactStats, setImpactStats] = useState<PublicImpactStats | null>(null);
 

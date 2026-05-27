@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function ScrollToTop() {
     const [isVisible, setIsVisible] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [isMotivaVisible, setIsMotivaVisible] = useState(false);
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -28,6 +29,16 @@ export default function ScrollToTop() {
         return () => window.removeEventListener('scroll', toggleVisibility);
     }, []);
 
+    useEffect(() => {
+        const handleMotivaVisibility = (event: Event) => {
+            const customEvent = event as CustomEvent<{ visible?: boolean }>;
+            setIsMotivaVisible(!!customEvent.detail?.visible);
+        };
+
+        window.addEventListener('motiva-visibility-change', handleMotivaVisibility);
+        return () => window.removeEventListener('motiva-visibility-change', handleMotivaVisibility);
+    }, []);
+
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
@@ -37,7 +48,7 @@ export default function ScrollToTop() {
 
     return (
         <AnimatePresence>
-            {isVisible && (
+            {isVisible && !isMotivaVisible && (
                 <motion.button
                     initial={{ opacity: 0, scale: 0.5, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
