@@ -13,8 +13,8 @@ import {
 } from 'lucide-react';
 
 const menuItems = [
-    { id: 'plans', icon: <CreditCard size={20} />, label: 'Planos Premium', target: 'plans-section' },
     { id: 'sectors', icon: <Zap size={20} />, label: 'Sectores', target: 'sectors-section' },
+    { id: 'plans', icon: <CreditCard size={20} />, label: 'Planos Premium', target: 'plans-section' },
     { id: 'impact', icon: <BarChart3 size={20} />, label: 'Impacto Global', target: 'results-section' },
     { id: 'payments', icon: <CreditCard size={20} />, label: 'Pagamentos', target: 'payments-section' },
     { id: 'milestones', icon: <Trophy size={20} />, label: 'Meus Marcos', target: 'milestones-section' },
