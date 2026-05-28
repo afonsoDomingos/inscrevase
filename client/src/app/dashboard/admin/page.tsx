@@ -1640,30 +1640,27 @@ function AdminDashboardContent() {
                                                 <div style={{ width: '180px', height: '180px' }}>
                                                     <ResponsiveContainer width="100%" height="100%">
                                                         <PieChart onMouseLeave={() => setActiveOriginIndex(-1)}>
-                                                            {(
-                                                                <Pie
-                                                                    data={[
-                                                                        { name: 'Nativo', value: stats?.authStats?.native || 0 },
-                                                                        { name: 'Google', value: stats?.authStats?.google || 0 },
-                                                                        { name: 'LinkedIn', value: stats?.authStats?.linkedin || 0 },
-                                                                    ]}
-                                                                    innerRadius={50}
-                                                                    outerRadius={70}
-                                                                    paddingAngle={5}
-                                                                    dataKey="value"
-                                                                    activeIndex={activeOriginIndex !== -1 ? activeOriginIndex : undefined}
-                                                                    activeShape={renderActiveShape}
-                                                                    {...{ onMouseEnter: (_: any, index: number) => setActiveOriginIndex(index) }}
-                                                                >
-                                                                    <Cell fill="#1a1a1a" />
-                                                                    <Cell fill="#db4437" />
-                                                                    <Cell fill="#0077b5" />
-                                                                </Pie>
-                                                                /* eslint-disable @typescript-eslint/no-explicit-any */
-                                                            ) as any}
-                                                            /* eslint-enable @typescript-eslint/no-explicit-any */
+                                                            <Pie
+                                                                data={[
+                                                                    { name: 'Nativo', value: stats?.authStats?.native || 0 },
+                                                                    { name: 'Google', value: stats?.authStats?.google || 0 },
+                                                                    { name: 'LinkedIn', value: stats?.authStats?.linkedin || 0 },
+                                                                ]}
+                                                                innerRadius={50}
+                                                                outerRadius={70}
+                                                                paddingAngle={5}
+                                                                dataKey="value"
+                                                                {...{
+                                                                    activeIndex: activeOriginIndex !== -1 ? activeOriginIndex : undefined,
+                                                                    activeShape: renderActiveShape,
+                                                                    onMouseEnter: (_: unknown, index: number) => setActiveOriginIndex(index)
+                                                                }}
+                                                            >
+                                                                <Cell fill="#1a1a1a" />
+                                                                <Cell fill="#db4437" />
+                                                                <Cell fill="#0077b5" />
+                                                            </Pie>
                                                             <RechartsTooltip contentStyle={{ borderRadius: '12px' }} />
-
                                                         </PieChart>
                                                     </ResponsiveContainer>
                                                 </div>
