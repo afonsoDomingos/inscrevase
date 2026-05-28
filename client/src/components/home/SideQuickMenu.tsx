@@ -15,11 +15,11 @@ import {
 const menuItems = [
     { id: 'sectors', icon: <Zap size={20} />, label: 'Sectores', target: 'sectors-section' },
     { id: 'plans', icon: <CreditCard size={20} />, label: 'Planos Premium', target: 'plans-section' },
+    { id: 'payments', icon: <CreditCard size={20} />, label: 'Pagamentos', target: 'payments-section' },
     { id: 'impact', icon: <BarChart3 size={20} />, label: 'Impacto Global', target: 'results-section' },
     { id: 'milestones', icon: <Trophy size={20} />, label: 'Meus Marcos', target: 'milestones-section' },
     { id: 'tutorials', icon: <PlayCircle size={20} />, label: 'Tutoriais', target: 'tutorials-section' },
     { id: 'faq', icon: <HelpCircle size={20} />, label: 'Dúvidas', target: 'faq-section' },
-    { id: 'payments', icon: <CreditCard size={20} />, label: 'Pagamentos', target: 'payments-section' },
     { id: 'support', icon: <MessageCircle size={20} />, label: 'Suporte', target: '/suporte', isLink: true },
     { id: 'dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard', target: '/dashboard', isLink: true },
 ];
