@@ -215,7 +215,7 @@ export default function MentorMilestonesSection() {
                     style={{ marginTop: '60px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', color: '#666' }}
                 >
                     <TrendingUp size={20} color="#D4AF37" />
-                    <span>Junte-se a centenas de criadores angolanos e comece a sua jornada de sucesso.</span>
+                    <span>Junte-se a centenas de criadores de sucesso e comece a sua jornada hoje mesmo.</span>
                 </motion.div>
             </div>
         </section>
