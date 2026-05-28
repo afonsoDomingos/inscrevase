@@ -463,6 +463,33 @@
         "planSubscriptions": "Plan Subscriptions",
         "newsletter": "Newsletter",
         "manageBlog": "Manage Blog",
+        "adminNewsletter": {
+            "title": "Newsletter Subscribers",
+            "subtitle": "Manage newsletter subscribers",
+            "searchPlaceholder": "Search by email...",
+            "export": "Export CSV",
+            "table": {
+                "email": "Email",
+                "date": "Subscription Date",
+                "status": "Status",
+                "actions": "Actions"
+            },
+            "status": {
+                "active": "Active",
+                "unsubscribed": "Unsubscribed"
+            },
+            "stats": {
+                "total": "Total: {count} subscribers",
+                "growth": "Growth"
+            },
+            "messages": {
+                "loadError": "Error loading newsletter subscribers",
+                "funcSoon": "Feature under development"
+            },
+            "actions": {
+                "sendIndividual": "Send individual message"
+            }
+        },
         "blogArticles": "Blog Articles",
         "ads": "Ads",
         "smartlinks": "SmartLinks",

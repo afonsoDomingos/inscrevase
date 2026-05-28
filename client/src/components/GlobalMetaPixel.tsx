@@ -14,11 +14,11 @@ export default function GlobalMetaPixel() {
                 if (data.pixelId) {
                     setPixelId(data.pixelId);
                 } else {
-                    setPixelId("1624084229040413"); // Fallback
+                    setPixelId("1468106138155619"); // Fallback
                 }
             } catch (error) {
                 console.error('Error fetching global pixel:', error);
-                setPixelId("1624084229040413"); // Fallback on error
+                setPixelId("1468106138155619"); // Fallback on error
             }
         };
 

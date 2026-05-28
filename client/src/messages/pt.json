@@ -560,6 +560,33 @@
         "planSubscriptions": "Assinaturas Planos",
         "newsletter": "Newsletter",
         "manageBlog": "Gerenciar Blog",
+        "adminNewsletter": {
+            "title": "Assinantes da Newsletter",
+            "subtitle": "Gerar assinantes da newsletter",
+            "searchPlaceholder": "Pesquisar por email...",
+            "export": "Exportar CSV",
+            "table": {
+                "email": "E-mail",
+                "date": "Data de Inscrição",
+                "status": "Status",
+                "actions": "Ações"
+            },
+            "status": {
+                "active": "Ativo",
+                "unsubscribed": "Cancelado"
+            },
+            "stats": {
+                "total": "Total: {count} assinantes",
+                "growth": "Crescimento"
+            },
+            "messages": {
+                "loadError": "Erro ao carregar assinantes da newsletter",
+                "funcSoon": "Funcionalidade em desenvolvimento"
+            },
+            "actions": {
+                "sendIndividual": "Enviar mensagem individual"
+            }
+        },
         "submissionNotFound": "Inscrição não encontrada",
         "cancelAlert": "Tem certeza que deseja cancelar esta inscrição? Esta ação não pode ser desfeita.",
         "cancelSuccess": "Inscrição cancelada com sucesso.",
