@@ -73,7 +73,20 @@ const itemVariants = {
     visible: { opacity: 1, y: 0, transition: { type: 'spring', damping: 25, stiffness: 400 } }
 };
 
-const renderActiveShape = (props: any) => {
+interface ActiveShapeProps {
+    cx: number;
+    cy: number;
+    innerRadius: number;
+    outerRadius: number;
+    startAngle: number;
+    endAngle: number;
+    fill: string;
+    payload: any;
+    percent: number;
+    value: number;
+}
+
+const renderActiveShape = (props: ActiveShapeProps) => {
     const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
     return (
         <g>
