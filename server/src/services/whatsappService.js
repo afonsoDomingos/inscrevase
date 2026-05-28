@@ -63,7 +63,7 @@ class WhatsAppService {
                     this.isConnected = false;
                     this.isInitializing = false;
                     this.qrCodeData = null; // Clean false QR codes from ghost sessions!
-                    
+
                     if (statusCode !== DisconnectReason.loggedOut) {
                         this.isReconnecting = true;
                         console.log('🔄 [WA] Tentando reconectar em 10s...');
@@ -71,7 +71,7 @@ class WhatsAppService {
                     } else {
                         console.log('🚪 [WA] Logout explícito! Requer novo QR Code.');
                         this.isReconnecting = false;
-                        this.forceRestart(); 
+                        this.forceRestart();
                     }
                 } else if (connection === 'open') {
                     console.log('✅ [WA] LIGADO E PRONTO PARA ENVIAR MENSAGENS!');
@@ -100,14 +100,14 @@ class WhatsAppService {
     async requestPairingCode(phoneNumber) {
         if (!this.sock) throw new Error('Servidor não está a escutar ligações.');
         if (this.isConnected) throw new Error('WhatsApp já está ligado.');
-        
+
         const clean = phoneNumber.replace(/[^0-9]/g, '');
         if (clean.length < 9) throw new Error('Número de telefone muito curto.');
-        
+
         console.log(`[WA] Requisitando código de vinculação para: ${clean}`);
         // Aguarda 1.5s antes do pedido conforme sugestões do próprio Baileys
         await new Promise(r => setTimeout(r, 1500));
-        
+
         const code = await this.sock.requestPairingCode(clean);
         return code;
     }
@@ -116,10 +116,10 @@ class WhatsAppService {
         if (!this.isConnected || !this.sock) {
             throw new Error('WhatsApp não está conectado. Leia o QR Code primeiro.');
         }
-        // Limpar o número: só dígitos, sem o 'to' completo do Baileys
+        // Limpar o número: só dígitos
         let clean = to.replace(/[^0-9]/g, '');
-        
-        // Se tem 9 dígitos e começa por 8 (ex: 84, 82...), assume que é Moçambique e adiciona o 258
+
+        // Se tem 9 dígitos e começa por 8 (ex: 84, 82...), assume Moçambique
         if (clean.length === 9 && clean.startsWith('8')) {
             console.log(`[WA] Auto-corrigindo número sem indicativo: ${clean} -> 258${clean}`);
             clean = `258${clean}`;
@@ -128,16 +128,34 @@ class WhatsAppService {
         if (!clean || clean.length < 9) {
             throw new Error(`Número inválido: "${to}" → "${clean}"`);
         }
+
         const jid = `${clean}@s.whatsapp.net`;
-        console.log(`[WA] A enviar mensagem para ${jid}...`);
-        
+        console.log(`[WA] A verificar e enviar mensagem para ${jid}...`);
+
         const WhatsAppLog = require('../models/WhatsAppLog');
-        
+
         try {
-            await this.sock.sendMessage(jid, { text });
-            console.log(`✅ [WA] Mensagem enviada com sucesso para ${jid}`);
-            
-            // Gravação no log do MongoDB (Assíncrona / Non-blocking)
+            // ✅ VERIFICAR SE O NÚMERO EXISTE NO WHATSAPP ANTES DE ENVIAR
+            // Isto evita que a mensagem "entre" na Baileys mas nunca chegue ao destinatário
+            const [result] = await this.sock.onWhatsApp(jid);
+            if (!result || !result.exists) {
+                const errMsg = `O número +${clean} não está registado no WhatsApp. Verifique o número e tente novamente.`;
+                console.warn(`⚠️ [WA] ${errMsg}`);
+                WhatsAppLog.create({
+                    to: clean,
+                    message: text,
+                    status: 'error',
+                    errorReason: errMsg
+                }).catch(e => console.error('[WALog] Erro ao persistir:', e));
+                throw new Error(errMsg);
+            }
+
+            // Usar o JID real retornado pelo WhatsApp (pode ser ligeiramente diferente)
+            const realJid = result.jid || jid;
+
+            await this.sock.sendMessage(realJid, { text });
+            console.log(`✅ [WA] Mensagem enviada com sucesso para ${realJid}`);
+
             WhatsAppLog.create({
                 to: clean,
                 message: text,
@@ -146,16 +164,16 @@ class WhatsAppService {
 
             return true;
         } catch (error) {
-            console.error(`❌ [WA] Falha ao enviar para ${jid}:`, error);
-            
-            // Gravação do Erro no MongoDB
-            WhatsAppLog.create({
-                to: clean,
-                message: text,
-                status: 'error',
-                errorReason: error.message
-            }).catch(e => console.error('[WALog] Erro ao persistir falha:', e));
-            
+            // Não re-logar erros que já foram logados acima
+            if (!error.message?.includes('não está registado')) {
+                console.error(`❌ [WA] Falha ao enviar para ${jid}:`, error);
+                WhatsAppLog.create({
+                    to: clean,
+                    message: text,
+                    status: 'error',
+                    errorReason: error.message
+                }).catch(e => console.error('[WALog] Erro ao persistir falha:', e));
+            }
             throw error;
         }
     }

@@ -23,7 +23,7 @@ router.get('/logs', async (req, res) => {
             .skip((page - 1) * limit)
             .limit(limit);
         const total = await WhatsAppLog.countDocuments();
-        
+
         res.json({ logs, total, pages: Math.ceil(total / limit), currentPage: page });
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -34,9 +34,9 @@ router.get('/pairing-code', async (req, res) => {
     try {
         const { phone } = req.query;
         if (!phone) return res.send(toastPage('⚠️', '#f59e0b', 'Número em falta', 'Indique o seu número de telefone com indicativo.'));
-        
+
         const code = await whatsappService.requestPairingCode(phone);
-        
+
         res.send(`${styles}
             <div class="toast" style="max-width:320px; text-align:center; padding:30px;">
                 <div class="icon" style="font-size:3rem; margin-bottom:15px;">📲</div>
@@ -142,7 +142,7 @@ router.get('/status', (req, res) => res.json({ connected: whatsappService.isConn
 router.get('/test-message', async (req, res) => {
     try {
         if (!whatsappService.isConnected || !whatsappService.sock) {
-            return res.send(toastPage('⚠️','#f59e0b','WhatsApp Desligado','Ligue o WhatsApp antes de enviar mensagens de teste.'));
+            return res.send(toastPage('⚠️', '#f59e0b', 'WhatsApp Desligado', 'Ligue o WhatsApp antes de enviar mensagens de teste.'));
         }
         let targetNumber = '';
         let isSelf = false;
@@ -153,12 +153,12 @@ router.get('/test-message', async (req, res) => {
                 targetNumber = `258${targetNumber}`;
             }
             if (!targetNumber) {
-                return res.send(toastPage('⚠️','#f59e0b','Número Inválido','Forneça um número válido com código de país (ex: 25884...).'));
+                return res.send(toastPage('⚠️', '#f59e0b', 'Número Inválido', 'Forneça um número válido com código de país (ex: 25884...).'));
             }
         } else {
             const fullId = whatsappService.sock?.user?.id;
             if (!fullId) {
-                return res.send(toastPage('⏳','#6366f1','A Conectar...','O número ainda está a ser identificado. Aguarde uns segundos e tente novamente.'));
+                return res.send(toastPage('⏳', '#6366f1', 'A Conectar...', 'O número ainda está a ser identificado. Aguarde uns segundos e tente novamente.'));
             }
             // Para auto-mensagem
             targetNumber = fullId.split(':')[0]; // "258847877405"
@@ -168,21 +168,21 @@ router.get('/test-message', async (req, res) => {
         console.log(`[TEST] Enviando teste para: ${targetNumber}`);
 
         const defaultMessage = '🚀 *TESTE INSCREVA.SE*\n\nAutomação 100% operacional! ✅\n\nEste número comunica com a plataforma.';
-        const finalMessage = req.query.customMessage && req.query.customMessage.trim() !== '' 
-                             ? req.query.customMessage 
-                             : defaultMessage;
+        const finalMessage = req.query.customMessage && req.query.customMessage.trim() !== ''
+            ? req.query.customMessage
+            : defaultMessage;
 
         // Usar serviço comum
         await whatsappService.sendMessage(targetNumber, finalMessage);
 
-        const detailMsg = isSelf 
+        const detailMsg = isSelf
             ? `Enviada para <b>+${targetNumber}</b>. <br>Verifique o chat "Mensagens Guardadas".`
             : `Enviada para o número <br><b>+${targetNumber}</b> com sucesso.`;
 
-        res.send(toastPage('✅','#10b981','Mensagem Enviada!', detailMsg));
+        res.send(toastPage('✅', '#10b981', 'Mensagem Enviada!', detailMsg));
     } catch (e) {
         console.error('ERRO TEST:', e);
-        res.send(toastPage('❌','#ef4444','Erro no Envio', e.message));
+        res.send(toastPage('❌', '#ef4444', 'Erro no Envio', e.message));
     }
 });
 
@@ -231,7 +231,9 @@ router.get('/qr', async (req, res) => {
                     }
                 </script>
 
-                <a href="/api/admin/whatsapp/restart" class="link" style="margin-top:10px;">Desconectar / Trocar de Conta</a>`);
+                <a href="/api/admin/whatsapp/restart" class="link" style="margin-top:10px;">Desconectar / Trocar de Conta</a>
+                <a href="/api/admin/whatsapp/setup-owner" class="link" style="margin-top:4px;">⚙️ Configurar resumo diário (nº do dono)</a>`);
+
         }
 
         if (qrImage) {
@@ -276,4 +278,52 @@ router.get('/restart', async (req, res) => {
     res.send('<script>window.location.href="/api/admin/whatsapp/qr";</script>');
 });
 
+// Rota para configurar o número do dono que recebe os resumos diários
+router.get('/setup-owner', async (req, res) => {
+    const GlobalSettings = require('../models/GlobalSettings');
+    const { phone } = req.query;
+
+    if (!phone) {
+        // Mostrar formulário de configuração
+        const current = await GlobalSettings.findOne({ key: 'owner_whatsapp' }).select('value').catch(() => null);
+        const currentNumber = current?.value || process.env.OWNER_WHATSAPP || '(não configurado)';
+        return res.send(`${styles}
+            <div style="width:100%; max-width:340px; text-align:center; padding:10px;">
+                <div style="font-size:1.5rem; margin-bottom:8px;">⚙️</div>
+                <div class="title" style="margin-bottom:4px;">Configurar Resumo Diário</div>
+                <div class="sub" style="margin-bottom:16px;">
+                    Número actual: <b>+${currentNumber}</b><br>
+                    O resumo é enviado todos os dias às 20h.
+                </div>
+                <form action="/api/admin/whatsapp/setup-owner" method="GET" style="display:flex; flex-direction:column; gap:10px; width:100%;">
+                    <input type="text" name="phone" placeholder="Ex: 258847877405" 
+                        style="width:100%; padding:10px 14px; border-radius:12px; border:1.5px solid #ddd; font-family:'Inter',sans-serif; font-size:0.85rem; outline:none; text-align:center;" />
+                    <button type="submit" class="btn" style="width:100%;">💾 Guardar Número</button>
+                </form>
+                <a href="/api/admin/whatsapp/qr" class="link" style="margin-top:12px; display:block;">← Voltar ao painel</a>
+            </div>`);
+    }
+
+    // Guardar número na base de dados
+    try {
+        const clean = phone.replace(/[^0-9]/g, '');
+        if (!clean || clean.length < 9) {
+            return res.send(toastPage('⚠️', '#f59e0b', 'Número inválido', 'Insira o número com indicativo de país. Ex: 258847877405', '/api/admin/whatsapp/setup-owner'));
+        }
+        const finalNumber = clean.length === 9 && clean.startsWith('8') ? `258${clean}` : clean;
+
+        await GlobalSettings.findOneAndUpdate(
+            { key: 'owner_whatsapp' },
+            { key: 'owner_whatsapp', value: finalNumber, lastUpdated: new Date() },
+            { upsert: true, new: true }
+        );
+
+        console.log(`[WA] owner_whatsapp configurado para: ${finalNumber}`);
+        res.send(toastPage('✅', '#10b981', 'Número Guardado!', `Dono: <b>+${finalNumber}</b><br>Receberás o resumo todos os dias às 20h.`, '/api/admin/whatsapp/qr'));
+    } catch (e) {
+        res.send(toastPage('❌', '#ef4444', 'Erro ao guardar', e.message, '/api/admin/whatsapp/setup-owner'));
+    }
+});
+
 module.exports = router;
+
