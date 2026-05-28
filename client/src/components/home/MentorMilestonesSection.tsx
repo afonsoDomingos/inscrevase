@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Award, TrendingUp, CheckCircle2 } from 'lucide-react';
+import { TrendingUp, CheckCircle2 } from 'lucide-react';
 import { useTranslate } from '@/context/LanguageContext';
 
 const milestones = [
@@ -52,7 +52,7 @@ const milestones = [
 ];
 
 export default function MentorMilestonesSection() {
-    const { t } = useTranslate();
+    // Component logic here
 
     return (
         <section style={{
