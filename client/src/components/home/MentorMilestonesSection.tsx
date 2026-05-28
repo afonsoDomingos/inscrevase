@@ -9,34 +9,45 @@ const milestones = [
         id: 'emerald',
         title: 'Emerald Milestone',
         description: 'Parabéns por alcançar',
-        value: '100.000',
-        currency: 'KZ',
+        value: '100mil',
+        currency: 'Meticais',
         subtitle: 'Primeira grande conquista',
         color: '#10b981', // Emerald
         textColor: '#fff',
         icon: '💎'
     },
     {
-        id: 'gold',
-        title: 'Gold Milestone',
-        description: 'Vendas superiores a',
-        value: '500.000',
-        currency: 'KZ',
-        subtitle: 'Elite Inscreva-se',
-        color: '#fbbf24', // Amber/Gold
-        textColor: '#000',
-        icon: '🏆'
-    },
-    {
         id: 'black',
         title: 'Black Pearl',
         description: 'Parabéns por alcançar',
-        value: '1.000.000',
-        currency: 'KZ',
+        value: '1 milhão',
+        currency: 'Meticais',
         subtitle: 'Domínio de Mercado',
         color: '#000', // Black
         textColor: '#fff',
         icon: '🌟'
+    },
+    {
+        id: 'diamond',
+        title: 'Diamond Milestone',
+        description: 'Parabéns por alcançar',
+        value: '10 milhões',
+        currency: 'Meticais',
+        subtitle: 'Elite do Conhecimento',
+        color: '#3b82f6', // Bright Blue
+        textColor: '#fff',
+        icon: '💎'
+    },
+    {
+        id: 'ultimate',
+        title: 'Ultimate Champion',
+        description: 'Parabéns por alcançar',
+        value: '100 milhões',
+        currency: 'Meticais',
+        subtitle: 'Legado na plataforma',
+        color: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)',
+        textColor: '#000',
+        icon: '👑'
     }
 ];
 

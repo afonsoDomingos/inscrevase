@@ -30,7 +30,6 @@ import InstitutionalSection from "@/components/home/InstitutionalSection";
 import BlogPreviewSection from "@/components/home/BlogPreviewSection";
 import WeatherWidget from "@/components/home/WeatherWidget";
 import CurrencyWidget from "@/components/home/CurrencyWidget";
-import VideoTutorialsSection from "@/components/home/VideoTutorialsSection";
 
 
 const galleryImages = [
