@@ -75,7 +75,11 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                         onMouseLeave={() => setHoveredId(null)}
                     >
                         <motion.button
-                            whileHover={{ scale: 1.1, backgroundColor: '#fff' }}
+                            whileHover={{
+                                scale: 1.1,
+                                backgroundColor: '#fff',
+                                boxShadow: '0 8px 24px rgba(212, 175, 55, 0.2)'
+                            }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleAction(item)}
                             style={{
@@ -90,8 +94,8 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 cursor: 'pointer',
-                                color: isDashboard && !userRole ? '#D4AF37' : (item.id === 'milestones' ? '#D4AF37' : '#555'),
-                                transition: 'all 0.2s ease',
+                                color: (hoveredId === item.id) || (isDashboard && !userRole) || (item.id === 'milestones') ? '#D4AF37' : '#555',
+                                transition: 'all 0.3s ease',
                             }}
                         >
                             {React.cloneElement(item.icon as React.ReactElement, { size: 16 })}
