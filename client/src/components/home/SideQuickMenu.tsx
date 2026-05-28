@@ -51,7 +51,7 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
         <div style={{
             position: 'fixed',
             left: '10px',
-            top: '100px',
+            top: '75px',
             zIndex: 1000,
             display: 'flex',
             flexDirection: 'column',
