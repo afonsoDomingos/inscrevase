@@ -49,7 +49,7 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
         <div style={{
             position: 'fixed',
             left: '12px',
-            top: '65%', // Deslocado para baixo para evitar o botão de câmbio
+            top: '65%',
             transform: 'translateY(-50%)',
             zIndex: 1000,
             display: 'flex',
@@ -137,61 +137,22 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                 );
             })}
 
-            <AnimatePresence>
-                {hoveredId === item.id && (
-                    <motion.div
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
-                        style={{
-                            position: 'absolute',
-                            left: '50px',
-                            background: '#111',
-                            color: '#fff',
-                            padding: '6px 14px',
-                            borderRadius: '8px',
-                            fontSize: '0.85rem',
-                            fontWeight: 600,
-                            whiteSpace: 'nowrap',
-                            pointerEvents: 'none',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            zIndex: 1001,
-                        }}
-                    >
-                        {item.label}
-                        {/* Tooltip Triangle */}
-                        <div style={{
-                            position: 'absolute',
-                            left: '-4px',
-                            top: '50%',
-                            transform: 'translateY(-50%) rotate(45deg)',
-                            width: '8px',
-                            height: '8px',
-                            background: '#111',
-                        }} />
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* Premium Indicator / Logo at the bottom of the bar */}
+            <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+                style={{
+                    width: '40px',
+                    height: '40px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: 0.4,
+                    marginTop: '5px'
+                }}
+            >
+                <Zap size={14} color="#D4AF37" fill="#D4AF37" />
+            </motion.div>
         </div>
-    ))
-}
-
-{/* Premium Indicator / Logo at the bottom of the bar */ }
-<motion.div
-    animate={{ rotate: 360 }}
-    transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-    style={{
-        width: '40px',
-        height: '40px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        opacity: 0.4,
-        marginTop: '5px'
-    }}
->
-    <Zap size={14} color="#D4AF37" fill="#D4AF37" />
-</motion.div>
-        </div >
     );
 }
