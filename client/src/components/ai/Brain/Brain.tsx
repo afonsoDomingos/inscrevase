@@ -30,20 +30,20 @@ const TypewriterText = ({ text, speed = 8 }: { text: string, speed?: number }) =
     }, [text, speed]);
 
     return (
-        <ReactMarkdown 
-            components={{ 
+        <ReactMarkdown
+            components={{
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                p: ({node, ...props}) => <p style={{ margin: 0, paddingBottom: '2px', color: '#e2e8f0' }} {...props} />, 
+                p: ({ node, ...props }) => <p style={{ margin: 0, paddingBottom: '2px', color: '#e2e8f0' }} {...props} />,
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                strong: ({node, ...props}) => <strong style={{ color: '#fff', fontWeight: 800 }} {...props} />, 
+                strong: ({ node, ...props }) => <strong style={{ color: '#fff', fontWeight: 800 }} {...props} />,
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                a: ({node, href, children, ...props}) => {
+                a: ({ node, href, children, ...props }) => {
                     const isExternal = href?.startsWith('http');
                     return (
-                        <a 
-                            style={{ 
-                                color: '#facc15', 
-                                textDecoration: 'underline', 
+                        <a
+                            style={{
+                                color: '#facc15',
+                                textDecoration: 'underline',
                                 textUnderlineOffset: '3px',
                                 cursor: 'pointer',
                                 fontWeight: 700,
@@ -80,7 +80,7 @@ export default function Brain() {
     const pathname = usePathname();
     const { socket } = useSocket();
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    
+
     const [isVisible, setIsVisible] = useState(false);
     const [isHibernated, setIsHibernated] = useState(false);
     const [isMaximized, setIsMaximized] = useState(false);
@@ -91,7 +91,7 @@ export default function Brain() {
     const [isThinking, setIsThinking] = useState(false);
     const [isAlert, setIsAlert] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
-    const [chatHistory, setChatHistory] = useState<{role: 'user' | 'ai', text: string}[]>([]);
+    const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'ai', text: string }[]>([]);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isAuthorized, setIsAuthorized] = useState(true); // Aberto a todos por padrão
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -138,7 +138,7 @@ export default function Brain() {
     useEffect(() => {
         try {
             const savedHistory = localStorage.getItem('brain_chat_history');
-            
+
             if (savedHistory) {
                 try {
                     setChatHistory(JSON.parse(savedHistory));
@@ -168,10 +168,10 @@ export default function Brain() {
 
     const triggerAlert = useCallback((message: string, type: 'info' | 'error' | 'success' = 'info') => {
         if (type === 'error') setIsAlert(true);
-        
+
         // Inject as inline system message in chat instead of floating overlay
         setChatHistory(prev => [...prev, { role: 'system' as 'ai', text: `__SYSTEM__${type}__${message}` }]);
-        
+
         if (type === 'error') {
             setTimeout(() => setIsAlert(false), 4000);
         }
@@ -207,6 +207,63 @@ export default function Brain() {
         return "Boa noite";
     };
 
+    // Auto-open Brain logic (once a day, after 10s)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            try {
+                // Prevent auto-opening on auth pages or if hibernated
+                const authPages = ['/entrar', '/cadastro', '/forgot-password', '/reset-password'];
+                if (authPages.some(page => window.location.pathname.startsWith(page))) return;
+
+                const lastAutoOpenStr = localStorage.getItem('brain_last_auto_open');
+                const now = new Date();
+
+                let shouldOpen = false;
+                if (!lastAutoOpenStr) {
+                    shouldOpen = true;
+                } else {
+                    const lastAutoOpenDate = new Date(lastAutoOpenStr);
+                    if (lastAutoOpenDate.toDateString() !== now.toDateString()) {
+                        shouldOpen = true;
+                    }
+                }
+
+                if (shouldOpen) {
+                    setIsVisible(currentVis => {
+                        if (!currentVis && !isHibernated) {
+                            playSystemSound('intro');
+                            let userName = "";
+                            try {
+                                const storedUser = localStorage.getItem('user');
+                                if (storedUser) {
+                                    const userObj = JSON.parse(storedUser);
+                                    userName = userObj.name || "";
+                                }
+                            } catch (e) {
+                                console.error("Erro ao ler nome do utilizador:", e);
+                            }
+
+                            const namePrefix = userName ? `! ${userName}.` : ", Mestre.";
+                            const greeting = `${getTimeGreeting()}${namePrefix} Seja bem-vindo ao Inscreva-se. Como posso ajudar?`;
+
+                            speak(greeting);
+                            setChatHistory([{ role: 'ai', text: greeting }]);
+
+                            localStorage.setItem('brain_last_auto_open', now.toISOString());
+                            return true;
+                        }
+                        return currentVis;
+                    });
+                }
+            } catch (e) {
+                console.error('Error with auto-open brain logic:', e);
+            }
+        }, 10000);
+
+        return () => clearTimeout(timer);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isHibernated]);
+
     const fallbackToBrowserTTS = useCallback((text: string, onEndCallback?: () => void) => {
         if (!window.speechSynthesis) {
             if (onEndCallback) onEndCallback();
@@ -238,17 +295,17 @@ export default function Brain() {
         const availableVoices = voices.length > 0 ? voices : window.speechSynthesis.getVoices();
         const ptBRVoices = availableVoices.filter(v => v.lang.startsWith('pt-BR'));
         const ptPTVoices = availableVoices.filter(v => v.lang.startsWith('pt-PT'));
-        
+
         const preferredVoice = (preferredVoiceName && availableVoices.find(v => v.name === preferredVoiceName)) ||
-                               ptBRVoices.find(v => v.name.toLowerCase().includes('google')) ||
-                               ptBRVoices.find(v => v.name.toLowerCase().includes('natural')) ||
-                               ptPTVoices.find(v => v.name.toLowerCase().includes('natural')) ||
-                               ptBRVoices[0] ||
-                               ptPTVoices[0] || 
-                               availableVoices[0];
-        
+            ptBRVoices.find(v => v.name.toLowerCase().includes('google')) ||
+            ptBRVoices.find(v => v.name.toLowerCase().includes('natural')) ||
+            ptPTVoices.find(v => v.name.toLowerCase().includes('natural')) ||
+            ptBRVoices[0] ||
+            ptPTVoices[0] ||
+            availableVoices[0];
+
         if (preferredVoice) utterance.voice = preferredVoice;
-        
+
         // Falar imediatamente sem delay artificial
         window.speechSynthesis.speak(utterance);
     }, [voices, preferredVoiceName]);
@@ -358,7 +415,7 @@ Tudo fica centralizado num único lugar — mais organização, mais controlo e 
 Se és mentor, especialista ou empresa e queres escalar os teus eventos sem complicações, a Inscreva-se é a solução ideal para ti.
 
 Experimenta agora e leva os teus eventos para o próximo nível.”`;
-            
+
             setChatHistory(prev => [...prev, { role: 'ai', text: promoText + "\n\n**Nota:** Mestre, preparei também uma [apresentação visual completa em /promo](/promo)." }]);
             speak(promoText);
             setIsThinking(false);
@@ -396,7 +453,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
             try {
                 // 1. Scroll Nativo da Janela
                 window.scrollBy({ top: amount, behavior: 'smooth' });
-                
+
                 // 2. Scroll de Documento e Body
                 if (document.documentElement) document.documentElement.scrollBy({ top: amount, behavior: 'smooth' });
                 if (document.body) document.body.scrollBy({ top: amount, behavior: 'smooth' });
@@ -404,7 +461,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                 // 3. O Dashboard e outras páginas podem ter scroll preso num contentor main
                 const mainEl = document.querySelector('main');
                 if (mainEl) mainEl.scrollBy({ top: amount, behavior: 'smooth' });
-                
+
                 // 4. Algoritmo de Detecção de Scroller Ativo
                 // Procura o elemento com a maior altura de conteúdo (scrollHeight) e que seja maior que a tela
                 const allElements = document.querySelectorAll('div, section, main, article');
@@ -415,7 +472,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                     const htmlEl = el as HTMLElement;
                     const style = window.getComputedStyle(htmlEl);
                     const isScrollable = style.overflowY === 'auto' || style.overflowY === 'scroll' || style.overflow === 'auto';
-                    
+
                     if (isScrollable && htmlEl.scrollHeight > maxScroll) {
                         maxScroll = htmlEl.scrollHeight;
                         bestScroller = htmlEl;
@@ -438,7 +495,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
             // Privilegia o subir se a palavra cima estiver presente explícitamente e a direção descer não estiver.
             const isUp = wantsToScrollUp && !/(descer|baixo|fundo)/.test(lowerTranscript);
             performSuperScroll(isUp ? -window.innerHeight * 0.8 : window.innerHeight * 0.8);
-            
+
             const msg = isUp ? "A subir a página." : "A descer a página, Mestre.";
             setChatHistory(prev => [...prev, { role: 'ai', text: msg }]);
             speak(msg);
@@ -497,7 +554,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                 if (gotoMatch) {
                     const navUrl = gotoMatch[1].trim();
                     reply = reply.replace(/\[\[GOTO:.*?\]\]/g, '').trim();
-                    
+
                     // Navigate after a short delay
                     setTimeout(() => {
                         router.push(navUrl);
@@ -509,7 +566,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                 const actionMatches = [...reply.matchAll(/\[\[ACTION:(.*?)\]\]/g)];
                 if (actionMatches.length > 0) {
                     reply = reply.replace(/\[\[ACTION:.*?\]\]/g, '').trim();
-                    
+
                     // Dispatch the specific action events sequentially
                     setTimeout(async () => {
                         for (const match of actionMatches) {
@@ -536,7 +593,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 window.dispatchEvent(new Event(`brain-action-${actionName}`));
                                 triggerAlert(`A executar ação: ${actionName}`, 'success');
                             }
-                            
+
                             // Pausa dramática/UX de 3.5 segundos entre cada ação para o utilizador ver o que foi feito
                             await new Promise(resolve => setTimeout(resolve, 3500));
                         }
@@ -544,10 +601,10 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                 }
 
                 setChatHistory(prev => [...prev, { role: 'user', text: transcript }, { role: 'ai', text: reply }]);
-                
+
                 // Inteligência Neural: Leitura completa da resposta sem interrupções
                 speak(reply);
-                
+
                 triggerAlert("BRAIN processou sua consulta.");
             }
         } catch (error) {
@@ -688,36 +745,36 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                     const centerOffset = Math.abs(i - (barCount - 1) / 2);
                     const maxHeight = Math.max(12, 36 - centerOffset * 4);
                     const midHeight = Math.max(8, 22 - centerOffset * 2.5);
-                    
+
                     return (
                         <motion.div
                             key={i}
-                            animate={{ 
-                                height: isListening 
+                            animate={{
+                                height: isListening
                                     ? Math.max(4, (audioLevel / 100) * 45 - centerOffset * 2)
-                                    : isSpeaking 
-                                        ? [4, maxHeight, midHeight, maxHeight * 0.85, 4] 
+                                    : isSpeaking
+                                        ? [4, maxHeight, midHeight, maxHeight * 0.85, 4]
                                         : 4,
                                 opacity: isSpeaking ? 1 : (isListening && audioLevel > 5) ? 1 : 0.3
                             }}
                             transition={
-                                isSpeaking ? { 
+                                isSpeaking ? {
                                     duration: 0.6 + (i % 3) * 0.2,
                                     repeat: Infinity,
                                     repeatType: "mirror",
                                     ease: "easeInOut",
                                     delay: centerOffset * 0.08
-                                } : { 
+                                } : {
                                     type: 'spring',
                                     stiffness: 300,
                                     damping: 20
                                 }
                             }
-                            style={{ 
-                                width: '4px', 
-                                borderRadius: '9999px', 
+                            style={{
+                                width: '4px',
+                                borderRadius: '9999px',
                                 background: isAlert ? '#ef4444' : '#eab308',
-                                boxShadow: isSpeaking || (isListening && audioLevel > 10) ? `0 0 12px ${isAlert ? 'rgba(239,68,68,0.8)' : 'rgba(234,179,8,0.8)'}` : 'none' 
+                                boxShadow: isSpeaking || (isListening && audioLevel > 10) ? `0 0 12px ${isAlert ? 'rgba(239,68,68,0.8)' : 'rgba(234,179,8,0.8)'}` : 'none'
                             }}
                         />
                     );
@@ -735,7 +792,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
             // Se for algo urgente ou pessoal, o Brain intervém
             setIsAlert(true);
             setIsVisible(true);
-            
+
             const message = `Mestre, peço desculpa pela interrupção. ${data.title}. ${data.content}`;
             speak(message);
             setLastCommand(`ALERTA: ${data.title}`);
@@ -758,7 +815,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
     }, [hasSupport]);
 
     if (isHibernated) return null;
-    
+
     // Ocultar em páginas de autenticação para não poluir a UI de entrada
     const authPages = ['/entrar', '/cadastro', '/forgot-password', '/reset-password'];
     if (authPages.some(page => pathname?.startsWith(page))) return null;
@@ -876,15 +933,15 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                 }
             `}</style>
             {/* Monitor HUD — Centered */}
-            <div style={{ 
-                position: 'fixed', 
-                top: '50%', 
-                left: '50%', 
-                transform: 'translate(-50%, -50%)', 
-                zIndex: 99999, 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center', 
+            <div style={{
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                zIndex: 99999,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
                 pointerEvents: 'none'
             }}>
                 <AnimatePresence>
@@ -895,23 +952,23 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                             initial={{ opacity: 0, scale: 0.1, perspective: 2000, rotateX: -25, filter: 'blur(20px)' }}
                             animate={{ opacity: 1, scale: 1, rotateX: 0, filter: 'blur(0px)' }}
                             exit={{ opacity: 0, scale: 0, rotateX: 25, filter: 'blur(20px)' }}
-                            transition={{ 
-                                type: "spring", 
-                                damping: 22, 
+                            transition={{
+                                type: "spring",
+                                damping: 22,
                                 stiffness: 100,
                                 mass: 0.8,
                                 filter: { duration: 0.4 }
                             }}
-                            style={{ 
-                                position: 'relative', 
-                                width: isMaximized 
-                                    ? 'min(95vw, calc(90vh * 1.86))' 
-                                    : (isMobile ? '98vw' : '820px'), 
-                                height: isMaximized 
-                                    ? 'min(90vh, calc(95vw / 1.86))' 
-                                    : (isMobile ? '53vw' : '440px'), 
-                                cursor: isMobile || isMaximized ? 'default' : 'grab', 
-                                filter: isAlert ? 'drop-shadow(0 0 40px rgba(239,68,68,0.4))' : 'drop-shadow(0 0 30px rgba(234,179,8,0.2))', 
+                            style={{
+                                position: 'relative',
+                                width: isMaximized
+                                    ? 'min(95vw, calc(90vh * 1.86))'
+                                    : (isMobile ? '98vw' : '820px'),
+                                height: isMaximized
+                                    ? 'min(90vh, calc(95vw / 1.86))'
+                                    : (isMobile ? '53vw' : '440px'),
+                                cursor: isMobile || isMaximized ? 'default' : 'grab',
+                                filter: isAlert ? 'drop-shadow(0 0 40px rgba(239,68,68,0.4))' : 'drop-shadow(0 0 30px rgba(234,179,8,0.2))',
                                 pointerEvents: 'auto',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -952,16 +1009,16 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 </defs>
 
                                 <ellipse cx="410" cy="425" rx="180" ry="15" fill="rgba(0,0,0,0.5)" />
-                                <path 
-                                    d="M 0,0 Q 410,24 820,0 L 820,340 Q 410,316 0,340 Z" 
-                                    fill="none" 
-                                    stroke={isSpeaking ? "#eab308" : isAlert ? "rgba(239,68,68,0.15)" : "rgba(234,179,8,0.08)"} 
-                                    strokeWidth={isSpeaking ? "2" : "4"} 
-                                    filter={isSpeaking ? "url(#glowSpeaking)" : "blur(4px)"} 
+                                <path
+                                    d="M 0,0 Q 410,24 820,0 L 820,340 Q 410,316 0,340 Z"
+                                    fill="none"
+                                    stroke={isSpeaking ? "#eab308" : isAlert ? "rgba(239,68,68,0.15)" : "rgba(234,179,8,0.08)"}
+                                    strokeWidth={isSpeaking ? "2" : "4"}
+                                    filter={isSpeaking ? "url(#glowSpeaking)" : "blur(4px)"}
                                     style={{ transition: 'all 0.5s ease' }}
                                 />
                                 <path d="M 0,0 Q 410,24 820,0 L 820,340 Q 410,316 0,340 Z" fill="url(#bezelGrad)" stroke="#111" strokeWidth="1" />
-                                
+
                                 {/* Background Neural Grid */}
                                 <g opacity="0.05">
                                     <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -977,7 +1034,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
 
                                 <mask id="scanlineMask">
                                     <rect x="0" y="0" width="820" height="440" fill="white" />
-                                    {Array.from({length: 80}).map((_, i) => (
+                                    {Array.from({ length: 80 }).map((_, i) => (
                                         <rect key={i} x="12" y={14 + i * 4} width="796" height="1" fill="black" fillOpacity="0.15" />
                                     ))}
                                 </mask>
@@ -990,7 +1047,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 <path d="M 390,395 L 430,395 L 440,410 L 380,410 Z" fill="#151515" />
                                 <ellipse cx="410" cy="415" rx="160" ry="18" fill="#2a2a2a" stroke="#3a3a3a" strokeWidth="1" />
                                 <ellipse cx="410" cy="412" rx="155" ry="15" fill="#111" />
-                                
+
                                 <rect x="390" y="318" width="40" height="12" rx="2" fill="#0a0a0a" />
                                 <text x="410" y="326" textAnchor="middle" fontSize="6" fontWeight="bold" fill="#333" fontFamily="Arial" letterSpacing="2">BRAIN</text>
 
@@ -1003,38 +1060,38 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                             </svg>
 
                             {/* Content Overlays - Adjusted offsets for mobile to fit within curve */}
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.5, duration: 0.5 }}
-                                style={{ 
-                                    position: 'absolute', 
-                                    top: isMobile ? '5.5%' : '11%', 
-                                    left: isMobile ? '6.5%' : '6.7%', 
-                                    right: isMobile ? '6.5%' : '6.7%', 
-                                    bottom: isMobile ? '23%' : '26%', 
-                                    zIndex: 5, 
-                                    display: 'flex', 
+                                style={{
+                                    position: 'absolute',
+                                    top: isMobile ? '5.5%' : '11%',
+                                    left: isMobile ? '6.5%' : '6.7%',
+                                    right: isMobile ? '6.5%' : '6.7%',
+                                    bottom: isMobile ? '23%' : '26%',
+                                    zIndex: 5,
+                                    display: 'flex',
                                     flexDirection: 'row',
-                                    padding: isMobile ? '6px 8px' : '15px 20px', 
+                                    padding: isMobile ? '6px 8px' : '15px 20px',
                                     overflow: 'hidden',
                                     gap: isMobile ? '6px' : '0'
                                 }}
                             >
                                 {/* Left Column: Brain + Status */}
-                                    <div style={{ 
-                                        display: 'flex', 
-                                        flexDirection: 'column', 
-                                        alignItems: 'center', 
-                                        justifyContent: 'center', 
-                                        gap: isMobile ? '4px' : '10px', 
-                                        minWidth: isMobile ? '60px' : '180px',
-                                        padding: isMobile ? '2px' : '0',
-                                        background: isMobile ? 'rgba(255,255,255,0.03)' : 'none',
-                                        borderRadius: '12px',
-                                        width: isMobile ? '60px' : 'auto',
-                                        flexShrink: 0
-                                    }}>
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: isMobile ? '4px' : '10px',
+                                    minWidth: isMobile ? '60px' : '180px',
+                                    padding: isMobile ? '2px' : '0',
+                                    background: isMobile ? 'rgba(255,255,255,0.03)' : 'none',
+                                    borderRadius: '12px',
+                                    width: isMobile ? '60px' : 'auto',
+                                    flexShrink: 0
+                                }}>
                                     <div style={{ transform: isMobile ? 'scale(0.4)' : 'scale(0.75)', transformOrigin: 'center center', margin: isMobile ? '35px 0 -45px 0' : '0' }}>
                                         <CerberusVisual isListening={isListening} isThinking={isThinking} isAlert={isAlert} isSpeaking={isSpeaking} />
                                     </div>
@@ -1045,12 +1102,12 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                         <p style={{ color: '#9ca3af', fontSize: '9px', margin: '4px 0 0', lineHeight: '1.4', display: isMobile ? 'none' : 'block' }}>
                                             {isAlert ? 'Alerta!' : isThinking ? 'Analisando...' : 'Inscreva-se'}
                                         </p>
-                                        <div style={{ 
-                                            marginTop: isMobile ? '4px' : '15px', 
-                                            background: 'rgba(0,0,0,0.3)', 
-                                            padding: isMobile ? '2px' : '10px', 
-                                            borderRadius: '12px', 
-                                            width: '100%', 
+                                        <div style={{
+                                            marginTop: isMobile ? '4px' : '15px',
+                                            background: 'rgba(0,0,0,0.3)',
+                                            padding: isMobile ? '2px' : '10px',
+                                            borderRadius: '12px',
+                                            width: '100%',
                                             border: '1px solid rgba(255,255,255,0.03)',
                                             display: 'flex',
                                             justifyContent: 'center',
@@ -1061,21 +1118,21 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                             </div>
                                         </div>
                                     </div>
-                                    <div style={{ 
-                                        display: 'flex', 
-                                        gap: isMobile ? '0px' : '10px', 
+                                    <div style={{
+                                        display: 'flex',
+                                        gap: isMobile ? '0px' : '10px',
                                         alignItems: 'center',
                                         flexWrap: 'wrap',
                                         justifyContent: 'center',
                                         marginTop: isMobile ? '4px' : '0'
                                     }}>
                                         {isThinking && (
-                                            <button 
-                                                onClick={() => { 
-                                                    setIsThinking(false); 
-                                                    speak("Processamento interrompido pelo utilizador."); 
+                                            <button
+                                                onClick={() => {
+                                                    setIsThinking(false);
+                                                    speak("Processamento interrompido pelo utilizador.");
                                                     triggerAlert("Interrupção manual detectada.", "info");
-                                                }} 
+                                                }}
                                                 style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
                                                 title={isMobile ? undefined : "Parar Processamento"}
                                             >
@@ -1083,81 +1140,81 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                             </button>
                                         )}
                                         {isSpeaking && (
-                                            <button 
-                                                onClick={() => { 
-                                                    window.speechSynthesis?.cancel(); 
+                                            <button
+                                                onClick={() => {
+                                                    window.speechSynthesis?.cancel();
                                                     if (currentAudioRef.current) {
                                                         currentAudioRef.current.pause();
                                                         currentAudioRef.current = null;
                                                     }
-                                                    setIsSpeaking(false); 
-                                                    speak("Entendido. Silenciando."); 
-                                                }} 
+                                                    setIsSpeaking(false);
+                                                    speak("Entendido. Silenciando.");
+                                                }}
                                                 style={{ color: '#eab308', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
                                                 title={isMobile ? undefined : "Parar Fala"}
                                             >
                                                 <Square size={14} fill="currentColor" />
                                             </button>
                                         )}
-                                        <button 
-                                            onClick={() => { 
+                                        <button
+                                            onClick={() => {
                                                 setIsResetting(true);
-                                                setChatHistory([]); 
+                                                setChatHistory([]);
                                                 setLastCommand("");
                                                 setTextInput("");
                                                 if (window.speechSynthesis) window.speechSynthesis.cancel();
-                                                speak("Sistemas reiniciados. Memória limpa, Mestre."); 
-                                                triggerAlert("Monitor Reiniciado", "success"); 
+                                                speak("Sistemas reiniciados. Memória limpa, Mestre.");
+                                                triggerAlert("Monitor Reiniciado", "success");
                                                 setTimeout(() => setIsResetting(false), 1500);
-                                            }} 
-                                            style={{ color: '#10b981', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
+                                            }}
+                                            style={{ color: '#10b981', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
                                             data-tooltip={isMobile ? undefined : "Reiniciar Sistemas"}
                                         >
                                             <RotateCw size={isMobile ? 14 : 18} className={isResetting ? 'animate-spin' : ''} />
                                         </button>
-                                        <button 
-                                            onClick={() => setIsMaximized(!isMaximized)} 
-                                            style={{ color: '#38bdf8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
+                                        <button
+                                            onClick={() => setIsMaximized(!isMaximized)}
+                                            style={{ color: '#38bdf8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
                                             data-tooltip={isMobile ? undefined : (isMaximized ? "Minimizar Ecrã" : "Modo Cinema")}
                                         >
                                             {isMaximized ? <Minimize2 size={isMobile ? 14 : 18} /> : <Maximize2 size={isMobile ? 14 : 18} />}
                                         </button>
-                                        <button 
-                                            onClick={() => { 
+                                        <button
+                                            onClick={() => {
                                                 setIsShuttingDown(true);
-                                                playSystemSound('close'); 
-                                                speak("Desativando sistemas neurais. Para me reativar, será necessário recarregar a plataforma. Até logo, Mestre."); 
+                                                playSystemSound('close');
+                                                speak("Desativando sistemas neurais. Para me reativar, será necessário recarregar a plataforma. Até logo, Mestre.");
                                                 setTimeout(() => {
                                                     setIsHibernated(true);
                                                     setIsShuttingDown(false);
-                                                }, 2000); 
-                                            }} 
-                                            style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
+                                                }, 2000);
+                                            }}
+                                            style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
                                             data-tooltip={isMobile ? undefined : "Hibernar Sistema"}
                                         >
                                             <Power size={isMobile ? 14 : 18} />
                                         </button>
-                                        <button 
-                                            onClick={() => { 
-                                                setChatHistory([]); 
-                                                speak("Memória de chat limpa. Estou pronto para uma nova orquestração, Mestre."); 
-                                                triggerAlert("Histórico de chat reiniciado.", "success"); 
-                                            }} 
-                                            style={{ color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }} 
+                                        <button
+                                            onClick={() => {
+                                                setChatHistory([]);
+                                                speak("Memória de chat limpa. Estou pronto para uma nova orquestração, Mestre.");
+                                                triggerAlert("Histórico de chat reiniciado.", "success");
+                                            }}
+                                            style={{ color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
                                             data-tooltip={isMobile ? undefined : "Limpar Histórico"}
                                         >
                                             <Square size={isMobile ? 12 : 16} />
                                         </button>
-                                        <button 
-                                            onClick={() => { 
+                                        <button
+                                            onClick={() => {
                                                 setIsDisconnecting(true);
-                                                playSystemSound('close'); 
-                                                speak("Encerrando conexão neural."); 
+                                                playSystemSound('close');
+                                                speak("Encerrando conexão neural.");
                                                 setTimeout(() => {
                                                     setIsVisible(false);
                                                     setIsDisconnecting(false);
                                                 }, 1500);
-                                            }} 
+                                            }}
                                             style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '5px' }}
                                             data-tooltip={isMobile ? undefined : "Encerrar Sessão"}
                                         >
@@ -1183,22 +1240,22 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                     )}
 
                                     {lastCommand && !isListening && (
-                                        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1, borderColor: isThinking ? ['rgba(56,189,248,0.2)','rgba(56,189,248,0.8)','rgba(56,189,248,0.2)'] : 'rgba(234,179,8,0.2)', boxShadow: isThinking ? ['0 0 0px rgba(56,189,248,0)','0 0 15px rgba(56,189,248,0.3)','0 0 0px rgba(56,189,248,0)'] : 'none' }} transition={isThinking ? { duration: 1.5, repeat: Infinity } : {}} style={{ background: isThinking ? 'rgba(56, 189, 248, 0.15)' : 'rgba(234, 179, 8, 0.1)', border: '1px solid', padding: '10px 15px', borderRadius: '15px', display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', flexShrink: 0 }}><Terminal size={12} style={{ color: isThinking ? '#38bdf8' : '#eab308', minWidth: '12px' }} /><span style={{ color: isThinking ? '#38bdf8' : '#eab308', fontSize: '0.8rem', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'normal', wordBreak: 'break-word' }}>{lastCommand}</span></motion.div>
+                                        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1, borderColor: isThinking ? ['rgba(56,189,248,0.2)', 'rgba(56,189,248,0.8)', 'rgba(56,189,248,0.2)'] : 'rgba(234,179,8,0.2)', boxShadow: isThinking ? ['0 0 0px rgba(56,189,248,0)', '0 0 15px rgba(56,189,248,0.3)', '0 0 0px rgba(56,189,248,0)'] : 'none' }} transition={isThinking ? { duration: 1.5, repeat: Infinity } : {}} style={{ background: isThinking ? 'rgba(56, 189, 248, 0.15)' : 'rgba(234, 179, 8, 0.1)', border: '1px solid', padding: '10px 15px', borderRadius: '15px', display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', flexShrink: 0 }}><Terminal size={12} style={{ color: isThinking ? '#38bdf8' : '#eab308', minWidth: '12px' }} /><span style={{ color: isThinking ? '#38bdf8' : '#eab308', fontSize: '0.8rem', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'normal', wordBreak: 'break-word' }}>{lastCommand}</span></motion.div>
                                     )}
 
                                     <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: isMobile ? '8px' : '12px', fontSize: '0.95rem', color: '#d1d5db', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent', paddingRight: '10px', minHeight: '0', position: 'relative' }}>
                                         {/* Monitor Screen Overlay for effects */}
                                         <AnimatePresence>
                                             {(isResetting || isShuttingDown || isDisconnecting) && (
-                                                <motion.div 
+                                                <motion.div
                                                     initial={{ opacity: 0 }}
                                                     animate={{ opacity: 1 }}
                                                     exit={{ opacity: 0 }}
-                                                    style={{ 
-                                                        position: 'absolute', 
-                                                        inset: 0, 
-                                                        background: '#000', 
-                                                        zIndex: 100, 
+                                                    style={{
+                                                        position: 'absolute',
+                                                        inset: 0,
+                                                        background: '#000',
+                                                        zIndex: 100,
                                                         pointerEvents: 'none',
                                                         display: 'flex',
                                                         flexWrap: 'wrap',
@@ -1209,19 +1266,19 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                         color: isDisconnecting ? '#38bdf8' : (isShuttingDown ? '#ef4444' : '#eab308'),
                                                         lineHeight: '1',
                                                         justifyContent: 'center'
-                                                    }} 
+                                                    }}
                                                 >
                                                     {[...Array(500)].map((_, i) => (
-                                                        <motion.span 
+                                                        <motion.span
                                                             key={i}
-                                                            animate={{ 
+                                                            animate={{
                                                                 opacity: [0, 1, 0],
                                                                 color: isDisconnecting ? ['#38bdf8', '#fff', '#0369a1'] : (isShuttingDown ? ['#ef4444', '#fff', '#7f1d1d'] : ['#eab308', '#fff', '#ca8a04'])
                                                             }}
-                                                            transition={{ 
-                                                                duration: 0.2, 
-                                                                repeat: Infinity, 
-                                                                delay: Math.random() * 0.4 
+                                                            transition={{
+                                                                duration: 0.2,
+                                                                repeat: Infinity,
+                                                                delay: Math.random() * 0.4
                                                             }}
                                                         >
                                                             {Math.round(Math.random())}
@@ -1241,7 +1298,7 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                 const sysMsg = parts.slice(3).join('__');
                                                 const color = sysType === 'error' ? '#f87171' : sysType === 'success' ? '#4ade80' : '#94a3b8';
                                                 const icon = sysType === 'error' ? '⚠' : sysType === 'success' ? '✓' : 'ℹ';
-                                                
+
                                                 const handleCopyError = () => {
                                                     navigator.clipboard.writeText(sysMsg);
                                                     setCopiedIndex(idx);
@@ -1255,13 +1312,13 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sysMsg}</span>
                                                         </div>
                                                         {sysType === 'error' && (
-                                                            <button 
+                                                            <button
                                                                 onClick={handleCopyError}
-                                                                style={{ 
-                                                                    background: 'rgba(255,255,255,0.05)', 
-                                                                    border: 'none', 
-                                                                    borderRadius: '4px', 
-                                                                    padding: '4px', 
+                                                                style={{
+                                                                    background: 'rgba(255,255,255,0.05)',
+                                                                    border: 'none',
+                                                                    borderRadius: '4px',
+                                                                    padding: '4px',
                                                                     cursor: 'pointer',
                                                                     display: 'flex',
                                                                     alignItems: 'center',
@@ -1280,13 +1337,13 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                             if (isMobile && msg.role === 'ai') return null;
 
                                             return (
-                                            <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(12px)', border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`, padding: isMobile ? '8px 12px' : '12px 18px', borderRadius: '12px', maxWidth: '95%', wordBreak: 'break-word', boxShadow: '0 4px 15px rgba(0,0,0,0.15)' }}>
-                                                {msg.role === 'ai' ? (
-                                                    <div style={{ fontSize: '0.95rem', color: '#f8fafc', lineHeight: '1.6' }}>
-                                                        <TypewriterText text={msg.text} />
-                                                    </div>
-                                                ) : <span style={{ color: '#fef08a' }}>{msg.text}</span>}
-                                            </div>
+                                                <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(12px)', border: `1px solid ${msg.role === 'user' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`, padding: isMobile ? '8px 12px' : '12px 18px', borderRadius: '12px', maxWidth: '95%', wordBreak: 'break-word', boxShadow: '0 4px 15px rgba(0,0,0,0.15)' }}>
+                                                    {msg.role === 'ai' ? (
+                                                        <div style={{ fontSize: '0.95rem', color: '#f8fafc', lineHeight: '1.6' }}>
+                                                            <TypewriterText text={msg.text} />
+                                                        </div>
+                                                    ) : <span style={{ color: '#fef08a' }}>{msg.text}</span>}
+                                                </div>
                                             );
                                         }) : (
                                             <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0.3, gap: '8px' }}><div style={{ padding: '20px', textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}><p style={{ margin: 0, fontSize: '11px' }}>Sistemas Prontos.</p><p style={{ margin: 0, fontSize: '9px', marginTop: '4px' }}>Diga {"\""}Cérbero{"\""} ou clique no botão para testar.</p></div></div>
@@ -1312,19 +1369,19 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                             </div>
                                         )}
                                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '100%' }}>
-                                            <div className={`gemini-ai-wrapper ${isListening ? 'listening-pulse' : ''}`} style={{ 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
+                                            <div className={`gemini-ai-wrapper ${isListening ? 'listening-pulse' : ''}`} style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
                                                 border: isListening ? '1px solid #ef4444' : '1px solid transparent',
                                                 boxShadow: isListening ? '0 0 15px rgba(239, 68, 68, 0.3)' : 'none',
                                                 transition: 'all 0.3s ease',
                                                 height: isMobile ? '32px' : 'auto'
                                             }}>
                                                 <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', background: '#111', borderRadius: '48px', zIndex: 1, paddingRight: '4px' }}>
-                                                    <input 
-                                                        type="text" 
+                                                    <input
+                                                        type="text"
                                                         className="gemini-ai-input"
-                                                        value={textInput} 
+                                                        value={textInput}
                                                         onChange={(e) => setTextInput(e.target.value)}
                                                         onKeyDown={(e) => {
                                                             if (e.key === 'Enter' && textInput.trim()) {
@@ -1343,41 +1400,41 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                                                 return;
                                                             }
                                                             if (isListening) {
-                                                                    stopListening();
-                                                                    if (textInput.trim()) {
-                                                                        handleCommand(textInput.trim());
-                                                                        setTextInput("");
-                                                                    }
-                                                                } else {
-                                                                    if (!isMobile) playSystemSound('intro');
-                                                                    // Chamada direta para o browser não bloquear o start() da Web Speech API por falta de user gesture
-                                                                    startListening();
+                                                                stopListening();
+                                                                if (textInput.trim()) {
+                                                                    handleCommand(textInput.trim());
+                                                                    setTextInput("");
                                                                 }
-                                                            }}
-                                                            style={{
-                                                                background: 'none',
-                                                                border: 'none',
-                                                                cursor: 'pointer',
-                                                                color: isListening ? '#ef4444' : '#94a3b8',
-                                                                padding: '8px',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                transition: 'all 0.3s'
-                                                            }}
-                                                            data-tooltip={isMobile ? undefined : (isListening ? "Parar Escuta" : "Clica para Iniciar")}
-                                                        >
-                                                            {isListening ? (
-                                                                <div style={{ display: 'flex', gap: '2px' }}>
-                                                                    {[1,2,3].map(i => <motion.div key={i} animate={{ height: [4, 12, 4], opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1 }} style={{ width: '2px', background: '#ef4444', borderRadius: '9999px' }} />)}
-                                                                </div>
-                                                            ) : <Mic size={18} />}
-                                                        </button>
+                                                            } else {
+                                                                if (!isMobile) playSystemSound('intro');
+                                                                // Chamada direta para o browser não bloquear o start() da Web Speech API por falta de user gesture
+                                                                startListening();
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            background: 'none',
+                                                            border: 'none',
+                                                            cursor: 'pointer',
+                                                            color: isListening ? '#ef4444' : '#94a3b8',
+                                                            padding: '8px',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            transition: 'all 0.3s'
+                                                        }}
+                                                        data-tooltip={isMobile ? undefined : (isListening ? "Parar Escuta" : "Clica para Iniciar")}
+                                                    >
+                                                        {isListening ? (
+                                                            <div style={{ display: 'flex', gap: '2px' }}>
+                                                                {[1, 2, 3].map(i => <motion.div key={i} animate={{ height: [4, 12, 4], opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1 }} style={{ width: '2px', background: '#ef4444', borderRadius: '9999px' }} />)}
+                                                            </div>
+                                                        ) : <Mic size={18} />}
+                                                    </button>
                                                 </div>
                                             </div>
-                                            <button 
-                                                type="button" 
-                                                disabled={isThinking || !textInput.trim()} 
+                                            <button
+                                                type="button"
+                                                disabled={isThinking || !textInput.trim()}
                                                 onClick={() => {
                                                     if (textInput.trim()) {
                                                         handleCommand(textInput.trim());
@@ -1418,14 +1475,14 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
             {/* Trigger Button — Top Right (Only visible when HUD is closed) */}
             <AnimatePresence>
                 {!isVisible && (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, y: -20, scale: 0.8 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -20, scale: 0.8 }}
-                        style={{ 
-                            position: 'fixed', 
-                            top: isMobile ? '85px' : '100px', 
-                            right: '25px', 
+                        style={{
+                            position: 'fixed',
+                            top: isMobile ? '85px' : '100px',
+                            right: '25px',
                             zIndex: 100000,
                             pointerEvents: 'auto'
                         }}
@@ -1433,10 +1490,10 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                         <motion.button
                             whileHover={{ scale: 1.1, boxShadow: '0 0 40px rgba(234, 179, 8, 0.4)' }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => { 
-                                setIsVisible(true); 
+                            onClick={() => {
+                                setIsVisible(true);
                                 playSystemSound('intro');
-                                
+
                                 // Tenta obter o nome do utilizador do localStorage
                                 let userName = "";
                                 try {
@@ -1476,16 +1533,16 @@ Experimenta agora e leva os teus eventos para o próximo nível.”`;
                                 <div className="gemini-ai-button-glow" />
                             </div>
 
-                            <div style={{ 
-                                position: 'relative', 
-                                zIndex: 2, 
-                                background: '#111', 
-                                width: '100%', 
-                                height: '100%', 
-                                borderRadius: '50%', 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                justifyContent: 'center' 
+                            <div style={{
+                                position: 'relative',
+                                zIndex: 2,
+                                background: '#111',
+                                width: '100%',
+                                height: '100%',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
                             }}>
                                 <Command size={24} color="#fff" />
                             </div>

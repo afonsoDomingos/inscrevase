@@ -38,7 +38,7 @@ import { useCurrency } from '@/context/CurrencyContext';
 import AdminMessageModal from '@/components/admin/AdminMessageModal';
 import AdminEmailModal from '@/components/admin/AdminEmailModal';
 import OnboardingTour, { Step } from '@/components/mentor/OnboardingTour';
-import { BarChart, Bar, XAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid, YAxis, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, RadialBarChart, RadialBar, Legend, ComposedChart, Line, Sector } from 'recharts';
 
 
 import ErrorBoundary from '@/components/common/ErrorBoundary';
@@ -73,6 +73,24 @@ const itemVariants = {
     visible: { opacity: 1, y: 0, transition: { type: 'spring', damping: 25, stiffness: 400 } }
 };
 
+const renderActiveShape = (props: any) => {
+    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+    return (
+        <g>
+            <Sector
+                cx={cx}
+                cy={cy}
+                innerRadius={innerRadius}
+                outerRadius={outerRadius + 8}
+                startAngle={startAngle}
+                endAngle={endAngle}
+                fill={fill}
+                style={{ filter: 'drop-shadow(0px 0px 4px rgba(0,0,0,0.3))' }}
+            />
+        </g>
+    );
+};
+
 function AdminDashboardContent() {
     const { t } = useTranslate();
     const { currency, formatPrice } = useCurrency();
@@ -81,13 +99,14 @@ function AdminDashboardContent() {
     const pathname = usePathname();
     const [user, setUser] = useState<UserData | null>(null);
     const [activeTab, setActiveTab] = useState<Tab>('overview');
+    const [activeOriginIndex, setActiveOriginIndex] = useState(-1);
 
     // Handle tab switching from URL
     useEffect(() => {
         const tab = searchParams.get('tab');
         if (tab && (['overview', 'users', 'forms', 'submissions', 'support', 'finance', 'newsletter', 'blog', 'lessons', 'ads', 'referrals', 'smartlinks', 'settings', 'marketing', 'payouts', 'books', 'whatsapp', 'vacancies', 'motiva', 'workspace'].includes(tab))) {
             setActiveTab(tab as Tab);
-            
+
             // Auto expand relevant sections if needed
             if (tab === 'vacancies' || tab === 'users' || tab === 'forms') {
                 setExpandedSections(prev => ({ ...prev, superAdmin: true }));
@@ -155,20 +174,20 @@ function AdminDashboardContent() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    const peakHourToday = trafficStats?.trafficByHour?.length 
-        ? [...trafficStats.trafficByHour].sort((a,b) => b.count - a.count)[0] 
+    const peakHourToday = trafficStats?.trafficByHour?.length
+        ? [...trafficStats.trafficByHour].sort((a, b) => b.count - a.count)[0]
         : null;
-        
-    const peakDayPatternData = trafficStats?.peakDays?.length 
-        ? [...trafficStats.peakDays].sort((a,b) => b.count - a.count)[0] 
+
+    const peakDayPatternData = trafficStats?.peakDays?.length
+        ? [...trafficStats.peakDays].sort((a, b) => b.count - a.count)[0]
         : null;
-        
-    const peakDayPatternName = peakDayPatternData 
+
+    const peakDayPatternName = peakDayPatternData
         ? [
             t('common.days.sun'), t('common.days.mon'), t('common.days.tue'),
             t('common.days.wed'), t('common.days.thu'), t('common.days.fri'),
             t('common.days.sat')
-          ][peakDayPatternData.day - 1] 
+        ][peakDayPatternData.day - 1]
         : null;
     const [topMentors, setTopMentors] = useState<TopMentor[]>([]);
     const [loading, setLoading] = useState(true);
@@ -390,13 +409,13 @@ function AdminDashboardContent() {
                 dashboardService.getAdminStats()
                     .then(setStats)
                     .catch(err => !handleUnauthorized(err) && console.error("Stats polling error", err));
-                
+
                 dashboardService.getTrafficStats(
                     trafficFilterDays > 0 ? { days: trafficFilterDays } : undefined
                 )
                     .then(setTrafficStats)
                     .catch(err => !handleUnauthorized(err) && console.error("Traffic polling error", err));
-                
+
                 if (user?.role === 'SuperAdmin') {
                     dashboardService.getSuperAdminAnalytics()
                         .then(setSuperAdminAnalytics)
@@ -985,7 +1004,7 @@ function AdminDashboardContent() {
                             id="admin-brain-trigger"
                             className="admin-header-btn-premium admin-header-brain-btn"
                         >
-                            <Brain size={16} className="brain-pulse" /> 
+                            <Brain size={16} className="brain-pulse" />
                             <span className="btn-text">Neural Brain</span>
                         </button>
 
@@ -1117,29 +1136,29 @@ function AdminDashboardContent() {
                                             >
                                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
                                                     {/* Device Distribution Chart */}
-                                                    <motion.div 
-                                                        variants={itemVariants} 
+                                                    <motion.div
+                                                        variants={itemVariants}
                                                         whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(212, 175, 55, 0.1)' }}
-                                                        className="luxury-card" 
-                                                        style={{ 
-                                                            background: 'linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%)', 
-                                                            padding: '1.8rem', 
-                                                            borderRadius: '30px', 
-                                                            border: '1px solid rgba(212, 175, 55, 0.2)', 
+                                                        className="luxury-card"
+                                                        style={{
+                                                            background: 'linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%)',
+                                                            padding: '1.8rem',
+                                                            borderRadius: '30px',
+                                                            border: '1px solid rgba(212, 175, 55, 0.2)',
                                                             minHeight: '320px',
                                                             position: 'relative',
                                                             overflow: 'hidden'
                                                         }}
                                                     >
                                                         <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '50%', filter: 'blur(30px)' }}></div>
-                                                        
+
                                                         <h3 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '12px', color: '#1a1a1a' }}>
                                                             <div style={{ background: 'rgba(212, 175, 55, 0.15)', padding: '8px', borderRadius: '12px' }}>
                                                                 <Smartphone size={22} className="gold-text" />
                                                             </div>
                                                             Dispositivos
                                                         </h3>
-                                                        
+
                                                         <div style={{ height: '220px', width: '100%' }}>
                                                             <ResponsiveContainer width="100%" height="100%">
                                                                 <PieChart>
@@ -1153,18 +1172,18 @@ function AdminDashboardContent() {
                                                                         animationBegin={0}
                                                                         animationDuration={1500}
                                                                     >
-                                                                        {superAdminAnalytics.deviceStats.map((entry, index) => ( 
-                                                                            <Cell 
-                                                                                key={`cell-${index}`} 
-                                                                                fill={index === 0 ? '#1452AD' : ['#ef4444', '#10b981', '#f59e0b'][index % 3]} 
-                                                                                stroke="none" 
-                                                                            /> 
+                                                                        {superAdminAnalytics.deviceStats.map((entry, index) => (
+                                                                            <Cell
+                                                                                key={`cell-${index}`}
+                                                                                fill={index === 0 ? '#1452AD' : ['#ef4444', '#10b981', '#f59e0b'][index % 3]}
+                                                                                stroke="none"
+                                                                            />
                                                                         ))}
                                                                     </Pie>
-                                                                    <RechartsTooltip 
-                                                                        contentStyle={{ 
-                                                                            borderRadius: '16px', 
-                                                                            border: 'none', 
+                                                                    <RechartsTooltip
+                                                                        contentStyle={{
+                                                                            borderRadius: '16px',
+                                                                            border: 'none',
                                                                             boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
                                                                             background: 'rgba(255,255,255,0.95)',
                                                                             backdropFilter: 'blur(10px)',
@@ -1172,11 +1191,11 @@ function AdminDashboardContent() {
                                                                         }}
                                                                         itemStyle={{ fontWeight: 700, color: '#111' }}
                                                                     />
-                                                                    <Legend 
-                                                                        verticalAlign="bottom" 
-                                                                        height={36} 
+                                                                    <Legend
+                                                                        verticalAlign="bottom"
+                                                                        height={36}
                                                                         iconType="diamond"
-                                                                        wrapperStyle={{ paddingTop: '20px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }} 
+                                                                        wrapperStyle={{ paddingTop: '20px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}
                                                                     />
                                                                 </PieChart>
                                                             </ResponsiveContainer>
@@ -1184,29 +1203,29 @@ function AdminDashboardContent() {
                                                     </motion.div>
 
                                                     {/* OS Distribution Chart */}
-                                                    <motion.div 
-                                                        variants={itemVariants} 
+                                                    <motion.div
+                                                        variants={itemVariants}
                                                         whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(0, 0, 0, 0.05)' }}
-                                                        className="luxury-card" 
-                                                        style={{ 
-                                                            background: 'linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%)', 
-                                                            padding: '1.8rem', 
-                                                            borderRadius: '30px', 
-                                                            border: '1px solid rgba(0, 0, 0, 0.05)', 
+                                                        className="luxury-card"
+                                                        style={{
+                                                            background: 'linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%)',
+                                                            padding: '1.8rem',
+                                                            borderRadius: '30px',
+                                                            border: '1px solid rgba(0, 0, 0, 0.05)',
                                                             minHeight: '320px',
                                                             position: 'relative',
                                                             overflow: 'hidden'
                                                         }}
                                                     >
                                                         <div style={{ position: 'absolute', bottom: '-20px', left: '-20px', width: '100px', height: '100px', background: 'rgba(0, 0, 0, 0.03)', borderRadius: '50%', filter: 'blur(30px)' }}></div>
-                                                        
+
                                                         <h3 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '12px', color: '#1a1a1a' }}>
                                                             <div style={{ background: 'rgba(0, 0, 0, 0.05)', padding: '8px', borderRadius: '12px' }}>
                                                                 <LayoutDashboard size={22} style={{ color: '#1a1a1a' }} />
                                                             </div>
                                                             Sistemas
                                                         </h3>
-                                                        
+
                                                         <div style={{ height: '220px', width: '100%' }}>
                                                             <ResponsiveContainer width="100%" height="100%">
                                                                 <PieChart>
@@ -1224,10 +1243,10 @@ function AdminDashboardContent() {
                                                                             <Cell key={`cell-${index}`} fill={['#1452AD', '#ef4444', '#D4AF37', '#0d9488', '#4f46e5'][index % 5]} stroke="none" />
                                                                         ))}
                                                                     </Pie>
-                                                                    <RechartsTooltip 
-                                                                        contentStyle={{ 
-                                                                            borderRadius: '16px', 
-                                                                            border: 'none', 
+                                                                    <RechartsTooltip
+                                                                        contentStyle={{
+                                                                            borderRadius: '16px',
+                                                                            border: 'none',
                                                                             boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
                                                                             background: 'rgba(255,255,255,0.95)',
                                                                             backdropFilter: 'blur(10px)',
@@ -1235,11 +1254,11 @@ function AdminDashboardContent() {
                                                                         }}
                                                                         itemStyle={{ fontWeight: 700, color: '#111' }}
                                                                     />
-                                                                    <Legend 
-                                                                        verticalAlign="bottom" 
-                                                                        height={36} 
+                                                                    <Legend
+                                                                        verticalAlign="bottom"
+                                                                        height={36}
                                                                         iconType="diamond"
-                                                                        wrapperStyle={{ paddingTop: '20px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }} 
+                                                                        wrapperStyle={{ paddingTop: '20px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}
                                                                     />
                                                                 </PieChart>
                                                             </ResponsiveContainer>
@@ -1247,103 +1266,103 @@ function AdminDashboardContent() {
                                                     </motion.div>
                                                 </div>
                                                 <div style={{ width: '100%', marginBottom: '2rem' }}>
-                                                            {/* Growth Stats Chart - Premium Area Chart */}
-                                                            <motion.div 
-                                                                variants={itemVariants} 
-                                                                whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(212, 175, 55, 0.15)' }}
-                                                                className="luxury-card" 
-                                                                style={{ 
-                                                                    background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)', 
-                                                                    padding: '2.5rem', 
-                                                                    borderRadius: '35px', 
-                                                                    border: '1px solid rgba(212, 175, 55, 0.3)', 
-                                                                    minHeight: '400px',
-                                                                    position: 'relative',
-                                                                    overflow: 'hidden',
-                                                                    marginBottom: '2rem',
-                                                                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
-                                                                }}
-                                                            >
-                                                                <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'radial-gradient(circle at 0% 0%, rgba(212, 175, 55, 0.1), transparent 50%)', pointerEvents: 'none' }}></div>
-                                                                
-                                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem' }}>
-                                                                    <div>
-                                                                        <h3 style={{ fontSize: '1.6rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '15px', color: '#fff', margin: 0 }}>
-                                                                            <div style={{ background: 'rgba(212, 175, 55, 0.2)', padding: '10px', borderRadius: '15px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>
-                                                                                <TrendingUp size={28} className="gold-text" />
-                                                                            </div>
-                                                                            Análise de Crescimento Neural
-                                                                        </h3>
-                                                                        <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '8px', marginLeft: '53px' }}>Estatísticas reais de novos utilizadores por mês</p>
+                                                    {/* Growth Stats Chart - Premium Area Chart */}
+                                                    <motion.div
+                                                        variants={itemVariants}
+                                                        whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(212, 175, 55, 0.15)' }}
+                                                        className="luxury-card"
+                                                        style={{
+                                                            background: 'linear-gradient(135deg, #000 0%, #1a1a1a 100%)',
+                                                            padding: '2.5rem',
+                                                            borderRadius: '35px',
+                                                            border: '1px solid rgba(212, 175, 55, 0.3)',
+                                                            minHeight: '400px',
+                                                            position: 'relative',
+                                                            overflow: 'hidden',
+                                                            marginBottom: '2rem',
+                                                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+                                                        }}
+                                                    >
+                                                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'radial-gradient(circle at 0% 0%, rgba(212, 175, 55, 0.1), transparent 50%)', pointerEvents: 'none' }}></div>
+
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem' }}>
+                                                            <div>
+                                                                <h3 style={{ fontSize: '1.6rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '15px', color: '#fff', margin: 0 }}>
+                                                                    <div style={{ background: 'rgba(212, 175, 55, 0.2)', padding: '10px', borderRadius: '15px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>
+                                                                        <TrendingUp size={28} className="gold-text" />
                                                                     </div>
-                                                                    <div style={{ padding: '10px 20px', background: 'rgba(212, 175, 55, 0.1)', border: '1px solid rgba(212, 175, 55, 0.2)', borderRadius: '14px', fontSize: '0.8rem', fontWeight: 800, color: '#FFD700', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                                                        Últimos 6 Meses
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                                <div style={{ height: '240px', width: '100%' }}>
-                                                                    <ResponsiveContainer width="100%" height="100%">
-                                                                        <AreaChart data={superAdminAnalytics.growthStats}>
-                                                                            <defs>
-                                                                                <linearGradient id="colorGrowth" x1="0" y1="0" x2="0" y2="1">
-                                                                                    <stop offset="5%" stopColor="#1452AD" stopOpacity={0.4}/>
-                                                                                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
-                                                                                </linearGradient>
-                                                                            </defs>
-                                                                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
-                                                                            <XAxis 
-                                                                                dataKey="name" 
-                                                                                axisLine={false} 
-                                                                                tickLine={false} 
-                                                                                tick={{ fill: '#aaa', fontSize: 12, fontWeight: 700 }} 
-                                                                                dy={15}
-                                                                            />
-                                                                            <YAxis hide />
-                                                                            <RechartsTooltip 
-                                                                                cursor={{ stroke: 'rgba(20, 82, 173, 0.3)', strokeWidth: 2 }}
-                                                                                contentStyle={{ 
-                                                                                    borderRadius: '20px', 
-                                                                                    border: '1px solid rgba(20, 82, 173, 0.2)', 
-                                                                                    boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
-                                                                                    background: 'rgba(0,0,0,0.9)',
-                                                                                    backdropFilter: 'blur(10px)',
-                                                                                    padding: '15px'
-                                                                                }}
-                                                                                itemStyle={{ fontWeight: 900, color: '#fff', fontSize: '1.2rem' }}
-                                                                                labelStyle={{ color: '#888', marginBottom: '6px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}
-                                                                                formatter={(value) => [`${value} Utilizadores`, '']}
-                                                                            />
-                                                                            <Area 
-                                                                                type="monotone" 
-                                                                                dataKey="count" 
-                                                                                stroke="#1452AD" 
-                                                                                strokeWidth={5}
-                                                                                fillOpacity={1} 
-                                                                                fill="url(#colorGrowth)" 
-                                                                                animationDuration={2500}
-                                                                                dot={{ r: 6, fill: '#fff', stroke: '#ef4444', strokeWidth: 3 }}
-                                                                                activeDot={{ r: 9, fill: '#ef4444', stroke: '#fff', strokeWidth: 2 }}
-                                                                            />
-                                                                        </AreaChart>
-                                                                    </ResponsiveContainer>
-                                                                </div>
-                                                                
-                                                                <div style={{ marginTop: '2.5rem', display: 'flex', gap: '3rem' }}>
-                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                                                        <span style={{ fontSize: '0.7rem', color: '#888', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Acumulado Semestre</span>
-                                                                        <span style={{ fontSize: '1.6rem', color: '#fff', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>
-                                                                            {superAdminAnalytics.growthStats.reduce((acc, curr) => acc + curr.count, 0)}
-                                                                        </span>
-                                                                    </div>
-                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                                                        <span style={{ fontSize: '0.7rem', color: '#888', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Média de Engajamento</span>
-                                                                        <span style={{ fontSize: '1.6rem', color: '#1452AD', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>
-                                                                            +{Math.round((superAdminAnalytics.growthStats.reduce((acc, curr) => acc + curr.count, 0) / (superAdminAnalytics.growthStats.length || 1)) * 1.2)}%
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                            </motion.div>
+                                                                    Análise de Crescimento Neural
+                                                                </h3>
+                                                                <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '8px', marginLeft: '53px' }}>Estatísticas reais de novos utilizadores por mês</p>
+                                                            </div>
+                                                            <div style={{ padding: '10px 20px', background: 'rgba(212, 175, 55, 0.1)', border: '1px solid rgba(212, 175, 55, 0.2)', borderRadius: '14px', fontSize: '0.8rem', fontWeight: 800, color: '#FFD700', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                                                Últimos 6 Meses
+                                                            </div>
                                                         </div>
+
+                                                        <div style={{ height: '240px', width: '100%' }}>
+                                                            <ResponsiveContainer width="100%" height="100%">
+                                                                <AreaChart data={superAdminAnalytics.growthStats}>
+                                                                    <defs>
+                                                                        <linearGradient id="colorGrowth" x1="0" y1="0" x2="0" y2="1">
+                                                                            <stop offset="5%" stopColor="#1452AD" stopOpacity={0.4} />
+                                                                            <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                                                                        </linearGradient>
+                                                                    </defs>
+                                                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+                                                                    <XAxis
+                                                                        dataKey="name"
+                                                                        axisLine={false}
+                                                                        tickLine={false}
+                                                                        tick={{ fill: '#aaa', fontSize: 12, fontWeight: 700 }}
+                                                                        dy={15}
+                                                                    />
+                                                                    <YAxis hide />
+                                                                    <RechartsTooltip
+                                                                        cursor={{ stroke: 'rgba(20, 82, 173, 0.3)', strokeWidth: 2 }}
+                                                                        contentStyle={{
+                                                                            borderRadius: '20px',
+                                                                            border: '1px solid rgba(20, 82, 173, 0.2)',
+                                                                            boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+                                                                            background: 'rgba(0,0,0,0.9)',
+                                                                            backdropFilter: 'blur(10px)',
+                                                                            padding: '15px'
+                                                                        }}
+                                                                        itemStyle={{ fontWeight: 900, color: '#fff', fontSize: '1.2rem' }}
+                                                                        labelStyle={{ color: '#888', marginBottom: '6px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}
+                                                                        formatter={(value) => [`${value} Utilizadores`, '']}
+                                                                    />
+                                                                    <Area
+                                                                        type="monotone"
+                                                                        dataKey="count"
+                                                                        stroke="#1452AD"
+                                                                        strokeWidth={5}
+                                                                        fillOpacity={1}
+                                                                        fill="url(#colorGrowth)"
+                                                                        animationDuration={2500}
+                                                                        dot={{ r: 6, fill: '#fff', stroke: '#ef4444', strokeWidth: 3 }}
+                                                                        activeDot={{ r: 9, fill: '#ef4444', stroke: '#fff', strokeWidth: 2 }}
+                                                                    />
+                                                                </AreaChart>
+                                                            </ResponsiveContainer>
+                                                        </div>
+
+                                                        <div style={{ marginTop: '2.5rem', display: 'flex', gap: '3rem' }}>
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                                                <span style={{ fontSize: '0.7rem', color: '#888', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Acumulado Semestre</span>
+                                                                <span style={{ fontSize: '1.6rem', color: '#fff', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>
+                                                                    {superAdminAnalytics.growthStats.reduce((acc, curr) => acc + curr.count, 0)}
+                                                                </span>
+                                                            </div>
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                                                <span style={{ fontSize: '0.7rem', color: '#888', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Média de Engajamento</span>
+                                                                <span style={{ fontSize: '1.6rem', color: '#1452AD', fontWeight: 900, fontFamily: 'var(--font-playfair)' }}>
+                                                                    +{Math.round((superAdminAnalytics.growthStats.reduce((acc, curr) => acc + curr.count, 0) / (superAdminAnalytics.growthStats.length || 1)) * 1.2)}%
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </motion.div>
+                                                </div>
 
                                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem' }}>
                                                     <motion.div variants={itemVariants} className="luxury-card" style={{ background: '#fff', padding: '1.5rem', borderRadius: '24px', border: '1px solid #e0e0e0' }}>
@@ -1375,14 +1394,14 @@ function AdminDashboardContent() {
                                                                                 {login.loginCount || 0} acessos
                                                                             </span>
                                                                             {(login.lastLoginDevice || login.lastLoginOS) && (
-                                                                                <span style={{ 
-                                                                                    fontSize: '0.6rem', 
-                                                                                    display: 'flex', 
-                                                                                    alignItems: 'center', 
-                                                                                    gap: '5px', 
-                                                                                    color: '#666', 
-                                                                                    background: '#fff', 
-                                                                                    padding: '3px 8px', 
+                                                                                <span style={{
+                                                                                    fontSize: '0.6rem',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    gap: '5px',
+                                                                                    color: '#666',
+                                                                                    background: '#fff',
+                                                                                    padding: '3px 8px',
                                                                                     borderRadius: '50px',
                                                                                     fontWeight: 700,
                                                                                     border: '1px solid #e0e0e0',
@@ -1586,13 +1605,25 @@ function AdminDashboardContent() {
                                                     ].map((item, idx) => {
                                                         const total = (stats?.authStats?.native || 0) + (stats?.authStats?.google || 0) + (stats?.authStats?.linkedin || 0);
                                                         const percentage = total > 0 ? (item.count / total) * 100 : 0;
+                                                        const isActive = activeOriginIndex === idx;
                                                         return (
-                                                            <div key={idx} style={{ marginBottom: '1rem' }}>
+                                                            <div
+                                                                key={idx}
+                                                                style={{
+                                                                    marginBottom: '1rem',
+                                                                    cursor: 'pointer',
+                                                                    opacity: activeOriginIndex === -1 ? 1 : (isActive ? 1 : 0.4),
+                                                                    transform: isActive ? 'translateX(5px)' : 'none',
+                                                                    transition: 'all 0.3s ease'
+                                                                }}
+                                                                onMouseEnter={() => setActiveOriginIndex(idx)}
+                                                                onMouseLeave={() => setActiveOriginIndex(-1)}
+                                                            >
                                                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.85rem' }}>
                                                                     <span style={{ fontWeight: 700, color: item.color }}>{item.label}</span>
                                                                     <span style={{ fontWeight: 800 }}>{item.count} ({Math.round(percentage)}%)</span>
                                                                 </div>
-                                                                <div style={{ width: '100%', height: '8px', background: '#f0f0f0', borderRadius: '10px', overflow: 'hidden' }}>
+                                                                <div style={{ width: '100%', height: isActive ? '10px' : '8px', background: '#f0f0f0', borderRadius: '10px', overflow: 'hidden', transition: 'height 0.3s ease' }}>
                                                                     <motion.div
                                                                         initial={{ width: 0 }}
                                                                         animate={{ width: `${percentage}%` }}
@@ -1606,7 +1637,7 @@ function AdminDashboardContent() {
                                                 </div>
                                                 <div style={{ width: '180px', height: '180px' }}>
                                                     <ResponsiveContainer width="100%" height="100%">
-                                                        <PieChart>
+                                                        <PieChart onMouseLeave={() => setActiveOriginIndex(-1)}>
                                                             <Pie
                                                                 data={[
                                                                     { name: 'Nativo', value: stats?.authStats?.native || 0 },
@@ -1617,6 +1648,9 @@ function AdminDashboardContent() {
                                                                 outerRadius={70}
                                                                 paddingAngle={5}
                                                                 dataKey="value"
+                                                                activeIndex={activeOriginIndex !== -1 ? activeOriginIndex : undefined}
+                                                                activeShape={renderActiveShape}
+                                                                onMouseEnter={(_, index) => setActiveOriginIndex(index)}
                                                             >
                                                                 <Cell fill="#1a1a1a" />
                                                                 <Cell fill="#db4437" />
@@ -1966,8 +2000,8 @@ function AdminDashboardContent() {
                                                         })}>
                                                             <defs>
                                                                 <linearGradient id="colorHourPeak" x1="0" y1="0" x2="0" y2="1">
-                                                                    <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.4}/>
-                                                                    <stop offset="95%" stopColor="#D4AF37" stopOpacity={0}/>
+                                                                    <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.4} />
+                                                                    <stop offset="95%" stopColor="#D4AF37" stopOpacity={0} />
                                                                 </linearGradient>
                                                             </defs>
                                                             <XAxis dataKey="hour" tickFormatter={(h) => `${h}h`} fontSize={10} axisLine={false} tickLine={false} tick={{ fill: '#888' }} />
@@ -1994,28 +2028,28 @@ function AdminDashboardContent() {
                                                 gap: '24px'
                                             }}
                                         >
-                                            <div style={{ 
-                                                background: 'var(--gold-gradient)', 
-                                                color: '#000', 
-                                                padding: '12px', 
+                                            <div style={{
+                                                background: 'var(--gold-gradient)',
+                                                color: '#000',
+                                                padding: '12px',
                                                 borderRadius: '14px',
                                                 boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
                                             }}>
                                                 <Zap size={24} fill="#000" />
                                             </div>
                                             <div style={{ flex: 1 }}>
-                                                <div style={{ 
-                                                    fontSize: '0.75rem', 
-                                                    textTransform: 'uppercase', 
-                                                    fontWeight: 900, 
-                                                    color: '#B8860B', 
+                                                <div style={{
+                                                    fontSize: '0.75rem',
+                                                    textTransform: 'uppercase',
+                                                    fontWeight: 900,
+                                                    color: '#B8860B',
                                                     letterSpacing: '1px',
-                                                    marginBottom: '4px' 
+                                                    marginBottom: '4px'
                                                 }}>
                                                     {t('dashboard.admin.todayPeakInsight')}
                                                 </div>
                                                 <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1a1a1a', lineHeight: 1.4 }}>
-                                                    {peakHourToday 
+                                                    {peakHourToday
                                                         ? t('dashboard.admin.todayPeakMessage')
                                                             .replace('{hour}', peakHourToday.hour.toString())
                                                             .replace('{count}', peakHourToday.count.toString())
@@ -2027,10 +2061,10 @@ function AdminDashboardContent() {
                                                     </div>
                                                 )}
                                             </div>
-                                            
-                                            <div style={{ 
-                                                background: 'rgba(0,0,0,0.03)', 
-                                                padding: '10px 18px', 
+
+                                            <div style={{
+                                                background: 'rgba(0,0,0,0.03)',
+                                                padding: '10px 18px',
                                                 borderRadius: '12px',
                                                 textAlign: 'center'
                                             }}>
@@ -2280,19 +2314,19 @@ function AdminDashboardContent() {
                                 Automação WhatsApp 💬
                             </h2>
 
-                            <iframe 
-                                    src={`${(process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? (window.location.origin.includes('localhost') ? 'http://localhost:5000' : window.location.origin) : 'http://localhost:5000')).replace(/\/api$/, '')}/api/admin/whatsapp/qr`}
-                                    style={{
-                                        width: '100%',
-                                        height: '460px', // Aumentado ligeiramente para acomodar o form de código
-                                        border: 'none',
-                                        overflow: 'hidden',
-                                        borderRadius: '16px',
-                                        marginBottom: '1rem',
-                                        background: '#fff'
-                                    }}
-                                    title="WhatsApp QR Monitor"
-                                />
+                            <iframe
+                                src={`${(process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? (window.location.origin.includes('localhost') ? 'http://localhost:5000' : window.location.origin) : 'http://localhost:5000')).replace(/\/api$/, '')}/api/admin/whatsapp/qr`}
+                                style={{
+                                    width: '100%',
+                                    height: '460px', // Aumentado ligeiramente para acomodar o form de código
+                                    border: 'none',
+                                    overflow: 'hidden',
+                                    borderRadius: '16px',
+                                    marginBottom: '1rem',
+                                    background: '#fff'
+                                }}
+                                title="WhatsApp QR Monitor"
+                            />
 
                             <div style={{ textAlign: 'left', background: '#f8f9fa', padding: '1.5rem', borderRadius: '16px', width: '100%' }}>
                                 <h3 style={{ fontWeight: 700, marginBottom: '0.8rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -2316,7 +2350,7 @@ function AdminDashboardContent() {
                             <VacanciesAdmin />
                         </ErrorBoundary>
                     )}
-                    
+
                     {activeTab === 'motiva' && (
                         <ErrorBoundary>
                             <MotivaManager />
@@ -2657,7 +2691,7 @@ function AdminDashboardContent() {
                     )}
                 </AnimatePresence>
 
-                <OnboardingTour steps={adminSteps} storageKey="inscrevase_admin_tour_completed" />
+                {!isMobile && <OnboardingTour steps={adminSteps} storageKey="inscrevase_admin_tour_completed" />}
 
                 <style jsx>{`
                     @media (max-width: 768px) {

@@ -827,12 +827,12 @@ function MentorDashboardContent() {
                                     <span style={{ fontWeight: 800, fontSize: '0.9rem', color: '#fff' }}>
                                         {user.plan || 'Free'}
                                         {user.subscriptionStatus === 'trialing' && (
-                                            <span style={{ 
-                                                marginLeft: '8px', 
-                                                fontSize: '0.65rem', 
-                                                background: '#FFD700', 
-                                                color: '#000', 
-                                                padding: '2px 6px', 
+                                            <span style={{
+                                                marginLeft: '8px',
+                                                fontSize: '0.65rem',
+                                                background: '#FFD700',
+                                                color: '#000',
+                                                padding: '2px 6px',
                                                 borderRadius: '4px',
                                                 verticalAlign: 'middle'
                                             }}>TRIAL</span>
@@ -861,21 +861,21 @@ function MentorDashboardContent() {
                                     setIsSupportOpen(true);
                                     if (isMobile) setIsMobileSidebarOpen(false);
                                 }}
-                                style={{ 
-                                    width: '100%', 
-                                    padding: '12px 16px', 
-                                    background: '#111', 
-                                    border: '1.5px solid rgba(255,215,0,0.6)', 
-                                    borderRadius: '16px', 
-                                    color: '#fff', 
-                                    cursor: 'pointer', 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
-                                    justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', 
-                                    gap: '12px', 
-                                    fontWeight: 800, 
-                                    transition: 'all 0.3s', 
-                                    position: 'relative', 
+                                style={{
+                                    width: '100%',
+                                    padding: '12px 16px',
+                                    background: '#111',
+                                    border: '1.5px solid rgba(255,215,0,0.6)',
+                                    borderRadius: '16px',
+                                    color: '#fff',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                                    gap: '12px',
+                                    fontWeight: 800,
+                                    transition: 'all 0.3s',
+                                    position: 'relative',
                                     fontSize: isMobile ? '0.8rem' : '0.9rem',
                                     boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
                                     marginBottom: '10px'
@@ -936,7 +936,7 @@ function MentorDashboardContent() {
             </aside>
 
             {/* Main Content */}
-            <main 
+            <main
                 className="mentor-main"
                 style={{
                     marginLeft: isMobile ? '0' : (isSidebarCollapsed ? '80px' : '280px'),
@@ -1014,14 +1014,14 @@ function MentorDashboardContent() {
                         }}
                     >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                            <div style={{ 
-                                background: 'rgba(0, 0, 0, 0.1)', 
-                                width: '40px', 
-                                height: '40px', 
-                                borderRadius: '50%', 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                justifyContent: 'center' 
+                            <div style={{
+                                background: 'rgba(0, 0, 0, 0.1)',
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
                             }}>
                                 <Crown size={22} />
                             </div>
@@ -2620,7 +2620,7 @@ function MentorDashboardContent() {
                 />
 
                 <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} mode="mentor" />
-                <OnboardingTour steps={steps} storageKey="inscrevase_mentor_tour_completed" />
+                {!isMobile && <OnboardingTour steps={steps} storageKey="inscrevase_mentor_tour_completed" />}
 
                 <AnimatePresence>
                     {showUpgradeSuccess && (

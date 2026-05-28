@@ -1545,10 +1545,12 @@ function ParticipantDashboardContent() {
                 availableMentors={availableMentors}
             />
 
-            <OnboardingTour
-                steps={participantSteps}
-                storageKey="participant-tour-seen"
-            />
+            {!isMobile && (
+                <OnboardingTour
+                    steps={participantSteps}
+                    storageKey="participant-tour-seen"
+                />
+            )}
 
             <style jsx>{`
                 .no-scrollbar::-webkit-scrollbar {
