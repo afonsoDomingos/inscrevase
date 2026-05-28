@@ -43,7 +43,7 @@ export default function SponsoredAdCard({ events }: SponsoredAdCardProps) {
         checkMobile();
         window.addEventListener('resize', checkMobile);
 
-        const timer = setTimeout(() => setIsVisible(true), 5000);
+        const timer = setTimeout(() => setIsVisible(true), 10000);
         return () => {
             clearTimeout(timer);
             window.removeEventListener('resize', checkMobile);
