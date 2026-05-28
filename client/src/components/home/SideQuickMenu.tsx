@@ -9,7 +9,8 @@ import {
     HelpCircle,
     MessageCircle,
     LayoutDashboard,
-    Zap
+    Zap,
+    Users
 } from 'lucide-react';
 
 const menuItems = [
@@ -20,6 +21,7 @@ const menuItems = [
     { id: 'milestones', icon: <Trophy size={20} />, label: 'Meus Marcos', target: 'milestones-section' },
     { id: 'tutorials', icon: <PlayCircle size={20} />, label: 'Tutoriais', target: 'tutorials-section' },
     { id: 'faq', icon: <HelpCircle size={20} />, label: 'Dúvidas', target: 'faq-section' },
+    { id: 'team', icon: <Users size={20} />, label: 'Liderança', target: 'team-section' },
     { id: 'support', icon: <MessageCircle size={20} />, label: 'Suporte', target: '/suporte', isLink: true },
     { id: 'dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard', target: '/dashboard', isLink: true },
 ];

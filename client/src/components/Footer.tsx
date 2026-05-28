@@ -54,6 +54,46 @@ export default function Footer() {
                         <Link href="/sobre-nos" className="footer-link-new">Sobre Nós</Link>
                         <Link href="/anunciar" className="footer-link-new">Anunciar Conosco</Link>
                     </div>
+
+                    {/* Newsletter Column */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                        <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#1a1a1a', marginBottom: '5px' }}>Newsletter</h4>
+                        <p style={{ fontSize: '0.85rem', color: '#666', lineHeight: 1.5 }}>
+                            Receba as últimas novidades e dicas exclusivas para mentores.
+                        </p>
+                        <div style={{ position: 'relative', marginTop: '5px' }}>
+                            <input
+                                type="email"
+                                placeholder="Seu e-mail"
+                                style={{
+                                    width: '100%',
+                                    padding: '12px 15px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #e2e2e2',
+                                    fontSize: '0.9rem',
+                                    outline: 'none',
+                                    background: '#fafafa'
+                                }}
+                            />
+                            <button style={{
+                                position: 'absolute',
+                                right: '5px',
+                                top: '5px',
+                                bottom: '5px',
+                                background: '#1a1a1b',
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '6px',
+                                padding: '0 15px',
+                                fontSize: '0.8rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                transition: 'all 0.3s'
+                            }}>
+                                ASSINAR
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Developer Credits Section */}
@@ -69,7 +109,7 @@ export default function Footer() {
                     <div style={{ color: '#5c5e62', fontSize: '0.85rem' }}>
                         Inscreva-se &copy; {new Date().getFullYear()}. Todos os direitos reservados.
                     </div>
-                    
+
                     <a
                         href="https://www.linkedin.com/in/afonso-domingos-6b59361a5/"
                         target="_blank"

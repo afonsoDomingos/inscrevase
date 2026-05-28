@@ -1328,7 +1328,9 @@ export default function Home() {
       < Testimonials />
 
       {/* Team Section - Leadership Authority */}
-      < TeamSection />
+      <div id="team-section">
+        <TeamSection />
+      </div>
 
       {/* Tesla-inspired Minimalist Footer with Developer Credits */}
       < Footer />
