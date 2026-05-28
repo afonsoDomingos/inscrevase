@@ -36,15 +36,15 @@ export default function PlanCard({
             whileHover={{ y: -10 }}
             className="luxury-card"
             style={{
-                flex: '0 1 360px', // Prevent stretching
-                minHeight: '680px', // Consistent height for all cards
+                flex: '0 1 360px',
+                minHeight: '540px', // Reduzido
                 display: 'flex',
                 flexDirection: 'column',
                 background: `linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 100%), url("${bgImage}")`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 border: recommended ? '2px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
-                padding: '1.5rem',
+                padding: '1.25rem', // Mais compacto
                 borderRadius: '24px',
                 color: '#fff',
                 position: 'relative',
@@ -55,9 +55,9 @@ export default function PlanCard({
         >
             {recommended && (
                 <div style={{
-                    position: 'absolute', top: '15px', right: '15px',
-                    background: '#D4AF37', color: '#000', padding: '4px 12px',
-                    borderRadius: '6px', fontSize: '0.7rem', fontWeight: 900,
+                    position: 'absolute', top: '12px', right: '12px',
+                    background: '#D4AF37', color: '#000', padding: '3px 10px',
+                    borderRadius: '6px', fontSize: '0.65rem', fontWeight: 900,
                     textTransform: 'uppercase', zIndex: 10
                 }}>
                     {t('common.recommended')}
@@ -66,12 +66,12 @@ export default function PlanCard({
 
             {canUseTrial && id === 'pro' && (
                 <div style={{
-                    position: 'absolute', top: '15px', left: '15px',
-                    background: '#fff', color: '#000', padding: '4px 12px',
-                    borderRadius: '6px', fontSize: '0.7rem', fontWeight: 900,
+                    position: 'absolute', top: '12px', left: '12px',
+                    background: '#fff', color: '#000', padding: '3px 10px',
+                    borderRadius: '6px', fontSize: '0.65rem', fontWeight: 900,
                     textTransform: 'uppercase', zIndex: 10,
                     boxShadow: '0 4px 12px rgba(255,255,255,0.3)',
-                    display: 'flex', alignItems: 'center', gap: '5px'
+                    display: 'flex', alignItems: 'center', gap: '4px'
                 }}>
                     <Zap size={10} fill="#000" />
                     {t('plans.trialBadge')}
@@ -80,60 +80,60 @@ export default function PlanCard({
 
             {isCurrentPlan && (
                 <div style={{
-                    position: 'absolute', top: '15px', left: '15px',
-                    background: 'rgba(52, 211, 153, 0.2)', color: '#10b981', padding: '4px 12px',
-                    borderRadius: '6px', fontSize: '0.7rem', fontWeight: 900,
+                    position: 'absolute', top: '12px', left: '12px',
+                    background: 'rgba(52, 211, 153, 0.2)', color: '#10b981', padding: '3px 10px',
+                    borderRadius: '6px', fontSize: '0.65rem', fontWeight: 900,
                     textTransform: 'uppercase', zIndex: 10,
                     border: '1px solid #10b981',
-                    display: 'flex', alignItems: 'center', gap: '5px'
+                    display: 'flex', alignItems: 'center', gap: '4px'
                 }}>
                     <CheckCircle size={10} />
                     {t('plans.currentPlan')}
                 </div>
             )}
 
-            <div style={{ marginBottom: '1.5rem', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+            <div style={{ marginBottom: '1rem', textAlign: 'center', position: 'relative', zIndex: 2 }}>
                 <h3 style={{
-                    fontSize: isEnterprise ? '2.5rem' : '2.2rem',
-                    fontWeight: 900, marginBottom: '0.2rem',
+                    fontSize: isEnterprise ? '2.1rem' : '1.9rem',
+                    fontWeight: 900, marginBottom: '0.1rem',
                     color: recommended ? '#D4AF37' : '#fff',
                     fontFamily: 'var(--font-playfair)'
                 }}>
                     {name}
                 </h3>
-                <p style={{ opacity: 0.8, fontSize: '0.9rem' }}>{description}</p>
+                <p style={{ opacity: 0.8, fontSize: '0.8rem' }}>{description}</p>
             </div>
 
-            <div style={{ marginBottom: '1.5rem', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+            <div style={{ marginBottom: '1rem', textAlign: 'center', position: 'relative', zIndex: 2 }}>
                 {canUseTrial && id === 'pro' ? (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <div style={{ fontSize: '2.8rem', fontWeight: 900, color: '#fff' }}>
+                        <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#fff' }}>
                             {t('common.free')}
                         </div>
-                        <div style={{ fontSize: '0.85rem', fontWeight: 700, opacity: 0.9, background: 'rgba(212,175,55,0.2)', padding: '2px 10px', borderRadius: '4px', marginTop: '4px', color: '#D4AF37' }}>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.9, background: 'rgba(212,175,55,0.2)', padding: '1px 8px', borderRadius: '4px', marginTop: '2px', color: '#D4AF37' }}>
                             {t('plans.freeFirstMonth')}
                         </div>
-                        <div style={{ fontSize: '0.9rem', opacity: 0.6, marginTop: '8px' }}>
+                        <div style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '4px' }}>
                             {typeof price === 'string' ? price : formatPrice(amount, currency, currency)} {t('plans.perMonthAfter')}
                         </div>
                     </div>
                 ) : (
-                    <div style={{ fontSize: '2.8rem', fontWeight: 900, color: recommended || isEnterprise ? '#D4AF37' : '#fff' }}>
+                    <div style={{ fontSize: '2.2rem', fontWeight: 900, color: recommended || isEnterprise ? '#D4AF37' : '#fff' }}>
                         {typeof price === 'string' ? price : formatPrice(amount, currency, currency)}
-                        <span style={{ fontSize: '1rem', fontWeight: 500, opacity: 0.7 }}>/mês</span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 500, opacity: 0.7 }}>/mês</span>
                     </div>
                 )}
             </div>
 
-            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px', position: 'relative', zIndex: 2 }}>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative', zIndex: 2 }}>
                 {features.map((f, idx) => (
-                    <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.95rem' }}>
+                    <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.88rem' }}>
                         <div style={{
-                            padding: '6px',
+                            padding: '4px',
                             background: isEnterprise ? 'rgba(184, 134, 11, 0.2)' : recommended ? 'rgba(212, 175, 55, 0.2)' : 'rgba(255,255,255,0.1)',
                             borderRadius: '50%'
                         }}>
-                            {isEnterprise ? <Crown size={18} color="#D4AF37" /> : recommended ? <Zap size={18} color="#D4AF37" /> : <CheckCircle size={18} color="#fff" />}
+                            {isEnterprise ? <Crown size={15} color="#D4AF37" /> : recommended ? <Zap size={15} color="#D4AF37" /> : <CheckCircle size={15} color="#fff" />}
                         </div>
                         <span style={{ fontWeight: isEnterprise && idx === 0 ? 900 : 400 }}>{f}</span>
                     </li>
