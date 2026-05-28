@@ -86,7 +86,8 @@ interface ActiveShapeProps {
     value: number;
 }
 
-const renderActiveShape = (props: ActiveShapeProps) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const renderActiveShape = (props: any) => {
     const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
     return (
         <g>
