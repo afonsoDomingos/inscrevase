@@ -26,37 +26,38 @@ interface PlanCardProps {
 }
 
 export default function PlanCard({
-    id, name, description, price, amount, currency, features, bgImage, 
+    id, name, description, price, amount, currency, features, bgImage,
     recommended, isEnterprise, canUseTrial, isCurrentPlan, onManualSelect, onSuccess, t
 }: PlanCardProps) {
     const { formatPrice } = useCurrency();
 
     return (
-        <motion.div 
-            whileHover={{ y: -10 }} 
-            className="luxury-card" 
+        <motion.div
+            whileHover={{ y: -10 }}
+            className="luxury-card"
             style={{
-                flex: '1 1 280px', 
-                maxWidth: '360px', 
-                display: 'flex', 
+                flex: '0 1 360px', // Prevent stretching
+                minHeight: '680px', // Consistent height for all cards
+                display: 'flex',
                 flexDirection: 'column',
                 background: `linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 100%), url("${bgImage}")`,
-                backgroundSize: 'cover', 
+                backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                border: recommended ? '2px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)', 
-                padding: '1.5rem', 
-                borderRadius: '24px', 
-                color: '#fff', 
-                position: 'relative', 
-                overflow: 'hidden', 
-                boxShadow: recommended ? '0 20px 40px rgba(0,0,0,0.4)' : '0 10px 30px rgba(0,0,0,0.3)'
+                border: recommended ? '2px solid #D4AF37' : '1px solid rgba(255,255,255,0.1)',
+                padding: '1.5rem',
+                borderRadius: '24px',
+                color: '#fff',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: recommended ? '0 20px 40px rgba(0,0,0,0.4)' : '0 10px 30px rgba(0,0,0,0.3)',
+                transition: 'all 0.3s ease'
             }}
         >
             {recommended && (
-                <div style={{ 
-                    position: 'absolute', top: '15px', right: '15px', 
-                    background: '#D4AF37', color: '#000', padding: '4px 12px', 
-                    borderRadius: '6px', fontSize: '0.7rem', fontWeight: 900, 
+                <div style={{
+                    position: 'absolute', top: '15px', right: '15px',
+                    background: '#D4AF37', color: '#000', padding: '4px 12px',
+                    borderRadius: '6px', fontSize: '0.7rem', fontWeight: 900,
                     textTransform: 'uppercase', zIndex: 10
                 }}>
                     {t('common.recommended')}
@@ -64,10 +65,10 @@ export default function PlanCard({
             )}
 
             {canUseTrial && id === 'pro' && (
-                <div style={{ 
-                    position: 'absolute', top: '15px', left: '15px', 
-                    background: '#fff', color: '#000', padding: '4px 12px', 
-                    borderRadius: '6px', fontSize: '0.7rem', fontWeight: 900, 
+                <div style={{
+                    position: 'absolute', top: '15px', left: '15px',
+                    background: '#fff', color: '#000', padding: '4px 12px',
+                    borderRadius: '6px', fontSize: '0.7rem', fontWeight: 900,
                     textTransform: 'uppercase', zIndex: 10,
                     boxShadow: '0 4px 12px rgba(255,255,255,0.3)',
                     display: 'flex', alignItems: 'center', gap: '5px'
@@ -76,12 +77,12 @@ export default function PlanCard({
                     {t('plans.trialBadge')}
                 </div>
             )}
-            
+
             {isCurrentPlan && (
-                <div style={{ 
-                    position: 'absolute', top: '15px', left: '15px', 
-                    background: 'rgba(52, 211, 153, 0.2)', color: '#10b981', padding: '4px 12px', 
-                    borderRadius: '6px', fontSize: '0.7rem', fontWeight: 900, 
+                <div style={{
+                    position: 'absolute', top: '15px', left: '15px',
+                    background: 'rgba(52, 211, 153, 0.2)', color: '#10b981', padding: '4px 12px',
+                    borderRadius: '6px', fontSize: '0.7rem', fontWeight: 900,
                     textTransform: 'uppercase', zIndex: 10,
                     border: '1px solid #10b981',
                     display: 'flex', alignItems: 'center', gap: '5px'
@@ -92,11 +93,11 @@ export default function PlanCard({
             )}
 
             <div style={{ marginBottom: '1.5rem', textAlign: 'center', position: 'relative', zIndex: 2 }}>
-                <h3 style={{ 
-                    fontSize: isEnterprise ? '2.5rem' : '2.2rem', 
-                    fontWeight: 900, marginBottom: '0.2rem', 
-                    color: recommended ? '#D4AF37' : '#fff', 
-                    fontFamily: 'var(--font-playfair)' 
+                <h3 style={{
+                    fontSize: isEnterprise ? '2.5rem' : '2.2rem',
+                    fontWeight: 900, marginBottom: '0.2rem',
+                    color: recommended ? '#D4AF37' : '#fff',
+                    fontFamily: 'var(--font-playfair)'
                 }}>
                     {name}
                 </h3>
@@ -127,10 +128,10 @@ export default function PlanCard({
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px', position: 'relative', zIndex: 2 }}>
                 {features.map((f, idx) => (
                     <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.95rem' }}>
-                        <div style={{ 
-                            padding: '6px', 
-                            background: isEnterprise ? 'rgba(184, 134, 11, 0.2)' : recommended ? 'rgba(212, 175, 55, 0.2)' : 'rgba(255,255,255,0.1)', 
-                            borderRadius: '50%' 
+                        <div style={{
+                            padding: '6px',
+                            background: isEnterprise ? 'rgba(184, 134, 11, 0.2)' : recommended ? 'rgba(212, 175, 55, 0.2)' : 'rgba(255,255,255,0.1)',
+                            borderRadius: '50%'
                         }}>
                             {isEnterprise ? <Crown size={18} color="#D4AF37" /> : recommended ? <Zap size={18} color="#D4AF37" /> : <CheckCircle size={18} color="#fff" />}
                         </div>
@@ -141,10 +142,10 @@ export default function PlanCard({
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', position: 'relative', zIndex: 2 }}>
                 {isCurrentPlan ? (
-                    <div style={{ 
-                        width: '100%', padding: '15px', 
-                        borderRadius: '12px', background: 'rgba(52, 211, 153, 0.1)', 
-                        border: '1px solid #10b981', color: '#10b981', 
+                    <div style={{
+                        width: '100%', padding: '15px',
+                        borderRadius: '12px', background: 'rgba(52, 211, 153, 0.1)',
+                        border: '1px solid #10b981', color: '#10b981',
                         fontWeight: 800, textAlign: 'center', fontSize: '0.9rem',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
                     }}>
@@ -156,15 +157,15 @@ export default function PlanCard({
                         {id !== 'free' && (
                             <>
                                 {/* Stripe Locked Mockup */}
-                                <div 
+                                <div
                                     onClick={() => toast.info("Checkout via Stripe temporariamente indisponível. Por favor, use o PayPal para pagar com seu cartão – é seguro e instantâneo!")}
-                                    style={{ 
-                                        width: '100%', height: '52px', 
-                                        background: 'rgba(255,255,255,0.05)', 
-                                        color: '#999', borderRadius: '12px', 
-                                        fontWeight: 800, border: '1px dashed rgba(255,255,255,0.2)', 
-                                        cursor: 'help', display: 'flex', 
-                                        alignItems: 'center', justifyContent: 'center', 
+                                    style={{
+                                        width: '100%', height: '52px',
+                                        background: 'rgba(255,255,255,0.05)',
+                                        color: '#999', borderRadius: '12px',
+                                        fontWeight: 800, border: '1px dashed rgba(255,255,255,0.2)',
+                                        cursor: 'help', display: 'flex',
+                                        alignItems: 'center', justifyContent: 'center',
                                         gap: '10px', padding: 0
                                     }}
                                 >
@@ -195,12 +196,12 @@ export default function PlanCard({
                         {/* Manual Transfer Button */}
                         <button
                             onClick={onManualSelect}
-                            style={{ 
-                                width: '100%', height: '52px', 
-                                borderRadius: '12px', background: 'rgba(255,255,255,0.08)', 
-                                border: '1px solid rgba(255,255,255,0.15)', color: '#fff', 
-                                fontWeight: 700, cursor: 'pointer', display: 'flex', 
-                                alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' 
+                            style={{
+                                width: '100%', height: '52px',
+                                borderRadius: '12px', background: 'rgba(255,255,255,0.08)',
+                                border: '1px solid rgba(255,255,255,0.15)', color: '#fff',
+                                fontWeight: 700, cursor: 'pointer', display: 'flex',
+                                alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s'
                             }}
                             onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
                             onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
@@ -213,11 +214,11 @@ export default function PlanCard({
                 {id === 'free' && !isCurrentPlan && (
                     <button
                         disabled
-                        style={{ 
-                            width: '100%', height: '52px', 
-                            borderRadius: '12px', background: 'rgba(255,255,255,0.05)', 
-                            border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', 
-                            fontWeight: 700, cursor: 'default', display: 'flex', 
+                        style={{
+                            width: '100%', height: '52px',
+                            borderRadius: '12px', background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)',
+                            fontWeight: 700, cursor: 'default', display: 'flex',
                             alignItems: 'center', justifyContent: 'center'
                         }}
                     >
