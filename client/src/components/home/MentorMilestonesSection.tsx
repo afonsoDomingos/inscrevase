@@ -5,15 +5,15 @@ import { TrendingUp, CheckCircle2 } from 'lucide-react';
 
 const milestones = [
     {
-        id: 'silver',
-        title: 'Silver Milestone',
+        id: 'gold-starter',
+        title: 'Gold Starter',
         description: 'Vendas superiores a',
         value: '10 mil',
         currency: 'Meticais',
-        subtitle: 'Primeiro grande passo',
-        color: '#94a3b8', // Silver/Slate
-        textColor: '#fff',
-        icon: '🥈'
+        subtitle: 'Início da jornada de ouro',
+        color: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)',
+        textColor: '#000',
+        icon: '🥇'
     },
     {
         id: 'emerald',
