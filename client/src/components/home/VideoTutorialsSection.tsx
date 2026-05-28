@@ -280,7 +280,7 @@ export default function VideoTutorialsSection() {
                     style={{ textAlign: 'center' }}
                 >
                     <motion.a
-                        href="https://www.youtube.com/@inscrevase"
+                        href="https://www.youtube.com/@Inscreva-se-events"
                         target="_blank"
                         rel="noopener noreferrer"
                         whileHover={{ scale: 1.04, y: -2 }}

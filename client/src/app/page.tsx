@@ -16,6 +16,8 @@ import Footer from "@/components/Footer";
 import { Calendar, Users, TrendingUp, Star, Trophy } from "lucide-react";
 import { TextDispersion } from "@/components/TextDispersion";
 import TeamSection from "@/components/home/TeamSection";
+import VideoTutorialsSection from "@/components/home/VideoTutorialsSection";
+import MentorMilestonesSection from "@/components/home/MentorMilestonesSection";
 import { formService } from "@/lib/formService";
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import Typewriter from "@/components/common/Typewriter";
@@ -1293,6 +1295,9 @@ export default function Home() {
 
       {/* Institutional Section */}
       < InstitutionalSection />
+
+      {/* Mentor Milestones Section */}
+      <MentorMilestonesSection />
 
       {/* Video Tutorials Section */}
       <VideoTutorialsSection />
