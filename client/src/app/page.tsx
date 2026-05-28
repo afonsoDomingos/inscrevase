@@ -52,19 +52,37 @@ export default function Home() {
   const [isMotivaEnabledAdmin] = useState(true);
 
   // Motiva Contest Floating Button State
-  // Keeping it static logically in the lower right area.
   const [isMotivaVisible, setIsMotivaVisible] = useState(false);
+  const [isScrollBelowHalf, setIsScrollBelowHalf] = useState(false);
 
   useEffect(() => {
     // Apresentar o botão após 3 segundos
     const showTimeout = setTimeout(() => setIsMotivaVisible(true), 3000);
 
-    // Fazer desaparecer por breves momentos e reaparecer (Fade in / Fade out, sempre no mesmo sítio)
+    // Monitorizar o scroll para esconder o botão após 50% da página
+    const checkScroll = () => {
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = document.documentElement.clientHeight;
+      const scrolled = window.scrollY;
+
+      // Se passou de 50% da altura total navegável
+      if (scrolled > (scrollHeight - clientHeight) / 2) {
+        setIsScrollBelowHalf(true);
+      } else {
+        setIsScrollBelowHalf(false);
+      }
+    };
+
+    window.addEventListener('scroll', checkScroll);
+    checkScroll(); // Executar logo no início
+
+    // Fazer desaparecer por breves momentos e reaparecer (Fade in / Fade out)
     const interval = setInterval(() => {
       setIsMotivaVisible(v => !v);
-    }, 15000); // Oscilação a cada 15 segundos para chamar atenção sem chatear
+    }, 15000);
 
     return () => {
+      window.removeEventListener('scroll', checkScroll);
       clearTimeout(showTimeout);
       clearInterval(interval);
     };
@@ -1317,7 +1335,7 @@ export default function Home() {
 
       {/* Strategic Floating MOTIVA Button (Only shows if Admin enabled) */}
       <AnimatePresence>
-        {isMotivaEnabledAdmin && isMotivaVisible && (
+        {isMotivaEnabledAdmin && isMotivaVisible && !isScrollBelowHalf && (
           <motion.div
             initial={{ scale: 0, opacity: 0, y: 50 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
