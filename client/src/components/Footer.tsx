@@ -1,10 +1,30 @@
 "use client";
-// Force rebuild - 2026-05-15-22-54
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState } from 'react';
+import { publicService } from '@/lib/publicService';
+import { toast } from 'sonner';
 
 export default function Footer() {
+    const [email, setEmail] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleSubscribe = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!email) return;
+
+        setLoading(true);
+        try {
+            await publicService.subscribeNewsletter(email);
+            toast.success('Obrigado por assinar nossa newsletter!');
+            setEmail('');
+        } catch (error: any) {
+            toast.error(error.message || 'Erro ao assinar newsletter');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <footer style={{ padding: '80px 0 40px', background: '#fff', borderTop: '1px solid #f0f0f0' }}>
@@ -61,10 +81,14 @@ export default function Footer() {
                         <p style={{ fontSize: '0.85rem', color: '#666', lineHeight: 1.5 }}>
                             Receba as últimas novidades e dicas exclusivas para mentores.
                         </p>
-                        <div style={{ position: 'relative', marginTop: '5px' }}>
+                        <form onSubmit={handleSubscribe} style={{ position: 'relative', marginTop: '5px' }}>
                             <input
                                 type="email"
                                 placeholder="Seu e-mail"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                disabled={loading}
+                                required
                                 style={{
                                     width: '100%',
                                     padding: '12px 15px',
@@ -75,24 +99,29 @@ export default function Footer() {
                                     background: '#fafafa'
                                 }}
                             />
-                            <button style={{
-                                position: 'absolute',
-                                right: '5px',
-                                top: '5px',
-                                bottom: '5px',
-                                background: '#1a1a1b',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '6px',
-                                padding: '0 15px',
-                                fontSize: '0.8rem',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                transition: 'all 0.3s'
-                            }}>
-                                ASSINAR
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                style={{
+                                    position: 'absolute',
+                                    right: '5px',
+                                    top: '5px',
+                                    bottom: '5px',
+                                    background: '#1a1a1b',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    padding: '0 15px',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 700,
+                                    cursor: loading ? 'not-allowed' : 'pointer',
+                                    opacity: loading ? 0.7 : 1,
+                                    transition: 'all 0.3s'
+                                }}
+                            >
+                                {loading ? '...' : 'ASSINAR'}
                             </button>
-                        </div>
+                        </form>
                     </div>
                 </div>
 

@@ -30,5 +30,18 @@ export const publicService = {
         const response = await fetch(`${API_URL}/analytics/public-impact`);
         if (!response.ok) throw new Error('Falha ao buscar dados de impacto');
         return response.json();
+    },
+
+    async subscribeNewsletter(email: string): Promise<{ success: boolean; message: string }> {
+        const response = await fetch(`${API_URL}/newsletter/subscribe`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Falha ao assinar newsletter');
+        }
+        return response.json();
     }
 };
