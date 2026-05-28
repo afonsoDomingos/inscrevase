@@ -2,7 +2,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, CheckCircle2 } from 'lucide-react';
-import { useTranslate } from '@/context/LanguageContext';
 
 const milestones = [
     {
