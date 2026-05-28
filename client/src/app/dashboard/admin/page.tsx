@@ -1067,7 +1067,7 @@ function AdminDashboardContent() {
                                         label={card.label}
                                         value={card.value}
                                         color={card.color}
-                                        footer={(card as any).footer}
+                                        footer={(card as { footer?: React.ReactNode }).footer}
                                         onClick={() => setActiveTab(card.tab as Tab)}
                                     />
                                 ))}
