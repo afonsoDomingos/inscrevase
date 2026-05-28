@@ -962,7 +962,7 @@ export default function Home() {
       </section >
 
       {/* Payment Methods Section */}
-      < section style={{ padding: '100px 0', background: '#fff', position: 'relative', overflow: 'hidden', borderTop: '1px solid #f0f0f0' }
+      < section id="payments-section" style={{ padding: '100px 0', background: '#fff', position: 'relative', overflow: 'hidden', borderTop: '1px solid #f0f0f0' }
       }>
         <div className="container" style={{ textAlign: 'center', position: 'relative', zIndex: 1, padding: '0 1.5rem' }}>
           <motion.div {...fadeIn}>

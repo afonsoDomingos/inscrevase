@@ -38,7 +38,7 @@ export default function SectorsSection() {
     ];
 
     return (
-        <section style={{ padding: '100px 0', background: '#0a0a0a', position: 'relative', overflow: 'hidden' }}>
+        <section id="sectors-section" style={{ padding: '100px 0', background: '#0a0a0a', position: 'relative', overflow: 'hidden' }}>
             {/* Background elements */}
             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.1, pointerEvents: 'none' }}>
                 <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%)', filter: 'blur(50px)' }} />
