@@ -81,7 +81,7 @@ interface ActiveShapeProps {
     startAngle: number;
     endAngle: number;
     fill: string;
-    payload: any;
+    payload: unknown;
     percent: number;
     value: number;
 }
