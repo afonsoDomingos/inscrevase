@@ -22,6 +22,15 @@ const PLANS = {
             USD: 7979    // 79.79 USD
         },
         interval: 'month'
+    },
+    premium: {
+        name: 'Premium',
+        commissionRate: 0.02, // 2%
+        prices: {
+            MZN: 250000, // 2.500 MT
+            USD: 3959    // 39.59 USD
+        },
+        interval: 'month'
     }
 };
 

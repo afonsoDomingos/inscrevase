@@ -99,14 +99,14 @@ export default function SystemSettings() {
     };
 
     const handlePriceChange = (plan: 'free' | 'pro' | 'enterprise' | 'premium', currency: 'MZN' | 'USD', value: string) => {
-        if (!settings) return;
+        if (!settings || !settings.plans[plan]) return;
         const newSettings = { ...settings };
         newSettings.plans[plan].prices[currency] = Number(value) * 100; // Convert to cents
         setSettings(newSettings);
     };
 
     const handleCommissionChange = (plan: 'free' | 'pro' | 'enterprise' | 'premium', value: string) => {
-        if (!settings) return;
+        if (!settings || !settings.plans[plan]) return;
         const newSettings = { ...settings };
         newSettings.plans[plan].commissionRate = Number(value) / 100; // Convert percentage to decimal
         setSettings(newSettings);
@@ -286,6 +286,7 @@ export default function SystemSettings() {
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
                                 {planKeys.map((key) => {
                                     const plan = settings.plans[key];
+                                    if (!plan) return null;
                                     const Icon = key === 'enterprise' ? Crown : (key === 'pro' ? Zap : Shield);
                                     const color = key === 'enterprise' ? '#000' : (key === 'pro' ? '#D4AF37' : '#666');
 

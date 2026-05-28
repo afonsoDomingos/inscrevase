@@ -1637,6 +1637,10 @@ exports.getPlans = async (req, res) => {
             dynamicPlans.pro.prices.USD = Math.round((dynamicPlans.pro.prices.MZN / 100) / mznRate * 100);
         }
 
+        if (dynamicPlans.premium && dynamicPlans.premium.prices && dynamicPlans.premium.prices.MZN) {
+            dynamicPlans.premium.prices.USD = Math.round((dynamicPlans.premium.prices.MZN / 100) / mznRate * 100);
+        }
+
         if (dynamicPlans.enterprise && dynamicPlans.enterprise.prices && dynamicPlans.enterprise.prices.MZN) {
             dynamicPlans.enterprise.prices.USD = Math.round((dynamicPlans.enterprise.prices.MZN / 100) / mznRate * 100);
         }
