@@ -73,18 +73,6 @@ const itemVariants = {
     visible: { opacity: 1, y: 0, transition: { type: 'spring', damping: 25, stiffness: 400 } }
 };
 
-interface ActiveShapeProps {
-    cx: number;
-    cy: number;
-    innerRadius: number;
-    outerRadius: number;
-    startAngle: number;
-    endAngle: number;
-    fill: string;
-    payload: unknown;
-    percent: number;
-    value: number;
-}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const renderActiveShape = (props: any) => {
