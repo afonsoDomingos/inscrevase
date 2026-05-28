@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Eye, ExternalLink } from 'lucide-react';
 import { lessonService, Lesson } from '@/lib/lessonService';
-import { useTranslate } from '@/lib/useTranslate';
+import { useTranslate } from '@/context/LanguageContext';
 
 // Utility to extract YT ID
 const getYouTubeId = (url: string) => {
