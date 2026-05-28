@@ -29,7 +29,7 @@ export default function ImpactSection() {
     if (loading) return null;
 
     return (
-        <section className="impact-section">
+        <section id="impact-section" className="impact-section">
             <div className="bg-mesh-overlay"></div>
 
             <div className="container">

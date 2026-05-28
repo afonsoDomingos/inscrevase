@@ -31,7 +31,7 @@ export default function FAQSection() {
     ];
 
     return (
-        <section style={{ padding: '80px 20px', background: '#fcfcfc', borderTop: '1px solid #eee' }}>
+        <section id="faq-section" style={{ padding: '80px 20px', background: '#fcfcfc', borderTop: '1px solid #eee' }}>
             <div className="container" style={{ maxWidth: '800px', margin: '0 auto' }}>
                 <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
                     <h2 style={{ fontSize: 'clamp(2rem, 4vw, 2.5rem)', fontWeight: 700, color: '#1a1a1a', marginBottom: '1rem', fontFamily: 'var(--font-playfair)' }}>

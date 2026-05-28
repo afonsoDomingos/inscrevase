@@ -43,7 +43,7 @@ export default function MentorMilestonesSection() {
     // Component logic here
 
     return (
-        <section style={{
+        <section id="milestones-section" style={{
             padding: '100px 0',
             background: '#fafafa',
             position: 'relative',

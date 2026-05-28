@@ -18,6 +18,7 @@ import { TextDispersion } from "@/components/TextDispersion";
 import TeamSection from "@/components/home/TeamSection";
 import VideoTutorialsSection from "@/components/home/VideoTutorialsSection";
 import MentorMilestonesSection from "@/components/home/MentorMilestonesSection";
+import SideQuickMenu from "@/components/home/SideQuickMenu";
 import { formService } from "@/lib/formService";
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
 import Typewriter from "@/components/common/Typewriter";
@@ -164,6 +165,7 @@ export default function Home() {
 
   return (
     <main style={{ backgroundColor: '#fff', overflow: 'hidden' }}>
+      <SideQuickMenu />
       <Navbar />
       <CurrencyWidget />
 

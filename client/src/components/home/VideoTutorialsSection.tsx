@@ -32,7 +32,7 @@ export default function VideoTutorialsSection() {
     if (tutorials.length === 0) return null;
 
     return (
-        <section style={{
+        <section id="tutorials-section" style={{
             padding: '100px 0',
             background: '#fff',
             borderTop: '1px solid #f0f0f0',

@@ -55,7 +55,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
     };
 
     return (
-        <div style={{ width: '100%', maxWidth: '1400px', margin: '0 auto', paddingBottom: '2rem' }}>
+        <div id="plans-section" style={{ width: '100%', maxWidth: '1400px', margin: '0 auto', paddingBottom: '2rem' }}>
             {showTitle && (
                 <div className="luxury-card" style={{ background: 'var(--paper)', border: 'none', marginBottom: '2rem', textAlign: 'center', padding: '2rem' }}>
                     <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', fontFamily: 'var(--font-playfair)' }}>
@@ -117,7 +117,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
             )}
 
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
-                <PlanCard 
+                <PlanCard
                     id="free"
                     name="Free"
                     description={t('plans.free.description')}
@@ -130,13 +130,13 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                         t('plans.unlimitedForms'),
                         t('plans.participantManagement')
                     ]}
-                    onManualSelect={() => {}}
-                    onSuccess={() => {}}
+                    onManualSelect={() => { }}
+                    onSuccess={() => { }}
                     isCurrentPlan={!!(user?.plan === 'free' || (user && !user.plan))}
                     t={t}
                 />
 
-                <PlanCard 
+                <PlanCard
                     id="pro"
                     name="Pro"
                     description={t('plans.pro.description')}
@@ -158,7 +158,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                     t={t}
                 />
 
-                <PlanCard 
+                <PlanCard
                     id="enterprise"
                     name="Enterprise"
                     description={t('plans.enterprise.description')}
@@ -186,7 +186,7 @@ export default function PlansSection({ showTitle = true }: { showTitle?: boolean
                     {t('plans.footerInfo')}
                 </p>
             </div>
-            
+
             <PlanUpgradeModal
                 isOpen={isUpgradeModalOpen}
                 onClose={() => {
