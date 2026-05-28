@@ -5,12 +5,23 @@ import { TrendingUp, CheckCircle2 } from 'lucide-react';
 
 const milestones = [
     {
+        id: 'silver',
+        title: 'Silver Milestone',
+        description: 'Vendas superiores a',
+        value: '10 mil',
+        currency: 'Meticais',
+        subtitle: 'Primeiro grande passo',
+        color: '#94a3b8', // Silver/Slate
+        textColor: '#fff',
+        icon: '🥈'
+    },
+    {
         id: 'emerald',
         title: 'Emerald Milestone',
         description: 'Parabéns por alcançar',
-        value: '100mil',
+        value: '100 mil',
         currency: 'Meticais',
-        subtitle: 'Primeira grande conquista',
+        subtitle: 'Conquista de prestígio',
         color: '#10b981', // Emerald
         textColor: '#fff',
         icon: '💎'
@@ -25,28 +36,6 @@ const milestones = [
         color: '#000', // Black
         textColor: '#fff',
         icon: '🌟'
-    },
-    {
-        id: 'diamond',
-        title: 'Diamond Milestone',
-        description: 'Parabéns por alcançar',
-        value: '10 milhões',
-        currency: 'Meticais',
-        subtitle: 'Elite do Conhecimento',
-        color: '#3b82f6', // Bright Blue
-        textColor: '#fff',
-        icon: '💎'
-    },
-    {
-        id: 'ultimate',
-        title: 'Ultimate Champion',
-        description: 'Parabéns por alcançar',
-        value: '100 milhões',
-        currency: 'Meticais',
-        subtitle: 'Legado na plataforma',
-        color: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)',
-        textColor: '#000',
-        icon: '👑'
     }
 ];
 
