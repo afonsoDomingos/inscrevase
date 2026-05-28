@@ -13,12 +13,12 @@ import {
 } from 'lucide-react';
 
 const menuItems = [
+    { id: 'plans', icon: <CreditCard size={20} />, label: 'Planos Premium', target: 'plans-section' },
     { id: 'sectors', icon: <Zap size={20} />, label: 'Sectores', target: 'sectors-section' },
-    { id: 'payments', icon: <CreditCard size={20} />, label: 'Pagamentos', target: 'payments-section' },
     { id: 'impact', icon: <BarChart3 size={20} />, label: 'Impacto Global', target: 'impact-section' },
+    { id: 'payments', icon: <CreditCard size={20} />, label: 'Pagamentos', target: 'payments-section' },
     { id: 'milestones', icon: <Trophy size={20} />, label: 'Meus Marcos', target: 'milestones-section' },
     { id: 'tutorials', icon: <PlayCircle size={20} />, label: 'Tutoriais', target: 'tutorials-section' },
-    { id: 'plans', icon: <CreditCard size={20} />, label: 'Planos Premium', target: 'plans-section' },
     { id: 'faq', icon: <HelpCircle size={20} />, label: 'Dúvidas', target: 'faq-section' },
     { id: 'support', icon: <MessageCircle size={20} />, label: 'Suporte', target: '/suporte', isLink: true },
     { id: 'dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard', target: '/dashboard', isLink: true },
@@ -64,90 +64,134 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                 }
             `}</style>
 
-            {menuItems.map((item) => (
-                <div
-                    key={item.id}
-                    style={{ position: 'relative', display: 'flex', alignItems: 'center' }}
-                    onMouseEnter={() => setHoveredId(item.id)}
-                    onMouseLeave={() => setHoveredId(null)}
-                >
-                    <motion.button
-                        whileHover={{ scale: 1.1, backgroundColor: '#fff' }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handleAction(item)}
+            {menuItems.map((item) => {
+                const isDashboard = item.id === 'dashboard';
+                const label = isDashboard && !userRole ? 'Entrar / Criar Conta' : item.label;
+
+                return (
+                    <div
+                        key={item.id}
+                        style={{ position: 'relative', display: 'flex', alignItems: 'center' }}
+                        onMouseEnter={() => setHoveredId(item.id)}
+                        onMouseLeave={() => setHoveredId(null)}
+                    >
+                        <motion.button
+                            whileHover={{ scale: 1.1, backgroundColor: '#fff' }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleAction(item)}
+                            style={{
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '10px',
+                                background: isDashboard && !userRole ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255, 255, 255, 0.9)',
+                                backdropFilter: 'blur(10px)',
+                                border: isDashboard && !userRole ? '1px solid rgba(212, 175, 55, 0.3)' : '1px solid rgba(0, 0, 0, 0.05)',
+                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                color: isDashboard && !userRole ? '#D4AF37' : (item.id === 'milestones' ? '#D4AF37' : '#666'),
+                                transition: 'all 0.2s ease',
+                            }}
+                        >
+                            {React.cloneElement(item.icon as React.ReactElement, { size: 18 })}
+                        </motion.button>
+
+                        <AnimatePresence>
+                            {hoveredId === item.id && (
+                                <motion.div
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -10 }}
+                                    style={{
+                                        position: 'absolute',
+                                        left: '50px',
+                                        background: isDashboard && !userRole ? '#D4AF37' : '#111',
+                                        color: isDashboard && !userRole ? '#000' : '#fff',
+                                        padding: '6px 14px',
+                                        borderRadius: '8px',
+                                        fontSize: '0.85rem',
+                                        fontWeight: 800,
+                                        whiteSpace: 'nowrap',
+                                        pointerEvents: 'none',
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                        zIndex: 1001,
+                                    }}
+                                >
+                                    {label}
+                                    {/* Tooltip Triangle */}
+                                    <div style={{
+                                        position: 'absolute',
+                                        left: '-4px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%) rotate(45deg)',
+                                        width: '8px',
+                                        height: '8px',
+                                        background: isDashboard && !userRole ? '#D4AF37' : '#111',
+                                    }} />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                );
+            })}
+
+            <AnimatePresence>
+                {hoveredId === item.id && (
+                    <motion.div
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
                         style={{
-                            width: '40px', // Tamanho reduzido
-                            height: '40px', // Tamanho reduzido
-                            borderRadius: '10px',
-                            background: 'rgba(255, 255, 255, 0.9)',
-                            backdropFilter: 'blur(10px)',
-                            border: '1px solid rgba(0, 0, 0, 0.05)',
-                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            color: item.id === 'milestones' ? '#D4AF37' : '#666',
-                            transition: 'all 0.2s ease',
+                            position: 'absolute',
+                            left: '50px',
+                            background: '#111',
+                            color: '#fff',
+                            padding: '6px 14px',
+                            borderRadius: '8px',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            whiteSpace: 'nowrap',
+                            pointerEvents: 'none',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                            zIndex: 1001,
                         }}
                     >
-                        {React.cloneElement(item.icon as React.ReactElement, { size: 18 })}
-                    </motion.button>
-
-                    <AnimatePresence>
-                        {hoveredId === item.id && (
-                            <motion.div
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -10 }}
-                                style={{
-                                    position: 'absolute',
-                                    left: '50px',
-                                    background: '#111',
-                                    color: '#fff',
-                                    padding: '6px 14px',
-                                    borderRadius: '8px',
-                                    fontSize: '0.85rem',
-                                    fontWeight: 600,
-                                    whiteSpace: 'nowrap',
-                                    pointerEvents: 'none',
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                                    zIndex: 1001,
-                                }}
-                            >
-                                {item.label}
-                                {/* Tooltip Triangle */}
-                                <div style={{
-                                    position: 'absolute',
-                                    left: '-4px',
-                                    top: '50%',
-                                    transform: 'translateY(-50%) rotate(45deg)',
-                                    width: '8px',
-                                    height: '8px',
-                                    background: '#111',
-                                }} />
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-            ))}
-
-            {/* Premium Indicator / Logo at the bottom of the bar */}
-            <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-                style={{
-                    width: '40px',
-                    height: '40px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    opacity: 0.4,
-                    marginTop: '5px'
-                }}
-            >
-                <Zap size={14} color="#D4AF37" fill="#D4AF37" />
-            </motion.div>
+                        {item.label}
+                        {/* Tooltip Triangle */}
+                        <div style={{
+                            position: 'absolute',
+                            left: '-4px',
+                            top: '50%',
+                            transform: 'translateY(-50%) rotate(45deg)',
+                            width: '8px',
+                            height: '8px',
+                            background: '#111',
+                        }} />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
+    ))
+}
+
+{/* Premium Indicator / Logo at the bottom of the bar */ }
+<motion.div
+    animate={{ rotate: 360 }}
+    transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+    style={{
+        width: '40px',
+        height: '40px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: 0.4,
+        marginTop: '5px'
+    }}
+>
+    <Zap size={14} color="#D4AF37" fill="#D4AF37" />
+</motion.div>
+        </div >
     );
 }
