@@ -1653,13 +1653,15 @@ function AdminDashboardContent() {
                                                                     dataKey="value"
                                                                     activeIndex={activeOriginIndex !== -1 ? activeOriginIndex : undefined}
                                                                     activeShape={renderActiveShape}
-                                                                    onMouseEnter={(_: any, index: number) => setActiveOriginIndex(index)}
+                                                                    {...{ onMouseEnter: (_: any, index: number) => setActiveOriginIndex(index) }}
                                                                 >
                                                                     <Cell fill="#1a1a1a" />
                                                                     <Cell fill="#db4437" />
                                                                     <Cell fill="#0077b5" />
                                                                 </Pie>
+                                                                /* eslint-disable @typescript-eslint/no-explicit-any */
                                                             ) as any}
+                                                            /* eslint-enable @typescript-eslint/no-explicit-any */
                                                             <RechartsTooltip contentStyle={{ borderRadius: '12px' }} />
 
                                                         </PieChart>
