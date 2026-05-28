@@ -98,6 +98,11 @@
                 "convertDesc": "Calculate quick conversions for your plan.",
                 "viewFinance": "VIEW FINANCES"
             }
+        },
+        "tutorials": {
+            "title": "Video Tutorials",
+            "subtitle": "Watch and learn step-by-step how to use Inscreva-se",
+            "cta": "See more videos on YouTube"
         }
     },
     "common": {

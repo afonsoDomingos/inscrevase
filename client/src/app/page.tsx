@@ -28,6 +28,7 @@ import InstitutionalSection from "@/components/home/InstitutionalSection";
 import BlogPreviewSection from "@/components/home/BlogPreviewSection";
 import WeatherWidget from "@/components/home/WeatherWidget";
 import CurrencyWidget from "@/components/home/CurrencyWidget";
+import VideoTutorialsSection from "@/components/home/VideoTutorialsSection";
 
 
 const galleryImages = [
@@ -55,12 +56,12 @@ export default function Home() {
   useEffect(() => {
     // Apresentar o botão após 3 segundos
     const showTimeout = setTimeout(() => setIsMotivaVisible(true), 3000);
-    
+
     // Fazer desaparecer por breves momentos e reaparecer (Fade in / Fade out, sempre no mesmo sítio)
     const interval = setInterval(() => {
       setIsMotivaVisible(v => !v);
     }, 15000); // Oscilação a cada 15 segundos para chamar atenção sem chatear
-    
+
     return () => {
       clearTimeout(showTimeout);
       clearInterval(interval);
@@ -1293,6 +1294,9 @@ export default function Home() {
       {/* Institutional Section */}
       < InstitutionalSection />
 
+      {/* Video Tutorials Section */}
+      <VideoTutorialsSection />
+
       {/* FAQ Section */}
       < FAQSection />
 
@@ -1316,7 +1320,7 @@ export default function Home() {
             className="motiva-floating-btn"
           >
             <Link href="/motiva" style={{ textDecoration: 'none' }}>
-              <motion.div 
+              <motion.div
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 className="motiva-btn-content"

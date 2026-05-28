@@ -102,6 +102,11 @@
                 "convertDesc": "Calcule conversões rápidas para o seu plano.",
                 "viewFinance": "VER FINANÇAS"
             }
+        },
+        "tutorials": {
+            "title": "Tutoriais em Vídeo",
+            "subtitle": "Assista e aprenda passo a passo como usar a Inscreva-se",
+            "cta": "Ver mais vídeos no YouTube"
         }
     },
     "common": {
