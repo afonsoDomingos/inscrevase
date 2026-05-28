@@ -19,8 +19,9 @@ export default function Footer() {
             await publicService.subscribeNewsletter(email);
             toast.success('Obrigado por assinar nossa newsletter!');
             setEmail('');
-        } catch (error: any) {
-            toast.error(error.message || 'Erro ao assinar newsletter');
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Erro ao assinar newsletter';
+            toast.error(message);
         } finally {
             setLoading(false);
         }
