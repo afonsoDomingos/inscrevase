@@ -22,12 +22,19 @@ const menuItems = [
     { id: 'dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard', target: '/dashboard', isLink: true },
 ];
 
-export default function SideQuickMenu() {
+export default function SideQuickMenu({ userRole }: { userRole?: string }) {
     const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+    const getDashboardPath = () => {
+        if (!userRole) return '/entrar';
+        if (userRole === 'admin' || userRole === 'SuperAdmin') return '/dashboard/admin';
+        if (userRole === 'participant') return '/dashboard/participant';
+        return '/dashboard/mentor';
+    };
 
     const handleAction = (item: typeof menuItems[0]) => {
         if (item.isLink) {
-            window.location.href = item.target;
+            window.location.href = item.id === 'dashboard' ? getDashboardPath() : item.target;
         } else {
             const el = document.getElementById(item.target);
             if (el) {
@@ -39,17 +46,17 @@ export default function SideQuickMenu() {
     return (
         <div style={{
             position: 'fixed',
-            left: '20px',
-            top: '50%',
+            left: '12px',
+            top: '65%', // Deslocado para baixo para evitar o botão de câmbio
             transform: 'translateY(-50%)',
             zIndex: 1000,
             display: 'flex',
             flexDirection: 'column',
-            gap: '12px',
-        }} className="hidden-mobile">
+            gap: '8px',
+        }} className="side-menu-container">
             <style jsx>{`
-                @media (max-width: 768px) {
-                    .hidden-mobile {
+                @media (max-width: 1024px) {
+                    .side-menu-container {
                         display: none !important;
                     }
                 }
@@ -67,22 +74,22 @@ export default function SideQuickMenu() {
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleAction(item)}
                         style={{
-                            width: '48px',
-                            height: '48px',
-                            borderRadius: '12px',
-                            background: 'rgba(255, 255, 255, 0.8)',
+                            width: '40px', // Tamanho reduzido
+                            height: '40px', // Tamanho reduzido
+                            borderRadius: '10px',
+                            background: 'rgba(255, 255, 255, 0.9)',
                             backdropFilter: 'blur(10px)',
-                            border: '1px solid rgba(255, 255, 255, 0.3)',
-                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+                            border: '1px solid rgba(0, 0, 0, 0.05)',
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             cursor: 'pointer',
-                            color: item.id === 'milestones' ? '#D4AF37' : '#555',
-                            transition: 'color 0.2s ease',
+                            color: item.id === 'milestones' ? '#D4AF37' : '#666',
+                            transition: 'all 0.2s ease',
                         }}
                     >
-                        {item.icon}
+                        {React.cloneElement(item.icon as React.ReactElement, { size: 18 })}
                     </motion.button>
 
                     <AnimatePresence>
@@ -93,7 +100,7 @@ export default function SideQuickMenu() {
                                 exit={{ opacity: 0, x: -10 }}
                                 style={{
                                     position: 'absolute',
-                                    left: '60px',
+                                    left: '50px',
                                     background: '#111',
                                     color: '#fff',
                                     padding: '6px 14px',
@@ -103,6 +110,7 @@ export default function SideQuickMenu() {
                                     whiteSpace: 'nowrap',
                                     pointerEvents: 'none',
                                     boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                    zIndex: 1001,
                                 }}
                             >
                                 {item.label}
@@ -127,16 +135,16 @@ export default function SideQuickMenu() {
                 animate={{ rotate: 360 }}
                 transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
                 style={{
-                    width: '48px',
-                    height: '48px',
+                    width: '40px',
+                    height: '40px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     opacity: 0.4,
-                    marginTop: '10px'
+                    marginTop: '5px'
                 }}
             >
-                <Zap size={16} color="#D4AF37" fill="#D4AF37" />
+                <Zap size={14} color="#D4AF37" fill="#D4AF37" />
             </motion.div>
         </div>
     );

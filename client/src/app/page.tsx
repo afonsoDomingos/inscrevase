@@ -165,7 +165,7 @@ export default function Home() {
 
   return (
     <main style={{ backgroundColor: '#fff', overflow: 'hidden' }}>
-      <SideQuickMenu />
+      <SideQuickMenu userRole={user?.role} />
       <Navbar />
       <CurrencyWidget />
 
