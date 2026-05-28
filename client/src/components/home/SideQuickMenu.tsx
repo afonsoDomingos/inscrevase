@@ -48,13 +48,12 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
     return (
         <div style={{
             position: 'fixed',
-            left: '12px',
-            top: '65%',
-            transform: 'translateY(-50%)',
+            left: '10px',
+            top: '130px',
             zIndex: 1000,
             display: 'flex',
             flexDirection: 'column',
-            gap: '8px',
+            gap: '6px',
         }} className="side-menu-container">
             <style jsx>{`
                 @media (max-width: 1024px) {
@@ -80,22 +79,22 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleAction(item)}
                             style={{
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '10px',
-                                background: isDashboard && !userRole ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255, 255, 255, 0.9)',
+                                width: '34px',
+                                height: '34px',
+                                borderRadius: '8px',
+                                background: isDashboard && !userRole ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255, 255, 255, 0.95)',
                                 backdropFilter: 'blur(10px)',
-                                border: isDashboard && !userRole ? '1px solid rgba(212, 175, 55, 0.3)' : '1px solid rgba(0, 0, 0, 0.05)',
-                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+                                border: isDashboard && !userRole ? '1px solid rgba(212, 175, 55, 0.4)' : '1px solid rgba(0, 0, 0, 0.08)',
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 cursor: 'pointer',
-                                color: isDashboard && !userRole ? '#D4AF37' : (item.id === 'milestones' ? '#D4AF37' : '#666'),
+                                color: isDashboard && !userRole ? '#D4AF37' : (item.id === 'milestones' ? '#D4AF37' : '#555'),
                                 transition: 'all 0.2s ease',
                             }}
                         >
-                            {React.cloneElement(item.icon as React.ReactElement, { size: 18 })}
+                            {React.cloneElement(item.icon as React.ReactElement, { size: 16 })}
                         </motion.button>
 
                         <AnimatePresence>
@@ -106,12 +105,12 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                                     exit={{ opacity: 0, x: -10 }}
                                     style={{
                                         position: 'absolute',
-                                        left: '50px',
+                                        left: '42px',
                                         background: isDashboard && !userRole ? '#D4AF37' : '#111',
                                         color: isDashboard && !userRole ? '#000' : '#fff',
-                                        padding: '6px 14px',
-                                        borderRadius: '8px',
-                                        fontSize: '0.85rem',
+                                        padding: '5px 12px',
+                                        borderRadius: '6px',
+                                        fontSize: '0.75rem',
                                         fontWeight: 800,
                                         whiteSpace: 'nowrap',
                                         pointerEvents: 'none',
@@ -142,8 +141,8 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                 animate={{ rotate: 360 }}
                 transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
                 style={{
-                    width: '40px',
-                    height: '40px',
+                    width: '34px',
+                    height: '34px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
