@@ -8,6 +8,7 @@ import { SUPPORT_WHATSAPP } from '@/lib/constants';
 export default function WhatsAppFloat() {
     const [isVisible, setIsVisible] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [isBrainOpen, setIsBrainOpen] = useState(false);
     const pathname = usePathname();
 
     useEffect(() => {
@@ -18,6 +19,9 @@ export default function WhatsAppFloat() {
     }, []);
 
     useEffect(() => {
+        const handleBrainVisibility = (e: any) => setIsBrainOpen(e.detail.visible);
+        window.addEventListener('brain-visibility-change', handleBrainVisibility);
+
         const checkScroll = () => {
             if (window.scrollY > 200 && !pathname?.startsWith('/hub/')) {
                 setIsVisible(true);
@@ -26,12 +30,16 @@ export default function WhatsAppFloat() {
             }
         };
         window.addEventListener('scroll', checkScroll);
-        return () => window.removeEventListener('scroll', checkScroll);
+
+        return () => {
+            window.removeEventListener('scroll', checkScroll);
+            window.removeEventListener('brain-visibility-change', handleBrainVisibility);
+        };
     }, [pathname]);
 
     return (
         <AnimatePresence>
-            {isVisible && (
+            {isVisible && !(isMobile && isBrainOpen) && (
                 <motion.a
                     href={`https://wa.me/${SUPPORT_WHATSAPP}`}
                     target="_blank"

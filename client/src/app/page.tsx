@@ -54,8 +54,20 @@ export default function Home() {
   // Motiva Contest Floating Button State
   const [isMotivaVisible, setIsMotivaVisible] = useState(false);
   const [isScrollBelowHalf, setIsScrollBelowHalf] = useState(false);
+  const [isBrainOpen, setIsBrainOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    // Listen for Brain visibility
+    const handleBrainVisibility = (e: any) => {
+      setIsBrainOpen(e.detail.visible);
+    };
+    window.addEventListener('brain-visibility-change', handleBrainVisibility);
+
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
     // Apresentar o botão após 3 segundos
     const showTimeout = setTimeout(() => setIsMotivaVisible(true), 3000);
 
@@ -83,6 +95,8 @@ export default function Home() {
 
     return () => {
       window.removeEventListener('scroll', checkScroll);
+      window.removeEventListener('brain-visibility-change', handleBrainVisibility);
+      window.removeEventListener('resize', checkMobile);
       clearTimeout(showTimeout);
       clearInterval(interval);
     };
@@ -496,7 +510,7 @@ export default function Home() {
       </section>
 
       {/* Sponsored Ad System */}
-      {sponsoredItems.length > 0 && (
+      {sponsoredItems.length > 0 && !(isMobile && isBrainOpen) && (
         <SponsoredAdCard events={sponsoredItems} />
       )}
 
@@ -1337,7 +1351,7 @@ export default function Home() {
 
       {/* Strategic Floating MOTIVA Button (Only shows if Admin enabled) */}
       <AnimatePresence>
-        {isMotivaEnabledAdmin && isMotivaVisible && !isScrollBelowHalf && (
+        {isMotivaEnabledAdmin && isMotivaVisible && !isScrollBelowHalf && !(isMobile && isBrainOpen) && (
           <motion.div
             initial={{ scale: 0, opacity: 0, y: 50 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
