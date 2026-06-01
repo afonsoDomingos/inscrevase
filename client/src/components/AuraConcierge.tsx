@@ -39,7 +39,10 @@ export default function AuraConcierge() {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
 
-        const handleBrainVisibility = (e: any) => setIsBrainOpen(e.detail.visible);
+        const handleBrainVisibility = (e: Event) => {
+            const customEvent = e as CustomEvent;
+            setIsBrainOpen(customEvent.detail?.visible ?? false);
+        };
         window.addEventListener('brain-visibility-change', handleBrainVisibility);
 
         window.addEventListener('resize', checkMobile);

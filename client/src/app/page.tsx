@@ -59,8 +59,9 @@ export default function Home() {
 
   useEffect(() => {
     // Listen for Brain visibility
-    const handleBrainVisibility = (e: any) => {
-      setIsBrainOpen(e.detail.visible);
+    const handleBrainVisibility = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      setIsBrainOpen(customEvent.detail?.visible ?? false);
     };
     window.addEventListener('brain-visibility-change', handleBrainVisibility);
 

@@ -19,7 +19,10 @@ export default function WhatsAppFloat() {
     }, []);
 
     useEffect(() => {
-        const handleBrainVisibility = (e: any) => setIsBrainOpen(e.detail.visible);
+        const handleBrainVisibility = (e: Event) => {
+            const customEvent = e as CustomEvent;
+            setIsBrainOpen(customEvent.detail?.visible ?? false);
+        };
         window.addEventListener('brain-visibility-change', handleBrainVisibility);
 
         const checkScroll = () => {
