@@ -16,16 +16,16 @@ import {
 } from 'lucide-react';
 
 const menuItems = [
-    { id: 'sectors', icon: <Zap size={14} />, label: 'Sectores', target: 'sectors-section' },
-    { id: 'payments', icon: <CreditCard size={14} />, label: 'Pagamentos', target: 'payments-section' },
-    { id: 'plans', icon: <CreditCard size={14} />, label: 'Planos Premium', target: 'plans-section' },
-    { id: 'impact', icon: <BarChart3 size={14} />, label: 'Impacto Global', target: 'impact-section' },
-    { id: 'milestones', icon: <Trophy size={14} />, label: 'Meus Marcos', target: 'milestones-section' },
-    { id: 'tutorials', icon: <PlayCircle size={14} />, label: 'Tutoriais', target: 'tutorials-section' },
-    { id: 'faq', icon: <HelpCircle size={14} />, label: 'Dúvidas', target: 'faq-section' },
-    { id: 'team', icon: <Users size={14} />, label: 'Liderança', target: 'team-section' },
-    { id: 'support', icon: <MessageCircle size={14} />, label: 'Suporte', target: '/suporte', isLink: true },
-    { id: 'dashboard', icon: <LayoutDashboard size={14} />, label: 'Dashboard', target: '/dashboard', isLink: true },
+    { id: 'sectors', icon: <Zap size={12} />, label: 'Sectores', target: 'sectors-section' },
+    { id: 'payments', icon: <CreditCard size={12} />, label: 'Pagamentos', target: 'payments-section' },
+    { id: 'plans', icon: <CreditCard size={12} />, label: 'Planos Premium', target: 'plans-section' },
+    { id: 'impact', icon: <BarChart3 size={12} />, label: 'Impacto Global', target: 'impact-section' },
+    { id: 'milestones', icon: <Trophy size={12} />, label: 'Meus Marcos', target: 'milestones-section' },
+    { id: 'tutorials', icon: <PlayCircle size={12} />, label: 'Tutoriais', target: 'tutorials-section' },
+    { id: 'faq', icon: <HelpCircle size={12} />, label: 'Dúvidas', target: 'faq-section' },
+    { id: 'team', icon: <Users size={12} />, label: 'Liderança', target: 'team-section' },
+    { id: 'support', icon: <MessageCircle size={12} />, label: 'Suporte', target: '/suporte', isLink: true },
+    { id: 'dashboard', icon: <LayoutDashboard size={12} />, label: 'Dashboard', target: '/dashboard', isLink: true },
 ];
 
 export default function SideQuickMenu({ userRole }: { userRole?: string }) {
@@ -75,8 +75,8 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsCollapsed(!isCollapsed)}
                 style={{
-                    width: '24px',
-                    height: '24px',
+                    width: '20px',
+                    height: '20px',
                     borderRadius: '50%',
                     background: 'rgba(255,255,255,0.8)',
                     border: '1px solid rgba(0,0,0,0.1)',
@@ -84,12 +84,12 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
-                    marginBottom: '8px',
+                    marginBottom: '6px',
                     color: '#666',
                     boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
                 }}
             >
-                {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+                {isCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
             </motion.button>
 
             <AnimatePresence>
@@ -120,9 +120,9 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => handleAction(item)}
                                         style={{
-                                            width: '28px',
-                                            height: '28px',
-                                            borderRadius: '6px',
+                                            width: '24px',
+                                            height: '24px',
+                                            borderRadius: '5px',
                                             background: isDashboard && !userRole ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255, 255, 255, 0.95)',
                                             backdropFilter: 'blur(10px)',
                                             border: isDashboard && !userRole ? '1px solid rgba(212, 175, 55, 0.4)' : '1px solid rgba(0, 0, 0, 0.08)',
@@ -146,7 +146,7 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                                                 exit={{ opacity: 0, x: -10 }}
                                                 style={{
                                                     position: 'absolute',
-                                                    left: '36px',
+                                                    left: '32px',
                                                     background: isDashboard && !userRole ? '#D4AF37' : '#111',
                                                     color: isDashboard && !userRole ? '#000' : '#fff',
                                                     padding: '4px 10px',
@@ -181,8 +181,8 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                             animate={{ rotate: 360 }}
                             transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
                             style={{
-                                width: '28px',
-                                height: '28px',
+                                width: '24px',
+                                height: '24px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
