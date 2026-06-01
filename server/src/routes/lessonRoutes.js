@@ -114,9 +114,9 @@ router.get('/', protect, async (req, res) => {
 });
 
 // @route   GET /api/lessons/platform/tutorials
-// @desc    Get tutorials created by platform admins
-// @access  Private
-router.get('/platform/tutorials', protect, async (req, res) => {
+// @desc    Get tutorials created by platform admins (Public)
+// @access  Public (Optional Auth)
+router.get('/platform/tutorials', require('../middleware/authMiddleware').optionalAuthMiddleware, async (req, res) => {
     try {
         const User = require('../models/User');
         const admins = await User.find({ role: { $in: ['admin', 'SuperAdmin'] } }).select('_id');
