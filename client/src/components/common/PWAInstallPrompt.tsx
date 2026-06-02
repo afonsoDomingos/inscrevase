@@ -18,6 +18,8 @@ export default function PWAInstallPrompt() {
     const [isVisible, setIsVisible] = useState(false);
     const [isIOS, setIsIOS] = useState(false);
     const [isStandalone, setIsStandalone] = useState(false);
+    const [isBrainOpen, setIsBrainOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         // Detect if already in standalone mode (already installed and open as app)
@@ -66,10 +68,10 @@ export default function PWAInstallPrompt() {
                 console.warn('localStorage not accessible for PWA prompt');
             }
 
-            // Show if not dismissed in the last 24 hours
-            const dayInMs = 24 * 60 * 60 * 1000;
-            if (Date.now() - lastDismissed > dayInMs) {
-                setTimeout(() => setIsVisible(true), 5000);
+            // Show if not dismissed in the last hour (reduced for better visibility during testing)
+            const hourInMs = 60 * 60 * 1000;
+            if (Date.now() - lastDismissed > hourInMs) {
+                setTimeout(() => setIsVisible(true), 1500); // Faster appearance
             }
         };
 
@@ -78,7 +80,17 @@ export default function PWAInstallPrompt() {
             checkAndShow();
         }
 
+        const handleBrainVisibility = (e: Event) => {
+            const customEvent = e as CustomEvent;
+            setIsBrainOpen(customEvent.detail?.visible ?? false);
+        };
+
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        window.addEventListener('brain-visibility-change', handleBrainVisibility);
+        window.addEventListener('resize', checkMobile);
 
         window.addEventListener('appinstalled', () => {
             setInstallPrompt(null);
@@ -88,6 +100,8 @@ export default function PWAInstallPrompt() {
 
         return () => {
             window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+            window.removeEventListener('brain-visibility-change', handleBrainVisibility);
+            window.removeEventListener('resize', checkMobile);
         };
     }, []);
 
@@ -98,10 +112,15 @@ export default function PWAInstallPrompt() {
             return;
         }
 
-        if (!installPrompt) return;
+        if (!installPrompt) {
+            // Fallback for Android if native prompt not available
+            alert('Para instalar: Clique nos três pontos (⋮) no canto superior direito do Chrome e selecione "Instalar aplicação" ou "Adicionar ao Ecrã Principal".');
+            return;
+        }
 
         installPrompt.prompt();
-        await installPrompt.userChoice;
+        const { outcome } = await installPrompt.userChoice;
+        console.log('User install choice:', outcome);
 
         setInstallPrompt(null);
         setIsVisible(false);
@@ -116,7 +135,7 @@ export default function PWAInstallPrompt() {
         }
     };
 
-    if (!isVisible || isStandalone) return null;
+    if (!isVisible || isStandalone || (isMobile && isBrainOpen)) return null;
 
     return (
         <AnimatePresence>
@@ -189,7 +208,7 @@ export default function PWAInstallPrompt() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        {isIOS ? 'Instruções' : <><Download size={16} /> Instalar</>}
+                        {isIOS || !installPrompt ? 'Instruções' : <><Download size={16} /> Instalar</>}
                     </button>
 
                     <button

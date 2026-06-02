@@ -67,44 +67,53 @@ export default function CookieConsent() {
                             left: 0,
                             right: 0,
                             zIndex: 9999,
-                            padding: '1.5rem',
-                            background: 'rgba(255, 255, 255, 0.95)',
+                            padding: '0.75rem 1rem',
+                            background: 'rgba(255, 255, 255, 0.98)',
                             backdropFilter: 'blur(10px)',
                             borderTop: '1px solid #eee',
                             boxShadow: '0 -10px 25px rgba(0,0,0,0.05)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '1rem',
-                            maxWidth: '100%'
                         }}
                     >
-                        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
-                            <div style={{ flex: 1, minWidth: '300px' }}>
-                                <h4 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '0.5rem', color: '#111' }}>
-                                    {t('cookies.title')}
-                                </h4>
-                                <p style={{ fontSize: '0.85rem', color: '#666', lineHeight: '1.5' }}>
+                        <div style={{
+                            maxWidth: '1200px',
+                            margin: '0 auto',
+                            width: '100%',
+                            display: 'flex',
+                            flexDirection: window.innerWidth < 768 ? 'column' : 'row',
+                            justifyContent: 'space-between',
+                            alignItems: window.innerWidth < 768 ? 'stretch' : 'center',
+                            gap: '0.75rem'
+                        }}>
+                            <div style={{ flex: 1 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                                    <Shield size={14} color="#D4AF37" />
+                                    <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111', margin: 0 }}>
+                                        {t('cookies.title')}
+                                    </h4>
+                                </div>
+                                <p style={{ fontSize: '0.75rem', color: '#666', lineHeight: '1.4', margin: 0 }}>
                                     {t('cookies.description')}{' '}
                                     <button
                                         onClick={() => setShowSettings(true)}
-                                        style={{ background: 'none', border: 'none', padding: 0, color: '#000', fontWeight: 700, textDecoration: 'underline', cursor: 'pointer' }}
+                                        style={{ background: 'none', border: 'none', padding: 0, color: '#000', fontWeight: 700, textDecoration: 'underline', cursor: 'pointer', fontSize: '0.75rem' }}
                                     >
                                         {t('cookies.settings')}
                                     </button>
                                 </p>
                             </div>
-                            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
                                 <button
                                     onClick={handleRejectAll}
                                     style={{
-                                        padding: '0.8rem 1.5rem',
-                                        borderRadius: '12px',
+                                        flex: 1,
+                                        padding: '0.5rem 1rem',
+                                        borderRadius: '8px',
                                         border: '1px solid #ddd',
                                         background: '#fff',
                                         fontWeight: 700,
-                                        fontSize: '0.9rem',
+                                        fontSize: '0.8rem',
                                         cursor: 'pointer',
-                                        transition: 'all 0.2s'
+                                        whiteSpace: 'nowrap'
                                     }}
                                 >
                                     {t('cookies.reject')}
@@ -112,15 +121,16 @@ export default function CookieConsent() {
                                 <button
                                     onClick={handleAcceptAll}
                                     style={{
-                                        padding: '0.8rem 1.5rem',
-                                        borderRadius: '12px',
+                                        flex: 1,
+                                        padding: '0.5rem 1rem',
+                                        borderRadius: '8px',
                                         border: 'none',
                                         background: '#000',
                                         color: '#fff',
                                         fontWeight: 700,
-                                        fontSize: '0.9rem',
+                                        fontSize: '0.8rem',
                                         cursor: 'pointer',
-                                        transition: 'all 0.2s'
+                                        whiteSpace: 'nowrap'
                                     }}
                                 >
                                     {t('cookies.accept')}

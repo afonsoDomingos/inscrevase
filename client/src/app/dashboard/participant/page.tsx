@@ -107,6 +107,11 @@ function ParticipantDashboardContent() {
     const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
     const [libraryBooks, setLibraryBooks] = useState<BookModel[]>([]);
     const [libraryLoading, setLibraryLoading] = useState(false);
+    const [ticketsFilter, setTicketsFilter] = useState<'all' | 'approved' | 'pending' | 'rejected'>('all');
+
+    const pendingTicketsCount = useMemo(() => {
+        return tickets.filter(t => t.status === 'pending' && t.paymentStatus !== 'paid').length;
+    }, [tickets]);
 
     const availableMentors = useMemo(() => {
         const mentorsMap = new Map();
@@ -552,6 +557,30 @@ function ParticipantDashboardContent() {
                                     {item.label}
                                 </motion.span>
                             )}
+
+                            {item.id === 'tickets' && pendingTicketsCount > 0 && (
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    style={{
+                                        position: 'absolute',
+                                        right: isSidebarCollapsed ? '4px' : '12px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: '#ef4444',
+                                        color: '#fff',
+                                        fontSize: '0.7rem',
+                                        fontWeight: 700,
+                                        padding: '2px 6px',
+                                        borderRadius: '10px',
+                                        minWidth: '18px',
+                                        textAlign: 'center',
+                                        boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                                    }}
+                                >
+                                    {pendingTicketsCount}
+                                </motion.div>
+                            )}
                         </button>
                     ))}
 
@@ -918,148 +947,220 @@ function ParticipantDashboardContent() {
                                 <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
                                     <Loader2 className="animate-spin" size={40} color="#FFD700" />
                                 </div>
-                            ) : tickets.length > 0 ? (
-                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
-                                    {tickets.map(ticket => {
-                                        if (!ticket?.form) return null;
-                                        return (
-                                            <div key={ticket._id} style={{ position: 'relative' }}>
-                                                <Link href={`/hub/${ticket._id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                                                    <div style={{
-                                                        background: 'var(--paper)',
-                                                        borderRadius: '24px',
-                                                        overflow: 'hidden',
-                                                        boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
-                                                        border: '1px solid var(--border)',
-                                                        transition: 'transform 0.2s',
-                                                        cursor: 'pointer'
-                                                    }}
-                                                        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
-                                                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                                                    >
-                                                        <div style={{ position: 'relative', height: '160px' }}>
-                                                            <Image
-                                                                src={ticket.form.coverImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop'}
-                                                                alt={ticket.form.title}
-                                                                fill
-                                                                style={{ objectFit: 'cover' }}
-                                                            />
-                                                            <div style={{
-                                                                position: 'absolute',
-                                                                top: '12px',
-                                                                right: '12px',
-                                                                padding: '4px 12px',
-                                                                borderRadius: '20px',
-                                                                background: ticket.status === 'rejected' ? '#ef4444' : (ticket.status === 'approved' || ticket.paymentStatus === 'paid' ? '#10b981' : '#f59e0b'),
-                                                                color: '#fff',
-                                                                fontSize: '0.75rem',
-                                                                fontWeight: 700
-                                                            }}>
-                                                                {ticket.status === 'rejected' ? t('hub.status.rejected') : ((ticket.status === 'approved' || ticket.paymentStatus === 'paid') ? t('hub.status.confirmed') : t('hub.status.pending'))}
-                                                            </div>
-                                                        </div>
-                                                        <div style={{ padding: '1.5rem' }}>
-                                                            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.8rem', color: 'var(--foreground)' }}>{ticket.form.title}</h3>
-                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                                                                    <Calendar size={16} />
-                                                                    {ticket.form.eventDate ? new Date(ticket.form.eventDate).toLocaleDateString() : t('common.toBeDefined')} {ticket.form.eventTime ? `${t('common.atTime')} ${ticket.form.eventTime}` : ''}
-                                                                </div>
-                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.85rem' }}>
-                                                                    <Clock size={14} style={{ opacity: 0.7 }} />
-                                                                    <span style={{ opacity: 0.8 }}>Inscrito em: {new Date(ticket.submittedAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
-                                                                </div>
-                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.9rem' }}>
-                                                                    <MapPin size={16} />
-                                                                    {ticket.form.location || 'Online'}
-                                                                </div>
-                                                            </div>
-                                                            <button style={{
-                                                                width: '100%',
-                                                                marginTop: '1.5rem',
-                                                                padding: '0.8rem',
-                                                                borderRadius: '12px',
-                                                                background: 'var(--secondary)',
-                                                                color: 'var(--primary)',
-                                                                border: 'none',
-                                                                fontWeight: 700,
-                                                                fontSize: '0.9rem',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                gap: '8px'
-                                                            }}>
-                                                                <Ticket size={18} /> {t('hub.viewAccess')}
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </Link>
+                            ) : (
+                                <>
+                                    {/* Filters */}
+                                    <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                                        {[
+                                            { id: 'all', label: 'Todos' },
+                                            { id: 'approved', label: 'Confirmados' },
+                                            { id: 'pending', label: 'Pendentes' },
+                                            { id: 'rejected', label: 'Anulados' }
+                                        ].map(filter => {
+                                            const count = filter.id === 'all'
+                                                ? tickets.length
+                                                : tickets.filter(t => filter.id === 'approved' ? (t.status === 'approved' || t.paymentStatus === 'paid') : t.status === filter.id).length;
 
-                                                {/* Delete Button - Outside the Link to avoid collision but positioned absolute */}
+                                            return (
                                                 <button
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        if (confirm(t('dashboard.cancelAlert'))) {
-                                                            const handleDelete = async () => {
-                                                                try {
-                                                                    await submissionService.deleteSubmission(ticket._id);
-                                                                    setTickets(prev => prev.filter(t => t._id !== ticket._id));
-                                                                    toast.success(t('dashboard.cancelSuccess'));
-                                                                } catch (err) {
-                                                                    console.error(err);
-                                                                    toast.error(t('dashboard.cancelError'));
-                                                                }
-                                                            };
-                                                            handleDelete();
-                                                        }
-                                                    }}
+                                                    key={filter.id}
+                                                    onClick={() => setTicketsFilter(filter.id as any)}
                                                     style={{
-                                                        position: 'absolute',
-                                                        top: '12px',
-                                                        left: '12px', // Opposite side of status
-                                                        width: '32px',
-                                                        height: '32px',
-                                                        borderRadius: '50%',
-                                                        background: 'rgba(255, 255, 255, 0.9)',
-                                                        border: 'none',
-                                                        color: '#ef4444',
+                                                        padding: '8px 16px',
+                                                        borderRadius: '20px',
+                                                        border: '1px solid',
+                                                        borderColor: ticketsFilter === filter.id ? '#FFD700' : 'var(--border)',
+                                                        background: ticketsFilter === filter.id ? 'var(--gold-gradient)' : 'transparent',
+                                                        color: ticketsFilter === filter.id ? '#000' : 'var(--text-muted)',
+                                                        fontWeight: 600,
+                                                        fontSize: '0.85rem',
+                                                        cursor: 'pointer',
+                                                        whiteSpace: 'nowrap',
                                                         display: 'flex',
                                                         alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        cursor: 'pointer',
-                                                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-                                                        zIndex: 10
+                                                        gap: '8px',
+                                                        transition: 'all 0.2s'
                                                     }}
-                                                    title="Cancelar Inscrição"
                                                 >
-                                                    <LogOut size={16} style={{ transform: 'rotate(180deg)' }} />
+                                                    {filter.label}
+                                                    <span style={{
+                                                        background: ticketsFilter === filter.id ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.05)',
+                                                        padding: '2px 8px',
+                                                        borderRadius: '10px',
+                                                        fontSize: '0.75rem'
+                                                    }}>
+                                                        {count}
+                                                    </span>
                                                 </button>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            ) : (
-                                <div style={{
-                                    padding: '3rem',
-                                    background: 'var(--paper)',
-                                    borderRadius: '20px',
-                                    textAlign: 'center',
-                                    border: '1px dashed var(--border)'
-                                }}>
-                                    <div style={{ background: 'rgba(255,215,0,0.1)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-                                        <Ticket size={40} color="#DAA520" />
+                                            );
+                                        })}
                                     </div>
-                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Você ainda não tem ingressos</h3>
-                                    <p style={{ color: '#666', marginBottom: '2rem' }}>Inscreva-se em eventos para vê-los aqui.</p>
-                                    <button
-                                        onClick={() => setActiveTab('explore')}
-                                        className="btn-primary"
-                                        style={{ padding: '0.8rem 2rem', borderRadius: '50px' }}
-                                    >
-                                        Explorar Eventos
-                                    </button>
-                                </div>
+
+                                    {tickets.filter(t => {
+                                        if (ticketsFilter === 'all') return true;
+                                        if (ticketsFilter === 'approved') return t.status === 'approved' || t.paymentStatus === 'paid';
+                                        return t.status === ticketsFilter;
+                                    }).length > 0 ? (
+                                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                                            {tickets
+                                                .filter(t => {
+                                                    if (ticketsFilter === 'all') return true;
+                                                    if (ticketsFilter === 'approved') return t.status === 'approved' || t.paymentStatus === 'paid';
+                                                    return t.status === ticketsFilter;
+                                                })
+                                                .map(ticket => {
+                                                    if (!ticket?.form) return null;
+                                                    return (
+                                                        <div key={ticket._id} style={{ position: 'relative' }}>
+                                                            <Link href={`/hub/${ticket._id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                                                                <div style={{
+                                                                    background: 'var(--paper)',
+                                                                    borderRadius: '24px',
+                                                                    overflow: 'hidden',
+                                                                    boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+                                                                    border: '1px solid var(--border)',
+                                                                    transition: 'transform 0.2s',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
+                                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                                >
+                                                                    <div style={{ position: 'relative', height: '160px' }}>
+                                                                        <Image
+                                                                            src={ticket.form.coverImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop'}
+                                                                            alt={ticket.form.title}
+                                                                            fill
+                                                                            style={{ objectFit: 'cover' }}
+                                                                        />
+                                                                        <div style={{
+                                                                            position: 'absolute',
+                                                                            top: '12px',
+                                                                            right: '12px',
+                                                                            padding: '4px 12px',
+                                                                            borderRadius: '20px',
+                                                                            background: ticket.status === 'rejected' ? '#ef4444' : (ticket.status === 'approved' || ticket.paymentStatus === 'paid' ? '#10b981' : '#f59e0b'),
+                                                                            color: '#fff',
+                                                                            fontSize: '0.75rem',
+                                                                            fontWeight: 700
+                                                                        }}>
+                                                                            {ticket.status === 'rejected' ? t('hub.status.rejected') : ((ticket.status === 'approved' || ticket.paymentStatus === 'paid') ? t('hub.status.confirmed') : t('hub.status.pending'))}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div style={{ padding: '1.5rem' }}>
+                                                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.8rem', color: 'var(--foreground)' }}>{ticket.form.title}</h3>
+                                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                                                                                <Calendar size={16} />
+                                                                                {ticket.form.eventDate ? new Date(ticket.form.eventDate).toLocaleDateString() : t('common.toBeDefined')} {ticket.form.eventTime ? `${t('common.atTime')} ${ticket.form.eventTime}` : ''}
+                                                                            </div>
+                                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.85rem' }}>
+                                                                                <Clock size={14} style={{ opacity: 0.7 }} />
+                                                                                <span style={{ opacity: 0.8 }}>Inscrito em: {new Date(ticket.submittedAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                                                                            </div>
+                                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '0.9rem' }}>
+                                                                                <MapPin size={16} />
+                                                                                {ticket.form.location || 'Online'}
+                                                                            </div>
+                                                                        </div>
+                                                                        <button style={{
+                                                                            width: '100%',
+                                                                            marginTop: '1.5rem',
+                                                                            padding: '0.8rem',
+                                                                            borderRadius: '12px',
+                                                                            background: 'var(--secondary)',
+                                                                            color: 'var(--primary)',
+                                                                            border: 'none',
+                                                                            fontWeight: 700,
+                                                                            fontSize: '0.9rem',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            gap: '8px'
+                                                                        }}>
+                                                                            <Ticket size={18} /> {t('hub.viewAccess')}
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </Link>
+
+                                                            {/* Delete Button - Outside the Link to avoid collision but positioned absolute */}
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    e.stopPropagation();
+                                                                    if (confirm(t('dashboard.cancelAlert'))) {
+                                                                        const handleDelete = async () => {
+                                                                            try {
+                                                                                await submissionService.deleteSubmission(ticket._id);
+                                                                                setTickets(prev => prev.filter(t => t._id !== ticket._id));
+                                                                                toast.success(t('dashboard.cancelSuccess'));
+                                                                            } catch (err) {
+                                                                                console.error(err);
+                                                                                toast.error(t('dashboard.cancelError'));
+                                                                            }
+                                                                        };
+                                                                        handleDelete();
+                                                                    }
+                                                                }}
+                                                                style={{
+                                                                    position: 'absolute',
+                                                                    top: '12px',
+                                                                    left: '12px', // Opposite side of status
+                                                                    width: '32px',
+                                                                    height: '32px',
+                                                                    borderRadius: '50%',
+                                                                    background: 'rgba(255, 255, 255, 0.9)',
+                                                                    border: 'none',
+                                                                    color: '#ef4444',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    cursor: 'pointer',
+                                                                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                                                                    zIndex: 10
+                                                                }}
+                                                                title="Cancelar Inscrição"
+                                                            >
+                                                                <LogOut size={16} style={{ transform: 'rotate(180deg)' }} />
+                                                            </button>
+                                                        </div>
+                                                    );
+                                                })}
+                                        </div>
+                                    ) : (
+                                        <div style={{
+                                            padding: '3rem',
+                                            background: 'var(--paper)',
+                                            borderRadius: '20px',
+                                            textAlign: 'center',
+                                            border: '1px dashed var(--border)'
+                                        }}>
+                                            <div style={{ background: 'rgba(255,215,0,0.1)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+                                                <Ticket size={40} color="#DAA520" />
+                                            </div>
+                                            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+                                                {ticketsFilter === 'all' ? 'Você ainda não tem ingressos' :
+                                                    ticketsFilter === 'pending' ? 'Nenhuma inscrição pendente' :
+                                                        ticketsFilter === 'approved' ? 'Nenhum ingresso confirmado' :
+                                                            'Nenhuma inscrição anulada'}
+                                            </h3>
+                                            <p style={{ color: '#666', marginBottom: '2rem' }}>
+                                                {ticketsFilter === 'all'
+                                                    ? 'Inscreva-se em eventos para vê-los aqui.'
+                                                    : 'Seus itens aparecerão aqui assim que o status for atualizado.'}
+                                            </p>
+                                            {ticketsFilter === 'all' && (
+                                                <button
+                                                    onClick={() => setActiveTab('explore')}
+                                                    className="btn-primary"
+                                                    style={{ padding: '0.8rem 2rem', borderRadius: '50px' }}
+                                                >
+                                                    Explorar Eventos
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </motion.div>
                     )}
@@ -1521,20 +1622,22 @@ function ParticipantDashboardContent() {
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </main>
+            </main >
 
             {/* Modals & Tour */}
-            {user && (
-                <ProfileModal
-                    isOpen={isProfileModalOpen}
-                    onClose={() => setIsProfileModalOpen(false)}
-                    user={user}
-                    onSuccess={() => {
-                        toast.success('Perfil atualizado!');
-                        authService.getProfile().then(setUser);
-                    }}
-                />
-            )}
+            {
+                user && (
+                    <ProfileModal
+                        isOpen={isProfileModalOpen}
+                        onClose={() => setIsProfileModalOpen(false)}
+                        user={user}
+                        onSuccess={() => {
+                            toast.success('Perfil atualizado!');
+                            authService.getProfile().then(setUser);
+                        }}
+                    />
+                )
+            }
 
             <SupportModal
                 isOpen={isSupportOpen}
@@ -1545,12 +1648,14 @@ function ParticipantDashboardContent() {
                 availableMentors={availableMentors}
             />
 
-            {!isMobile && (
-                <OnboardingTour
-                    steps={participantSteps}
-                    storageKey="participant-tour-seen"
-                />
-            )}
+            {
+                !isMobile && (
+                    <OnboardingTour
+                        steps={participantSteps}
+                        storageKey="participant-tour-seen"
+                    />
+                )
+            }
 
             <style jsx>{`
                 .no-scrollbar::-webkit-scrollbar {
@@ -1573,7 +1678,7 @@ function ParticipantDashboardContent() {
                     }
                 }
             `}</style>
-        </div>
+        </div >
     );
 }
 

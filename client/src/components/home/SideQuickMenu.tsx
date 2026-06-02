@@ -86,7 +86,7 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                 @media (max-width: 1024px) {
                     .side-menu-container {
                         left: 5px !important;
-                        top: 20% !important;
+                        top: 15% !important;
                     }
                 }
             `}</style>
@@ -97,8 +97,8 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsCollapsed(!isCollapsed)}
                 style={{
-                    width: '20px',
-                    height: '20px',
+                    width: isMobile ? '16px' : '20px',
+                    height: isMobile ? '16px' : '20px',
                     borderRadius: '50%',
                     background: 'rgba(255,255,255,0.8)',
                     border: '1px solid rgba(0,0,0,0.1)',
@@ -106,12 +106,12 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
-                    marginBottom: '6px',
+                    marginBottom: '4px',
                     color: '#666',
                     boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
                 }}
             >
-                {isCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
+                {isCollapsed ? <ChevronRight size={isMobile ? 10 : 12} /> : <ChevronLeft size={isMobile ? 10 : 12} />}
             </motion.button>
 
             <AnimatePresence>
@@ -120,7 +120,7 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
-                        style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}
+                        style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '4px' : '6px' }}
                     >
                         {menuItems.map((item) => {
                             const isDashboard = item.id === 'dashboard';
@@ -142,8 +142,8 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => handleAction(item)}
                                         style={{
-                                            width: '24px',
-                                            height: '24px',
+                                            width: isMobile ? '20px' : '24px',
+                                            height: isMobile ? '20px' : '24px',
                                             borderRadius: '5px',
                                             background: isDashboard && !userRole ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255, 255, 255, 0.95)',
                                             backdropFilter: 'blur(10px)',
@@ -157,7 +157,7 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
                                             transition: 'all 0.3s ease',
                                         }}
                                     >
-                                        {item.icon}
+                                        {React.cloneElement(item.icon as React.ReactElement, { size: isMobile ? 10 : 12 })}
                                     </motion.button>
 
                                     <AnimatePresence>
