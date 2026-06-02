@@ -23,7 +23,7 @@ export default function PWAInstallPrompt() {
         // Detect if already in standalone mode (already installed and open as app)
         const checkStandalone = () => {
             const isWindowStandalone = window.matchMedia('(display-mode: standalone)').matches;
-            const isNavigatorStandalone = (window.navigator as any).standalone === true;
+            const isNavigatorStandalone = (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
             return isWindowStandalone || isNavigatorStandalone;
         };
 
@@ -101,7 +101,7 @@ export default function PWAInstallPrompt() {
         if (!installPrompt) return;
 
         installPrompt.prompt();
-        const { outcome } = await installPrompt.userChoice;
+        await installPrompt.userChoice;
 
         setInstallPrompt(null);
         setIsVisible(false);
