@@ -31,6 +31,8 @@ const menuItems = [
 export default function SideQuickMenu({ userRole }: { userRole?: string }) {
     const [hoveredId, setHoveredId] = useState<string | null>(null);
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isBrainOpen, setIsBrainOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     const getDashboardPath = () => {
         if (!userRole) return '/entrar';
@@ -38,6 +40,23 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
         if (userRole === 'participant') return '/dashboard/participant';
         return '/dashboard/mentor';
     };
+
+    React.useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+
+        const handleBrainVisibility = (e: Event) => {
+            const customEvent = e as CustomEvent;
+            setIsBrainOpen(customEvent.detail?.visible ?? false);
+        };
+        window.addEventListener('brain-visibility-change', handleBrainVisibility);
+
+        return () => {
+            window.removeEventListener('resize', checkMobile);
+            window.removeEventListener('brain-visibility-change', handleBrainVisibility);
+        };
+    }, []);
 
     const handleAction = (item: typeof menuItems[0]) => {
         if (item.isLink) {
@@ -49,6 +68,8 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
             }
         }
     };
+
+    if (isMobile && isBrainOpen) return null;
 
     return (
         <div style={{
@@ -64,7 +85,8 @@ export default function SideQuickMenu({ userRole }: { userRole?: string }) {
             <style jsx>{`
                 @media (max-width: 1024px) {
                     .side-menu-container {
-                        display: none !important;
+                        left: 5px !important;
+                        top: 20% !important;
                     }
                 }
             `}</style>
