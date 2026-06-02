@@ -16,35 +16,74 @@ interface BeforeInstallPromptEvent extends Event {
 export default function PWAInstallPrompt() {
     const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [isVisible, setIsVisible] = useState(false);
+    const [isIOS, setIsIOS] = useState(false);
+    const [isStandalone, setIsStandalone] = useState(false);
 
     useEffect(() => {
-        // Listen for the PWA install prompt event
+        // Detect if already in standalone mode (already installed and open as app)
+        const checkStandalone = () => {
+            const isWindowStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            const isNavigatorStandalone = (window.navigator as any).standalone === true;
+            return isWindowStandalone || isNavigatorStandalone;
+        };
+
+        const inStandalone = checkStandalone();
+        setIsStandalone(inStandalone);
+
+        // Detect iOS
+        const detectIOS = () => {
+            return [
+                'iPad Simulator',
+                'iPhone Simulator',
+                'iPod Simulator',
+                'iPad',
+                'iPhone',
+                'iPod'
+            ].includes(navigator.platform)
+                // iPad on iOS 13 detection
+                || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+        };
+
+        const onIOS = detectIOS();
+        setIsIOS(onIOS);
+
+        // Listen for the PWA install prompt event (Chromium)
         const handleBeforeInstallPrompt = (e: Event) => {
             const promptEvent = e as BeforeInstallPromptEvent;
-            // Prevent Chrome 67 and earlier from automatically showing the prompt
             promptEvent.preventDefault();
-            // Stash the event so it can be triggered later.
             setInstallPrompt(promptEvent);
-            
-            // Wait a few seconds before showing our custom UI
-            let hasDismissed = false;
+
+            checkAndShow();
+        };
+
+        const checkAndShow = () => {
+            if (inStandalone) return;
+
+            let lastDismissed = 0;
             try {
-                hasDismissed = !!localStorage.getItem('pwa_prompt_dismissed');
+                lastDismissed = parseInt(localStorage.getItem('pwa_prompt_dismissed_at') || '0');
             } catch {
                 console.warn('localStorage not accessible for PWA prompt');
             }
-            if (!hasDismissed) {
-                setTimeout(() => setIsVisible(true), 3000);
+
+            // Show if not dismissed in the last 24 hours
+            const dayInMs = 24 * 60 * 60 * 1000;
+            if (Date.now() - lastDismissed > dayInMs) {
+                setTimeout(() => setIsVisible(true), 5000);
             }
         };
 
+        // On iOS, we don't have beforeinstallprompt, so we check manually
+        if (onIOS && !inStandalone) {
+            checkAndShow();
+        }
+
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-        // Check if already installed
         window.addEventListener('appinstalled', () => {
             setInstallPrompt(null);
             setIsVisible(false);
-            console.log('PWA was installed');
+            setIsStandalone(true);
         });
 
         return () => {
@@ -53,31 +92,31 @@ export default function PWAInstallPrompt() {
     }, []);
 
     const handleInstallClick = async () => {
+        if (isIOS) {
+            // For iOS, we show a message explaining how to install
+            alert('Para instalar: Clique no ícone de "Compartilhar" (quadrado com seta) na barra inferior e selecione "Adicionar ao Ecrã Principal".');
+            return;
+        }
+
         if (!installPrompt) return;
-        
-        // Show the native browser install prompt
+
         installPrompt.prompt();
-        
-        // Wait for the user to respond to the prompt
         const { outcome } = await installPrompt.userChoice;
-        console.log(`User response to the install prompt: ${outcome}`);
-        
-        // We've used the prompt, and can't use it again, throw it away
+
         setInstallPrompt(null);
         setIsVisible(false);
     };
 
     const handleDismiss = () => {
         setIsVisible(false);
-        // Remember dismissal for 7 days
         try {
-            localStorage.setItem('pwa_prompt_dismissed', 'true');
+            localStorage.setItem('pwa_prompt_dismissed_at', Date.now().toString());
         } catch {
             console.warn('Failed to save PWA prompt dismissal to localStorage');
         }
     };
 
-    if (!isVisible) return null;
+    if (!isVisible || isStandalone) return null;
 
     return (
         <AnimatePresence>
@@ -106,7 +145,6 @@ export default function PWAInstallPrompt() {
                     gap: '1rem',
                     position: 'relative'
                 }}>
-                    {/* Icon section */}
                     <div style={{
                         width: '56px',
                         height: '56px',
@@ -121,17 +159,19 @@ export default function PWAInstallPrompt() {
                         <Smartphone size={28} color="#000" />
                     </div>
 
-                    {/* Text section */}
                     <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
                             <span style={{ fontSize: '0.65rem', fontWeight: 900, background: '#000', color: '#fff', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>Oficial</span>
                             <Zap size={12} color="#D4AF37" fill="#D4AF37" />
                         </div>
-                        <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#000', margin: 0 }}>Instala a nossa App oficial</h3>
-                        <p style={{ fontSize: '0.75rem', color: '#666', margin: 0 }}>Acesso rápido aos teus livros e eventos.</p>
+                        <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#000', margin: 0 }}>
+                            {isIOS ? 'Adiciona ao teu iPhone' : 'Instala a nossa App'}
+                        </h3>
+                        <p style={{ fontSize: '0.75rem', color: '#666', margin: 0 }}>
+                            {isIOS ? 'Clica em partilhar e "Ecrã Principal"' : 'Acesso rápido aos teus livros e eventos.'}
+                        </p>
                     </div>
 
-                    {/* Action section */}
                     <button
                         onClick={handleInstallClick}
                         style={{
@@ -149,10 +189,9 @@ export default function PWAInstallPrompt() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        <Download size={16} /> Instalar
+                        {isIOS ? 'Instruções' : <><Download size={16} /> Instalar</>}
                     </button>
 
-                    {/* Close button */}
                     <button
                         onClick={handleDismiss}
                         style={{
