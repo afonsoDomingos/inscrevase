@@ -59,6 +59,7 @@ import { stripeService } from '@/lib/stripeService';
 import MySalesPanel from '@/components/books/MySalesPanel';
 import { pushService } from '@/lib/pushService';
 
+import CelebrationModal from '@/components/participant/CelebrationModal';
 import PlansSection from '@/components/common/PlansSection';
 import ParticipantLessons from '@/components/participant/ParticipantLessons';
 import SponsoredAdCard, { SponsoredItem } from '@/components/home/SponsoredAdCard';
@@ -110,6 +111,7 @@ function ParticipantDashboardContent() {
     const [libraryBooks, setLibraryBooks] = useState<BookModel[]>([]);
     const [libraryLoading, setLibraryLoading] = useState(false);
     const [ticketsFilter, setTicketsFilter] = useState<'all' | 'approved' | 'pending' | 'rejected'>('all');
+    const [celebrationSubmission, setCelebrationSubmission] = useState<SubmissionModel | null>(null);
 
     const pendingTicketsCount = useMemo(() => {
         return tickets.filter(t => t.status === 'pending' && t.paymentStatus !== 'paid').length;
@@ -255,6 +257,17 @@ function ParticipantDashboardContent() {
                 ].sort(() => Math.random() - 0.5) as SponsoredItem[];
 
                 setSponsoredItems(combinedAds);
+
+                // --- NEW: CELEBRATION LOGIC ---
+                // Trigger celebration popup for newly approved tickets
+                const approvedToCelebrate = ticketsData.find(t =>
+                    t.status === 'approved' &&
+                    !localStorage.getItem(`celebrated_sub_${t._id}`)
+                );
+                if (approvedToCelebrate) {
+                    setCelebrationSubmission(approvedToCelebrate);
+                }
+                // ------------------------------
             } catch (error) {
                 console.error("Error loading profile:", error);
                 const currentUrl = encodeURIComponent(pathname + (searchParams.toString() ? '?' + searchParams.toString() : ''));
@@ -1675,6 +1688,16 @@ function ParticipantDashboardContent() {
                 targetMentorId={targetMentor?.id}
                 targetMentorName={targetMentor?.name}
                 availableMentors={availableMentors}
+            />
+
+            <CelebrationModal
+                submission={celebrationSubmission}
+                onClose={() => {
+                    if (celebrationSubmission) {
+                        localStorage.setItem(`celebrated_sub_${celebrationSubmission._id}`, 'true');
+                    }
+                    setCelebrationSubmission(null);
+                }}
             />
 
             {
