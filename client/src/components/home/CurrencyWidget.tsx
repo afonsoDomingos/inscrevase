@@ -46,11 +46,7 @@ export default function CurrencyWidget() {
         checkMobile();
         window.addEventListener('resize', checkMobile);
 
-        // Verificar se o utilizador escondeu o widget anteriormente
-        const savedHidden = localStorage.getItem('hide_currency_widget');
-        if (savedHidden === 'true') setIsHidden(true);
-
-        // Listener para abrir o painel via Inteligência Artificial (mesmo se escondido)
+        // Listener para abrir o painel via Inteligência Artificial
         const openFromBrain = () => {
             setIsHidden(false);
             setIsOpen(true);
@@ -66,7 +62,6 @@ export default function CurrencyWidget() {
     const handleHide = (e: React.MouseEvent) => {
         e.stopPropagation();
         setIsHidden(true);
-        localStorage.setItem('hide_currency_widget', 'true');
     };
 
     const relevantCurrencies: { code: Currency, name: string, flag: string }[] = [
@@ -148,30 +143,6 @@ export default function CurrencyWidget() {
                     </div>
                 )}
             </AnimatePresence>
-
-            {/* Restore button if hidden (very discreet) */}
-            {isHidden && !isOpen && (
-                <button
-                    onClick={() => {
-                        setIsHidden(false);
-                        localStorage.removeItem('hide_currency_widget');
-                    }}
-                    style={{
-                        position: 'fixed',
-                        left: '4px',
-                        bottom: '20px',
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'rgba(255,215,0,0.2)',
-                        cursor: 'pointer',
-                        zIndex: 999,
-                        fontSize: '0.6rem'
-                    }}
-                    title="Restaurar Câmbio"
-                >
-                    <ArrowRightLeft size={10} />
-                </button>
-            )}
 
             {/* Side Panel */}
             <AnimatePresence>
