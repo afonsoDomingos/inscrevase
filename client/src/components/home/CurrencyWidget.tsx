@@ -86,62 +86,66 @@ export default function CurrencyWidget() {
             {/* Floating Trigger Button on the Left */}
             <AnimatePresence>
                 {!isHidden && !isOpen && (
-                    <motion.div
-                        initial={{ x: -100 }}
-                        animate={{ x: 0 }}
-                        exit={{ x: -100 }}
-                        whileHover={{ x: 5 }}
-                        onClick={() => setIsOpen(true)}
-                        style={{
-                            position: 'fixed',
-                            left: 0,
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            zIndex: 999,
-                            background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)',
-                            padding: isMobile ? '8px 4px' : '10px 6px',
-                            borderRadius: '0 12px 12px 0',
-                            cursor: 'pointer',
-                            boxShadow: '4px 0 15px rgba(0,0,0,0.2)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: '4px',
-                            writingMode: 'vertical-rl',
-                            textOrientation: 'mixed'
-                        }}
-                    >
-                        {/* Botão de Fechar Pequeno no Topo */}
-                        <div
+                    <div style={{ position: 'fixed', left: 0, top: '50%', transform: 'translateY(-50%)', zIndex: 999 }}>
+                        {/* Botão de Fechar Absoluto por Cima */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            whileHover={{ scale: 1.2, background: '#ff4444' }}
                             onClick={handleHide}
                             style={{
-                                marginBottom: '8px',
-                                padding: '2px',
-                                background: 'rgba(0,0,0,0.1)',
+                                position: 'absolute',
+                                top: '-15px',
+                                right: '-5px',
+                                width: '18px',
+                                height: '18px',
+                                background: '#333',
                                 borderRadius: '50%',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 cursor: 'pointer',
-                                transition: 'all 0.2s'
+                                zIndex: 1000,
+                                border: '2px solid #FFD700',
+                                color: '#fff',
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.3)'
                             }}
-                            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.2)'}
-                            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.1)'}
                         >
-                            <X size={10} color="#000" strokeWidth={3} />
-                        </div>
+                            <X size={10} strokeWidth={4} />
+                        </motion.div>
 
-                        <ArrowRightLeft size={isMobile ? 14 : 16} color="#000" style={{ transform: 'rotate(90deg)', marginBottom: '5px' }} />
-                        <span style={{
-                            color: '#000',
-                            fontWeight: 900,
-                            fontSize: isMobile ? '0.6rem' : '0.65rem',
-                            letterSpacing: '1px',
-                            textTransform: 'uppercase'
-                        }}>
-                            {t('home.widgets.currency.title')}
-                        </span>
-                    </motion.div>
+                        <motion.div
+                            initial={{ x: -100 }}
+                            animate={{ x: 0 }}
+                            exit={{ x: -100 }}
+                            whileHover={{ x: 5 }}
+                            onClick={() => setIsOpen(true)}
+                            style={{
+                                background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)',
+                                padding: isMobile ? '8px 3px' : '10px 4px',
+                                borderRadius: '0 10px 10px 0',
+                                cursor: 'pointer',
+                                boxShadow: '4px 0 15px rgba(0,0,0,0.2)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                gap: '4px',
+                                writingMode: 'vertical-rl',
+                                textOrientation: 'mixed'
+                            }}
+                        >
+                            <ArrowRightLeft size={isMobile ? 12 : 14} color="#000" style={{ transform: 'rotate(90deg)', marginBottom: '3px' }} />
+                            <span style={{
+                                color: '#000',
+                                fontWeight: 900,
+                                fontSize: isMobile ? '0.55rem' : '0.6rem',
+                                letterSpacing: '1px',
+                                textTransform: 'uppercase'
+                            }}>
+                                {t('home.widgets.currency.title')}
+                            </span>
+                        </motion.div>
+                    </div>
                 )}
             </AnimatePresence>
 
