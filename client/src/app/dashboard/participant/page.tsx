@@ -964,7 +964,7 @@ function ParticipantDashboardContent() {
                                             return (
                                                 <button
                                                     key={filter.id}
-                                                    onClick={() => setTicketsFilter(filter.id as any)}
+                                                    onClick={() => setTicketsFilter(filter.id as 'all' | 'approved' | 'pending' | 'rejected')}
                                                     style={{
                                                         padding: '8px 16px',
                                                         borderRadius: '20px',
