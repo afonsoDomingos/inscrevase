@@ -536,7 +536,14 @@ export default function Home() {
       )}
 
       {/* Stats Section - Luxury Dark Mode */}
-      <section id="impacto-global" className="stats-section-mobile" style={{ paddingTop: '0px', paddingBottom: '0px', background: '#050505', position: 'relative', overflow: 'hidden' }}>
+      <section id="impacto-global" className="stats-section-mobile" style={{
+        paddingTop: '0px',
+        paddingBottom: '10px',
+        background: '#050505',
+        position: 'relative',
+        overflow: 'hidden',
+        scrollMarginTop: '100px' // Compensar a Navbar fixa
+      }}>
         {/* Subtle background grid/mesh effect */}
         <div style={{
           position: 'absolute',
@@ -583,7 +590,7 @@ export default function Home() {
               {
                 icon: Calendar,
                 label: t('home.stats.createdEvents'),
-                value: impactStats?.globalStats.totalEvents ? `${impactStats.globalStats.totalEvents}+` : '0k+',
+                value: impactStats?.globalStats.totalEvents ? `${impactStats.globalStats.totalEvents}+` : '27+',
                 color: '#FFD700'
               },
               {
@@ -593,19 +600,19 @@ export default function Home() {
                   (impactStats.globalStats.totalSubmissions >= 1000 ?
                     `${(impactStats.globalStats.totalSubmissions / 1000).toFixed(1)}k+` :
                     `${impactStats.globalStats.totalSubmissions}+`) :
-                  '3k+', // Real fallback if 0 or loading
+                  '219+',
                 color: '#00f2ea'
               },
               {
                 icon: TrendingUp,
                 label: t('home.stats.activeMentors'),
-                value: impactStats?.globalStats.totalMentors ? `${impactStats.globalStats.totalMentors}+` : '45+',
+                value: impactStats?.globalStats.totalMentors ? `${impactStats.globalStats.totalMentors}+` : '64+',
                 color: '#ff0080'
               },
               {
-                icon: Star,
-                label: t('home.stats.averageRating'),
-                value: impactStats?.globalStats.averageRating?.toString() || '4.9',
+                icon: Trophy,
+                label: t('home.stats.locations') || 'Localizações',
+                value: impactStats?.globalStats.locationsCount?.toString() || '50+',
                 color: '#FFD700'
               },
             ].map((stat, i) => (
