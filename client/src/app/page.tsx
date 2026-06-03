@@ -472,6 +472,26 @@ export default function Home() {
               border-color: rgba(255, 255, 255, 0.5);
               box-shadow: 0 15px 40px rgba(255, 255, 255, 0.1);
             }
+            .stats-section-mobile {
+              padding-top: 10px !important;
+              padding-bottom: 10px !important;
+            }
+            .stat-card-luxury {
+              padding: 12px 8px !important;
+              gap: 4px !important;
+              border-radius: 20px !important;
+            }
+            .stat-value {
+              font-size: 1.6rem !important;
+            }
+            .stat-label {
+              font-size: 0.65rem !important;
+              letter-spacing: 1px !important;
+            }
+            .stat-icon-wrapper svg {
+              width: 32px !important;
+              height: 32px !important;
+            }
           }
         `}</style>
       </section>
@@ -516,7 +536,7 @@ export default function Home() {
       )}
 
       {/* Stats Section - Luxury Dark Mode */}
-      <section style={{ paddingTop: '0px', paddingBottom: '10px', background: '#050505', position: 'relative', overflow: 'hidden' }}>
+      <section className="stats-section-mobile" style={{ paddingTop: '0px', paddingBottom: '10px', background: '#050505', position: 'relative', overflow: 'hidden' }}>
         {/* Subtle background grid/mesh effect */}
         <div style={{
           position: 'absolute',
