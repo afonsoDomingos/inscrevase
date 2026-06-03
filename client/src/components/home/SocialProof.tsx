@@ -68,7 +68,7 @@ export default function SocialProof() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8 }}
-                    style={{ textAlign: 'center', marginBottom: '60px' }}
+                    style={{ textAlign: 'center', marginBottom: '30px' }}
                 >
                     <h2 style={{
                         fontSize: 'clamp(2rem, 5vw, 3rem)',
