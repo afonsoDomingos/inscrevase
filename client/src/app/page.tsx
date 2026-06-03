@@ -536,7 +536,7 @@ export default function Home() {
       )}
 
       {/* Stats Section - Luxury Dark Mode */}
-      <section className="stats-section-mobile" style={{ paddingTop: '0px', paddingBottom: '0px', background: '#050505', position: 'relative', overflow: 'hidden' }}>
+      <section id="impacto-global" className="stats-section-mobile" style={{ paddingTop: '0px', paddingBottom: '0px', background: '#050505', position: 'relative', overflow: 'hidden' }}>
         {/* Subtle background grid/mesh effect */}
         <div style={{
           position: 'absolute',
