@@ -10,11 +10,9 @@ import { useSpotlight } from "@/hooks/useSpotlight";
 import { authService, UserData } from "@/lib/authService";
 import { adService } from "@/lib/adService";
 import Cookies from "js-cookie";
-import SocialProof from "@/components/home/SocialProof";
 import Testimonials from "@/components/home/Testimonials";
 import Footer from "@/components/Footer";
 import { Calendar, Users, TrendingUp, Star, Trophy } from "lucide-react";
-import { TextDispersion } from "@/components/TextDispersion";
 import TeamSection from "@/components/home/TeamSection";
 import VideoTutorialsSection from "@/components/home/VideoTutorialsSection";
 import MentorMilestonesSection from "@/components/home/MentorMilestonesSection";
@@ -116,7 +114,6 @@ export default function Home() {
   }, [isMotivaVisible]);
 
   const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
-  const [impactStats, setImpactStats] = useState<PublicImpactStats | null>(null);
 
   useEffect(() => {
     const token = Cookies.get('token');
@@ -163,9 +160,6 @@ export default function Home() {
     };
     fetchSponsored();
 
-    publicService.getImpactStats()
-      .then(setImpactStats)
-      .catch(err => console.error("Error fetching impact stats:", err));
   }, []);
 
   const getDashboardLink = () => {
@@ -534,154 +528,6 @@ export default function Home() {
       {sponsoredItems.length > 0 && !(isMobile && isBrainOpen) && (
         <SponsoredAdCard events={sponsoredItems} />
       )}
-
-      {/* Stats Section - Luxury Dark Mode */}
-      <section className="stats-section-mobile" style={{ paddingTop: '0px', paddingBottom: '10px', background: '#050505', position: 'relative', overflow: 'hidden' }}>
-        {/* Subtle background grid/mesh effect */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'linear-gradient(#1a1a1a 1px, transparent 1px), linear-gradient(90deg, #1a1a1a 1px, transparent 1px)',
-          backgroundSize: '50px 50px',
-          opacity: 0.2,
-          pointerEvents: 'none'
-        }} />
-
-        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            style={{ textAlign: 'center', marginBottom: '10px' }}
-          >
-
-
-            <h2 style={{
-              fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
-              color: '#fff',
-              marginBottom: '1rem',
-              fontFamily: 'var(--font-playfair)'
-            }}>
-              {t('home.stats.title')}
-            </h2>
-            <TextDispersion text={t('home.stats.description')} />
-          </motion.div>
-
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            className="stats-grid"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: '30px',
-              textAlign: 'center'
-            }}
-          >
-            {[
-              {
-                icon: Calendar,
-                label: t('home.stats.createdEvents'),
-                value: impactStats?.globalStats.totalEvents ? `${impactStats.globalStats.totalEvents}+` : '0k+',
-                color: '#FFD700'
-              },
-              {
-                icon: Users,
-                label: t('home.stats.subscribers'),
-                value: impactStats?.globalStats.totalSubmissions ?
-                  (impactStats.globalStats.totalSubmissions >= 1000 ?
-                    `${(impactStats.globalStats.totalSubmissions / 1000).toFixed(1)}k+` :
-                    `${impactStats.globalStats.totalSubmissions}+`) :
-                  '3k+', // Real fallback if 0 or loading
-                color: '#00f2ea'
-              },
-              {
-                icon: TrendingUp,
-                label: t('home.stats.activeMentors'),
-                value: impactStats?.globalStats.totalMentors ? `${impactStats.globalStats.totalMentors}+` : '45+',
-                color: '#ff0080'
-              },
-              {
-                icon: Star,
-                label: t('home.stats.averageRating'),
-                value: impactStats?.globalStats.averageRating?.toString() || '4.9',
-                color: '#FFD700'
-              },
-            ].map((stat, i) => (
-              <motion.div
-                key={i}
-                variants={fadeIn}
-                whileHover={{ y: -10, scale: 1.02 }}
-                className="stat-card-luxury"
-                style={{
-                  padding: '30px 20px',
-                  background: 'rgba(20, 20, 20, 0.6)',
-                  backdropFilter: 'blur(10px)',
-                  borderRadius: '30px',
-                  border: '1px solid rgba(255,255,255,0.05)',
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '10px',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
-              >
-                {/* Hover Glow Effect */}
-                <div
-                  className="card-glow"
-                  style={{
-                    position: 'absolute',
-                    top: '-50%',
-                    left: '-50%',
-                    width: '200%',
-                    height: '200%',
-                    background: `radial-gradient(circle at center, ${stat.color}15 0%, transparent 70%)`,
-                    opacity: 0,
-                    transition: 'opacity 0.4s ease',
-                    pointerEvents: 'none'
-                  }}
-                />
-
-                <style jsx>{`
-                  .stat-card-luxury:hover .card-glow { opacity: 1; }
-                  .stat-card-luxury:hover { border-color: rgba(255,255,255,0.15) !important; }
-                  .stat-icon-wrapper svg { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-                  .stat-card-luxury:hover .stat-icon-wrapper svg { transform: scale(1.2) rotate(5deg); }
-                `}</style>
-
-                <div className="stat-icon-wrapper" style={{
-                  marginBottom: '5px'
-                }}>
-                  <stat.icon size={48} color={stat.color} strokeWidth={1.5} />
-                </div>
-
-                <div>
-                  <div className="stat-value" style={{
-                    fontSize: '2.5rem',
-                    fontWeight: 700,
-                    color: '#fff',
-                    marginBottom: '5px',
-                    lineHeight: 1,
-                    fontFamily: 'var(--font-inter)'
-                  }}>{stat.value}</div>
-                  <div className="stat-label" style={{
-                    color: '#666',
-                    fontWeight: 600,
-                    fontSize: '0.9rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '2px'
-                  }}>{stat.label}</div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-
-      </section>
 
       <SectorsSection />
       <CommunicationHubSection />
