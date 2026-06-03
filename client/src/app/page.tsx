@@ -516,7 +516,7 @@ export default function Home() {
       )}
 
       {/* Stats Section - Luxury Dark Mode */}
-      <section style={{ paddingTop: '10px', paddingBottom: '20px', background: '#050505', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ paddingTop: '0px', paddingBottom: '10px', background: '#050505', position: 'relative', overflow: 'hidden' }}>
         {/* Subtle background grid/mesh effect */}
         <div style={{
           position: 'absolute',
@@ -532,7 +532,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            style={{ textAlign: 'center', marginBottom: '20px' }}
+            style={{ textAlign: 'center', marginBottom: '10px' }}
           >
 
 
