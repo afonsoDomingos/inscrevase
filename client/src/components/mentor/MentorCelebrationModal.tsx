@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Users, Star, X, ArrowRight, Zap, Target } from 'lucide-react';
+import { Trophy, Users, X, ArrowRight, Zap, Target } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { useTranslate } from '@/context/LanguageContext';
 
 interface MentorCelebrationModalProps {
     isOpen: boolean;
@@ -19,8 +18,6 @@ const MentorCelebrationModal: React.FC<MentorCelebrationModalProps> = ({
     newSubmissionsCount,
     totalSubmissions
 }) => {
-    const { t } = useTranslate();
-
     useEffect(() => {
         if (isOpen) {
             // Lançar confetes dourados para o mentor
@@ -30,7 +27,7 @@ const MentorCelebrationModal: React.FC<MentorCelebrationModalProps> = ({
 
             const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
 
-            const interval: any = setInterval(function () {
+            const interval = setInterval(function () {
                 const timeLeft = animationEnd - Date.now();
 
                 if (timeLeft <= 0) {
