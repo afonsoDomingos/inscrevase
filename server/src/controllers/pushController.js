@@ -5,7 +5,7 @@ const PushSubscription = require('../models/PushSubscription');
 if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
     try {
         webpush.setVapidDetails(
-            'mailto:suporte@inscreva-se.com',
+            'mailto:inscrevase.events@gmail.com',
             process.env.VAPID_PUBLIC_KEY,
             process.env.VAPID_PRIVATE_KEY
         );
