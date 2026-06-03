@@ -39,20 +39,35 @@ export default function CurrencyWidget() {
         return () => clearInterval(interval);
     }, []);
 
+    const [isHidden, setIsHidden] = useState(false);
+
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
-        
-        // Listener para abrir o painel via Inteligência Artificial
-        const openFromBrain = () => setIsOpen(true);
+
+        // Verificar se o utilizador escondeu o widget anteriormente
+        const savedHidden = localStorage.getItem('hide_currency_widget');
+        if (savedHidden === 'true') setIsHidden(true);
+
+        // Listener para abrir o painel via Inteligência Artificial (mesmo se escondido)
+        const openFromBrain = () => {
+            setIsHidden(false);
+            setIsOpen(true);
+        };
         window.addEventListener('brain-action-cambio', openFromBrain);
-        
+
         return () => {
             window.removeEventListener('resize', checkMobile);
             window.removeEventListener('brain-action-cambio', openFromBrain);
         };
     }, []);
+
+    const handleHide = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsHidden(true);
+        localStorage.setItem('hide_currency_widget', 'true');
+    };
 
     const relevantCurrencies: { code: Currency, name: string, flag: string }[] = [
         { code: 'MZN', name: 'Metical', flag: '🇲🇿' },
@@ -69,41 +84,90 @@ export default function CurrencyWidget() {
     return (
         <>
             {/* Floating Trigger Button on the Left */}
-            <motion.div
-                initial={{ x: -100 }}
-                animate={{ x: isOpen ? -100 : 0 }}
-                whileHover={{ x: 5 }}
-                onClick={() => setIsOpen(true)}
-                style={{
-                    position: 'fixed',
-                    left: 0,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    zIndex: 999,
-                    background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)',
-                    padding: isMobile ? '10px 6px' : '12px 8px',
-                    borderRadius: '0 15px 15px 0',
-                    cursor: 'pointer',
-                    boxShadow: '4px 0 15px rgba(0,0,0,0.2)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '8px',
-                    writingMode: 'vertical-rl',
-                    textOrientation: 'mixed'
-                }}
-            >
-                <ArrowRightLeft size={isMobile ? 16 : 18} color="#000" style={{ transform: 'rotate(90deg)', marginBottom: '5px' }} />
-                <span style={{
-                    color: '#000',
-                    fontWeight: 900,
-                    fontSize: isMobile ? '0.65rem' : '0.75rem',
-                    letterSpacing: '2px',
-                    textTransform: 'uppercase'
-                }}>
-                    {t('home.widgets.currency.title')}
-                </span>
-            </motion.div>
+            <AnimatePresence>
+                {!isHidden && !isOpen && (
+                    <motion.div
+                        initial={{ x: -100 }}
+                        animate={{ x: 0 }}
+                        exit={{ x: -100 }}
+                        whileHover={{ x: 5 }}
+                        onClick={() => setIsOpen(true)}
+                        style={{
+                            position: 'fixed',
+                            left: 0,
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            zIndex: 999,
+                            background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)',
+                            padding: isMobile ? '8px 4px' : '10px 6px',
+                            borderRadius: '0 12px 12px 0',
+                            cursor: 'pointer',
+                            boxShadow: '4px 0 15px rgba(0,0,0,0.2)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '4px',
+                            writingMode: 'vertical-rl',
+                            textOrientation: 'mixed'
+                        }}
+                    >
+                        {/* Botão de Fechar Pequeno no Topo */}
+                        <div
+                            onClick={handleHide}
+                            style={{
+                                marginBottom: '8px',
+                                padding: '2px',
+                                background: 'rgba(0,0,0,0.1)',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.2)'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.1)'}
+                        >
+                            <X size={10} color="#000" strokeWidth={3} />
+                        </div>
+
+                        <ArrowRightLeft size={isMobile ? 14 : 16} color="#000" style={{ transform: 'rotate(90deg)', marginBottom: '5px' }} />
+                        <span style={{
+                            color: '#000',
+                            fontWeight: 900,
+                            fontSize: isMobile ? '0.6rem' : '0.65rem',
+                            letterSpacing: '1px',
+                            textTransform: 'uppercase'
+                        }}>
+                            {t('home.widgets.currency.title')}
+                        </span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Restore button if hidden (very discreet) */}
+            {isHidden && !isOpen && (
+                <button
+                    onClick={() => {
+                        setIsHidden(false);
+                        localStorage.removeItem('hide_currency_widget');
+                    }}
+                    style={{
+                        position: 'fixed',
+                        left: '4px',
+                        bottom: '20px',
+                        background: 'transparent',
+                        border: 'none',
+                        color: 'rgba(255,215,0,0.2)',
+                        cursor: 'pointer',
+                        zIndex: 999,
+                        fontSize: '0.6rem'
+                    }}
+                    title="Restaurar Câmbio"
+                >
+                    <ArrowRightLeft size={10} />
+                </button>
+            )}
 
             {/* Side Panel */}
             <AnimatePresence>
