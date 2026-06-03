@@ -2649,5 +2649,10 @@
         "paused": "Paused",
         "pause": "Pause",
         "activate": "Activate"
+    },
+    "submissions": {
+        "approved": "Approved",
+        "pending": "Pending",
+        "rejected": "Rejected"
     }
 }
