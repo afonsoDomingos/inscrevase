@@ -107,6 +107,7 @@ import MySalesPanel from '@/components/books/MySalesPanel';
 import { pushService } from '@/lib/pushService';
 import SubscriptionStatus from '@/components/mentor/SubscriptionStatus';
 import PersonalDashboard from '@/components/personal/PersonalDashboard';
+import MentorCelebrationModal from '@/components/mentor/MentorCelebrationModal';
 
 type Tab = 'overview' | 'forms' | 'submissions' | 'reports' | 'settings' | 'earnings' | 'blog' | 'plans' | 'services' | 'ads' | 'feedback' | 'smartlinks' | 'marketing' | 'lessons' | 'liveboard' | 'referral' | 'library' | 'mysales' | 'vacancies' | 'workspace';
 
@@ -152,6 +153,7 @@ function MentorDashboardContent() {
     const [libraryBooks, setLibraryBooks] = useState<BookModel[]>([]);
     const [libraryLoading, setLibraryLoading] = useState(false);
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+    const [mentorCelebration, setMentorCelebration] = useState<{ isOpen: boolean; newCount: number; total: number }>({ isOpen: false, newCount: 0, total: 0 });
 
     // Handle initial tab and changes from URL
     useEffect(() => {
@@ -310,6 +312,24 @@ function MentorDashboardContent() {
 
             setStats(statsData);
             setForms(formsData);
+
+            // Mentor Celebration Logic
+            if (statsData && statsData.submissions !== undefined) {
+                const storedCount = localStorage.getItem('mentor_last_submissions_count');
+                const lastCount = storedCount ? parseInt(storedCount) : null;
+
+                if (lastCount !== null && statsData.submissions > lastCount) {
+                    // Only show if not already showing another modal/success and it's a real increase
+                    setTimeout(() => {
+                        setMentorCelebration({
+                            isOpen: true,
+                            newCount: statsData.submissions! - lastCount,
+                            total: statsData.submissions!
+                        });
+                    }, 1000);
+                }
+                localStorage.setItem('mentor_last_submissions_count', statsData.submissions.toString());
+            }
         } catch (error: unknown) {
             console.error("Dashboard error:", error);
             // If unauthorized, redirect to login
@@ -2653,6 +2673,14 @@ function MentorDashboardContent() {
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                <MentorCelebrationModal
+                    isOpen={mentorCelebration.isOpen}
+                    onClose={() => setMentorCelebration(prev => ({ ...prev, isOpen: false }))}
+                    newSubmissionsCount={mentorCelebration.newCount}
+                    totalSubmissions={mentorCelebration.total}
+                />
+
 
                 <AnimatePresence>
                     {selectedTutorial && (
