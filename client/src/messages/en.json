@@ -1236,26 +1236,6 @@
                 "noLinks": "No SmartLink found for audit."
             }
         },
-        "adminNewsletter": {
-            "title": "Newsletter Subscribers",
-            "subtitle": "Manage people who signed up for blog updates.",
-            "searchPlaceholder": "Search email...",
-            "export": "Export CSV",
-            "table": {
-                "email": "Email",
-                "date": "Subscription Date",
-                "status": "Status",
-                "actions": "Actions"
-            },
-            "status": {
-                "active": "ACTIVE",
-                "unsubscribed": "UNSUBSCRIBED"
-            },
-            "messages": {
-                "funcSoon": "Manual sending feature coming soon",
-                "loadError": "Error loading subscribers"
-            }
-        },
         "adsManagement": {
             "title": "Ads Management",
             "subtitle": "Track and manage ad requests on the platform.",
