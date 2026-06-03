@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, CheckCircle2, ArrowRight, X } from 'lucide-react';
+import { Sparkles, ArrowRight, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SubmissionModel } from '@/lib/submissionService';
