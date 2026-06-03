@@ -71,6 +71,8 @@ function ParticipantDashboardContent() {
     const { currency, setCurrency, formatPrice, getPlanPrice } = useCurrency();
     const CATEGORIES = [
         { id: 'Todos', label: t('categories.all') },
+        { id: 'Recentes', label: t('categories.recent') },
+        { id: 'Pay per View', label: 'Pay per View' }, // Optional: adding Pay per View as seen in some other places or just to keep it rich
         { id: 'Negócios', label: t('categories.business') },
         { id: 'Tecnologia', label: t('categories.technology') },
         { id: 'Arte & Música', label: t('categories.artMusic') },

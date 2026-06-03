@@ -593,7 +593,11 @@ exports.getExploreEvents = async (req, res) => {
         console.log(`Exploring events - Category: ${category}, Search: ${search}`);
         let query = { active: true };
 
-        if (category && category !== 'Todos') {
+        let sort = { isSponsored: -1, eventDate: 1 };
+
+        if (category && category === 'Recentes') {
+            sort = { isSponsored: -1, createdAt: -1 };
+        } else if (category && category !== 'Todos') {
             query.category = category;
         }
 
@@ -604,7 +608,7 @@ exports.getExploreEvents = async (req, res) => {
         const forms = await Form.find(query)
             .select('title slug coverImage hubBackgroundImage eventDate eventType category creator location onlineLink isSponsored')
             .populate('creator', 'name businessName')
-            .sort({ isSponsored: -1, eventDate: 1 });
+            .sort(sort);
 
         console.log(`Found ${forms.length} events for explore`);
         res.json(forms);

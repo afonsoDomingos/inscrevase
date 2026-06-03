@@ -2508,6 +2508,7 @@
     },
     "categories": {
         "all": "Todos",
+        "recent": "Recentes",
         "business": "Negócios",
         "technology": "Tecnologia",
         "artMusic": "Arte & Música",
