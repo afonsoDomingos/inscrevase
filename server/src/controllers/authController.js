@@ -116,7 +116,7 @@ const register = async (req, res) => {
                     { "data.seu e-mail": emailRegex },
                     { "data.Seu E-mail": emailRegex }
                 ],
-                user: { $exists: false }
+                user: { $in: [null, undefined] }
             },
             { $set: { user: user._id } }
         );
@@ -170,7 +170,7 @@ const login = async (req, res) => {
                         { "data.seu e-mail": emailRegex },
                         { "data.Seu E-mail": emailRegex }
                     ],
-                    user: { $exists: false }
+                    user: { $in: [null, undefined] }
                 },
                 { $set: { user: user._id } }
             );
@@ -643,15 +643,15 @@ const getSuperAdminAnalytics = async (req, res) => {
         const sixMonthsAgo = new Date();
         sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
         sixMonthsAgo.setDate(1);
-        sixMonthsAgo.setHours(0,0,0,0);
+        sixMonthsAgo.setHours(0, 0, 0, 0);
 
         const growthStatsRaw = await User.aggregate([
             { $match: { createdAt: { $gte: sixMonthsAgo } } },
             {
                 $group: {
-                    _id: { 
-                        month: { $month: "$createdAt" }, 
-                        year: { $year: "$createdAt" } 
+                    _id: {
+                        month: { $month: "$createdAt" },
+                        year: { $year: "$createdAt" }
                     },
                     count: { $sum: 1 }
                 }
@@ -678,4 +678,60 @@ const getSuperAdminAnalytics = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole, searchMentors, verifyEmail, resendVerificationEmail, forgotPassword, resetPassword, migrateVerifiedUsers, migrationStatus, getSuperAdminAnalytics };
+// Retroactive fix: link all orphaned submissions (user: null) to their accounts by email
+const linkOrphanedSubmissions = async (req, res) => {
+    console.log('[Migration] Iniciando linking retroativo de submissões órfãs...');
+    try {
+        // Find all orphaned submissions
+        const orphaned = await Submission.find({ user: { $in: [null, undefined] } }).lean();
+        console.log(`[Migration] ${orphaned.length} submissões órfãs encontradas.`);
+
+        const EMAIL_KEYS = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail', 'Seu E-mail', 'Seu e-mail'];
+        let linked = 0;
+        let skipped = 0;
+
+        for (const sub of orphaned) {
+            try {
+                // Extract email from submission data (Map stored as object)
+                const dataObj = sub.data instanceof Map
+                    ? Object.fromEntries(sub.data)
+                    : (sub.data || {});
+
+                let foundEmail = null;
+                for (const key of EMAIL_KEYS) {
+                    if (dataObj[key] && typeof dataObj[key] === 'string' && dataObj[key].includes('@')) {
+                        foundEmail = dataObj[key].toLowerCase().trim();
+                        break;
+                    }
+                }
+
+                // Try any key that looks like an email
+                if (!foundEmail) {
+                    const allValues = Object.values(dataObj);
+                    const emailVal = allValues.find(v => typeof v === 'string' && v.includes('@') && v.includes('.'));
+                    if (emailVal) foundEmail = emailVal.toLowerCase().trim();
+                }
+
+                if (!foundEmail) { skipped++; continue; }
+
+                const matchingUser = await User.findOne({ email: foundEmail }).select('_id');
+                if (!matchingUser) { skipped++; continue; }
+
+                await Submission.updateOne({ _id: sub._id }, { $set: { user: matchingUser._id } });
+                linked++;
+            } catch (subErr) {
+                console.error(`[Migration] Erro ao processar submissão ${sub._id}:`, subErr.message);
+                skipped++;
+            }
+        }
+
+        const msg = `Migração concluída. ${linked} submissões ligadas a contas. ${skipped} ignoradas (sem email ou sem conta correspondente).`;
+        console.log('[Migration]', msg);
+        res.json({ success: true, message: msg, linked, skipped, total: orphaned.length });
+    } catch (err) {
+        console.error('[Migration] Erro crítico:', err);
+        res.status(500).json({ message: 'Erro na migração retroativa', error: err.message });
+    }
+};
+
+module.exports = { register, login, getProfile, updateProfile, requestVerification, getUsers, updateByAdmin, deleteByAdmin, getPublicMentors, getPublicMentorById, toggleFollow, recordVisit, downgradeToParticipant, restoreMentorRole, searchMentors, verifyEmail, resendVerificationEmail, forgotPassword, resetPassword, migrateVerifiedUsers, migrationStatus, getSuperAdminAnalytics, linkOrphanedSubmissions };

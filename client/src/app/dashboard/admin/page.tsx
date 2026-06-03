@@ -235,6 +235,7 @@ function AdminDashboardContent() {
     }, []);
     const [showValues, setShowValues] = useState(true);
     const [isMigrating, setIsMigrating] = useState(false);
+    const [isLinkingSubmissions, setIsLinkingSubmissions] = useState(false);
     const [referralRanking, setReferralRanking] = useState<ReferralRanking[]>([]);
     const [auditUser, setAuditUser] = useState<ReferralRanking | null>(null);
     const [auditHistory, setAuditHistory] = useState<ReferralHistory[]>([]);
@@ -281,6 +282,19 @@ function AdminDashboardContent() {
             toast.error((error as Error).message || 'Erro na migração');
         } finally {
             setIsMigrating(false);
+        }
+    };
+
+    const handleLinkOrphanedSubmissions = async () => {
+        if (!confirm('Isto irá ligar todas as submissões sem utilizador (user: null) às contas correspondentes pelo email. Continuar?')) return;
+        setIsLinkingSubmissions(true);
+        try {
+            const result = await authService.linkOrphanedSubmissions();
+            toast.success(`✅ ${result.linked} submissões ligadas! ${result.skipped} ignoradas de ${result.total} total.`);
+        } catch (error: unknown) {
+            toast.error((error as Error).message || 'Erro ao ligar submissões');
+        } finally {
+            setIsLinkingSubmissions(false);
         }
     };
 
@@ -2369,6 +2383,103 @@ function AdminDashboardContent() {
                     {activeTab === 'settings' && user.role === 'SuperAdmin' && (
                         <ErrorBoundary>
                             <SystemSettings />
+
+                            {/* Migration Tools */}
+                            <div style={{
+                                marginTop: '2rem',
+                                background: '#fff',
+                                borderRadius: '20px',
+                                padding: '2rem',
+                                border: '1px solid rgba(239,68,68,0.2)',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.04)'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
+                                    <div style={{ background: 'rgba(239,68,68,0.1)', padding: '10px', borderRadius: '12px' }}>
+                                        <Database size={22} color="#ef4444" />
+                                    </div>
+                                    <div>
+                                        <h3 style={{ fontWeight: 800, fontSize: '1.1rem', margin: 0, color: '#1a1a1a' }}>🛠️ Ferramentas de Migração</h3>
+                                        <p style={{ color: '#888', fontSize: '0.8rem', margin: 0 }}>Operações de manutenção da base de dados. Use com cuidado.</p>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+                                    {/* Link Orphaned Submissions */}
+                                    <div style={{
+                                        padding: '1.5rem',
+                                        borderRadius: '16px',
+                                        background: 'linear-gradient(135deg, #fff7ed 0%, #fff 100%)',
+                                        border: '1px solid rgba(249,115,22,0.2)'
+                                    }}>
+                                        <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#1a1a1a', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            🔗 Ligar Submissões Órfãs
+                                        </div>
+                                        <p style={{ color: '#666', fontSize: '0.82rem', lineHeight: 1.5, marginBottom: '1rem' }}>
+                                            Liga submissões sem utilizador (<code style={{ background: '#f1f5f9', padding: '1px 5px', borderRadius: '4px' }}>user: null</code>) às contas criadas com o mesmo email. Resolve o problema de participantes que se inscreveram antes de criar conta.
+                                        </p>
+                                        <button
+                                            id="btn-link-orphaned-submissions"
+                                            onClick={handleLinkOrphanedSubmissions}
+                                            disabled={isLinkingSubmissions}
+                                            style={{
+                                                width: '100%',
+                                                padding: '10px 16px',
+                                                background: isLinkingSubmissions ? '#ccc' : 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                                                color: '#fff',
+                                                border: 'none',
+                                                borderRadius: '10px',
+                                                fontWeight: 700,
+                                                fontSize: '0.85rem',
+                                                cursor: isLinkingSubmissions ? 'not-allowed' : 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '8px',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {isLinkingSubmissions ? <><Loader2 size={16} className="animate-spin" /> A processar...</> : '🔗 Executar Migração Retroativa'}
+                                        </button>
+                                    </div>
+
+                                    {/* Migrate Verified Users */}
+                                    <div style={{
+                                        padding: '1.5rem',
+                                        borderRadius: '16px',
+                                        background: 'linear-gradient(135deg, #f0fdf4 0%, #fff 100%)',
+                                        border: '1px solid rgba(34,197,94,0.2)'
+                                    }}>
+                                        <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#1a1a1a', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            ✅ Verificar Todos os Utilizadores
+                                        </div>
+                                        <p style={{ color: '#666', fontSize: '0.82rem', lineHeight: 1.5, marginBottom: '1rem' }}>
+                                            Marca todos os utilizadores existentes como e-mail verificado. Útil para migrar utilizadores antigos que ainda não passaram pelo processo de verificação.
+                                        </p>
+                                        <button
+                                            onClick={handleMigrateUsers}
+                                            disabled={isMigrating}
+                                            style={{
+                                                width: '100%',
+                                                padding: '10px 16px',
+                                                background: isMigrating ? '#ccc' : 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                                                color: '#fff',
+                                                border: 'none',
+                                                borderRadius: '10px',
+                                                fontWeight: 700,
+                                                fontSize: '0.85rem',
+                                                cursor: isMigrating ? 'not-allowed' : 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '8px',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {isMigrating ? <><Loader2 size={16} className="animate-spin" /> A processar...</> : '✅ Marcar Todos como Verificados'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </ErrorBoundary>
                     )}
                     {

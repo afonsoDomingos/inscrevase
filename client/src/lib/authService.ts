@@ -265,5 +265,16 @@ export const authService = {
 
         if (!response.ok) throw new Error(data.message || 'Erro na migração');
         return data.message;
+    },
+
+    async linkOrphanedSubmissions(): Promise<{ message: string; linked: number; skipped: number; total: number }> {
+        const token = Cookies.get('token');
+        const response = await fetch(`${API_URL}/auth/super-admin/link-orphaned-submissions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Erro na migração de submissões');
+        return data;
     }
 };

@@ -996,7 +996,33 @@ function ParticipantDashboardContent() {
                                         })}
                                     </div>
 
+                                    {/* Status Summary Cards */}
+                                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2.5rem' }}>
+                                        {[
+                                            { id: 'approved', label: t('submissions.approved'), color: '#10b981', count: tickets.filter(t => t.form && (t.status === 'approved' || t.paymentStatus === 'paid')).length },
+                                            { id: 'pending', label: t('submissions.pending'), color: '#f59e0b', count: tickets.filter(t => t.form && t.status === 'pending' && t.paymentStatus !== 'paid').length },
+                                            { id: 'rejected', label: t('submissions.rejected'), color: '#ef4444', count: tickets.filter(t => t.form && t.status === 'rejected').length }
+                                        ].map(card => (
+                                            <div key={card.id} style={{
+                                                background: 'var(--paper)',
+                                                padding: '1.2rem',
+                                                borderRadius: '20px',
+                                                border: '1px solid var(--border)',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                gap: '8px'
+                                            }}>
+                                                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{card.label}</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <span style={{ fontSize: '1.8rem', fontWeight: 900, color: card.color }}>{card.count}</span>
+                                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: card.color }} />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
                                     {tickets.filter(t => {
+                                        if (!t.form) return false;
                                         if (ticketsFilter === 'all') return true;
                                         if (ticketsFilter === 'approved') return t.status === 'approved' || t.paymentStatus === 'paid';
                                         return t.status === ticketsFilter;
@@ -1004,6 +1030,7 @@ function ParticipantDashboardContent() {
                                         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
                                             {tickets
                                                 .filter(t => {
+                                                    if (!t.form) return false;
                                                     if (ticketsFilter === 'all') return true;
                                                     if (ticketsFilter === 'approved') return t.status === 'approved' || t.paymentStatus === 'paid';
                                                     return t.status === ticketsFilter;

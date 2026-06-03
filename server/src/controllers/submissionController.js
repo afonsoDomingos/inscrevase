@@ -59,10 +59,10 @@ const submitForm = async (req, res) => {
         if (req.user) {
             submissionData.user = req.user.id;
         } else {
-            const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail'];
+            const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail', 'Seu E-mail', 'Seu e-mail', 'seu e-mail', 'seu-email'];
             let foundEmail = null;
             for (const key of emailKeys) {
-                if (data[key] && typeof data[key] === 'string') {
+                if (data[key] && typeof data[key] === 'string' && data[key].includes('@')) {
                     foundEmail = data[key];
                     break;
                 }
@@ -130,7 +130,7 @@ const submitForm = async (req, res) => {
                             const isPaid = form.paymentConfig?.enabled || false;
                             const priceInfo = isPaid ? `\n💰 *Valor:* ${form.paymentConfig.price} ${form.paymentConfig.currency}` : `\n🏷️ *Tipo:* Gratuito`;
                             const msg = `Olá *${rUser.name?.split(' ')[0] || 'Mentor'}*! 👋\n\n📩 *Nova Inscrição!*\nAlguém acabou de se inscrever em "${form.title}".\n\n👤 *Nome:* ${participantName}${priceInfo}\n\n🔗 *Acede ao painel:*\n${dashboardUrl}`;
-                            whatsappService.sendMessage(rUser.whatsapp, msg).catch(() => {});
+                            whatsappService.sendMessage(rUser.whatsapp, msg).catch(() => { });
                         }
                     } catch (e) {
                         console.error('[Submission BG] Partner Notify Error:', e);
@@ -141,7 +141,7 @@ const submitForm = async (req, res) => {
                 const mentor = await User.findById(form.creator);
                 if (mentor?.email) {
                     const emailHtml = generatePendingApprovalEmail(mentor.name, participantName, form.title, dashboardUrl);
-                    await sendEmail(mentor.email, `⏳ Aprovação Pendente: ${participantName} - ${form.title}`, emailHtml).catch(() => {});
+                    await sendEmail(mentor.email, `⏳ Aprovação Pendente: ${participantName} - ${form.title}`, emailHtml).catch(() => { });
                 }
 
                 // 3. Signup Incentive for Guests
@@ -152,7 +152,7 @@ const submitForm = async (req, res) => {
                         if (!exists) {
                             const signupUrl = `${process.env.FRONTEND_URL || 'https://inscreva-se.com'}/entrar?mode=register`;
                             const incentiveHtml = generateSignupIncentiveEmail(participantName, form.title, signupUrl);
-                            await sendEmail(pEmail, `💡 Cria a Tua Conta e Acompanha a Tua Inscrição em "${form.title}"`, incentiveHtml).catch(() => {});
+                            await sendEmail(pEmail, `💡 Cria a Tua Conta e Acompanha a Tua Inscrição em "${form.title}"`, incentiveHtml).catch(() => { });
                         }
                     }
                 }
@@ -163,7 +163,7 @@ const submitForm = async (req, res) => {
                 if (pPhone) {
                     const statusMsg = form.paymentConfig?.enabled ? 'O teu pagamento foi registado e está a aguardar validação.' : 'A tua inscrição foi registada e está a aguardar validação.';
                     const partMsg = `Olá *${firstName}*! 🎉\n\n✅ *Inscrição Recebida!*\n\n📅 *Evento:* "${form.title}"\n${statusMsg}\n\n🔗 *Vê aqui:*\n${process.env.FRONTEND_URL}/dashboard/participant`;
-                    whatsappService.sendMessage(pPhone, partMsg).catch(() => {});
+                    whatsappService.sendMessage(pPhone, partMsg).catch(() => { });
                 }
 
                 // 5. Welcome Ticket
@@ -175,7 +175,7 @@ const submitForm = async (req, res) => {
                         subject: `Bem-vindo: ${form.title}`,
                         messages: [{ sender: 'mentor', content: welcomeText }],
                         unreadByUser: true
-                    }).catch(() => {});
+                    }).catch(() => { });
                 }
 
             } catch (err) {
@@ -405,7 +405,7 @@ const updateStatus = async (req, res) => {
                         try {
                             const dataObj = submission.data instanceof Map ? Object.fromEntries(submission.data) : submission.data;
                             let pPhone = dataObj.whatsapp || dataObj.telefone || dataObj.telef || dataObj.phone || dataObj['telefone (whatsapp)'];
-                            
+
                             if (!pPhone) {
                                 const phoneKey = Object.keys(dataObj).find(k => k.toLowerCase().includes('whatsapp') || k.toLowerCase().includes('telef') || k.toLowerCase().includes('contacto') || k.toLowerCase().includes('phone'));
                                 if (phoneKey) pPhone = String(dataObj[phoneKey]);
@@ -419,7 +419,7 @@ const updateStatus = async (req, res) => {
                             if (pPhone) {
                                 const hubUrl = `${process.env.FRONTEND_URL || 'https://inscreva-se.com'}/hub/${submission._id}`;
                                 const msg = `Olá *${participantName.split(' ')[0]}*! 🎉\n\n✅ *A tua vaga está confirmada!*\n\nA tua inscrição para o evento "${submission.form.title}" foi aprovada pelo mentor.\n\n🔗 *Acede agora ao teu Hub do Inscrito:*\n${hubUrl}\n\nEstamos à tua espera! 🚀`;
-                                whatsappService.sendMessage(pPhone, msg).catch(() => {});
+                                whatsappService.sendMessage(pPhone, msg).catch(() => { });
                             }
                         } catch (waErr) {
                             console.error('[Submission] Error sending approval WA:', waErr);
@@ -530,10 +530,15 @@ const getMySubmissions = async (req, res) => {
             // If participant, return submissions THEY made
             query = { user: userId };
         } else {
-            // If mentor/admin, return submissions for forms THEY created
+            // If mentor/admin, return submissions for THEIR forms OR submissions THEY made
             const myForms = await Form.find({ creator: userId }).select('_id');
             const formIds = myForms.map(f => f._id);
-            query = { form: { $in: formIds } };
+            query = {
+                $or: [
+                    { form: { $in: formIds } },
+                    { user: userId }
+                ]
+            };
         }
 
         const submissions = await Submission.find(query)
