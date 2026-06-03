@@ -18,6 +18,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const SupportTicket = require('../models/SupportTicket');
 const sendEmail = require('../utils/emailService');
 const { logCommunication } = require('../utils/communicationLogger');
+const AdminAlertService = require('../services/adminAlertService');
 const { generateBasicEmail, generatePendingApprovalEmail, generateSignupIncentiveEmail, generateEventPaymentConfirmationEmail } = require('../utils/emailTemplates');
 
 const submitForm = async (req, res) => {
@@ -177,6 +178,15 @@ const submitForm = async (req, res) => {
                         unreadByUser: true
                     }).catch(() => { });
                 }
+
+                // 6. Alert Admins (Global & SuperAdmins)
+                await AdminAlertService.notifyAdmins({
+                    senderId: req.user?.id,
+                    title: 'Nova Inscrição na Plataforma 📈',
+                    content: `O participante <strong>${participantName}</strong> acabou de se inscrever no evento <strong>"${form.title}"</strong> de <strong>${mentor?.name || 'outro mentor'}</strong>.`,
+                    actionUrl: `/dashboard/admin/submissions`,
+                    type: 'system'
+                });
 
             } catch (err) {
                 console.error('[Submission BG] Critical background error:', err);

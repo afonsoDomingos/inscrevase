@@ -3,8 +3,11 @@ const GlobalSettings = require('../models/GlobalSettings');
 const NotificationService = require('./notificationService');
 const pushController = require('../controllers/pushController');
 const whatsappService = require('./whatsappService');
+const sendEmail = require('../utils/emailService');
+const { generateBasicEmail } = require('../utils/emailTemplates');
 
 const OWNER_WHATSAPP = process.env.OWNER_WHATSAPP;
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL; // Global admin email from .env
 
 async function getOwnerWhatsapp() {
     const ownerSetting = await GlobalSettings.findOne({ key: 'owner_whatsapp' }).select('value');
@@ -44,10 +47,28 @@ async function notifyAdmins({
     if (!title || !content) return;
     if (shouldSkipByCooldown(cooldownKey, cooldownMs)) return;
 
-    const admins = await User.find({ role: { $in: ['admin', 'SuperAdmin'] } }).select('_id');
-    if (!admins.length) return;
+    const admins = await User.find({ role: { $in: ['admin', 'SuperAdmin'] } }).select('_id email name');
+    if (!admins.length && !ADMIN_EMAIL) return;
 
     const ownerUrl = toAbsoluteUrl(actionUrl);
+    const emailHtml = generateBasicEmail(
+        `🚨 Alerta Admin: ${title}`,
+        'Administrador',
+        `${content}<br><br><strong>Ação imediata requerida.</strong>`,
+        'Ir para o Painel',
+        ownerUrl || `${process.env.CLIENT_URL || 'https://inscreva-se.com'}/dashboard/admin`
+    );
+
+    // Collect all emails (SuperAdmins + Global Admin Email)
+    const adminEmailList = new Set();
+    if (ADMIN_EMAIL) adminEmailList.add(ADMIN_EMAIL);
+    admins.forEach(admin => {
+        if (admin.email) adminEmailList.add(admin.email);
+    });
+
+    const emailPromises = Array.from(adminEmailList).map(email =>
+        sendEmail(email, `🚨 Alerta: ${title}`, emailHtml).catch(() => null)
+    );
     const ownerMessage = ownerUrl
         ? `🚨 *${title}*\n${content}\n🔗 ${ownerUrl}`
         : `🚨 *${title}*\n${content}`;
@@ -79,7 +100,8 @@ async function notifyAdmins({
                 actionUrl
             );
         })),
-        ownerPromise
+        ownerPromise,
+        ...emailPromises
     ]);
 }
 

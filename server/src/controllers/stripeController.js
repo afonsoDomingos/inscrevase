@@ -714,7 +714,7 @@ exports.handleWebhook = async (req, res) => {
 
             if (userId) {
                 const user = await User.findById(userId);
-                
+
                 // Fetch full subscription to get trial dates
                 const subscription = await stripe.subscriptions.retrieve(session.subscription);
 
@@ -746,7 +746,7 @@ exports.handleWebhook = async (req, res) => {
 
                 // --- WHATSAPP NOTIFICATION ---
                 if (user && user.whatsapp) {
-                    const waMsg = isTrial 
+                    const waMsg = isTrial
                         ? `💎 *BEM-VINDO AO TESTE GRATUITO* - Inscreva-se\n\nOlá *${user.name.split(' ')[0]}*! O seu plano *${plan.toUpperCase()}* (30 dias grátis) já está ativo no Stripe. 🎉\n\nJá podes começar a criar!\n🔗 https://inscreva-se.com/dashboard/mentor`
                         : `✅ *ASSINATURA STRIPE ATIVADA* - Inscreva-se\n\nOlá *${user.name.split(' ')[0]}*! O seu plano *${plan.toUpperCase()}* já está ativo. 🎉\n\nBoas vendas! 📈`;
                     whatsappService.sendMessage(user.whatsapp, waMsg).catch(e => console.error('WA Error (Stripe Act):', e.message));
@@ -757,12 +757,12 @@ exports.handleWebhook = async (req, res) => {
                     const dynamicPlans = await getDynamicPlanConfig();
                     const planConfig = dynamicPlans[plan] || PLANS.pro;
                     const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
-                    
-                    const emailHtml = isTrial 
+
+                    const emailHtml = isTrial
                         ? generateTrialWelcomeEmail(user.name, plan, subscription.trial_end * 1000, dashboardUrl)
                         : generateSubscriptionConfirmationEmail(user.name, plan, dashboardUrl, planConfig.commissionRate);
-                    
-                    const subject = isTrial 
+
+                    const subject = isTrial
                         ? `💎 O seu Teste Gratuito do Plano ${plan.toUpperCase()} começou!`
                         : `Pagamento Confirmado: Bem-vindo ao plano ${plan.toUpperCase()}`;
 
@@ -827,7 +827,7 @@ exports.handleWebhook = async (req, res) => {
                                 const userEmail = user ? user.email : 'Sem email';
                                 const userName = user ? user.name : 'Novo Utilizador';
                                 const baseUrl = process.env.FRONTEND_URL || 'https://inscreva-se.com';
-                                
+
                                 const msg = `Olá *${adminName}*! 🚀\n\n💳 *NOVA ASSINATURA PREMIUM!*\nAlguém acabou de fazer upgrade à sua conta!\n\n👤 *Nome:* ${userName}\n📧 *Email:* ${userEmail}\n⭐ *Plano Activado:* ${plan.toUpperCase()}\n\n🔗 *Ver Painel:*\n${baseUrl}/dashboard/admin`;
                                 whatsappService.sendMessage(admin.whatsapp, msg);
                             }
@@ -835,6 +835,15 @@ exports.handleWebhook = async (req, res) => {
                     } catch (pushErr) {
                         console.error('Erro ao enviar push de subscrição:', pushErr);
                     }
+
+                    // --- ADMIN NOTIFICATION ---
+                    await AdminAlertService.notifyAdmins({
+                        senderId: userId,
+                        title: 'Novo Assinante Premium! 🥂',
+                        content: `O utilizador <strong>${user?.name || 'Novo'}</strong> fez upgrade para o plano <strong>${plan.toUpperCase()}</strong>.`,
+                        actionUrl: '/dashboard/admin',
+                        type: 'system'
+                    });
                 }
             }
         } else {
@@ -923,7 +932,7 @@ exports.handleWebhook = async (req, res) => {
                     const dashboardUrl = `${process.env.CLIENT_URL}/dashboard/mentor`;
                     const emailHtml = generatePaymentFailedEmail(user.name, plan, dashboardUrl);
                     await sendEmail(user.email, `Problema com o Pagamento: Plano ${plan.toUpperCase()}`, emailHtml);
-                    
+
                     // --- WHATSAPP NOTIFICATION ---
                     if (user.whatsapp) {
                         const waMsg = `❌ *ERRO NO PAGAMENTO* - Inscreva-se\n\nOlá *${user.name.split(' ')[0]}*! Notamos um problema ao processar o pagamento automático da sua assinatura *${plan.toUpperCase()}* no Stripe.\n\nPor favor, verifica o teu método de pagamento para evitar a interrupção do serviço:\n🔗 https://inscreva-se.com/dashboard/mentor`;
@@ -968,7 +977,7 @@ exports.handleWebhook = async (req, res) => {
                 const { generateSubscriptionExpiredEmail } = require('../utils/emailTemplates');
                 const emailHtml = generateSubscriptionExpiredEmail(user.name, oldPlan, dashboardUrl);
                 await sendEmail(user.email, `Assinatura ${oldPlan.toUpperCase()} Terminada - Inscreva-se`, emailHtml);
-                
+
                 if (user.whatsapp) {
                     const waMsg = `⏳ *ASSINATURA TERMINADA (STRIPE)* - Inscreva-se\n\nOlá *${user.name.split(' ')[0]}*! O seu plano *${oldPlan.toUpperCase()}* foi interrompido e a sua conta voltou ao plano Free.\n\nPodes reativar aqui:\n🔗 https://inscreva-se.com/planos`;
                     whatsappService.sendMessage(user.whatsapp, waMsg).catch(e => console.error('WA Error:', e.message));
@@ -1003,7 +1012,7 @@ exports.handleWebhook = async (req, res) => {
 
             const emailHtml = generateTrialEndingReminderEmail(user.name, plan, subscription.trial_end * 1000, dashboardUrl);
             sendEmail(user.email, `⏳ O seu Teste Gratuito do Plano ${plan.toUpperCase()} expira em breve`, emailHtml);
-            
+
             await logCommunication({
                 recipientIds: [user._id.toString()],
                 recipientEmails: [user.email],
@@ -1479,11 +1488,11 @@ exports.getAdminFinancialSummary = async (req, res) => {
             },
             {
                 $addFields: {
-                    safeAmount: { 
+                    safeAmount: {
                         $ifNull: [
-                            "$baseAmount", 
+                            "$baseAmount",
                             { $multiply: ["$amount", { $ifNull: ["$exchangeRate", 1] }] }
-                        ] 
+                        ]
                     },
                     safeFee: {
                         $ifNull: [
