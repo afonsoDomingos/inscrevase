@@ -612,7 +612,7 @@ export default function Home() {
               {
                 icon: Trophy,
                 label: t('home.stats.locations') || 'Localizações',
-                value: impactStats?.globalStats.locationsCount?.toString() || '50+',
+                value: impactStats?.globalStats.totalCountries?.toString() || '50+',
                 color: '#FFD700'
               },
             ].map((stat, i) => (
