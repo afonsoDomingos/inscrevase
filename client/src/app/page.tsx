@@ -13,7 +13,7 @@ import Cookies from "js-cookie";
 import SocialProof from "@/components/home/SocialProof";
 import Testimonials from "@/components/home/Testimonials";
 import Footer from "@/components/Footer";
-import { Calendar, Users, TrendingUp, Star, Trophy } from "lucide-react";
+import { Calendar, Users, TrendingUp, Trophy } from "lucide-react";
 import { TextDispersion } from "@/components/TextDispersion";
 import TeamSection from "@/components/home/TeamSection";
 import VideoTutorialsSection from "@/components/home/VideoTutorialsSection";
