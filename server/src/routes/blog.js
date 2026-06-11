@@ -4,6 +4,46 @@ const { authMiddleware: protect, adminMiddleware: adminOnly } = require('../midd
 const multer = require('multer');
 const path = require('path');
 const { uploadToCloudinary } = require('../config/cloudinaryService');
+const User = require('../models/User');
+const NewsletterSubscriber = require('../models/NewsletterSubscriber');
+const sendEmail = require('../utils/emailService');
+const { generateNewPostEmail } = require('../utils/emailTemplates');
+
+const notifySubscribers = async (post) => {
+    try {
+        const [users, subscribers] = await Promise.all([
+            User.find({ email: { $exists: true } }, 'email name'),
+            NewsletterSubscriber.find({ status: 'active' }, 'email')
+        ]);
+
+        const allEmails = new Set();
+        users.forEach(u => allEmails.add(u.email.toLowerCase()));
+        subscribers.forEach(s => allEmails.add(s.email.toLowerCase()));
+
+        const postUrl = `${process.env.CLIENT_URL || 'https://inscreva-se.com'}/blog/${post.slug}`;
+
+        console.log(`📣 [BlogNotification] Sending to ${allEmails.size} recipients for: ${post.title}`);
+
+        // Individualized send (not blocking)
+        for (const email of allEmails) {
+            const user = users.find(u => u.email.toLowerCase() === email);
+            const name = user ? user.name : 'Inscrito';
+            const emailHtml = generateNewPostEmail(
+                post.title,
+                post.excerpt,
+                post.coverImage,
+                postUrl,
+                post.author?.name,
+                name
+            );
+
+            // Async call, don't wait for each one
+            sendEmail(email, `📝 Novo Artigo: ${post.title}`, emailHtml);
+        }
+    } catch (error) {
+        console.error('🔴 [BlogNotification] Error notifying subscribers:', error);
+    }
+};
 
 const router = Router();
 
@@ -97,6 +137,12 @@ router.post('/', protect, adminOnly, async (req, res) => {
         });
 
         const savedPost = await newPost.save();
+
+        // Trigger notifications if published
+        if (published) {
+            notifySubscribers(savedPost);
+        }
+
         res.status(201).json(savedPost);
     } catch (error) {
         console.error('Error creating blog post:', error);
@@ -140,6 +186,11 @@ router.put('/:id', protect, adminOnly, async (req, res) => {
 
         if (!updatedPost) {
             return res.status(404).json({ message: 'Artigo não encontrado' });
+        }
+
+        // Trigger notifications if it WASN'T published before but IS now
+        if (published && !req.body.publishedAt) {
+            notifySubscribers(updatedPost);
         }
 
         res.json(updatedPost);

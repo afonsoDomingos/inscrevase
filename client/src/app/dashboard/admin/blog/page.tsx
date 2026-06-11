@@ -638,6 +638,19 @@ export default function BlogManagement() {
                                                 />
                                             </div>
 
+                                            <div>
+                                                <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#475569' }}>Nome do Autor</label>
+                                                <input
+                                                    type="text"
+                                                    value={formData.author.name}
+                                                    onChange={(e) => setFormData({ ...formData, author: { ...formData.author, name: e.target.value } })}
+                                                    placeholder="Quem escreveu o artigo?"
+                                                    style={{ ...inputStyle, padding: '0.75rem', border: '1px solid #cbd5e1' }}
+                                                    onFocus={handleFocus}
+                                                    onBlur={handleBlur}
+                                                />
+                                            </div>
+
                                             <div style={{
                                                 display: 'flex',
                                                 alignItems: 'center',

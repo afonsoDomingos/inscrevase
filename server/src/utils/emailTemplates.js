@@ -1776,7 +1776,50 @@ const generateFinancialHealthIncentiveEmail = (name, dashboardUrl) => {
     `;
 };
 
+const generateNewPostEmail = (postTitle, postExcerpt, postImage, postUrl, authorName, recipientName) => {
+    const accentColor = "#FFD700";
+
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+            <div style="background: linear-gradient(135deg, ${accentColor} 0%, #000000 100%); padding: 50px 20px; text-align: center; position: relative;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+                <img src="https://inscreva-se.com/logo.png" alt="Inscreva-se" style="width: 80px; height: auto; filter: brightness(0) invert(1); position: relative; z-index: 1;">
+                <h1 style="color: #ffffff; font-size: 24px; font-weight: 900; margin-top: 20px; letter-spacing: 2px; text-transform: uppercase; position: relative; z-index: 1;">Novo Artigo <span style="color: ${accentColor};">Publicado</span> 📝</h1>
+            </div>
+
+            <div style="padding: 45px;">
+                <div style="background-color: #fcfcfc; padding: 35px; border-radius: 20px; border: 1px solid #f0f0f0; border-left: 5px solid ${accentColor};">
+                    <p style="font-size: 18px; color: #111; margin-top: 0; font-weight: 700;">Olá, ${recipientName || 'Inscrito'}! 👋</p>
+                    <h3 style="font-size: 20px; color: #111; margin-top: 15px; font-weight: 800; line-height: 1.4;">${postTitle}</h3>
+                    
+                    ${postImage ? `
+                    <div style="margin: 25px 0; border-radius: 12px; overflow: hidden; border: 1px solid #eee;">
+                        <img src="${postImage}" alt="${postTitle}" style="width: 100%; height: auto; display: block;">
+                    </div>
+                    ` : ''}
+
+                    <p style="font-size: 16px; color: #555; line-height: 1.7; font-style: italic; margin-bottom: 25px;">
+                        "${postExcerpt}"
+                    </p>
+
+                    <p style="font-size: 13px; color: #999; text-transform: uppercase; letter-spacing: 1px;">Assinado por:</p>
+                    <p style="font-size: 15px; color: #111; font-weight: 800; margin-top: 4px;">${authorName || 'Equipe Inscreva-se'}</p>
+                    
+                    <div style="text-align: center; margin: 40px 0 10px;">
+                        <a href="${postUrl}" style="background: linear-gradient(135deg, ${accentColor} 0%, #000 100%); color: #000; padding: 20px 45px; text-decoration: none; border-radius: 15px; font-weight: 900; font-size: 15px; display: inline-block; box-shadow: 0 10px 25px rgba(255, 215, 0, 0.2); text-transform: uppercase; letter-spacing: 1px;">
+                            Ler Artigo Completo
+                        </a>
+                    </div>
+                </div>
+                
+                ${getSocialFooter()}
+            </div>
+        </div>
+    `;
+};
+
 module.exports = {
+    generateNewPostEmail,
     generateMonthlyFinancialReportEmail,
     generateFinancialHealthIncentiveEmail,
     generateWelcomeEmail,
