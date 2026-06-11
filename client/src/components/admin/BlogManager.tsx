@@ -18,7 +18,7 @@ export default function BlogManager() {
         title: '',
         excerpt: '',
         content: '',
-        category: 'guide' as 'guide' | 'marketing' | 'mentoring' | 'engagement' | 'event' | 'case-study',
+        category: 'guide' as string,
         coverImage: '',
         author: {
             name: 'Equipe Inscreva.se',
@@ -417,7 +417,7 @@ export default function BlogManager() {
                                                         <label style={{ display: 'block', fontWeight: 800, marginBottom: '0.4rem', fontSize: '0.8rem', color: '#1a1a1a' }}>CATEGORIA</label>
                                                         <select
                                                             value={formData.category}
-                                                            onChange={(e) => setFormData({ ...formData, category: e.target.value as BlogPost['category'] })}
+                                                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                                             style={{ ...inputStyle, padding: '0.75rem', fontWeight: 600 }}
                                                         >
                                                             <option value="guide">Guias</option>

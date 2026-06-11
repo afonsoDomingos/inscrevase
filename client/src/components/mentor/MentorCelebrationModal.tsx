@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Users, X, ArrowRight, Zap, Target } from 'lucide-react';
+// @ts-ignore
 import confetti from 'canvas-confetti';
 
 interface MentorCelebrationModalProps {
