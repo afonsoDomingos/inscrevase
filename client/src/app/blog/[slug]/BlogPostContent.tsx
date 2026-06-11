@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { BlogPost, blogService } from '@/lib/blogService';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
     Calendar, ArrowLeft, Clock, Facebook, Twitter, Linkedin,
-    Heart, MessageCircle, Copy, Check, Send, Lock
+    Heart, MessageCircle, Copy, Check, Send, Lock, ArrowRight, X
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { motion, useScroll, useSpring } from 'framer-motion';
@@ -25,6 +25,10 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
     const [likeCount, setLikeCount] = useState(0);
     const [commentText, setCommentText] = useState('');
     const [submittingComment, setSubmittingComment] = useState(false);
+    const [nextPost, setNextPost] = useState<BlogPost | null>(null);
+    const [showNextCard, setShowNextCard] = useState(false);
+    const [nextCardDismissed, setNextCardDismissed] = useState(false);
+    const scrollProgressRef = useRef(0);
 
     // Scroll progress bar
     const { scrollYProgress } = useScroll();
@@ -33,6 +37,17 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
         damping: 30,
         restDelta: 0.001
     });
+
+    // Track scroll to show next article suggestion
+    useEffect(() => {
+        const unsubscribe = scrollYProgress.on('change', (v) => {
+            scrollProgressRef.current = v;
+            if (v >= 0.9 && !nextCardDismissed) {
+                setShowNextCard(true);
+            }
+        });
+        return () => unsubscribe();
+    }, [scrollYProgress, nextCardDismissed]);
 
     const fetchPost = useCallback(async () => {
         try {
@@ -51,11 +66,31 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
         }
     }, [params.slug]);
 
+    const fetchNextPost = useCallback(async (currentPost: BlogPost) => {
+        try {
+            const allPosts = await blogService.getPublishedPosts();
+            // 1st priority: same category, different article
+            const sameCat = allPosts.filter(
+                p => p._id !== currentPost._id && p.category === currentPost.category
+            );
+            // 2nd priority: any other article (most recent)
+            const others = allPosts.filter(p => p._id !== currentPost._id);
+            const candidate = sameCat[0] || others[0] || null;
+            setNextPost(candidate);
+        } catch {
+            // silent fail — suggestion is non-critical
+        }
+    }, []);
+
     useEffect(() => {
         const currentUser = authService.getCurrentUser();
         setUser(currentUser);
         fetchPost();
     }, [fetchPost]);
+
+    useEffect(() => {
+        if (post) fetchNextPost(post);
+    }, [post, fetchNextPost]);
 
     const handleLike = async () => {
         const token = Cookies.get('token');
@@ -460,6 +495,77 @@ export default function BlogPostContent({ params }: { params: { slug: string } }
                         </div>
                     </div>
                 </article>
+
+                {/* ── Next Article Sticky Card ── */}
+                {showNextCard && nextPost && (
+                    <motion.div
+                        initial={{ y: 120, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 120, opacity: 0 }}
+                        transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+                        style={{
+                            position: 'fixed',
+                            bottom: '24px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            width: 'calc(100% - 40px)',
+                            maxWidth: '560px',
+                            background: '#000',
+                            borderRadius: '20px',
+                            padding: '16px 20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '16px',
+                            boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+                            border: '1px solid rgba(255,215,0,0.25)',
+                            zIndex: 9998,
+                        }}
+                    >
+                        {/* Cover thumbnail */}
+                        {nextPost.coverImage && (
+                            <div style={{ flexShrink: 0, width: '56px', height: '56px', borderRadius: '10px', overflow: 'hidden', position: 'relative' }}>
+                                <Image src={nextPost.coverImage} alt={nextPost.title} fill style={{ objectFit: 'cover' }} />
+                            </div>
+                        )}
+
+                        {/* Text */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                            <p style={{ margin: 0, fontSize: '0.65rem', color: '#FFD700', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Próxima Leitura</p>
+                            <p style={{ margin: '2px 0 0', fontSize: '0.9rem', fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nextPost.title}</p>
+                            <p style={{ margin: '2px 0 0', fontSize: '0.75rem', color: '#aaa' }}>{nextPost.readTime} min · {nextPost.category}</p>
+                        </div>
+
+                        {/* CTA */}
+                        <Link
+                            href={`/blog/${nextPost.slug}`}
+                            style={{
+                                flexShrink: 0,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                background: '#FFD700',
+                                color: '#000',
+                                padding: '8px 16px',
+                                borderRadius: '50px',
+                                fontWeight: 800,
+                                fontSize: '0.8rem',
+                                textDecoration: 'none',
+                                whiteSpace: 'nowrap'
+                            }}
+                        >
+                            Ler <ArrowRight size={14} />
+                        </Link>
+
+                        {/* Close */}
+                        <button
+                            onClick={() => { setShowNextCard(false); setNextCardDismissed(true); }}
+                            style={{ flexShrink: 0, background: 'transparent', border: 'none', cursor: 'pointer', color: '#666', padding: '4px' }}
+                            title="Fechar"
+                        >
+                            <X size={16} />
+                        </button>
+                    </motion.div>
+                )}
 
                 <style dangerouslySetInnerHTML={{
                     __html: `
