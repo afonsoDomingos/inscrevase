@@ -21,7 +21,7 @@ export default function BlogManagement() {
         title: '',
         excerpt: '',
         content: '',
-        category: 'guide' as 'guide' | 'marketing' | 'mentoring' | 'engagement' | 'event' | 'case-study',
+        category: 'guide',
         coverImage: '',
         author: {
             name: 'Equipe Inscreva.se',
@@ -36,6 +36,22 @@ export default function BlogManagement() {
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
     const isMobile = windowWidth < 768;
     const [sponsoredItems, setSponsoredItems] = useState<SponsoredItem[]>([]);
+    const [isCustomCategory, setIsCustomCategory] = useState(false);
+
+    // Auto-calculate read time based on word count
+    useEffect(() => {
+        if (formData.content) {
+            // Remove markdown characters and count words
+            const words = formData.content
+                .replace(/[#*`_~]/g, '') // Simple markdown normalization
+                .trim()
+                .split(/\s+/)
+                .length;
+
+            const minutes = Math.max(1, Math.ceil(words / 200));
+            setFormData(prev => ({ ...prev, readTime: minutes }));
+        }
+    }, [formData.content]);
 
     useEffect(() => {
         const handleResize = () => setWindowWidth(window.innerWidth);
@@ -196,6 +212,11 @@ export default function BlogManagement() {
             tags: post.tags,
             published: post.published,
         });
+
+        // Check if category is standard or custom
+        const standardCategories = ['guide', 'marketing', 'mentoring', 'engagement', 'event', 'case-study'];
+        setIsCustomCategory(!standardCategories.includes(post.category));
+
         setShowModal(true);
     };
 
@@ -214,6 +235,7 @@ export default function BlogManagement() {
             tags: [],
             published: false,
         });
+        setIsCustomCategory(false);
         setPreviewUrl(null);
     };
 
@@ -595,33 +617,94 @@ export default function BlogManagement() {
                                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                                 <div>
                                                     <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#475569' }}>Categoria</label>
-                                                    <select
-                                                        value={formData.category}
-                                                        onChange={(e) => setFormData({ ...formData, category: e.target.value as BlogPost['category'] })}
-                                                        style={{ ...inputStyle, padding: '0.75rem', border: '1px solid #cbd5e1' }}
-                                                        onFocus={handleFocus}
-                                                        onBlur={handleBlur}
-                                                    >
-                                                        <option value="guide">Guias</option>
-                                                        <option value="marketing">Marketing</option>
-                                                        <option value="mentoring">Mentoria</option>
-                                                        <option value="engagement">Engajamento</option>
-                                                        <option value="event">Eventos</option>
-                                                        <option value="case-study">Casos de Estudo</option>
-                                                    </select>
+                                                    {!isCustomCategory ? (
+                                                        <select
+                                                            value={formData.category}
+                                                            onChange={(e) => {
+                                                                if (e.target.value === 'custom') {
+                                                                    setIsCustomCategory(true);
+                                                                    setFormData({ ...formData, category: '' });
+                                                                } else {
+                                                                    setFormData({ ...formData, category: e.target.value });
+                                                                }
+                                                            }}
+                                                            style={{ ...inputStyle, padding: '0.75rem', border: '1px solid #cbd5e1' }}
+                                                            onFocus={handleFocus}
+                                                            onBlur={handleBlur}
+                                                        >
+                                                            <option value="guide">Guias</option>
+                                                            <option value="marketing">Marketing</option>
+                                                            <option value="mentoring">Mentoria</option>
+                                                            <option value="engagement">Engajamento</option>
+                                                            <option value="event">Eventos</option>
+                                                            <option value="case-study">Casos de Estudo</option>
+                                                            <option value="custom">+ Outra (Manual)...</option>
+                                                        </select>
+                                                    ) : (
+                                                        <div style={{ position: 'relative' }}>
+                                                            <input
+                                                                type="text"
+                                                                value={formData.category}
+                                                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                                                placeholder="Digite a categoria..."
+                                                                style={{ ...inputStyle, padding: '0.75rem', border: '1px solid #cbd5e1' }}
+                                                                onFocus={handleFocus}
+                                                                onBlur={handleBlur}
+                                                                autoFocus
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setIsCustomCategory(false);
+                                                                    setFormData({ ...formData, category: 'guide' });
+                                                                }}
+                                                                style={{
+                                                                    position: 'absolute',
+                                                                    right: '10px',
+                                                                    top: '50%',
+                                                                    transform: 'translateY(-50%)',
+                                                                    background: '#eee',
+                                                                    border: 'none',
+                                                                    borderRadius: '4px',
+                                                                    padding: '2px 8px',
+                                                                    fontSize: '0.7rem',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                            >
+                                                                Voltar
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                 </div>
 
                                                 <div>
                                                     <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.4rem', fontSize: '0.85rem', color: '#475569' }}>Tempo (min)</label>
-                                                    <input
-                                                        type="number"
-                                                        value={formData.readTime}
-                                                        onChange={(e) => setFormData({ ...formData, readTime: parseInt(e.target.value) })}
-                                                        min={1}
-                                                        style={{ ...inputStyle, padding: '0.75rem', border: '1px solid #cbd5e1' }}
-                                                        onFocus={handleFocus}
-                                                        onBlur={handleBlur}
-                                                    />
+                                                    <div style={{ position: 'relative' }}>
+                                                        <input
+                                                            type="number"
+                                                            value={formData.readTime}
+                                                            onChange={(e) => setFormData({ ...formData, readTime: parseInt(e.target.value) })}
+                                                            min={1}
+                                                            style={{ ...inputStyle, padding: '1rem', border: '1px solid #cbd5e1', background: '#f1f5f9' }}
+                                                            onFocus={handleFocus}
+                                                            onBlur={handleBlur}
+                                                        />
+                                                        <div style={{
+                                                            position: 'absolute',
+                                                            right: '10px',
+                                                            top: '50%',
+                                                            transform: 'translateY(-50%)',
+                                                            fontSize: '0.65rem',
+                                                            color: '#64748b',
+                                                            fontWeight: 600,
+                                                            background: '#fff',
+                                                            padding: '2px 8px',
+                                                            borderRadius: '4px',
+                                                            border: '1px solid #e2e8f0'
+                                                        }}>
+                                                            AUTO
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
 

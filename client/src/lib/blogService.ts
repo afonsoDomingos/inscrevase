@@ -8,7 +8,7 @@ export interface BlogPost {
     slug: string;
     excerpt: string;
     content: string;
-    category: 'guide' | 'marketing' | 'mentoring' | 'engagement' | 'event' | 'case-study';
+    category: string;
     coverImage: string;
     author: {
         name: string;
