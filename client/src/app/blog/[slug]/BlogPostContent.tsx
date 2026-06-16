@@ -16,9 +16,15 @@ import { toast } from 'sonner';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
-export default function BlogPostContent({ params }: { params: { slug: string } }) {
-    const [post, setPost] = useState<BlogPost | null>(null);
-    const [loading, setLoading] = useState(true);
+export default function BlogPostContent({
+    params,
+    initialPost
+}: {
+    params: { slug: string },
+    initialPost: BlogPost
+}) {
+    const [post, setPost] = useState<BlogPost | null>(initialPost);
+    const [loading, setLoading] = useState(false);
     const [user, setUser] = useState<UserData | null>(null);
     const [copied, setCopied] = useState(false);
     const [isLiked, setIsLiked] = useState(false);

@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { blogService } from '@/lib/blogService';
+import { notFound } from 'next/navigation';
 import BlogPostContent from './BlogPostContent';
 
 type Props = {
@@ -50,8 +51,6 @@ export async function generateMetadata(
     }
 }
 
-import { notFound } from 'next/navigation';
-
 export default async function BlogPostPage({ params }: Props) {
     const post = await blogService.getPostBySlug(params.slug);
 
@@ -59,5 +58,41 @@ export default async function BlogPostPage({ params }: Props) {
         notFound();
     }
 
-    return <BlogPostContent params={params} />;
+    // JSON-LD Structured Data for AdSense/Google
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: post.title,
+        description: post.excerpt,
+        image: post.coverImage || 'https://inscreva-se.com/og-image.jpg',
+        author: {
+            '@type': 'Organization',
+            name: post.author?.name || 'Equipe Inscreva.se',
+            url: 'https://inscreva-se.com/sobre-nos',
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'Inscreva-se',
+            logo: {
+                '@type': 'ImageObject',
+                url: 'https://inscreva-se.com/icon.png',
+            },
+        },
+        datePublished: post.publishedAt || post.createdAt,
+        dateModified: post.updatedAt || post.createdAt,
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': `https://inscreva-se.com/blog/${params.slug}`,
+        },
+    };
+
+    return (
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <BlogPostContent initialPost={post} params={params} />
+        </>
+    );
 }

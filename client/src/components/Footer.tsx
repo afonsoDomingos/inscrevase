@@ -47,6 +47,14 @@ export default function Footer() {
                         <p style={{ fontSize: '0.9rem', color: '#666', lineHeight: 1.6 }}>
                             A plataforma líder em gestão de eventos e mentoria em Angola e Moçambique. Transforme o seu conhecimento em impacto global.
                         </p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.85rem', color: '#5c5e62' }}>
+                            <p>📍 Luanda, Angola | Maputo, Moçambique</p>
+                            <p>📧 <a href="mailto:suporte@inscreva-se.com" style={{ color: '#1452AD', textDecoration: 'none', fontWeight: 600 }}>suporte@inscreva-se.com</a></p>
+                            <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
+                                <a href="https://instagram.com/inscreva.se_com" target="_blank" rel="noopener" style={{ color: '#666' }}>Instagram</a>
+                                <a href="https://linkedin.com/company/inscreva-se" target="_blank" rel="noopener" style={{ color: '#666' }}>LinkedIn</a>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Product Column */}
