@@ -66,16 +66,17 @@ export default async function BlogPostPage({ params }: Props) {
         description: post.excerpt,
         image: post.coverImage || 'https://inscreva-se.com/og-image.jpg',
         author: {
-            '@type': 'Organization',
+            '@type': post.author?.name === 'Equipe Inscreva.se' ? 'Organization' : 'Person',
             name: post.author?.name || 'Equipe Inscreva.se',
             url: 'https://inscreva-se.com/sobre-nos',
+            image: post.author?.avatar || 'https://inscreva-se.com/logo.png'
         },
         publisher: {
             '@type': 'Organization',
             name: 'Inscreva-se',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://inscreva-se.com/icon.png',
+                url: 'https://inscreva-se.com/logo.png',
             },
         },
         datePublished: post.publishedAt || post.createdAt,
