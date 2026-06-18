@@ -542,7 +542,7 @@ function HubContent() {
             {/* Top Navigation Bar - Glass White */}
             <nav style={{ position: 'sticky', top: 0, background: navBg, backdropFilter: 'blur(12px)', zIndex: 100, padding: '15px 24px', borderBottom: navBorder, boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.4)' : '0 4px 20px rgba(0,0,0,0.02)' }}>
                 <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }} className="nav-left-section">
                         <button onClick={() => router.back()} style={{ background: 'none', border: 'none', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: '0.9rem', color: navText, transition: '0.2s' }}>
                             <ArrowLeft size={18} /> {t('common.back')}
                         </button>
@@ -551,8 +551,8 @@ function HubContent() {
                             <Home size={18} /> {t('common.backToHome') || 'Visitar Plataforma'}
                         </Link>
                     </div>
-                    <div style={{ fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', fontSize: '0.75rem', color: navText }}>
-                        {t('hub.passport')} <span style={{ fontWeight: 500, color: isDark ? 'rgba(255,255,255,0.5)' : '#666' }}>ID: {id?.toString().slice(-6).toUpperCase()}</span>
+                    <div style={{ fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', fontSize: '0.75rem', color: navText }} className="nav-passport">
+                        <span className="nav-passport-label">{t('hub.passport')} </span><span style={{ fontWeight: 500, color: isDark ? 'rgba(255,255,255,0.5)' : '#666' }}>ID: {id?.toString().slice(-6).toUpperCase()}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                         {currentUser ? (
@@ -597,7 +597,7 @@ function HubContent() {
                                 <UserCircle size={16} /> {t('common.createAccount') || 'Criar Conta'}
                             </button>
                         )}
-                        <button style={{ background: 'none', border: 'none', padding: '8px', cursor: 'pointer', color: '#171A20' }}>
+                        <button style={{ background: 'none', border: 'none', padding: '8px', cursor: 'pointer', color: navText }}>
                             <Share2 size={18} />
                         </button>
                     </div>
@@ -605,7 +605,7 @@ function HubContent() {
             </nav>
 
             {/* Main Container - Aumentado para 1100px */}
-            <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto', padding: '40px 24px 100px' }}>
+            <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto', padding: '40px 24px 100px' }} className="hub-container">
 
                 {/* Header Section */}
                 <div style={{ marginBottom: '50px', textAlign: 'center' }}>
@@ -1001,8 +1001,8 @@ function HubContent() {
 
                     {/* Left Column: Details */}
                     <div style={{ display: 'grid', gap: '35px' }}>
-                        <div style={{ background: cardBg, borderRadius: '24px', padding: '30px', border: cardBorder, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.3)' : '0 10px 30px rgba(0,0,0,0.02)' }}>
-                            <div style={{ display: 'flex', gap: '40px', justifyContent: 'space-between' }}>
+                        <div style={{ background: cardBg, borderRadius: '24px', padding: '30px', border: cardBorder, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.3)' : '0 10px 30px rgba(0,0,0,0.02)' }} className="event-details-card">
+                            <div style={{ display: 'flex', gap: '40px', justifyContent: 'space-between' }} className="details-flex-row">
                                 <div>
                                     <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.6, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('events.submissions.date')}</div>
                                     <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>{form.eventDate ? new Date(form.eventDate).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long' }) : t('common.toBeDefined')}</div>
@@ -1023,9 +1023,9 @@ function HubContent() {
                         </div>
 
                         {/* Location & Links */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px' }} className="location-links-grid">
                             {form.location ? (
-                                <div style={{ background: cardBg, color: textColor, padding: '35px', borderRadius: '32px', border: cardBorder, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.3)' : '0 10px 30px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                <div style={{ background: cardBg, color: textColor, padding: '35px', borderRadius: '32px', border: cardBorder, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.3)' : '0 10px 30px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '20px' }} className="info-card">
                                     <div style={{ background: isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8', width: '50px', height: '50px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <Navigation size={24} color={isDark ? '#fff' : '#333'} />
                                     </div>
@@ -1038,7 +1038,7 @@ function HubContent() {
                             ) : <div />}
 
                             {form.onlineLink ? (
-                                <div style={{ background: cardBg, color: textColor, padding: '35px', borderRadius: '32px', border: cardBorder, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.3)' : '0 10px 30px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                <div style={{ background: cardBg, color: textColor, padding: '35px', borderRadius: '32px', border: cardBorder, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.3)' : '0 10px 30px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '20px' }} className="info-card">
                                     <div style={{ background: isDark ? 'rgba(255,255,255,0.05)' : '#f8f8f8', width: '50px', height: '50px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <Video size={24} color={isDark ? '#fff' : '#333'} />
                                     </div>
@@ -1046,7 +1046,7 @@ function HubContent() {
                                         <div style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '6px' }}>{t('events.onlineLink')}</div>
                                         <div style={{ fontSize: '0.95rem', color: secondaryTextColor }}>{t('hub.linkAvailableInCabin')}</div>
                                     </div>
-                                    <a href={form.onlineLink} target="_blank" style={{ marginTop: 'auto', background: isDark ? '#fff' : '#111', color: isDark ? '#000' : '#fff', border: 'none', padding: '14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', textAlign: 'center', textDecoration: 'none', transition: '0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                                    <a href={form.onlineLink} target="_blank" style={{ marginTop: 'auto', background: isDark ? '#fff' : '#111', color: isDark ? '#000' : '#fff', border: 'none', padding: '14px', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', textAlign: 'center', textDecoration: 'none', transition: '0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} className="join-meeting-btn">
                                         {form.onlineLink.includes('meet.google') || form.onlineLink.includes('zoom.us') || form.onlineLink.includes('teams') ? t('events.joinRoom') : t('events.accessLink')}
                                     </a>
                                 </div>
@@ -1054,7 +1054,7 @@ function HubContent() {
                         </div>
 
                         {/* Mentor Section */}
-                        <div style={{ background: isDark ? 'rgba(10,10,10,0.8)' : '#0a0a0a', padding: '45px', borderRadius: '32px', color: '#fff', display: 'flex', gap: '35px', alignItems: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', border: cardBorder }}>
+                        <div style={{ background: isDark ? 'rgba(10,10,10,0.8)' : '#0a0a0a', padding: '45px', borderRadius: '32px', color: '#fff', display: 'flex', gap: '35px', alignItems: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.2)', border: cardBorder }} className="mentor-section-card">
                             <div style={{ position: 'relative', width: '110px', height: '110px', flexShrink: 0 }}>
                                 <Image
                                     src={form.creator.profilePhoto || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(form.creator.name) + '&size=200&background=171A20&color=FFD700&bold=true'}
@@ -1239,7 +1239,7 @@ function HubContent() {
                                     paddingBottom: '20px',
                                     scrollBehavior: 'smooth',
                                     WebkitOverflowScrolling: 'touch'
-                                }}>
+                                }} className="lessons-carousel">
 
                                     {lessons.map((lesson, idx) => {
                                         const locked = isLessonLocked(lesson, idx);
@@ -1267,6 +1267,7 @@ function HubContent() {
                                                     opacity: locked ? 0.6 : 1,
                                                     position: 'relative'
                                                 }}
+                                                className="lesson-card"
                                             >
                                                 <div style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
                                                     {lesson.thumbnailUrl ? (
@@ -1329,9 +1330,10 @@ function HubContent() {
                                     exit={{ opacity: 0 }}
                                     style={{ position: 'fixed', inset: 0, zIndex: 2000, background: 'rgba(0,0,0,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
                                     onClick={() => setSelectedLesson(null)}
+                                    className="modal-overlay"
                                 >
                                     <div style={{ width: '100%', maxWidth: '1000px', position: 'relative' }} onClick={e => e.stopPropagation()}>
-                                        <button onClick={() => setSelectedLesson(null)} style={{ position: 'absolute', top: '-50px', right: '0', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }}>
+                                        <button onClick={() => setSelectedLesson(null)} style={{ position: 'absolute', top: '-50px', right: '0', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }} className="modal-close-btn">
                                             <X size={32} />
                                         </button>
                                         <div style={{ background: '#000', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,1)' }}>
@@ -1344,10 +1346,10 @@ function HubContent() {
                                                     allowFullScreen
                                                 />
                                             </div>
-                                            <div style={{ padding: '30px', background: cardBg, color: textColor, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ padding: '30px', background: cardBg, color: textColor, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="modal-footer">
                                                 <div>
                                                     <h2 style={{ margin: '0 0 10px 0', color: textColor }}>{selectedLesson.title}</h2>
-                                                    <p style={{ margin: 0, color: '#666', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{selectedLesson.description}</p>
+                                                    <p style={{ margin: 0, color: isDark ? 'rgba(255,255,255,0.6)' : '#666', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{selectedLesson.description}</p>
                                                 </div>
                                                 {!selectedLesson.progress?.completed && (
                                                     <button
@@ -1364,14 +1366,15 @@ function HubContent() {
                                                             alignItems: 'center',
                                                             gap: '8px',
                                                             transition: '0.2s',
-                                                            boxShadow: '0 10px 20px rgba(16,185,129,0.2)'
+                                                            boxShadow: '0 10px 20px rgba(16,185,129,0.2)',
+                                                            flexShrink: 0
                                                         }}
                                                     >
                                                         <CheckCircle2 size={18} /> {t('hub.markAsComplete') || 'Concluir Aula'}
                                                     </button>
                                                 )}
                                                 {selectedLesson.progress?.completed && (
-                                                    <div style={{ color: '#10b981', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <div style={{ color: '#10b981', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                                                         <CheckCircle2 size={24} /> {t('hub.lessonCompleted') || 'Aula Concluída!'}
                                                     </div>
                                                 )}
@@ -1384,7 +1387,7 @@ function HubContent() {
 
                         {/* 5. Agenda */}
                         {form.agenda && form.agenda.length > 0 && (
-                            <div style={{ background: cardBg, color: textColor, padding: '45px', borderRadius: '32px', border: cardBorder, boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.3)' : '0 10px 40px rgba(0,0,0,0.03)' }}>
+                            <div style={{ background: cardBg, color: textColor, padding: '45px', borderRadius: '32px', border: cardBorder, boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.3)' : '0 10px 40px rgba(0,0,0,0.03)' }} className="info-section-card">
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '35px' }}>
                                     <div style={{ padding: '10px', background: `${primaryColor}15`, borderRadius: '12px' }}>
                                         <Calendar size={26} color={primaryColor} />
@@ -1398,10 +1401,10 @@ function HubContent() {
                                             <div style={{ position: 'absolute', left: '-6px', top: '6px', width: '14px', height: '14px', borderRadius: '50%', background: primaryColor, border: `3px solid ${cardBg}`, boxShadow: isDark ? '0 0 0 2px rgba(255,255,255,0.1)' : '0 0 0 2px #f0f0f0' }}></div>
                                             <div style={{ display: 'flex', alignItems: 'baseline', gap: '15px', marginBottom: '6px' }}>
                                                 <div style={{ fontWeight: 800, fontSize: '1.2rem', color: textColor }}>{item.time}</div>
-                                                <div style={{ fontSize: '0.85rem', color: '#888', fontWeight: 700, background: '#f4f4f4', padding: '2px 8px', borderRadius: '6px' }}>{item.duration}</div>
+                                                <div style={{ fontSize: '0.85rem', color: secondaryTextColor, fontWeight: 700, background: isDark ? 'rgba(255,255,255,0.05)' : '#f4f4f4', padding: '2px 8px', borderRadius: '6px' }}>{item.duration}</div>
                                             </div>
-                                            <div style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '6px', color: '#333' }}>{item.activity}</div>
-                                            {item.description && <div style={{ color: '#666', fontSize: '1rem', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>{item.description}</div>}
+                                            <div style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '6px', color: textColor }}>{item.activity}</div>
+                                            {item.description && <div style={{ color: secondaryTextColor, fontSize: '1rem', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>{item.description}</div>}
                                         </div>
                                     ))}
                                 </div>
@@ -1410,18 +1413,18 @@ function HubContent() {
 
                         {/* 5. Materiais */}
                         {form.materials && form.materials.length > 0 && (
-                            <div style={{ background: cardBg, color: textColor, padding: '45px', borderRadius: '32px', border: cardBorder, boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.3)' : '0 10px 40px rgba(0,0,0,0.03)' }}>
+                            <div style={{ background: cardBg, color: textColor, padding: '45px', borderRadius: '32px', border: cardBorder, boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.3)' : '0 10px 40px rgba(0,0,0,0.03)' }} className="info-section-card">
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '35px' }}>
                                     <div style={{ padding: '10px', background: `${primaryColor}15`, borderRadius: '12px' }}>
                                         <BookOpen size={26} color={primaryColor} />
                                     </div>
                                     <h2 style={{ margin: 0, fontSize: '1.7rem', fontWeight: 700, color: textColor }}>{t('events.materials')}</h2>
                                 </div>
-                                <div style={{ display: 'grid', gap: '18px' }}>
+                                <div style={{ display: 'grid', gap: '18px' }} className="materials-grid">
                                     {form.materials.sort((a, b) => a.order - b.order).map((material, idx) => (
-                                        <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px', background: isDark ? 'rgba(255,255,255,0.03)' : '#fbfbfb', borderRadius: '20px', border: cardBorder, transition: '0.2s', cursor: 'pointer' /* hover effect handles by CSS globally usually */ }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                                <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', border: '1px solid #eee' }}>
+                                        <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px', background: isDark ? 'rgba(255,255,255,0.03)' : '#fbfbfb', borderRadius: '20px', border: cardBorder, transition: '0.2s', cursor: 'pointer' }} className="material-item-row">
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }} className="material-info-flex">
+                                                <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: isDark ? 'rgba(255,255,255,0.05)' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #eee' }}>
                                                     {material.type === 'pdf' && <FileText size={22} color="#e53e3e" />}
                                                     {material.type === 'video' && <Play size={22} color="#3182ce" />}
                                                     {material.type === 'link' && <LinkIcon size={22} color="#38a169" />}
@@ -1429,16 +1432,16 @@ function HubContent() {
                                                     {material.type === 'other' && <FileText size={22} color="#718096" />}
                                                 </div>
                                                 <div>
-                                                    <div style={{ fontWeight: 700, fontSize: '1.05rem', marginBottom: '4px', color: '#222' }}>{material.name}</div>
-                                                    <div style={{ fontSize: '0.85rem', color: '#888', fontWeight: 500 }}>{material.type.toUpperCase()} • {material.size || 'Download'}</div>
+                                                    <div style={{ fontWeight: 700, fontSize: '1.05rem', marginBottom: '4px', color: textColor }}>{material.name}</div>
+                                                    <div style={{ fontSize: '0.85rem', color: secondaryTextColor, fontWeight: 500 }}>{material.type.toUpperCase()} • {material.size || 'Download'}</div>
                                                 </div>
                                             </div>
                                             {(!material.availableAfterEvent || new Date() >= new Date(form.eventDate!)) ? (
-                                                <a href={material.url} target="_blank" style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#111', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }}>
+                                                <a href={material.url} target="_blank" style={{ width: '44px', height: '44px', borderRadius: '50%', background: isDark ? '#fff' : '#111', color: isDark ? '#000' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }} className="material-download-btn">
                                                     <Download size={20} />
                                                 </a>
                                             ) : (
-                                                <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#f0f0f0', color: '#aaa', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={t('hub.availableAfterEvent')}>
+                                                <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: isDark ? 'rgba(255,255,255,0.05)' : '#f0f0f0', color: '#aaa', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={t('hub.availableAfterEvent')}>
                                                     <div style={{ fontSize: '1.2rem' }}>{ (currentUser?.role === 'admin' || currentUser?.role === 'SuperAdmin') ? '🛡️' : '🔒'}</div>
                                                 </div>
                                             )}
@@ -1869,12 +1872,85 @@ function HubContent() {
                         top: 0 !important;
                     }
                 }
-                @media (max-width: 640px) {
-                    nav div {
-                        justify-content: center !important;
+                @media (max-width: 768px) {
+                    .location-links-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: 15px !important;
                     }
-                    nav button {
+                }
+                @media (max-width: 640px) {
+                    .nav-left-section {
                         display: none !important;
+                    }
+                    .nav-passport-label {
+                        display: none !important;
+                    }
+                    .hub-container {
+                        padding: 20px 16px 60px !important;
+                    }
+                    .event-details-card {
+                        padding: 20px !important;
+                    }
+                    .details-flex-row {
+                        flex-direction: column;
+                        gap: 20px !important;
+                    }
+                    .info-card {
+                        padding: 20px !important;
+                        border-radius: 20px !important;
+                    }
+                    .mentor-section-card {
+                        flex-direction: column;
+                        text-align: center;
+                        padding: 30px 20px !important;
+                        gap: 20px !important;
+                    }
+                    .info-section-card {
+                        padding: 24px !important;
+                        border-radius: 20px !important;
+                    }
+                    .modal-overlay {
+                        padding: 10px !important;
+                    }
+                    .modal-close-btn {
+                        top: 10px !important;
+                        right: 10px !important;
+                        z-index: 10;
+                        background: rgba(0,0,0,0.5) !important;
+                        border-radius: 50%;
+                        padding: 8px !important;
+                        display: flex !important;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .modal-footer {
+                        flex-direction: column;
+                        align-items: stretch !important;
+                        gap: 20px;
+                        padding: 20px !important;
+                    }
+                    .material-item-row {
+                        flex-direction: column;
+                        align-items: flex-start !important;
+                        gap: 15px;
+                        padding: 20px !important;
+                    }
+                    .material-info-flex {
+                        width: 100%;
+                    }
+                    .material-download-btn {
+                        width: 100% !important;
+                        border-radius: 12px !important;
+                        margin-top: 10px;
+                    }
+                }
+                @media (max-width: 480px) {
+                    .nav-passport {
+                        display: none !important;
+                    }
+                    .lesson-card {
+                        min-width: 270px !important;
+                        max-width: 270px !important;
                     }
                 }
             `}</style>
