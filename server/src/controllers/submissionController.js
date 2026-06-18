@@ -247,6 +247,15 @@ const getFormSubmissions = async (req, res) => {
     }
 };
 
+// Helper: safely convert Mongoose Map or plain object to a regular JS object
+const toDataObj = (data) => {
+    if (!data) return {};
+    if (data instanceof Map) return Object.fromEntries(data);
+    if (typeof data.toObject === 'function') return data.toObject();
+    if (typeof data === 'object') return data;
+    return {};
+};
+
 const updateStatus = async (req, res) => {
     try {
         const { status } = req.body;
@@ -329,7 +338,7 @@ const updateStatus = async (req, res) => {
                 }
 
                 if (!participantEmail) {
-                    const dataObj = Object.fromEntries(submission.data);
+                    const dataObj = toDataObj(submission.data);
                     const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail'];
                     for (const key of emailKeys) {
                         if (dataObj[key]) {
@@ -342,7 +351,8 @@ const updateStatus = async (req, res) => {
                 if (participantEmail) {
                     const hubUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/hub/${submission._id}`;
                     const signupUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/entrar`;
-                    const participantName = submission.data.get('nome') || submission.data.get('name') || 'Participante';
+                    const _dataObjForName = toDataObj(submission.data);
+                    const participantName = _dataObjForName['nome'] || _dataObjForName['name'] || 'Participante';
 
                     let emailHtml;
 
@@ -449,7 +459,7 @@ const updateStatus = async (req, res) => {
                 }
 
                 if (!participantEmail) {
-                    const dataObj = Object.fromEntries(submission.data);
+                    const dataObj = toDataObj(submission.data);
                     const emailKeys = ['email', 'Email', 'e-mail', 'E-mail', 'seu-email', 'seu e-mail'];
                     for (const key of emailKeys) {
                         if (dataObj[key]) {
@@ -459,7 +469,8 @@ const updateStatus = async (req, res) => {
                     }
                 }
 
-                const participantName = submission.data.get('nome') || submission.data.get('name') || 'Participante';
+                const _dataObjForRejection = toDataObj(submission.data);
+                const participantName = _dataObjForRejection['nome'] || _dataObjForRejection['name'] || 'Participante';
 
                 if (participantEmail) {
                     const content = `Olá ${participantName}. Informamos que sua inscrição no evento "<strong>${submission.form.title}</strong>" não pôde ser aprovada neste momento. <br><br>Se você acredita que houve um erro ou deseja fornecer mais informações (como um novo comprovativo), entre em contato diretamente com o mentor ou responda a este e-mail.`;

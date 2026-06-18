@@ -26,7 +26,7 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
             {!isPublicForm && !isBioPage && <ScrollToTop />}
             {!isPublicForm && !isHub && !isBioPage && !isAuthPage && <AuraConcierge />}
             {!isPublicForm && !isHub && !isBioPage && !isAuthPage && <WhatsAppFloat />}
-            <Brain />
+            {!isPublicForm && !isHub && !isBioPage && !isAuthPage && <Brain />}
             <CookieConsent />
         </>
     );
