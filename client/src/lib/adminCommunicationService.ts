@@ -14,6 +14,8 @@ export const adminCommunicationService = {
         content: string;
         isAllMentors?: boolean;
         isAllUsers?: boolean;
+        buttonText?: string;
+        buttonUrl?: string;
     }) => {
         const response = await fetch(`${API_URL}/admin/communication/send-email`, {
             method: 'POST',

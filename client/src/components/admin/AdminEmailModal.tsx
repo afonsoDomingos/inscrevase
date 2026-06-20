@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, X, Mail, Sparkles, Loader2, Search, Check, History, LayoutIcon, FileText } from 'lucide-react';
+import { Send, X, Mail, Sparkles, Loader2, Search, Check, History, LayoutIcon, FileText, Calendar } from 'lucide-react';
 import { adminCommunicationService } from '@/lib/adminCommunicationService';
 import { aiService } from '@/lib/aiService';
 import { toast } from 'sonner';
@@ -8,6 +8,7 @@ import { useTranslate } from '@/context/LanguageContext';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import Tooltip from '../common/Tooltip';
+import { formService } from '@/lib/formService';
 
 
 interface AdminEmailModalProps {
@@ -230,7 +231,7 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
     const [content, setContent] = useState(initialContent || '');
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
-    const [leftTab, setLeftTab] = useState<'recipients' | 'history' | 'templates'>('recipients');
+    const [leftTab, setLeftTab] = useState<'recipients' | 'history' | 'templates' | 'events'>('recipients');
     const [logs, setLogs] = useState<EmailLog[]>([]);
     const [logsLoading, setLogsLoading] = useState(false);
 
@@ -241,6 +242,14 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
     const [selectedMentorIds, setSelectedMentorIds] = useState<string[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [fetchingMentors, setFetchingMentors] = useState(false);
+
+    // Events promotion states
+    const [events, setEvents] = useState<any[]>([]);
+    const [eventsLoading, setEventsLoading] = useState(false);
+    const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+    const [eventSearchTerm, setEventSearchTerm] = useState('');
+    const [buttonText, setButtonText] = useState('');
+    const [buttonUrl, setButtonUrl] = useState('');
 
     useEffect(() => {
         if (isOpen) {
@@ -275,6 +284,19 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
             toast.error('Erro ao carregar histórico');
         } finally {
             setLogsLoading(false);
+        }
+    };
+
+    const loadEvents = async () => {
+        setEventsLoading(true);
+        try {
+            const allEvents = await formService.getAllFormsAdmin();
+            setEvents(allEvents);
+        } catch (error) {
+            console.error('Error loading events:', error);
+            toast.error('Erro ao carregar lista de eventos');
+        } finally {
+            setEventsLoading(false);
         }
     };
 
@@ -326,12 +348,17 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                 subject,
                 content,
                 isAllMentors: !recipientId && isAllMentors,
-                isAllUsers: !recipientId && isAllUsers
+                isAllUsers: !recipientId && isAllUsers,
+                buttonText: buttonText || undefined,
+                buttonUrl: buttonUrl || undefined
             });
 
             toast.success('Emails enviados com sucesso!');
             setSubject('');
             setContent('');
+            setButtonText('');
+            setButtonUrl('');
+            setSelectedEventId(null);
             onClose();
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : 'Erro ao enviar emails';
@@ -385,6 +412,18 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                                 <h2 style={{ fontSize: window.innerWidth < 480 ? '1.1rem' : '1.4rem', fontWeight: 900, margin: 0 }}>Comunicação</h2>
                             </div>
                             <div style={{ display: 'flex', gap: '8px' }}>
+                                <Tooltip content="Promover eventos existentes">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setLeftTab(leftTab === 'events' ? 'recipients' : 'events');
+                                            if (leftTab !== 'events') loadEvents();
+                                        }}
+                                        style={{ background: leftTab === 'events' ? '#000' : '#f5f5f5', color: leftTab === 'events' ? '#FFD700' : '#666', border: 'none', padding: '8px 12px', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                    >
+                                        <Calendar size={13} /> {window.innerWidth < 480 ? '' : 'Eventos'}
+                                    </button>
+                                </Tooltip>
                                 <Tooltip content="Ver histórico de emails enviados">
                                     <button
                                         onClick={() => {
@@ -463,6 +502,85 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                                         </div>
                                     </button>
                                 ))}
+                            </div>
+                        ) : leftTab === 'events' ? (
+                            <div style={{ display: 'grid', gap: '10px' }}>
+                                <div style={{ position: 'relative', marginBottom: '10px' }}>
+                                    <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#aaa' }} />
+                                    <input
+                                        type="text"
+                                        placeholder="Buscar evento..."
+                                        value={eventSearchTerm}
+                                        onChange={(e) => setEventSearchTerm(e.target.value)}
+                                        style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: '16px', border: '1px solid #eee', fontSize: '0.9rem', outline: 'none' }}
+                                    />
+                                </div>
+
+                                <div style={{ maxHeight: '55vh', overflowY: 'auto', display: 'grid', gap: '12px' }}>
+                                    {eventsLoading ? (
+                                        <div style={{ textAlign: 'center', padding: '2rem' }}><Loader2 className="animate-spin" /></div>
+                                    ) : events.length === 0 ? (
+                                        <div style={{ textAlign: 'center', opacity: 0.5, padding: '2rem' }}>Nenhum evento encontrado.</div>
+                                    ) : (
+                                        events
+                                            .filter(evt => evt.title.toLowerCase().includes(eventSearchTerm.toLowerCase()) || (evt.creator?.name && evt.creator.name.toLowerCase().includes(eventSearchTerm.toLowerCase())))
+                                            .map((evt) => (
+                                                <button
+                                                    key={evt._id}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setSelectedEventId(evt._id);
+                                                        setSubject(`🔥 Evento Imperdível: ${evt.title} - Inscreve-te Já!`);
+                                                        
+                                                        const eventDateStr = evt.eventDate 
+                                                            ? new Date(evt.eventDate).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long', year: 'numeric' })
+                                                            : 'A definir';
+                                                        
+                                                        const detailText = `Olá, [name]!\n\nQueremos convidar-te a participar no evento "${evt.title}", organizado pelo mentor ${evt.creator?.name || 'inscreva-se'}.\n\n📅 Data: ${eventDateStr} às ${evt.eventTime || 'A definir'}\n📍 Local/Canal: ${evt.location || (evt.onlineLink ? 'Online (Link no Hub)' : 'Online')}\n\nSobre o Evento:\n${evt.description || 'Um evento exclusivo preparado para ti.'}\n\nClica no botão abaixo para garantires a tua vaga e fazeres a tua inscrição agora!`;
+                                                        
+                                                        setContent(detailText);
+                                                        setButtonText('Garantir Bilhete');
+                                                        setButtonUrl(`https://inscreva-se.com/f/${evt.slug}`);
+                                                        setLeftTab('recipients');
+                                                        toast.success('Evento selecionado para promoção!');
+                                                    }}
+                                                    style={{
+                                                        textAlign: 'left',
+                                                        padding: '1rem',
+                                                        background: selectedEventId === evt._id ? 'rgba(184,134,11,0.05)' : '#fff',
+                                                        border: '1px solid',
+                                                        borderColor: selectedEventId === evt._id ? '#B8860B' : '#eee',
+                                                        borderRadius: '20px',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        gap: '12px',
+                                                        alignItems: 'center',
+                                                        transition: 'all 0.2s ease',
+                                                    }}
+                                                    onMouseEnter={(e) => { if (selectedEventId !== evt._id) e.currentTarget.style.borderColor = '#B8860B'; }}
+                                                    onMouseLeave={(e) => { if (selectedEventId !== evt._id) e.currentTarget.style.borderColor = '#eee'; }}
+                                                >
+                                                    <div style={{
+                                                        background: '#B8860B15',
+                                                        color: '#B8860B',
+                                                        width: '40px',
+                                                        height: '40px',
+                                                        borderRadius: '12px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        flexShrink: 0
+                                                    }}>
+                                                        <Calendar size={20} />
+                                                    </div>
+                                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                                        <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{evt.title}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '2px' }}>Organizador: {evt.creator?.name || 'N/A'}</div>
+                                                    </div>
+                                                </button>
+                                            ))
+                                    )}
+                                </div>
                             </div>
                         ) : (
                             <>

@@ -5,7 +5,7 @@ const { generateBasicEmail } = require('../utils/emailTemplates');
 
 exports.sendAdminEmail = async (req, res) => {
     try {
-        const { recipientIds, subject, content, isAllMentors, isAllUsers } = req.body;
+        const { recipientIds, subject, content, isAllMentors, isAllUsers, buttonText, buttonUrl } = req.body;
         const senderId = req.user.id;
 
         let targetUsers = [];
@@ -38,8 +38,8 @@ exports.sendAdminEmail = async (req, res) => {
                 subject,
                 user.name,
                 content.replace(/\n/g, '<br>'),
-                'Aceder ao Painel',
-                dashboardUrl
+                buttonText || 'Aceder ao Painel',
+                buttonUrl || dashboardUrl
             );
 
             const sent = await sendEmail(user.email, subject, html);
