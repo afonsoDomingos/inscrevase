@@ -8,7 +8,7 @@ import { useTranslate } from '@/context/LanguageContext';
 import { userService } from '@/lib/userService';
 import { UserData } from '@/lib/authService';
 import Tooltip from '../common/Tooltip';
-import { formService } from '@/lib/formService';
+import { formService, FormModel } from '@/lib/formService';
 
 
 interface AdminEmailModalProps {
@@ -244,7 +244,7 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
     const [fetchingMentors, setFetchingMentors] = useState(false);
 
     // Events promotion states
-    const [events, setEvents] = useState<any[]>([]);
+    const [events, setEvents] = useState<FormModel[]>([]);
     const [eventsLoading, setEventsLoading] = useState(false);
     const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
     const [eventSearchTerm, setEventSearchTerm] = useState('');
