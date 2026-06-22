@@ -58,6 +58,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const [showPromo, setShowPromo] = useState(false); // Promo Popup State
     const [showFloatingButton, setShowFloatingButton] = useState(false);
     const [isBioExpanded, setIsBioExpanded] = useState(false);
+    const [isDescExpanded, setIsDescExpanded] = useState(false);
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
     const [file, setFile] = useState<File | null>(null);
@@ -802,11 +803,48 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     }}
                                 >
                                     <div className="markdown-content">
-                                        {form.description?.split('\n').map((line, i) => (
-                                            <p key={i} style={{ marginBottom: line.trim() === '' ? '1rem' : '0.5rem' }}>
-                                                {line}
-                                            </p>
-                                        )) || form.description}
+                                        {(() => {
+                                            const descLimit = 300;
+                                            const shouldTruncateDesc = form.description && form.description.length > descLimit;
+                                            const displayedDesc = (!isDescExpanded && shouldTruncateDesc)
+                                                ? `${form.description.substring(0, descLimit)}...`
+                                                : form.description;
+
+                                            return (
+                                                <>
+                                                    {displayedDesc?.split('\n').map((line, i, arr) => {
+                                                        const isLast = i === arr.length - 1;
+                                                        return (
+                                                            <p key={i} style={{ marginBottom: isLast ? '0' : (line.trim() === '' ? '1rem' : '0.5rem'), display: 'block' }}>
+                                                                {line}
+                                                                {isLast && shouldTruncateDesc && (
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={(e) => { e.preventDefault(); setIsDescExpanded(!isDescExpanded); }}
+                                                                        style={{
+                                                                            background: 'none',
+                                                                            border: 'none',
+                                                                            color: primaryColor,
+                                                                            fontWeight: 800,
+                                                                            fontSize: '0.95rem',
+                                                                            cursor: 'pointer',
+                                                                            padding: '0',
+                                                                            marginLeft: '8px',
+                                                                            textDecoration: 'underline',
+                                                                            fontStyle: 'normal',
+                                                                            display: 'inline-block',
+                                                                            verticalAlign: 'baseline'
+                                                                        }}
+                                                                    >
+                                                                        {isDescExpanded ? 'Ler menos' : 'Ler mais'}
+                                                                    </button>
+                                                                )}
+                                                            </p>
+                                                        );
+                                                    }) || displayedDesc}
+                                                </>
+                                            );
+                                        })()}
                                     </div>
                                 </motion.div>
 
