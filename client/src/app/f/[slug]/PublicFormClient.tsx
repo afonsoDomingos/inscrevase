@@ -112,10 +112,14 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
         }
     }, [success]);
 
-    // Show floating button only after scrolling down
+    // Show floating button only when reaching the bottom of the page
     useEffect(() => {
         const handleScroll = () => {
-            if (window.scrollY > 200) {
+            const scrollPosition = window.scrollY + window.innerHeight;
+            // Trigger when user is within 150px of the bottom of the page
+            const bottomThreshold = document.documentElement.scrollHeight - 150;
+            
+            if (scrollPosition >= bottomThreshold) {
                 setShowFloatingButton(true);
             } else {
                 setShowFloatingButton(false);
@@ -124,7 +128,11 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
 
         handleScroll();
         window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
+        window.addEventListener('resize', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('resize', handleScroll);
+        };
     }, []);
 
     // Animation Variants
