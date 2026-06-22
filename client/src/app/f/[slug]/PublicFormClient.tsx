@@ -891,10 +891,10 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                     <motion.div
                                         variants={itemVariants}
                                         whileHover={{ y: -2, boxShadow: `0 4px 15px ${primaryColor}10` }}
-                                        style={{ background: cardBg, padding: '0.6rem 0.8rem', borderRadius: '12px', border: `1px solid ${borderColor}`, marginBottom: '0.8rem', transition: 'all 0.3s ease', width: '100%' }}
+                                        style={{ background: cardBg, padding: '0.8rem 1rem', borderRadius: '12px', border: `1px solid ${borderColor}`, marginBottom: '0.8rem', transition: 'all 0.3s ease', width: '100%', textAlign: 'left' }}
                                     >
-                                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                                            <div style={{ width: '36px', height: '36px', borderRadius: '10px', overflow: 'hidden', border: `1px solid ${primaryColor}40`, flexShrink: 0 }}>
+                                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                                            <div style={{ width: '36px', height: '36px', borderRadius: '10px', overflow: 'hidden', border: `1px solid ${primaryColor}40`, flexShrink: 0, marginTop: '2px' }}>
                                                 {form.creator.profilePhoto ? (
                                                     <Image src={form.creator.profilePhoto} alt={form.creator.name} width={36} height={36} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                                 ) : (
@@ -903,15 +903,15 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                     </div>
                                                 )}
                                             </div>
-                                            <div style={{ flex: 1 }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                    <div>
-                                                        <div style={{ fontSize: '0.65rem', color: primaryColor, fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>
+                                            <div style={{ flex: 1, textAlign: 'left' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                    <div style={{ textAlign: 'left' }}>
+                                                        <div style={{ fontSize: '0.65rem', color: primaryColor, fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px', textAlign: 'left' }}>
                                                             {t('events.public.officialRole', { role: t(`common.badges.${form.creator.role || 'mentor'}`) })}
                                                         </div>
-                                                        <div style={{ fontWeight: 800, fontSize: '1rem', color: titleColor }}>{form.creator.name}</div>
+                                                        <div style={{ fontWeight: 800, fontSize: '1rem', color: titleColor, textAlign: 'left' }}>{form.creator.name}</div>
                                                     </div>
-                                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                                    <div style={{ display: 'flex', gap: '8px', marginTop: '2px' }}>
                                                         {form.creator.socialLinks?.instagram && (
                                                             <a href={form.creator.socialLinks.instagram} target="_blank" rel="noopener noreferrer" style={{ color: secondaryTextColor }} className="hover:opacity-80 transition-opacity">
                                                                 <Instagram size={16} />
@@ -929,7 +929,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                         )}
                                                     </div>
                                                 </div>
-                                                {form.creator.bio && <p style={{ fontSize: '0.85rem', color: secondaryTextColor, marginTop: '8px', fontStyle: 'italic', lineHeight: '1.4', whiteSpace: 'pre-wrap' }}>&quot;{form.creator.bio}&quot;</p>}
+                                                {form.creator.bio && <p style={{ fontSize: '0.85rem', color: secondaryTextColor, marginTop: '8px', fontStyle: 'italic', lineHeight: '1.4', whiteSpace: 'pre-wrap', textAlign: 'left' }}>&quot;{form.creator.bio}&quot;</p>}
                                             </div>
                                         </div>
                                     </motion.div>
