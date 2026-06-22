@@ -253,6 +253,10 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
     const [buttonText, setButtonText] = useState('');
     const [buttonUrl, setButtonUrl] = useState('');
 
+    // Recipient count state
+    const [recipientCount, setRecipientCount] = useState<{ count: number; label: string } | null>(null);
+    const [countLoading, setCountLoading] = useState(false);
+
     useEffect(() => {
         if (isOpen) {
             if (!recipientId) {
@@ -262,6 +266,19 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
             if (initialContent) setContent(initialContent);
         }
     }, [isOpen, recipientId, initialSubject, initialContent]);
+
+    // Auto-fetch recipient count whenever mode or participant event changes
+    useEffect(() => {
+        if (recipientId) return; // individual send — no count needed
+        const mode = isAllParticipants ? 'participants' : isAllUsers ? 'all' : isAllMentors ? 'mentors' : null;
+        if (!mode) { setRecipientCount(null); return; }
+        if (mode === 'participants' && !selectedParticipantEventId) { setRecipientCount(null); return; }
+        setCountLoading(true);
+        adminCommunicationService.getRecipientCount(mode, selectedParticipantEventId ?? undefined)
+            .then(data => setRecipientCount(data))
+            .catch(() => setRecipientCount(null))
+            .finally(() => setCountLoading(false));
+    }, [isAllMentors, isAllUsers, isAllParticipants, selectedParticipantEventId, recipientId]);
 
     const loadMentors = async () => {
         setFetchingMentors(true);
@@ -649,6 +666,45 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                                                 Escolher
                                             </button>
                                         </div>
+
+                                        {/* Recipient count badge */}
+                                        {!recipientId && (isAllMentors || isAllUsers || isAllParticipants || (!isAllMentors && !isAllUsers && !isAllParticipants && selectedMentorIds.length > 0)) && (
+                                            <div style={{
+                                                display: 'flex', alignItems: 'center', gap: '8px',
+                                                marginBottom: '1rem', padding: '10px 16px',
+                                                background: isAllParticipants ? '#f0fdf4' : 'rgba(184,134,11,0.06)',
+                                                border: `1px solid ${isAllParticipants ? '#bbf7d0' : 'rgba(184,134,11,0.2)'}`,
+                                                borderRadius: '14px', transition: 'all 0.3s ease'
+                                            }}>
+                                                {countLoading ? (
+                                                    <Loader2 size={14} className="animate-spin" style={{ color: '#B8860B' }} />
+                                                ) : (
+                                                    <span style={{
+                                                        fontSize: '1.1rem', fontWeight: 900,
+                                                        color: isAllParticipants ? '#166534' : '#B8860B',
+                                                        minWidth: '28px', textAlign: 'center',
+                                                        background: isAllParticipants ? '#dcfce7' : 'rgba(184,134,11,0.15)',
+                                                        padding: '2px 10px', borderRadius: '999px'
+                                                    }}>
+                                                        {(!isAllMentors && !isAllUsers && !isAllParticipants)
+                                                            ? selectedMentorIds.length
+                                                            : (recipientCount?.count ?? '—')}
+                                                    </span>
+                                                )}
+                                                <span style={{
+                                                    fontSize: '0.78rem', fontWeight: 600,
+                                                    color: isAllParticipants ? '#166534' : '#7a6000'
+                                                }}>
+                                                    {(!isAllMentors && !isAllUsers && !isAllParticipants)
+                                                        ? `mentor${selectedMentorIds.length !== 1 ? 'es' : ''} selecionado${selectedMentorIds.length !== 1 ? 's' : ''}`
+                                                        : recipientCount
+                                                            ? `${recipientCount.label} vão receber este email`
+                                                            : isAllParticipants && !selectedParticipantEventId
+                                                                ? 'Seleciona um evento para ver o total'
+                                                                : 'A calcular...'}
+                                                </span>
+                                            </div>
+                                        )}
 
                                         {isAllParticipants && (
                                             <div style={{ marginBottom: '1rem', padding: '1rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '16px' }}>

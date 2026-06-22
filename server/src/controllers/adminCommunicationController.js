@@ -145,3 +145,39 @@ exports.getCommunicationLogs = async (req, res) => {
         res.status(500).json({ message: 'Erro ao buscar histórico', error: err.message });
     }
 };
+
+exports.getRecipientCount = async (req, res) => {
+    try {
+        const { mode, eventId } = req.query;
+
+        if (mode === 'mentors') {
+            const count = await User.countDocuments({ role: { $in: ['mentor', 'specialist', 'company'] } });
+            return res.json({ count, label: 'mentores' });
+        }
+
+        if (mode === 'all') {
+            const count = await User.countDocuments({});
+            return res.json({ count, label: 'utilizadores' });
+        }
+
+        if (mode === 'participants' && eventId) {
+            // Count approved submissions
+            const userLinkedCount = await Submission.countDocuments({ form: eventId, status: 'approved', user: { $ne: null } });
+
+            // Count submissions without a linked user account but with email in data
+            const rawSubmissions = await Submission.find({ form: eventId, status: 'approved', user: null });
+            let rawWithEmailCount = 0;
+            for (const sub of rawSubmissions) {
+                const dataMap = sub.data instanceof Map ? Object.fromEntries(sub.data) : sub.data;
+                const emailVal = dataMap?.email || dataMap?.Email || dataMap?.['E-mail'] || dataMap?.['e-mail'];
+                if (emailVal) rawWithEmailCount++;
+            }
+            const count = userLinkedCount + rawWithEmailCount;
+            return res.json({ count, label: 'participantes aprovados' });
+        }
+
+        return res.json({ count: 0, label: '' });
+    } catch (err) {
+        res.status(500).json({ message: 'Erro ao contar destinatários', error: err.message });
+    }
+};

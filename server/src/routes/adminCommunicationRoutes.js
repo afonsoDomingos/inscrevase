@@ -5,5 +5,6 @@ const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 router.post('/send-email', protect, adminOnly, adminCommunicationController.sendAdminEmail);
 router.get('/logs', protect, adminOnly, adminCommunicationController.getCommunicationLogs);
+router.get('/recipient-count', protect, adminOnly, adminCommunicationController.getRecipientCount);
 
 module.exports = router;
