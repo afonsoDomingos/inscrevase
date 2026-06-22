@@ -56,6 +56,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
     const [showPromo, setShowPromo] = useState(false); // Promo Popup State
+    const [showFloatingButton, setShowFloatingButton] = useState(false);
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
     const [file, setFile] = useState<File | null>(null);
@@ -110,6 +111,21 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
             return () => clearTimeout(timer);
         }
     }, [success]);
+
+    // Show floating button only after scrolling down
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 200) {
+                setShowFloatingButton(true);
+            } else {
+                setShowFloatingButton(false);
+            }
+        };
+
+        handleScroll();
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     // Animation Variants
     const containerVariants = {
@@ -1638,57 +1654,60 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
             </AnimatePresence>
 
             {/* Floating Discover Platform Button */}
-            {!showPromo && (
-                <motion.a
-                    href="/"
-                    target="_blank"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.5, duration: 0.6 }}
-                    style={{
-                        position: 'fixed',
-                        bottom: '30px',
-                        right: '30px',
-                        zIndex: 100,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0',
-                        textDecoration: 'none',
-                        filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.3))'
-                    }}
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                >
-                    <div style={{
-                        background: '#1a1a1a',
-                        color: '#fff',
-                        padding: '10px 20px',
-                        borderRadius: '10px 4px 4px 10px',
-                        fontSize: '0.65rem',
-                        fontWeight: 800,
-                        letterSpacing: '1.2px',
-                        textTransform: 'uppercase',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        whiteSpace: 'nowrap'
-                    }}>
-                        {t('common.discoverPlatform')}
-                    </div>
-                    <div style={{
-                        background: '#FFD700',
-                        width: '42px',
-                        height: '42px',
-                        borderRadius: '4px 10px 10px 4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#000',
-                        marginLeft: '-1px',
-                        boxShadow: '0 4px 12px rgba(255, 215, 0, 0.2)'
-                    }}>
-                        <ArrowRight size={18} strokeWidth={2.5} />
-                    </div>
-                </motion.a>
-            )}
+            <AnimatePresence>
+                {!showPromo && showFloatingButton && (
+                    <motion.a
+                        href="/"
+                        target="_blank"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        transition={{ duration: 0.3 }}
+                        style={{
+                            position: 'fixed',
+                            bottom: '30px',
+                            right: '30px',
+                            zIndex: 100,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0',
+                            textDecoration: 'none',
+                            filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.3))'
+                        }}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.98 }}
+                    >
+                        <div style={{
+                            background: '#1a1a1a',
+                            color: '#fff',
+                            padding: '10px 20px',
+                            borderRadius: '10px 4px 4px 10px',
+                            fontSize: '0.65rem',
+                            fontWeight: 800,
+                            letterSpacing: '1.2px',
+                            textTransform: 'uppercase',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            whiteSpace: 'nowrap'
+                        }}>
+                            {t('common.discoverPlatform')}
+                        </div>
+                        <div style={{
+                            background: '#FFD700',
+                            width: '42px',
+                            height: '42px',
+                            borderRadius: '4px 10px 10px 4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#000',
+                            marginLeft: '-1px',
+                            boxShadow: '0 4px 12px rgba(255, 215, 0, 0.2)'
+                        }}>
+                            <ArrowRight size={18} strokeWidth={2.5} />
+                        </div>
+                    </motion.a>
+                )}
+            </AnimatePresence>
 
             {/* Show video back button if hidden */}
             <AnimatePresence>
