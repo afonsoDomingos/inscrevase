@@ -708,7 +708,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         />
                                     </motion.div>
                                 )}
-                                {/* Cover Image Carousel / Single Image */}
+                                {/* Cover Image Carousel / Single Image — fully responsive, no crop */}
                                 {covers.length > 0 && (
                                     covers.length === 1 ? (
                                         <motion.div
@@ -723,29 +723,33 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                 marginBottom: '1.5rem',
                                                 border: `1px solid ${borderColor}`,
                                                 cursor: 'zoom-in',
-                                                background: 'rgba(0,0,0,0.1)',
-                                                ...(form.coverImageMode === 'banner' ? {
-                                                    height: '240px'
-                                                } : {})
+                                                background: 'rgba(0,0,0,0.08)',
                                             }}
                                             onClick={() => setSelectedImage(covers[0])}
                                         >
+                                            {/* Blurred background for non-landscape images */}
+                                            <div style={{
+                                                position: 'absolute', inset: 0,
+                                                backgroundImage: `url(${covers[0]})`,
+                                                backgroundSize: 'cover',
+                                                backgroundPosition: 'center',
+                                                filter: 'blur(20px) brightness(0.4)',
+                                                transform: 'scale(1.1)',
+                                                zIndex: 0,
+                                            }} />
                                             <Image
                                                 src={covers[0]}
                                                 alt={form.title}
-                                                width={800}
-                                                height={600}
+                                                width={1200}
+                                                height={900}
                                                 style={{
+                                                    position: 'relative',
+                                                    zIndex: 1,
                                                     width: '100%',
-                                                    ...(form.coverImageMode === 'banner' ? {
-                                                        height: '100%',
-                                                        objectFit: 'cover'
-                                                    } : {
-                                                        height: 'auto',
-                                                        maxHeight: '400px',
-                                                        objectFit: 'cover'
-                                                    }),
-                                                    display: 'block'
+                                                    height: 'auto',
+                                                    maxHeight: 'min(70vw, 560px)',
+                                                    objectFit: 'contain',
+                                                    display: 'block',
                                                 }}
                                             />
                                         </motion.div>
@@ -759,16 +763,23 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                 overflow: 'hidden',
                                                 marginBottom: '1.5rem',
                                                 border: `1px solid ${borderColor}`,
-                                                background: 'rgba(0,0,0,0.1)',
-                                                ...(form.coverImageMode === 'banner' ? {
-                                                    height: '240px'
-                                                } : {
-                                                    height: '350px'
-                                                })
+                                                background: 'rgba(0,0,0,0.08)',
                                             }}
                                             onMouseEnter={() => setIsCoverHovered(true)}
                                             onMouseLeave={() => setIsCoverHovered(false)}
                                         >
+                                            {/* Blurred background layer */}
+                                            <div style={{
+                                                position: 'absolute', inset: 0,
+                                                backgroundImage: `url(${covers[currentCoverIndex]})`,
+                                                backgroundSize: 'cover',
+                                                backgroundPosition: 'center',
+                                                filter: 'blur(20px) brightness(0.4)',
+                                                transform: 'scale(1.1)',
+                                                zIndex: 0,
+                                                transition: 'background-image 0.5s ease',
+                                            }} />
+
                                             <AnimatePresence mode="wait">
                                                 <motion.div
                                                     key={currentCoverIndex}
@@ -776,15 +787,22 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                     animate={{ opacity: 1 }}
                                                     exit={{ opacity: 0 }}
                                                     transition={{ duration: 0.5 }}
-                                                    style={{ position: 'relative', width: '100%', height: '100%', cursor: 'zoom-in' }}
+                                                    style={{ position: 'relative', zIndex: 1, width: '100%', cursor: 'zoom-in' }}
                                                     onClick={() => setSelectedImage(covers[currentCoverIndex])}
                                                 >
                                                     <Image
                                                         src={covers[currentCoverIndex]}
                                                         alt={form.title}
-                                                        fill
-                                                        sizes="(max-width: 800px) 100vw, 800px"
-                                                        style={{ objectFit: 'cover' }}
+                                                        width={1200}
+                                                        height={900}
+                                                        sizes="(max-width: 768px) 100vw, 800px"
+                                                        style={{
+                                                            width: '100%',
+                                                            height: 'auto',
+                                                            maxHeight: 'min(70vw, 560px)',
+                                                            objectFit: 'contain',
+                                                            display: 'block',
+                                                        }}
                                                         priority
                                                     />
                                                 </motion.div>
@@ -802,7 +820,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                     left: '12px',
                                                     top: '50%',
                                                     transform: 'translateY(-50%)',
-                                                    background: 'rgba(0,0,0,0.4)',
+                                                    background: 'rgba(0,0,0,0.45)',
                                                     color: '#fff',
                                                     border: 'none',
                                                     borderRadius: '50%',
@@ -832,7 +850,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                     right: '12px',
                                                     top: '50%',
                                                     transform: 'translateY(-50%)',
-                                                    background: 'rgba(0,0,0,0.4)',
+                                                    background: 'rgba(0,0,0,0.45)',
                                                     color: '#fff',
                                                     border: 'none',
                                                     borderRadius: '50%',
@@ -884,6 +902,8 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         </motion.div>
                                     )
                                 )}
+
+
 
                                 <motion.div variants={itemVariants} style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                                     <span style={{ color: primaryColor, fontWeight: 700, letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase' }}>{t('form.registrationsOpen')}</span>
