@@ -57,6 +57,7 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const [success, setSuccess] = useState(false);
     const [showPromo, setShowPromo] = useState(false); // Promo Popup State
     const [showFloatingButton, setShowFloatingButton] = useState(false);
+    const [isBioExpanded, setIsBioExpanded] = useState(false);
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
     const [file, setFile] = useState<File | null>(null);
@@ -929,7 +930,39 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                                         )}
                                                     </div>
                                                 </div>
-                                                {form.creator.bio && <p style={{ fontSize: '0.85rem', color: secondaryTextColor, marginTop: '8px', fontStyle: 'italic', lineHeight: '1.4', whiteSpace: 'pre-wrap', textAlign: 'left' }}>&quot;{form.creator.bio}&quot;</p>}
+                                                {form.creator.bio && (() => {
+                                                    const limit = 120;
+                                                    const shouldTruncate = form.creator.bio.length > limit;
+                                                    const displayedBio = (!isBioExpanded && shouldTruncate)
+                                                        ? `${form.creator.bio.substring(0, limit)}...`
+                                                        : form.creator.bio;
+                                                    return (
+                                                        <p style={{ fontSize: '0.85rem', color: secondaryTextColor, marginTop: '8px', fontStyle: 'italic', lineHeight: '1.4', whiteSpace: 'pre-wrap', textAlign: 'left' }}>
+                                                            &quot;{displayedBio}&quot;
+                                                            {shouldTruncate && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(e) => { e.preventDefault(); setIsBioExpanded(!isBioExpanded); }}
+                                                                    style={{
+                                                                        background: 'none',
+                                                                        border: 'none',
+                                                                        color: primaryColor,
+                                                                        fontWeight: 800,
+                                                                        fontSize: '0.75rem',
+                                                                        cursor: 'pointer',
+                                                                        padding: '0',
+                                                                        marginLeft: '8px',
+                                                                        textDecoration: 'underline',
+                                                                        fontStyle: 'normal',
+                                                                        display: 'inline'
+                                                                    }}
+                                                                >
+                                                                    {isBioExpanded ? 'Ler menos' : 'Ler mais'}
+                                                                </button>
+                                                            )}
+                                                        </p>
+                                                    );
+                                                })()}
                                             </div>
                                         </div>
                                     </motion.div>
