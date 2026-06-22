@@ -14,6 +14,8 @@ export const adminCommunicationService = {
         content: string;
         isAllMentors?: boolean;
         isAllUsers?: boolean;
+        isAllParticipants?: boolean;
+        eventIdForParticipants?: string;
         buttonText?: string;
         buttonUrl?: string;
     }) => {

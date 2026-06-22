@@ -1,15 +1,39 @@
 const User = require('../models/User');
 const CommunicationLog = require('../models/CommunicationLog');
+const Submission = require('../models/Submission');
 const sendEmail = require('../utils/emailService');
 const { generateBasicEmail } = require('../utils/emailTemplates');
 
 exports.sendAdminEmail = async (req, res) => {
     try {
-        const { recipientIds, subject, content, isAllMentors, isAllUsers, buttonText, buttonUrl } = req.body;
+        const { recipientIds, subject, content, isAllMentors, isAllUsers, isAllParticipants, eventIdForParticipants, buttonText, buttonUrl } = req.body;
         const senderId = req.user.id;
 
         let targetUsers = [];
-        if (isAllUsers) {
+        let rawEmailTargets = []; // fallback for participants without accounts
+
+        if (isAllParticipants && eventIdForParticipants) {
+            // Fetch approved submissions for this event
+            const submissions = await Submission.find({
+                form: eventIdForParticipants,
+                status: 'approved'
+            }).populate('user', 'email name role');
+
+            for (const sub of submissions) {
+                if (sub.user && sub.user.email) {
+                    // Participant has a platform account
+                    targetUsers.push(sub.user);
+                } else {
+                    // Participant submitted without an account — extract email from form data
+                    const dataMap = sub.data instanceof Map ? Object.fromEntries(sub.data) : sub.data;
+                    const emailVal = dataMap?.email || dataMap?.Email || dataMap?.['E-mail'] || dataMap?.['e-mail'];
+                    const nameVal = dataMap?.name || dataMap?.Name || dataMap?.Nome || dataMap?.nome || 'Participante';
+                    if (emailVal) {
+                        rawEmailTargets.push({ email: emailVal, name: nameVal });
+                    }
+                }
+            }
+        } else if (isAllUsers) {
             // Send to everyone registered
             targetUsers = await User.find({}, 'email name role');
         } else if (isAllMentors) {
@@ -20,8 +44,8 @@ exports.sendAdminEmail = async (req, res) => {
             targetUsers = await User.find({ _id: { $in: recipientIds } }, 'email name role');
         }
 
-        if (targetUsers.length === 0) {
-            return res.status(400).json({ message: 'Nenhum utilizador selecionado ou encontrado.' });
+        if (targetUsers.length === 0 && rawEmailTargets.length === 0) {
+            return res.status(400).json({ message: 'Nenhum participante aprovado encontrado para este evento.' });
         }
 
         const results = [];
@@ -46,13 +70,32 @@ exports.sendAdminEmail = async (req, res) => {
             results.push({ email: user.email, success: sent });
         }
 
+        // Also send to participants who don't have a platform account
+        const rawResults = [];
+        for (const participant of rawEmailTargets) {
+            const html = generateBasicEmail(
+                subject,
+                participant.name,
+                content.replace(/\n/g, '<br>'),
+                buttonText || 'Ver Evento',
+                buttonUrl || 'https://inscreva-se.com'
+            );
+            const sent = await sendEmail(participant.email, subject, html);
+            rawResults.push({ email: participant.email, success: sent });
+        }
+
         // Create a single log entry for successful broadcast
-        const successfulUsers = targetUsers.filter((_, index) => results[index].success);
-        if (successfulUsers.length > 0) {
+        const successfulUsers = targetUsers.filter((_, index) => results[index]?.success);
+        const successfulRaw = rawEmailTargets.filter((_, index) => rawResults[index]?.success);
+        const allSuccessEmails = [
+            ...successfulUsers.map(m => m.email),
+            ...successfulRaw.map(r => r.email)
+        ];
+        if (allSuccessEmails.length > 0) {
             await CommunicationLog.create({
                 sender: senderId,
                 recipients: successfulUsers.map(m => m._id),
-                recipientEmails: successfulUsers.map(m => m.email),
+                recipientEmails: allSuccessEmails,
                 subject,
                 content,
                 type: 'email',
@@ -61,12 +104,17 @@ exports.sendAdminEmail = async (req, res) => {
         }
 
         // Also log failures if any
-        const failedUsers = targetUsers.filter((_, index) => !results[index].success);
-        if (failedUsers.length > 0) {
+        const failedUsers = targetUsers.filter((_, index) => !results[index]?.success);
+        const failedRaw = rawEmailTargets.filter((_, index) => !rawResults[index]?.success);
+        const allFailedEmails = [
+            ...failedUsers.map(m => m.email),
+            ...failedRaw.map(r => r.email)
+        ];
+        if (allFailedEmails.length > 0) {
             await CommunicationLog.create({
                 sender: senderId,
                 recipients: failedUsers.map(m => m._id),
-                recipientEmails: failedUsers.map(m => m.email),
+                recipientEmails: allFailedEmails,
                 subject,
                 content,
                 type: 'email',
@@ -74,9 +122,10 @@ exports.sendAdminEmail = async (req, res) => {
             });
         }
 
+        const totalSent = targetUsers.length + rawEmailTargets.length;
         res.json({
-            message: `Processo concluído para ${targetUsers.length} utilizador(es).`,
-            results
+            message: `Processo concluído para ${totalSent} participante(s).`,
+            results: [...results, ...rawResults]
         });
     } catch (err) {
         console.error('Error in sendAdminEmail:', err);

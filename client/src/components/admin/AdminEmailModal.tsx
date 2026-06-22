@@ -238,6 +238,8 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
     // Bulk logic states
     const [isAllMentors, setIsAllMentors] = useState(!recipientId);
     const [isAllUsers, setIsAllUsers] = useState(false);
+    const [isAllParticipants, setIsAllParticipants] = useState(false);
+    const [selectedParticipantEventId, setSelectedParticipantEventId] = useState<string | null>(null);
     const [mentors, setMentors] = useState<UserData[]>([]);
     const [selectedMentorIds, setSelectedMentorIds] = useState<string[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -337,18 +339,26 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
         setLoading(true);
 
         try {
-            if (!recipientId && !isAllMentors && !isAllUsers && selectedMentorIds.length === 0) {
-                toast.error('Selecione pelo menos um mentor ou grupo.');
+            if (!recipientId && !isAllMentors && !isAllUsers && !isAllParticipants && selectedMentorIds.length === 0) {
+                toast.error('Selecione pelo menos um mentor, grupo ou evento.');
+                setLoading(false);
+                return;
+            }
+
+            if (isAllParticipants && !selectedParticipantEventId) {
+                toast.error('Selecione o evento cujos participantes irão receber o email.');
                 setLoading(false);
                 return;
             }
 
             await adminCommunicationService.sendEmail({
-                recipientIds: recipientId ? [recipientId] : (isAllMentors || isAllUsers ? undefined : selectedMentorIds),
+                recipientIds: recipientId ? [recipientId] : (isAllMentors || isAllUsers || isAllParticipants ? undefined : selectedMentorIds),
                 subject,
                 content,
                 isAllMentors: !recipientId && isAllMentors,
                 isAllUsers: !recipientId && isAllUsers,
+                isAllParticipants: !recipientId && isAllParticipants,
+                eventIdForParticipants: isAllParticipants ? (selectedParticipantEventId ?? undefined) : undefined,
                 buttonText: buttonText || undefined,
                 buttonUrl: buttonUrl || undefined
             });
@@ -359,6 +369,8 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
             setButtonText('');
             setButtonUrl('');
             setSelectedEventId(null);
+            setSelectedParticipantEventId(null);
+            setIsAllParticipants(false);
             onClose();
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : 'Erro ao enviar emails';
@@ -590,7 +602,7 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                                         <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem', flexWrap: 'wrap' }}>
                                             <button
                                                 type="button"
-                                                onClick={() => { setIsAllMentors(true); setIsAllUsers(false); }}
+                                                onClick={() => { setIsAllMentors(true); setIsAllUsers(false); setIsAllParticipants(false); }}
                                                 style={{
                                                     flex: 1, padding: '10px 5px', borderRadius: '14px', fontSize: '0.75rem', fontWeight: 800,
                                                     background: isAllMentors ? '#000' : '#f5f5f5',
@@ -602,7 +614,7 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                                             </button>
                                             <button
                                                 type="button"
-                                                onClick={() => { setIsAllMentors(false); setIsAllUsers(true); }}
+                                                onClick={() => { setIsAllMentors(false); setIsAllUsers(true); setIsAllParticipants(false); }}
                                                 style={{
                                                     flex: 1, padding: '10px 5px', borderRadius: '14px', fontSize: '0.75rem', fontWeight: 800,
                                                     background: isAllUsers ? '#000' : '#f5f5f5',
@@ -610,15 +622,27 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                                                     border: 'none', cursor: 'pointer', whiteSpace: 'nowrap'
                                                 }}
                                             >
-                                                Todos (Geral)
+                                                Todos
                                             </button>
                                             <button
                                                 type="button"
-                                                onClick={() => { setIsAllMentors(false); setIsAllUsers(false); }}
+                                                onClick={() => { setIsAllMentors(false); setIsAllUsers(false); setIsAllParticipants(true); if (events.length === 0) loadEvents(); }}
                                                 style={{
                                                     flex: 1, padding: '10px 5px', borderRadius: '14px', fontSize: '0.75rem', fontWeight: 800,
-                                                    background: (!isAllMentors && !isAllUsers) ? '#000' : '#f5f5f5',
-                                                    color: (!isAllMentors && !isAllUsers) ? '#FFD700' : '#666',
+                                                    background: isAllParticipants ? '#1a6b3a' : '#f5f5f5',
+                                                    color: isAllParticipants ? '#7CFC00' : '#666',
+                                                    border: 'none', cursor: 'pointer', whiteSpace: 'nowrap'
+                                                }}
+                                            >
+                                                Participantes
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => { setIsAllMentors(false); setIsAllUsers(false); setIsAllParticipants(false); }}
+                                                style={{
+                                                    flex: 1, padding: '10px 5px', borderRadius: '14px', fontSize: '0.75rem', fontWeight: 800,
+                                                    background: (!isAllMentors && !isAllUsers && !isAllParticipants) ? '#000' : '#f5f5f5',
+                                                    color: (!isAllMentors && !isAllUsers && !isAllParticipants) ? '#FFD700' : '#666',
                                                     border: 'none', cursor: 'pointer', whiteSpace: 'nowrap'
                                                 }}
                                             >
@@ -626,7 +650,34 @@ export default function AdminEmailModal({ isOpen, onClose, recipientId, recipien
                                             </button>
                                         </div>
 
-                                        {!isAllMentors && !isAllUsers && (
+                                        {isAllParticipants && (
+                                            <div style={{ marginBottom: '1rem', padding: '1rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '16px' }}>
+                                                <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#166534', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Selecionar Evento</div>
+                                                <div style={{ fontSize: '0.72rem', color: '#166534', marginBottom: '10px', opacity: 0.8 }}>O email será enviado apenas para os participantes aprovados do evento escolhido.</div>
+                                                {eventsLoading ? (
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#166534', fontSize: '0.8rem' }}>
+                                                        <Loader2 size={14} className="animate-spin" /> A carregar eventos...
+                                                    </div>
+                                                ) : (
+                                                    <select
+                                                        value={selectedParticipantEventId || ''}
+                                                        onChange={(e) => setSelectedParticipantEventId(e.target.value || null)}
+                                                        style={{
+                                                            width: '100%', padding: '10px 12px', borderRadius: '12px',
+                                                            border: '1px solid #86efac', background: '#fff',
+                                                            fontSize: '0.85rem', fontWeight: 600, outline: 'none', cursor: 'pointer'
+                                                        }}
+                                                    >
+                                                        <option value="">-- Escolha um evento --</option>
+                                                        {events.map(evt => (
+                                                            <option key={evt._id} value={evt._id}>{evt.title} ({evt.creator?.name || 'N/A'})</option>
+                                                        ))}
+                                                    </select>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {!isAllMentors && !isAllUsers && !isAllParticipants && (
                                             <div style={{ display: 'grid', gap: '10px' }}>
                                                 <div style={{ position: 'relative' }}>
                                                     <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#aaa' }} />
