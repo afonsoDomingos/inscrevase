@@ -44,6 +44,7 @@ export interface FormModel {
     waitingVideo?: string | null;
     showVideoOnStart?: boolean | null;
     coverImage?: string | null;
+    coverImages?: string[]; // Array of cover images for carousel (max 5)
     coverImageMode?: 'full' | 'banner' | null;
     videoUrl?: string | null;
     videoOrientation?: 'vertical' | 'horizontal';

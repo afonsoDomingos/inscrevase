@@ -204,6 +204,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
     const [capacity, setCapacity] = useState('');
     const [extraCapacity, setExtraCapacity] = useState('');
     const [coverImage, setCoverImage] = useState<string>('');
+    const [coverImages, setCoverImages] = useState<string[]>([]);
     const [coverImageMode, setCoverImageMode] = useState<'full' | 'banner'>('full');
     const [uploadingImage, setUploadingImage] = useState(false);
 
@@ -331,6 +332,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
             setCapacity(form.capacity ? form.capacity.toString() : '');
             setExtraCapacity((form as any).extraCapacity ? (form as any).extraCapacity.toString() : '0');
             setCoverImage(form.coverImage || '');
+            setCoverImages(form.coverImages || (form.coverImage ? [form.coverImage] : []));
             setCoverImageMode((form as any).coverImageMode || 'full');
             setLocation(form.location || '');
             setOnlineLink(form.onlineLink || '');
@@ -464,11 +466,17 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
     };
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (coverImages.length >= 5) {
+            toast.error('Você já atingiu o limite de 5 imagens de capa.');
+            return;
+        }
         if (e.target.files && e.target.files[0]) {
             setUploadingImage(true);
             try {
                 const url = await formService.uploadFile(e.target.files[0], 'covers');
-                setCoverImage(url);
+                const updated = [...coverImages, url];
+                setCoverImages(updated);
+                setCoverImage(updated[0] || '');
                 toast.success('Imagem de capa carregada com sucesso!');
             } catch (err: unknown) {
                 console.error("Cover Upload Error:", err);
@@ -479,6 +487,13 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                 e.target.value = '';
             }
         }
+    };
+
+    const removeCoverImage = (indexToRemove: number) => {
+        const updated = coverImages.filter((_, idx) => idx !== indexToRemove);
+        setCoverImages(updated);
+        setCoverImage(updated[0] || '');
+        toast.info('Imagem de capa removida.');
     };
 
     const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -587,6 +602,7 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
                 onlineLink,
                 fields: cleanedFields as FormModel['fields'],
                 coverImage,
+                coverImages,
                 coverImageMode,
                 whatsappConfig,
                 theme: {
@@ -1016,66 +1032,89 @@ export default function EditEventModal({ isOpen, onClose, onSuccess, form, userP
 
                                             <div>
                                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                                                    {t('events.coverImageLabel')} <span style={{ color: '#ef4444' }}>(Obrigatório)</span>
+                                                    Imagens de Capa <span style={{ color: '#ef4444' }}>(Obrigatório, máx 5)</span>
                                                 </label>
-                                                <div style={{
-                                                    width: '100%',
-                                                    height: '180px',
-                                                    background: '#eee',
-                                                    borderRadius: '20px',
-                                                    border: '2px dashed #ccc',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    cursor: 'pointer',
-                                                    position: 'relative',
-                                                    overflow: 'hidden'
-                                                }}>
-                                                    <input
-                                                        type="file"
-                                                        accept="image/*"
-                                                        onChange={handleImageUpload}
-                                                        style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: coverImage ? 0 : 1 }}
-                                                    />
+                                                <div
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '120px',
+                                                        background: '#eee',
+                                                        borderRadius: '20px',
+                                                        border: '2px dashed #ccc',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        cursor: coverImages.length >= 5 ? 'not-allowed' : 'pointer',
+                                                        position: 'relative',
+                                                        overflow: 'hidden',
+                                                        opacity: coverImages.length >= 5 ? 0.6 : 1
+                                                    }}>
+                                                    {coverImages.length < 5 && (
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            onChange={handleImageUpload}
+                                                            style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: 1 }}
+                                                        />
+                                                    )}
                                                     {uploadingImage ? <Loader2 className="animate-spin" /> : (
-                                                        coverImage ? (
-                                                            <>
-                                                                <Image src={coverImage} alt="Cover" fill style={{ objectFit: 'cover' }} />
-                                                                <div style={{ position: 'absolute', bottom: '10px', right: '10px', display: 'flex', gap: '8px', zIndex: 2 }}>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={(e) => { e.stopPropagation(); setCoverImage(''); }}
-                                                                        style={{
-                                                                            background: 'rgba(239, 68, 68, 0.9)',
-                                                                            color: '#fff',
-                                                                            border: 'none',
-                                                                            borderRadius: '8px',
-                                                                            padding: '8px 12px',
-                                                                            fontSize: '0.75rem',
-                                                                            fontWeight: 600,
-                                                                            cursor: 'pointer',
-                                                                            display: 'flex',
-                                                                            alignItems: 'center',
-                                                                            gap: '4px'
-                                                                        }}
-                                                                    >
-                                                                        <Trash2 size={14} /> Remover
-                                                                    </button>
-                                                                </div>
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <ImageIcon size={32} color="#aaa" />
-                                                                <span style={{ fontSize: '0.8rem', color: '#888', marginTop: '10px' }}>{t('events.coverImageHelp')}</span>
-                                                            </>
-                                                        )
+                                                        <>
+                                                            <ImageIcon size={32} color="#aaa" />
+                                                            <span style={{ fontSize: '0.8rem', color: '#888', marginTop: '6px', fontWeight: 600 }}>
+                                                                {coverImages.length === 0 ? 'Adicionar imagens de capa' : 'Adicionar mais imagens'} ({coverImages.length}/5)
+                                                            </span>
+                                                            <span style={{ fontSize: '0.7rem', color: '#aaa', marginTop: '2px' }}>
+                                                                Clique para selecionar
+                                                            </span>
+                                                        </>
                                                     )}
                                                 </div>
-                                                {coverImage && !uploadingImage && (
-                                                    <p style={{ fontSize: '0.75rem', color: '#16a34a', marginTop: '8px', fontWeight: 600 }}>
-                                                        ✓ Imagem carregada! Clique acima para alterar ou use o botão Remover.
-                                                    </p>
+
+                                                {/* Thumbnails grid */}
+                                                {coverImages.length > 0 && (
+                                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '10px', marginTop: '12px' }}>
+                                                        {coverImages.map((img, idx) => (
+                                                            <div key={idx} style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: '12px', overflow: 'hidden', border: '1px solid #ddd' }}>
+                                                                <Image src={img} alt={`Capa ${idx + 1}`} fill style={{ objectFit: 'cover' }} />
+                                                                <span style={{ 
+                                                                    position: 'absolute', 
+                                                                    top: '4px', 
+                                                                    left: '4px', 
+                                                                    background: idx === 0 ? '#16a34a' : 'rgba(0,0,0,0.6)', 
+                                                                    color: '#fff', 
+                                                                    fontSize: '0.6rem', 
+                                                                    fontWeight: 700, 
+                                                                    padding: '1px 4px', 
+                                                                    borderRadius: '4px' 
+                                                                }}>
+                                                                    {idx === 0 ? 'Principal' : `#${idx + 1}`}
+                                                                </span>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => removeCoverImage(idx)}
+                                                                    style={{ 
+                                                                        position: 'absolute', 
+                                                                        top: '4px', 
+                                                                        right: '4px', 
+                                                                        background: 'rgba(239, 68, 68, 0.9)', 
+                                                                        color: '#fff', 
+                                                                        border: 'none', 
+                                                                        borderRadius: '50%', 
+                                                                        width: '18px', 
+                                                                        height: '18px', 
+                                                                        display: 'flex', 
+                                                                        alignItems: 'center', 
+                                                                        justifyContent: 'center', 
+                                                                        cursor: 'pointer', 
+                                                                        zIndex: 10 
+                                                                    }}
+                                                                >
+                                                                    <X size={10} />
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 )}
 
                                                 {/* Image Display Mode Selector */}

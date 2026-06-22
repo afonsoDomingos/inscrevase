@@ -26,7 +26,9 @@ import {
     Users,
     X,
     Minimize2,
-    Maximize2
+    Maximize2,
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-react';
 import StripeCheckout from '@/components/StripeCheckout';
 import Image from 'next/image';
@@ -64,6 +66,21 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
     const [file, setFile] = useState<File | null>(null);
     const [filePreview, setFilePreview] = useState<string | null>(null);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [currentCoverIndex, setCurrentCoverIndex] = useState(0);
+    const [isCoverHovered, setIsCoverHovered] = useState(false);
+
+    const covers = form?.coverImages && form.coverImages.length > 0
+        ? form.coverImages
+        : (form?.coverImage ? [form.coverImage] : []);
+
+    useEffect(() => {
+        if (covers.length <= 1 || isCoverHovered) return;
+        const timer = setInterval(() => {
+            setCurrentCoverIndex(prev => (prev + 1) % covers.length);
+        }, 4000);
+        return () => clearInterval(timer);
+    }, [covers.length, isCoverHovered]);
+
     const [paymentMode, setPaymentMode] = useState<'stripe' | 'manual' | 'paypal' | null>(null);
     const visitRecorded = useRef(false);
     const { trackViewContent, trackAddToCart, trackPurchase } = useMetaPixelEvents();
@@ -691,46 +708,181 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         />
                                     </motion.div>
                                 )}
-                                {/* Cover Image */}
-                                {form.coverImage && (
-                                    <motion.div
-                                        variants={itemVariants}
-                                        whileHover={{ scale: 1.01 }}
-                                        transition={{ duration: 0.3 }}
-                                        style={{
-                                            position: 'relative',
-                                            width: '100%',
-                                            borderRadius: '24px',
-                                            overflow: 'hidden',
-                                            marginBottom: '1.5rem',
-                                            border: `1px solid ${borderColor}`,
-                                            cursor: 'zoom-in',
-                                            background: 'rgba(0,0,0,0.1)',
-                                            ...(form.coverImageMode === 'banner' ? {
-                                                height: '240px'
-                                            } : {})
-                                        }}
-                                        onClick={() => setSelectedImage(form.coverImage!)}
-                                    >
-                                        <Image
-                                            src={form.coverImage}
-                                            alt={form.title}
-                                            width={800}
-                                            height={600}
+                                {/* Cover Image Carousel / Single Image */}
+                                {covers.length > 0 && (
+                                    covers.length === 1 ? (
+                                        <motion.div
+                                            variants={itemVariants}
+                                            whileHover={{ scale: 1.01 }}
+                                            transition={{ duration: 0.3 }}
                                             style={{
+                                                position: 'relative',
                                                 width: '100%',
+                                                borderRadius: '24px',
+                                                overflow: 'hidden',
+                                                marginBottom: '1.5rem',
+                                                border: `1px solid ${borderColor}`,
+                                                cursor: 'zoom-in',
+                                                background: 'rgba(0,0,0,0.1)',
                                                 ...(form.coverImageMode === 'banner' ? {
-                                                    height: '100%',
-                                                    objectFit: 'cover'
-                                                } : {
-                                                    height: 'auto',
-                                                    maxHeight: '400px',
-                                                    objectFit: 'cover'
-                                                }),
-                                                display: 'block'
+                                                    height: '240px'
+                                                } : {})
                                             }}
-                                        />
-                                    </motion.div>
+                                            onClick={() => setSelectedImage(covers[0])}
+                                        >
+                                            <Image
+                                                src={covers[0]}
+                                                alt={form.title}
+                                                width={800}
+                                                height={600}
+                                                style={{
+                                                    width: '100%',
+                                                    ...(form.coverImageMode === 'banner' ? {
+                                                        height: '100%',
+                                                        objectFit: 'cover'
+                                                    } : {
+                                                        height: 'auto',
+                                                        maxHeight: '400px',
+                                                        objectFit: 'cover'
+                                                    }),
+                                                    display: 'block'
+                                                }}
+                                            />
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            variants={itemVariants}
+                                            style={{
+                                                position: 'relative',
+                                                width: '100%',
+                                                borderRadius: '24px',
+                                                overflow: 'hidden',
+                                                marginBottom: '1.5rem',
+                                                border: `1px solid ${borderColor}`,
+                                                background: 'rgba(0,0,0,0.1)',
+                                                ...(form.coverImageMode === 'banner' ? {
+                                                    height: '240px'
+                                                } : {
+                                                    height: '350px'
+                                                })
+                                            }}
+                                            onMouseEnter={() => setIsCoverHovered(true)}
+                                            onMouseLeave={() => setIsCoverHovered(false)}
+                                        >
+                                            <AnimatePresence mode="wait">
+                                                <motion.div
+                                                    key={currentCoverIndex}
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                    transition={{ duration: 0.5 }}
+                                                    style={{ position: 'relative', width: '100%', height: '100%', cursor: 'zoom-in' }}
+                                                    onClick={() => setSelectedImage(covers[currentCoverIndex])}
+                                                >
+                                                    <Image
+                                                        src={covers[currentCoverIndex]}
+                                                        alt={form.title}
+                                                        fill
+                                                        sizes="(max-width: 800px) 100vw, 800px"
+                                                        style={{ objectFit: 'cover' }}
+                                                        priority
+                                                    />
+                                                </motion.div>
+                                            </AnimatePresence>
+
+                                            {/* Left Arrow */}
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setCurrentCoverIndex((prev) => (prev - 1 + covers.length) % covers.length);
+                                                }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    left: '12px',
+                                                    top: '50%',
+                                                    transform: 'translateY(-50%)',
+                                                    background: 'rgba(0,0,0,0.4)',
+                                                    color: '#fff',
+                                                    border: 'none',
+                                                    borderRadius: '50%',
+                                                    width: '36px',
+                                                    height: '36px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    zIndex: 10,
+                                                    backdropFilter: 'blur(4px)',
+                                                    transition: 'all 0.2s ease'
+                                                }}
+                                            >
+                                                <ChevronLeft size={20} />
+                                            </button>
+
+                                            {/* Right Arrow */}
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setCurrentCoverIndex((prev) => (prev + 1) % covers.length);
+                                                }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    right: '12px',
+                                                    top: '50%',
+                                                    transform: 'translateY(-50%)',
+                                                    background: 'rgba(0,0,0,0.4)',
+                                                    color: '#fff',
+                                                    border: 'none',
+                                                    borderRadius: '50%',
+                                                    width: '36px',
+                                                    height: '36px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    zIndex: 10,
+                                                    backdropFilter: 'blur(4px)',
+                                                    transition: 'all 0.2s ease'
+                                                }}
+                                            >
+                                                <ChevronRight size={20} />
+                                            </button>
+
+                                            {/* Dots indicators */}
+                                            <div style={{
+                                                position: 'absolute',
+                                                bottom: '12px',
+                                                left: '50%',
+                                                transform: 'translateX(-50%)',
+                                                display: 'flex',
+                                                gap: '6px',
+                                                zIndex: 10
+                                            }}>
+                                                {covers.map((_, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setCurrentCoverIndex(idx);
+                                                        }}
+                                                        style={{
+                                                            width: currentCoverIndex === idx ? '24px' : '8px',
+                                                            height: '8px',
+                                                            borderRadius: '4px',
+                                                            background: currentCoverIndex === idx ? primaryColor : 'rgba(255,255,255,0.5)',
+                                                            border: 'none',
+                                                            padding: 0,
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.3s ease'
+                                                        }}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </motion.div>
+                                    )
                                 )}
 
                                 <motion.div variants={itemVariants} style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>

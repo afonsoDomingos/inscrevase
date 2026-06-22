@@ -24,6 +24,7 @@ const FormSchema = new mongoose.Schema({
     description: { type: String, maxLength: 3000 },
     logo: { type: String },
     coverImage: { type: String, required: [true, 'A imagem de capa é obrigatória'] },
+    coverImages: [{ type: String }], // Array of cover images for carousel (optional, max 5)
     coverImageMode: { type: String, enum: ['full', 'banner'], default: 'full' }, // full = imagem completa, banner = cortada
     videoUrl: { type: String },
     videoOrientation: { type: String, enum: ['vertical', 'horizontal'], default: 'vertical' },

@@ -18,7 +18,7 @@ exports.createForm = async (req, res) => {
         if (!user.isEmailVerified && user.role !== 'admin' && user.role !== 'SuperAdmin') {
             return res.status(403).json({ message: 'Por favor, confirme seu e-mail para criar eventos.' });
         }
-        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, capacity, extraCapacity, whatsappConfig, videoUrl, videoOrientation, logo, coverImage, coverImageMode, location, onlineLink, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig, partners } = req.body;
+        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, capacity, extraCapacity, whatsappConfig, videoUrl, videoOrientation, logo, coverImage, coverImages, coverImageMode, location, onlineLink, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig, partners } = req.body;
 
         let slug = slugify(title, { lower: true, strict: true });
 
@@ -54,6 +54,7 @@ exports.createForm = async (req, res) => {
             whatsappConfig,
             videoUrl,
             coverImage,
+            coverImages: Array.isArray(coverImages) ? coverImages.slice(0, 5) : [],
             coverImageMode,
             location,
             onlineLink,
@@ -286,7 +287,7 @@ exports.updateForm = async (req, res) => {
         }
 
         // Update fields
-        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, coverImage, coverImageMode, logo, videoOrientation, capacity, extraCapacity, whatsappConfig, location, onlineLink, waitingVideo, showVideoOnStart, videoUrl, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig, partners } = req.body;
+        const { title, description, fields, theme, active, eventDate, eventTime, eventType, category, paymentConfig, coverImage, coverImages, coverImageMode, logo, videoOrientation, capacity, extraCapacity, whatsappConfig, location, onlineLink, waitingVideo, showVideoOnStart, videoUrl, hubBackgroundImage, hubButtonColor, showHubButton, welcomeMessage, welcomeVideo, customFields, agenda, materials, certificateConfig, partners } = req.body;
 
         console.log(`--- Atualizando Formulário ${req.params.id} ---`);
 
@@ -296,6 +297,7 @@ exports.updateForm = async (req, res) => {
         if (fields !== undefined) form.fields = fields;
         if (active !== undefined) form.active = active;
         if (coverImage !== undefined) form.coverImage = coverImage;
+        if (coverImages !== undefined) form.coverImages = Array.isArray(coverImages) ? coverImages.slice(0, 5) : [];
         if (coverImageMode !== undefined) form.coverImageMode = coverImageMode;
         if (logo !== undefined) form.logo = logo;
 
