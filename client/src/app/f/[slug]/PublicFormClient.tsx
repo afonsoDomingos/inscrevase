@@ -926,7 +926,9 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                 </motion.div>
 
                                 <motion.h1
-                                    variants={itemVariants}
+                                    initial={{ opacity: 0, y: 60, filter: 'blur(12px)', scale: 0.92 }}
+                                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)', scale: 1 }}
+                                    transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
                                     style={{
                                         fontSize: 'clamp(2.2rem, 8vw, 3.5rem)',
                                         fontWeight: 900,
@@ -941,7 +943,21 @@ export default function PublicForm({ params, initialForm }: PublicFormProps) {
                                         textAlign: 'center'
                                     }}
                                 >
-                                    {form.title}
+                                    {form.title.split(' ').map((word, i) => (
+                                        <motion.span
+                                            key={i}
+                                            initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+                                            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                                            transition={{
+                                                duration: 0.6,
+                                                ease: [0.22, 1, 0.36, 1],
+                                                delay: 0.25 + i * 0.07
+                                            }}
+                                            style={{ display: 'inline-block', marginRight: '0.25em' }}
+                                        >
+                                            {word}
+                                        </motion.span>
+                                    ))}
                                 </motion.h1>
 
                                 <motion.div
